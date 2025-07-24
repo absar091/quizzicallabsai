@@ -37,51 +37,9 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="hidden font-bold sm:inline-block">
-              Quizzicallabs™
-            </span>
-          </Link>
-          {!isHomePage && <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>}
-        </div>
-
-        <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
-          {!isHomePage && menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-foreground/80",
-                pathname === item.href
-                  ? "text-foreground"
-                  : "text-foreground/60"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          {user ? (
-            <Link href="/profile">
-              <Avatar className="h-9 w-9">
-                <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
-                <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
-              </Avatar>
-            </Link>
-          ) : isHomePage ? (
-            <Button asChild>
-                <Link href="/login">Get Started</Link>
-            </Button>
-          ) : null}
-          
+      <div className="container flex h-14 items-center">
+        {/* Left Section (Desktop) / Mobile Menu */}
+        <div className="flex items-center md:flex-1">
           {!isHomePage && (
             <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -91,7 +49,7 @@ export function AppHeader() {
                     <span className="sr-only">Toggle Menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left">
+                <SheetContent side="left" className="w-[240px]">
                   <SheetHeader>
                     <SheetTitle>
                       <div className="flex items-center space-x-2">
@@ -104,25 +62,25 @@ export function AppHeader() {
                       </div>
                     </SheetTitle>
                   </SheetHeader>
-                  <nav className="grid gap-6 text-lg font-medium mt-8">
+                  <nav className="grid gap-4 text-lg font-medium mt-8">
                     {menuItems.map(item => (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          "transition-colors hover:text-foreground/80",
+                          "transition-colors hover:text-foreground/80 flex items-center",
                           pathname === item.href ? "text-foreground" : "text-foreground/60"
                         )}
                       >
                         {item.label}
                       </Link>
                     ))}
-                    <Link
+                     <Link
                       href="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
-                        "transition-colors hover:text-foreground/80",
+                        "transition-colors hover:text-foreground/80 flex items-center pt-4 border-t",
                         pathname === "/profile" ? "text-foreground" : "text-foreground/60"
                       )}
                     >
@@ -133,6 +91,61 @@ export function AppHeader() {
               </Sheet>
             </div>
           )}
+          <Link href="/" className="hidden items-center space-x-2 md:flex">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-bold sm:inline-block">
+              Quizzicallabs™
+            </span>
+            {!isHomePage && <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>}
+          </Link>
+        </div>
+        
+        {/* Center Section (Desktop) / Mobile Logo */}
+         <div className="flex flex-1 justify-center md:justify-center">
+            <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+              {!isHomePage && menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "transition-colors hover:text-foreground/80",
+                    pathname === item.href
+                      ? "text-foreground"
+                      : "text-foreground/60"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <Link href="/" className="flex items-center space-x-2 md:hidden">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                  <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+              </div>
+               <span className="font-bold sm:inline-block">
+                Quizzicallabs™
+              </span>
+            </Link>
+        </div>
+
+
+        {/* Right Section */}
+        <div className="flex flex-1 items-center justify-end gap-2">
+          <ThemeToggle />
+          {user ? (
+            <Link href="/profile">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
+                <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : isHomePage ? (
+            <Button asChild size="sm">
+                <Link href="/login">Get Started</Link>
+            </Button>
+          ) : null}
         </div>
       </div>
     </header>
