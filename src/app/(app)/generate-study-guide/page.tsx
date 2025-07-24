@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle } from "lucide-react";
+import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download } from "lucide-react";
+import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,6 +59,107 @@ export default function GenerateStudyGuidePage() {
       setIsGenerating(false);
     }
   }
+  
+  const downloadStudyGuide = () => {
+    if (!studyGuide) return;
+    
+    const doc = new jsPDF();
+    const topic = form.getValues('topic');
+    let y = 15;
+    const pageHeight = 280;
+    const margin = 10;
+    const maxWidth = 180;
+    
+    const checkPageBreak = (neededHeight: number) => {
+        if(y + neededHeight > pageHeight) {
+            doc.addPage();
+            y = 15;
+        }
+    }
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(studyGuide.title, margin, y);
+    y += 10;
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    const summaryLines = doc.splitTextToSize(studyGuide.summary, maxWidth);
+    checkPageBreak(summaryLines.length * 5);
+    doc.text(summaryLines, margin, y);
+    y += (summaryLines.length * 5) + 10;
+
+    // Key Concepts
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    checkPageBreak(10);
+    doc.text("Key Concepts", margin, y);
+    y += 8;
+
+    studyGuide.keyConcepts.forEach(concept => {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        const conceptLines = doc.splitTextToSize(concept.concept, maxWidth);
+        checkPageBreak(conceptLines.length * 5 + 15);
+        doc.text(conceptLines, margin, y);
+        y+= conceptLines.length * 5;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const definitionLines = doc.splitTextToSize(concept.definition, maxWidth);
+        doc.text(definitionLines, margin, y);
+        y+= definitionLines.length * 5;
+
+        doc.setFont('helvetica', 'italic');
+        const importanceLines = doc.splitTextToSize(`Importance: ${concept.importance}`, maxWidth);
+        doc.text(importanceLines, margin, y);
+        y += (importanceLines.length * 5) + 5;
+    });
+
+    // Analogies
+    checkPageBreak(15);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Simple Analogies", margin, y);
+    y += 8;
+    
+    studyGuide.analogies.forEach(analogy => {
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'italic');
+        const analogyLines = doc.splitTextToSize(`"${analogy.analogy}"`, maxWidth);
+        checkPageBreak(analogyLines.length * 5 + 10);
+        doc.text(analogyLines, margin, y);
+        y += analogyLines.length * 5;
+
+        doc.setFont('helvetica', 'normal');
+        doc.text(`(This explains: ${analogy.concept})`, margin, y);
+        y += 10;
+    });
+
+    // Quiz Yourself
+    checkPageBreak(15);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Quiz Yourself", margin, y);
+    y += 8;
+
+    studyGuide.quizYourself.forEach(quiz => {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        const questionLines = doc.splitTextToSize(`Q: ${quiz.question}`, maxWidth);
+        checkPageBreak(questionLines.length * 5 + 10);
+        doc.text(questionLines, margin, y);
+        y+= questionLines.length * 5;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const answerLines = doc.splitTextToSize(`A: ${quiz.answer}`, maxWidth);
+        doc.text(answerLines, margin, y);
+        y += 10;
+    });
+
+    doc.save(`study_guide_${topic.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+  };
 
   return (
     <div>
@@ -116,10 +218,18 @@ export default function GenerateStudyGuidePage() {
       {studyGuide && (
         <div className="max-w-4xl mx-auto mt-12">
             <Card className="bg-card/80 backdrop-blur-sm">
-                <CardHeader className="text-center">
-                    <BookOpen className="mx-auto h-12 w-12 text-primary mb-4" />
-                    <CardTitle className="text-3xl">{studyGuide.title}</CardTitle>
-                    <CardDescription>{studyGuide.summary}</CardDescription>
+                <CardHeader className="text-center border-b pb-6">
+                    <div className="flex justify-center items-start">
+                         <div className="flex-1 text-center">
+                            <BookOpen className="mx-auto h-12 w-12 text-primary mb-4" />
+                            <CardTitle className="text-3xl">{studyGuide.title}</CardTitle>
+                            <CardDescription>{studyGuide.summary}</CardDescription>
+                         </div>
+                         <Button variant="outline" size="sm" onClick={downloadStudyGuide} className="ml-4">
+                            <Download className="h-4 w-4 mr-2"/>
+                            Download
+                         </Button>
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-8 pt-6">
                     <div>
@@ -176,5 +286,3 @@ export default function GenerateStudyGuidePage() {
     </div>
   );
 }
-
-    
