@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrainCircuit, Menu } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -30,6 +31,7 @@ const menuItems = [
 export function AppHeader() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -73,7 +75,7 @@ export function AppHeader() {
                 </Link>
             )}
              <div className="md:hidden">
-                <Sheet>
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
                             <Menu className="h-6 w-6" />
@@ -98,6 +100,7 @@ export function AppHeader() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
                                     className={cn(
                                         "transition-colors hover:text-foreground/80",
                                         pathname === item.href ? "text-foreground" : "text-foreground/60"
@@ -108,6 +111,7 @@ export function AppHeader() {
                             ))}
                              <Link
                                 href="/profile"
+                                onClick={() => setIsMobileMenuOpen(false)}
                                 className={cn(
                                     "transition-colors hover:text-foreground/80",
                                     pathname === "/profile" ? "text-foreground" : "text-foreground/60"
