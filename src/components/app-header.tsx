@@ -33,97 +33,107 @@ export function AppHeader() {
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isHomePage = pathname === "/";
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <div className="flex items-center">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+        <div className="mr-4 flex items-center">
+          <Link href="/" className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="hidden font-bold sm:inline-block">
               Quizzicallabs™
             </span>
-             <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>
           </Link>
-          <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
-            {menuItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "transition-colors hover:text-foreground/80",
-                  pathname === item.href
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          {!isHomePage && <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>}
         </div>
+
+        <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
+          {!isHomePage && menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname === item.href
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         
-        <nav className="ml-auto flex items-center gap-2">
-            <ThemeToggle />
-            {user && (
-                 <Link href="/profile">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
-                      <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                </Link>
-            )}
-             <div className="md:hidden">
-                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Menu className="h-6 w-6" />
-                            <span className="sr-only">Toggle Menu</span>
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="right">
-                        <SheetHeader>
-                            <SheetTitle>
-                                 <div className="flex items-center space-x-2">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                                        <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-                                    </div>
-                                    <span className="font-bold">
-                                        Quizzicallabs™
-                                    </span>
-                                </div>
-                            </SheetTitle>
-                        </SheetHeader>
-                        <nav className="grid gap-6 text-lg font-medium mt-8">
-                            {menuItems.map(item => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={cn(
-                                        "transition-colors hover:text-foreground/80",
-                                        pathname === item.href ? "text-foreground" : "text-foreground/60"
-                                    )}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                             <Link
-                                href="/profile"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className={cn(
-                                    "transition-colors hover:text-foreground/80",
-                                    pathname === "/profile" ? "text-foreground" : "text-foreground/60"
-                                )}
-                            >
-                                Profile
-                            </Link>
-                        </nav>
-                    </SheetContent>
-                </Sheet>
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          {user ? (
+            <Link href="/profile">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
+                <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : isHomePage ? (
+            <Button asChild>
+                <Link href="/login">Get Started</Link>
+            </Button>
+          ) : null}
+          
+          {!isHomePage && (
+            <div className="md:hidden">
+              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle Menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                          <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                        </div>
+                        <span className="font-bold">
+                          Quizzicallabs™
+                        </span>
+                      </div>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <nav className="grid gap-6 text-lg font-medium mt-8">
+                    {menuItems.map(item => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          "transition-colors hover:text-foreground/80",
+                          pathname === item.href ? "text-foreground" : "text-foreground/60"
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "transition-colors hover:text-foreground/80",
+                        pathname === "/profile" ? "text-foreground" : "text-foreground/60"
+                      )}
+                    >
+                      Profile
+                    </Link>
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
-          </nav>
+          )}
+        </div>
       </div>
     </header>
   );
