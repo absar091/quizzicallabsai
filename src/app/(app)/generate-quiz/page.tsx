@@ -5,9 +5,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Bookmark, Clock, Download, Share2, MessageSquareQuote, History, Redo, LayoutDashboard } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard } from "lucide-react";
 import jsPDF from 'jspdf';
-
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +31,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { Clock } from "lucide-react";
 
 
 const formSchema = z.object({
@@ -205,11 +205,17 @@ export default function GenerateQuizPage() {
     setUserAnswers([]);
     setShowResults(false);
     setExplanations({});
+    form.reset();
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
-    resetQuiz();
+    setQuiz(null);
+    setCurrentQuestion(0);
+    setUserAnswers([]);
+    setShowResults(false);
+    setExplanations({});
+    
     try {
       const result = await generateCustomQuiz(values);
       setQuiz(result.quiz);
@@ -217,7 +223,7 @@ export default function GenerateQuizPage() {
       setTimeLeft(values.timeLimit * 60);
     } catch (error: any) {
         let errorMessage = "An unknown error occurred.";
-        if (error.message.includes("503")) {
+        if (error.message.includes("503") || error.message.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
         }
       toast({
@@ -423,17 +429,18 @@ export default function GenerateQuizPage() {
                                       <Checkbox
                                         checked={field.value?.includes(item.id)}
                                         onCheckedChange={(checked) => {
+                                          const currentValue = field.value || [];
                                           return checked
-                                            ? field.onChange([...field.value, item.id])
+                                            ? field.onChange([...currentValue, item.id])
                                             : field.onChange(
-                                                field.value?.filter(
+                                                currentValue?.filter(
                                                   (value) => value !== item.id
                                                 )
                                               )
                                         }}
                                       />
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">
+                                    <FormLabel className="font-normal cursor-pointer flex-1">
                                       {item.label}
                                     </FormLabel>
                                   </FormItem>
