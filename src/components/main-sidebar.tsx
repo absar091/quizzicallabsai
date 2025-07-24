@@ -65,15 +65,16 @@ export function MainSidebar() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} legacyBehavior passHref>
-                <SidebarMenuButton
-                  isActive={pathname === item.href}
-                  tooltip={{ children: item.label }}
-                >
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === item.href}
+                tooltip={{ children: item.label }}
+              >
+                <Link href={item.href}>
                   <item.icon />
                   <span>{item.label}</span>
-                </SidebarMenuButton>
-              </Link>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -81,8 +82,8 @@ export function MainSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/profile" legacyBehavior passHref>
-               <SidebarMenuButton isActive={pathname === '/profile'}>
+            <SidebarMenuButton asChild isActive={pathname === '/profile'}>
+               <Link href="/profile">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
                   <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
@@ -91,8 +92,8 @@ export function MainSidebar() {
                   <span className="text-sm font-medium">{user?.displayName}</span>
                   <span className="text-xs text-muted-foreground">{user?.email}</span>
                 </div>
-              </SidebarMenuButton>
-            </Link>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
             <SidebarMenuButton onClick={logout}>
