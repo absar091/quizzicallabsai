@@ -23,7 +23,13 @@ const GenerateQuizFromDocumentInputSchema = z.object({
 export type GenerateQuizFromDocumentInput = z.infer<typeof GenerateQuizFromDocumentInputSchema>;
 
 const GenerateQuizFromDocumentOutputSchema = z.object({
-  quiz: z.string().describe('The generated quiz in JSON format.'),
+  quiz: z.array(
+    z.object({
+      question: z.string(),
+      answers: z.array(z.string()),
+      correctAnswerIndex: z.number(),
+    })
+  ).describe('The generated quiz questions and answers based on the document.'),
 });
 export type GenerateQuizFromDocumentOutput = z.infer<typeof GenerateQuizFromDocumentOutputSchema>;
 
@@ -36,25 +42,33 @@ export async function generateQuizFromDocument(
 const prompt = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt',
   input: {schema: GenerateQuizFromDocumentInputSchema},
-  output: {schema: GenerateQuizFromDocumentOutputSchema},
-  prompt: `You are a quiz generator. Generate a quiz with the following number of questions: {{{quizLength}}}. Use the context from the following document: {{media url=documentDataUri}}.
+  output: {
+    schema: z.object({
+        questions: GenerateQuizFromDocumentOutputSchema.shape.quiz
+    })
+  },
+  prompt: `You are an expert quiz generator. Your task is to create a quiz based *exclusively* on the content of the provided document.
 
-      Return the quiz as a JSON object with an array of questions. Each question should have the question text, and a list of possible answers, and the index of the correct answer. For example:
+  **Critical Instructions:**
+  1.  **Strictly Adhere to the Document:** You MUST generate {{{quizLength}}} questions and answers using ONLY the information found in the following document: {{media url=documentDataUri}}.
+  2.  **Do Not Use External Knowledge:** Do NOT use any information from outside the provided document. If the document is about a specific topic, do not add general knowledge questions about that topic. All questions must be answerable using only the text in the document.
+  3.  **Output Format:** Return the quiz as a JSON object with a "questions" array. Each question object must have:
+      *   "question": The question text.
+      *   "answers": An array of 4 possible answers.
+      *   "correctAnswerIndex": The index (0-3) of the correct answer in the "answers" array.
 
+  Example JSON format:
+  {
+    "questions": [
       {
-        "questions": [
-          {
-            "question": "What is the capital of France?",
-            "answers": ["London", "Paris", "Berlin", "Rome"],
-            "correctAnswerIndex": 1
-          },
-          {
-            "question": "What is the highest mountain in the world?",
-            "answers": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],
-            "correctAnswerIndex": 0
-          }
-        ]
-      }`,
+        "question": "What is the primary subject of the document?",
+        "answers": ["History", "Science", "Art", "Literature"],
+        "correctAnswerIndex": 1
+      }
+    ]
+  }
+
+  Generate the quiz now based *only* on the provided document.`,
 });
 
 const generateQuizFromDocumentFlow = ai.defineFlow(
@@ -65,6 +79,6 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    return { quiz: output!.questions };
   }
 );

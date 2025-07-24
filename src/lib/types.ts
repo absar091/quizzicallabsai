@@ -1,3 +1,4 @@
+
 export interface Question {
   question: string;
   options: string[];
@@ -12,7 +13,6 @@ export interface Quiz {
   questions: Question[];
 }
 
-// The AI flow returns a JSON string, which we parse into this type
 export interface DocumentQuizQuestion {
   question: string;
   answers: string[];

@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
@@ -29,10 +29,12 @@ const formSchema = z.object({
   quizLength: z.coerce.number().min(1, "Please enter a number of questions.").max(55),
 });
 
+type Quiz = GenerateQuizFromDocumentOutput["quiz"];
+
 export default function GenerateFromDocumentPage() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [quiz, setQuiz] = useState<DocumentQuizQuestion[] | null>(null);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [userAnswers, setUserAnswers] = useState<(number | null)[]>([]);
@@ -62,9 +64,8 @@ export default function GenerateFromDocumentPage() {
           documentDataUri: dataUri,
           quizLength: values.quizLength,
         });
-        const parsedQuiz = JSON.parse(result.quiz);
-        setQuiz(parsedQuiz.questions);
-        setUserAnswers(new Array(parsedQuiz.questions.length).fill(null));
+        setQuiz(result.quiz);
+        setUserAnswers(new Array(result.quiz.length).fill(null));
       } catch (error) {
         toast({
           title: "Error Generating Quiz",
@@ -96,29 +97,34 @@ export default function GenerateFromDocumentPage() {
     setQuiz(null);
     setShowResults(false);
     setUserAnswers([]);
+    setFileName(null);
     form.reset();
   }
 
-  if (showResults) {
+  if (showResults && quiz) {
      const score = calculateScore();
-     const total = quiz?.length ?? 0;
+     const total = quiz.length;
       return (
-       <div>
-        <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}`} />
+       <div className="max-w-3xl mx-auto">
+        <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
         <Card className="bg-muted/30">
           <CardContent className="pt-6 space-y-4">
-            {quiz?.map((q, i) => (
+            {quiz.map((q, i) => (
               <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
                 <p className="font-semibold">{i + 1}. {q.question}</p>
-                <p className={`mt-2 ${userAnswers[i] === q.correctAnswerIndex ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
-                {userAnswers[i] !== q.correctAnswerIndex && <p className="text-green-700">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+                 <div className="mt-2 text-sm space-y-1">
+                   <p className={cn(userAnswers[i] === q.correctAnswerIndex ? 'text-green-700' : 'text-red-700')}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
+                   {userAnswers[i] !== q.correctAnswerIndex && <p className="text-green-700">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+                </div>
               </div>
             ))}
+          </CardContent>
+           <CardFooter>
             <Button onClick={resetQuiz} className="mt-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Take another quiz
             </Button>
-          </CardContent>
+          </CardFooter>
         </Card>
       </div>
     )
@@ -126,16 +132,16 @@ export default function GenerateFromDocumentPage() {
 
   if (isGenerating) {
      return (
-        <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-muted-foreground">Generating quiz from your document...</p>
+        <div className="flex flex-col items-center justify-center h-[60vh]">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-xl text-muted-foreground">Generating quiz from your document...</p>
         </div>
     )
   }
   
   if (quiz) {
     return (
-        <div>
+        <div className="max-w-3xl mx-auto">
             <PageHeader title="Quiz from Document" description="Answer the questions below." />
             <Card className="bg-muted/30">
                 <CardContent className="pt-6 space-y-6">
@@ -144,16 +150,19 @@ export default function GenerateFromDocumentPage() {
                             <p className="font-semibold">{qIndex + 1}. {q.question}</p>
                             <div className="mt-2 space-y-2">
                                 {q.answers.map((ans, ansIndex) => (
-                                    <div key={ansIndex} className="flex items-center">
-                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-2 accent-primary"/>
-                                        <label htmlFor={`q${qIndex}a${ansIndex}`}>{ans}</label>
+                                    <div key={ansIndex} className="flex items-center p-3 rounded-md border has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
+                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-3 accent-primary" />
+                                        <label htmlFor={`q${qIndex}a${ansIndex}`} className="flex-1 cursor-pointer">{ans}</label>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))}
-                    <Button onClick={() => setShowResults(true)}>Submit Quiz</Button>
+                    
                 </CardContent>
+                 <CardFooter>
+                    <Button onClick={() => setShowResults(true)} disabled={userAnswers.some(a => a === null)} size="lg">Submit Quiz</Button>
+                </CardFooter>
             </Card>
         </div>
     )
@@ -166,11 +175,11 @@ export default function GenerateFromDocumentPage() {
         description="Upload your study materials (PDF, DOCX) to create a quiz."
       />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+      <div className="max-w-xl mx-auto">
           <Card className="bg-muted/30">
             <CardHeader>
               <CardTitle>Quiz Parameters</CardTitle>
+               <CardDescription>Upload a document and specify the number of questions you want.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -193,7 +202,7 @@ export default function GenerateFromDocumentPage() {
                                 <input id="dropzone-file" type="file" className="hidden" {...fileRef} onChange={(e) => {
                                   field.onChange(e.target.files);
                                   setFileName(e.target.files?.[0]?.name ?? null);
-                                }} />
+                                }} accept=".pdf,.docx" />
                             </label>
                           </div>
                         </FormControl>
@@ -230,19 +239,6 @@ export default function GenerateFromDocumentPage() {
               </Form>
             </CardContent>
           </Card>
-        </div>
-        <div className="lg:col-span-2">
-          <Card className="min-h-[400px] bg-muted/30">
-            <CardHeader>
-              <CardTitle>Generated Quiz</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-64">
-                  <p className="text-muted-foreground">Your generated quiz will appear here once you upload a document.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
