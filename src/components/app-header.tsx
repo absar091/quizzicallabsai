@@ -40,8 +40,7 @@ export function AppHeader() {
       <div className="container flex h-14 items-center">
         {/* Left Section (Desktop) / Mobile Menu */}
         <div className="flex items-center md:flex-1">
-          {!isHomePage && (
-            <div className="md:hidden">
+          <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -90,7 +89,6 @@ export function AppHeader() {
                 </SheetContent>
               </Sheet>
             </div>
-          )}
           <Link href="/" className="hidden items-center space-x-2 md:flex">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
@@ -98,7 +96,7 @@ export function AppHeader() {
             <span className="font-bold sm:inline-block">
               Quizzicallabs™
             </span>
-            {!isHomePage && <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>}
+             <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>
           </Link>
         </div>
         
