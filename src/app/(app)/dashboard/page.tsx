@@ -55,29 +55,6 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Welcome back! Let's start learning."
       />
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {featureCards.map((feature) => (
-          <Card key={feature.title} className="flex flex-col bg-muted/30">
-            <CardHeader className="flex-row items-start justify-between">
-              <div>
-                <feature.icon className="mb-4 h-8 w-8 text-primary" />
-                <CardTitle>{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </div>
-              {feature.badge && <Badge variant="outline">{feature.badge}</Badge>}
-            </CardHeader>
-            <CardFooter className="mt-auto">
-              <Button asChild className="w-full">
-                <Link href={feature.href}>
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-
       <div className="mt-8">
         <h2 className="text-2xl font-bold tracking-tight mb-4 text-center">Recent Activity</h2>
         <Card className="bg-muted/30">

@@ -80,17 +80,12 @@ export function AppHeader() {
                             <span className="sr-only">Toggle Menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left">
+                    <SheetContent side="right">
                         <SheetHeader>
                             <SheetTitle>
-                                 <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                                    <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-                                    </div>
-                                    <span className="font-bold sm:inline-block">
-                                    Quizzicallabs™
-                                    </span>
-                                </Link>
+                                 <span className="font-bold sm:inline-block">
+                                    Menu
+                                 </span>
                             </SheetTitle>
                         </SheetHeader>
                         <nav className="grid gap-6 text-lg font-medium mt-8">
