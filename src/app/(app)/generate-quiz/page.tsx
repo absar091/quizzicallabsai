@@ -95,7 +95,7 @@ export default function GenerateQuizPage() {
         setCurrentQuestion(currentQuestion);
         setUserAnswers(userAnswers);
         setTimeLeft(timeLeft);
-        setBookmarkedQuestions(bookmarkedQuestions);
+        setBookmarkedQuestions(bookmarkedQuestions || []);
         form.reset(formValues);
     }
      const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
@@ -142,6 +142,13 @@ export default function GenerateQuizPage() {
     newAnswers[currentQuestion] = answer;
     setUserAnswers(newAnswers);
   };
+  
+  const handleBack = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
 
   const handleNext = () => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
@@ -166,7 +173,7 @@ export default function GenerateQuizPage() {
         sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
     }
 
-  }, [quiz, userAnswers]);
+  }, [quiz, userAnswers, form]);
 
 
   const calculateScore = useCallback(() => {
@@ -230,12 +237,20 @@ export default function GenerateQuizPage() {
 
         q.answers.forEach((a) => {
             const answerText = doc.splitTextToSize(`- ${a}`, 170);
+            if (y + (answerText.length * 4) + 2 > 280) {
+                 doc.addPage();
+                 y = 10;
+            }
             doc.text(answerText, 15, y);
             y += (answerText.length * 4) + 2;
         });
 
         const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, 170);
         doc.setFont('helvetica', 'bold');
+        if (y + (correctAnswerText.length * 5) + 10 > 280) {
+            doc.addPage();
+            y = 10;
+        }
         doc.text(correctAnswerText, 15, y);
         doc.setFont('helvetica', 'normal');
 
@@ -381,7 +396,11 @@ export default function GenerateQuizPage() {
                 })}
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-between">
+                 <Button size="lg" onClick={handleBack} disabled={currentQuestion === 0} variant="outline">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                </Button>
                 <Button size="lg" onClick={handleNext}>
                   {currentQuestion === quiz.length - 1 ? "Finish Quiz" : "Next Question"}
                   <ArrowRight className="ml-2 h-4 w-4" />

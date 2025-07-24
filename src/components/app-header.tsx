@@ -17,6 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -41,6 +42,7 @@ export function AppHeader() {
             <span className="hidden font-bold sm:inline-block">
               Quizzicallabs™
             </span>
+             <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>
           </Link>
           <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
             {menuItems.map((item) => (
