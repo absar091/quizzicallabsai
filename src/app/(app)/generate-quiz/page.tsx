@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
@@ -44,13 +44,19 @@ const formSchema = z.object({
   timeLimit: z.number().min(1).max(120),
 });
 
-type Quiz = GenerateCustomQuizOutput["quiz"];
+export type Quiz = GenerateCustomQuizOutput["quiz"];
 
 interface ExplanationState {
   [questionIndex: number]: {
     isLoading: boolean;
     explanation: string | null;
   };
+}
+
+type BookmarkedQuestion = {
+    question: string;
+    correctAnswer: string;
+    topic: string;
 }
 
 const questionTypeOptions = [
@@ -68,7 +74,7 @@ export default function GenerateQuizPage() {
   const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,12 +88,46 @@ export default function GenerateQuizPage() {
   });
 
   useEffect(() => {
-    if (quiz && !showResults) {
+    const savedState = sessionStorage.getItem("quizState");
+    if (savedState) {
+        const { quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions } = JSON.parse(savedState);
+        setQuiz(quiz);
+        setCurrentQuestion(currentQuestion);
+        setUserAnswers(userAnswers);
+        setTimeLeft(timeLeft);
+        setBookmarkedQuestions(bookmarkedQuestions);
+        form.reset(formValues);
+    }
+     const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
+    if (storedBookmarks) {
+      setBookmarkedQuestions(JSON.parse(storedBookmarks));
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (quiz) {
+      const quizState = {
+        quiz,
+        currentQuestion,
+        userAnswers,
+        timeLeft,
+        formValues: form.getValues(),
+        bookmarkedQuestions,
+      };
+      sessionStorage.setItem("quizState", JSON.stringify(quizState));
+    } else {
+        sessionStorage.removeItem("quizState");
+    }
+  }, [quiz, currentQuestion, userAnswers, timeLeft, form, bookmarkedQuestions]);
+  
+
+  useEffect(() => {
+    if (quiz && !showResults && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(timer);
-            setShowResults(true);
+            handleSubmit();
             return 0;
           }
           return prevTime - 1;
@@ -95,7 +135,7 @@ export default function GenerateQuizPage() {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [quiz, showResults]);
+  }, [quiz, showResults, timeLeft]);
 
   const handleAnswer = (answer: string) => {
     const newAnswers = [...userAnswers];
@@ -111,9 +151,23 @@ export default function GenerateQuizPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     setShowResults(true);
-  };
+    const { score, percentage } = calculateScore();
+    if(quiz) {
+        const newResult = {
+            topic: form.getValues("topic"),
+            score,
+            total: quiz.length,
+            percentage,
+            date: new Date().toISOString(),
+        }
+        const existingResults = JSON.parse(sessionStorage.getItem("quizResults") || "[]");
+        sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
+    }
+
+  }, [quiz, userAnswers]);
+
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0 };
@@ -160,14 +214,34 @@ export default function GenerateQuizPage() {
   const downloadQuestions = () => {
     if (!quiz) return;
     const doc = new jsPDF();
+    doc.setFontSize(16);
     doc.text(`Quiz on: ${form.getValues('topic')}`, 10, 10);
+    doc.setFontSize(12);
+    let y = 20;
+
     quiz.forEach((q, i) => {
-      doc.text(`${i + 1}. ${q.question}`, 10, 20 + i * 25);
-      q.answers.forEach((a, j) => {
-        doc.text(`  - ${a}`, 15, 20 + i * 25 + (j + 1) * 5);
-      });
-      doc.text(`Correct Answer: ${q.correctAnswer}`, 15, 20 + i * 25 + 30);
+        if (y > 280) { // check for page break
+            doc.addPage();
+            y = 10;
+        }
+        const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, 180);
+        doc.text(questionText, 10, y);
+        y += (questionText.length * 5) + 5;
+
+        q.answers.forEach((a) => {
+            const answerText = doc.splitTextToSize(`- ${a}`, 170);
+            doc.text(answerText, 15, y);
+            y += (answerText.length * 4) + 2;
+        });
+
+        const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, 170);
+        doc.setFont('helvetica', 'bold');
+        doc.text(correctAnswerText, 15, y);
+        doc.setFont('helvetica', 'normal');
+
+        y += (correctAnswerText.length * 5) + 10;
     });
+
     doc.save('quiz_questions.pdf');
   };
 
@@ -189,6 +263,21 @@ export default function GenerateQuizPage() {
 
     doc.save('quiz_result_card.pdf');
   };
+  
+  const toggleBookmark = (question: string, correctAnswer: string) => {
+    const topic = form.getValues("topic");
+    const newBookmark: BookmarkedQuestion = { question, correctAnswer, topic };
+    let updatedBookmarks;
+
+    if (bookmarkedQuestions.some(bm => bm.question === question)) {
+      updatedBookmarks = bookmarkedQuestions.filter(bm => bm.question !== question);
+    } else {
+      updatedBookmarks = [...bookmarkedQuestions, newBookmark];
+    }
+    
+    setBookmarkedQuestions(updatedBookmarks);
+    sessionStorage.setItem("bookmarkedQuestions", JSON.stringify(updatedBookmarks));
+  };
 
 
   const resetQuiz = () => {
@@ -197,6 +286,7 @@ export default function GenerateQuizPage() {
     setUserAnswers([]);
     setShowResults(false);
     setExplanations({});
+    sessionStorage.removeItem("quizState");
     form.reset();
   };
 
@@ -242,6 +332,8 @@ export default function GenerateQuizPage() {
   if (quiz && !showResults) {
     const currentQ = quiz[currentQuestion];
     const progress = ((currentQuestion + 1) / quiz.length) * 100;
+    const isBookmarked = bookmarkedQuestions.some(bm => bm.question === currentQ.question);
+
     return (
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
@@ -258,7 +350,7 @@ export default function GenerateQuizPage() {
               <Progress value={progress} className="mb-4 h-2" />
 
               <div className="flex justify-between items-center mb-8 text-sm text-muted-foreground">
-                <Button variant="ghost" size="sm" onClick={() => setIsBookmarked(!isBookmarked)}>
+                <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
                   <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
                   Bookmark
                 </Button>
@@ -372,10 +464,10 @@ export default function GenerateQuizPage() {
                         </div>
                     )}
                 </CardContent>
-                 <CardContent className="flex justify-center gap-2 pt-4 border-t">
+                 <CardFooter className="flex justify-center gap-2 pt-4 border-t">
                     <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> Take Again</Button>
                     <Button variant="outline" asChild><a href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</a></Button>
-                </CardContent>
+                </CardFooter>
             </Card>
        </div>
     );
@@ -520,7 +612,7 @@ export default function GenerateQuizPage() {
                   />
                 </div>
               </CardContent>
-              <CardContent className="pt-6 border-t">
+              <CardFooter className="pt-6 border-t">
                  <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
                   {isGenerating ? (
                     <>
@@ -534,7 +626,7 @@ export default function GenerateQuizPage() {
                      </>
                   )}
                 </Button>
-              </CardContent>
+              </CardFooter>
             </form>
           </Form>
         </Card>

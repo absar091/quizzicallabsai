@@ -21,12 +21,16 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   fatherName: z.string().min(1, { message: "Father's name is required." }),
   className: z.string().min(1, { message: "Class is required." }),
+  agree: z.boolean().refine(val => val, {
+    message: "You must accept the privacy policy to continue."
+  })
 });
 
 export default function SignupPage() {
@@ -40,6 +44,7 @@ export default function SignupPage() {
       password: "",
       fatherName: "",
       className: "",
+      agree: false,
     },
   });
 
@@ -132,6 +137,30 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
+            <FormField
+                control={form.control}
+                name="agree"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
+                    <FormControl>
+                        <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                        <FormLabel>
+                        I agree to the{" "}
+                         <Link href="/privacy-policy" className="text-primary hover:underline" target="_blank">
+                            Privacy Policy
+                        </Link>
+                        .
+                        </FormLabel>
+                        <FormMessage />
+                    </div>
+                    </FormItem>
+                )}
+             />
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
