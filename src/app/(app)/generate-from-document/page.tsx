@@ -195,13 +195,13 @@ export default function GenerateFromDocumentPage() {
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                                     <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                    <p className="text-xs text-muted-foreground">PDF, DOCX (MAX. 5MB)</p>
+                                    <p className="text-xs text-muted-foreground">PDF, DOCX (MAX. 10MB)</p>
                                     {fileName && <p className="mt-2 text-xs text-primary">{fileName}</p>}
                                 </div>
                                 <input id="dropzone-file" type="file" className="hidden" {...fileRef} onChange={(e) => {
                                   field.onChange(e.target.files);
                                   setFileName(e.target.files?.[0]?.name ?? null);
-                                }} accept=".pdf,.docx" />
+                                }} accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                             </label>
                           </div>
                         </FormControl>
@@ -242,5 +242,3 @@ export default function GenerateFromDocumentPage() {
     </div>
   );
 }
-
-    

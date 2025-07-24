@@ -4,12 +4,54 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, BrainCircuit, ArrowRight, AlertTriangle } from "lucide-react";
+import { Loader2, BrainCircuit, ArrowRight, AlertTriangle, FileText, BotMessageSquare, BarChart2, BookOpen, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const features = [
+  {
+    icon: BotMessageSquare,
+    title: "Custom Quiz Generation",
+    description: "Create tailored quizzes based on topic, difficulty, and question type in seconds.",
+  },
+  {
+    icon: BookOpen,
+    title: "AI Study Guides",
+    description: "Generate comprehensive study guides for any subject to focus your learning.",
+  },
+  {
+    icon: BarChart2,
+    title: "Performance Analytics",
+    description: "Track your progress with detailed analytics and identify areas for improvement.",
+  },
+  {
+    icon: FileText,
+    title: "Quiz from Document",
+    description: "Upload your study materials (PDF, DOCX) and let our AI create a quiz for you.",
+  },
+];
+
+const howToSteps = [
+    {
+        icon: CheckCircle,
+        title: "Create Your Account",
+        description: "Sign up with your email to get started."
+    },
+    {
+        icon: CheckCircle,
+        title: "Generate a Quiz or Guide",
+        description: "Choose a feature, enter your topic, and let the AI do the work."
+    },
+    {
+        icon: CheckCircle,
+        title: "Take the Quiz & Review",
+        description: "Test your knowledge and review your results with AI explanations."
+    }
+]
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -35,23 +77,17 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
+       <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+       <div className="absolute left-0 top-0 -z-10 h-1/3 w-full bg-gradient-to-b from-primary/10 to-transparent"></div>
       <AppHeader />
       <main className="flex-1">
-        <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-16 md:py-24">
-         <Alert className="max-w-3xl bg-yellow-500/10 border-yellow-500/50 text-yellow-700 dark:text-yellow-300">
-            <AlertTriangle className="h-4 w-4 !text-yellow-500" />
-            <AlertTitle className="text-yellow-600 dark:text-yellow-200 font-bold">App in Development</AlertTitle>
-            <AlertDescription>
-              This app is a project by Absar Ahmad Rao and is currently under active development. Your feedback is welcome!
-            </AlertDescription>
-          </Alert>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="flex flex-col items-start space-y-6 text-left">
+        <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-16 text-center md:py-24">
+         
+          <div className="flex flex-col items-center space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
                 Master Any Subject, <span className="text-primary">Instantly.</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-lg">
+              <p className="text-lg text-muted-foreground max-w-2xl">
                 Welcome to Quizzicallabs™, the ultimate study tool. Generate, take, and share personalized quizzes to conquer your exams with the power of AI.
               </p>
               <div className="flex gap-4">
@@ -63,22 +99,39 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+        </section>
 
-            <div className="hidden md:flex items-center justify-center">
-                <div className="relative flex items-center justify-center w-80 h-80">
-                    <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl"></div>
-                    <div className="relative flex items-center justify-center gap-4 bg-background/60 backdrop-blur-sm p-8 rounded-full">
-                        <BrainCircuit className="h-20 w-20 text-primary" />
-                        <h2 className="text-3xl font-bold">Quizzicallabs™</h2>
-                    </div>
-                </div>
+        <section id="features" className="container mx-auto py-16 md:py-24">
+            <h2 className="text-3xl font-bold text-center mb-12">Core Features</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {features.map((feature, index) => (
+                    <Card key={index} className="text-center bg-card/80 backdrop-blur-sm">
+                        <CardHeader>
+                            <feature.icon className="h-12 w-12 mx-auto text-primary mb-4" />
+                            <CardTitle>{feature.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
-          </div>
+        </section>
+        
+        <section id="how-to-use" className="container mx-auto py-16 md:py-24 bg-muted/30 rounded-lg">
+             <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {howToSteps.map((step, index) => (
+                     <div key={index} className="flex flex-col items-center text-center">
+                        <step.icon className="h-10 w-10 text-primary mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
+                        <p className="text-muted-foreground">{step.description}</p>
+                    </div>
+                ))}
+             </div>
         </section>
       </main>
       <Footer />
     </div>
   );
 }
-
-    

@@ -24,9 +24,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
+  fullName: z.string().min(1, { message: "Full name is required." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  fatherName: z.string().min(1, { message: "Father's name is required." }),
   className: z.string().min(1, { message: "Class is required." }),
   agree: z.boolean().refine(val => val, {
     message: "You must accept the privacy policy to continue."
@@ -40,9 +40,9 @@ export default function SignupPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
-      fatherName: "",
       className: "",
       agree: false,
     },
@@ -52,8 +52,7 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
-      // Combine father's name and class name for the display name
-      const displayName = `${values.fatherName}__CLASS__${values.className}`;
+      const displayName = `${values.fullName}__CLASS__${values.className}`;
       
       await updateProfile(userCredential.user, {
         displayName: displayName,
@@ -91,7 +90,7 @@ export default function SignupPage() {
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
-              name="fatherName"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>

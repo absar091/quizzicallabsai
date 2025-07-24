@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BrainCircuit, Mail, Phone, Heart, Share2 } from 'lucide-react';
+import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 
 export function Footer() {
@@ -35,7 +35,6 @@ export function Footer() {
                     <div>
                          <h3 className="font-semibold mb-4">Legal & Support</h3>
                         <nav className="flex flex-col gap-2 text-sm">
-                            <Link href="/#" className="text-muted-foreground hover:text-primary">Terms of Service</Link>
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
                              <Link href="/#" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
                             <Link href="/#" className="text-muted-foreground hover:text-primary">MIT License</Link>
@@ -50,7 +49,11 @@ export function Footer() {
                         </div>
                     </div>
                 </div>
-                 <div className="mt-12 border-t pt-8 text-center">
+                 <div className="mt-12 border-t pt-8 text-center space-y-4">
+                    <div className="flex items-center justify-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+                        <AlertTriangle className="h-4 w-4" />
+                        <p>Disclaimer: This is a beta project. Features may change and errors may occur.</p>
+                    </div>
                     <p className="text-sm text-muted-foreground">&copy; {currentYear} Quizzicallabs™. All Rights Reserved.</p>
                 </div>
             </div>
