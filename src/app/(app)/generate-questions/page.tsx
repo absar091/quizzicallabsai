@@ -142,7 +142,7 @@ export default function GenerateQuestionsPage() {
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a question type" />
-                            </SelectTrigger>
+                            </Trigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="multiple choice">Multiple Choice</SelectItem>

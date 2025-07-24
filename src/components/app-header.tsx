@@ -39,98 +39,86 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        {/* Left Section (Desktop) / Mobile Menu */}
-        <div className="flex items-center md:flex-1">
-          <div className="md:hidden">
-              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle Menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[240px]">
-                  <SheetHeader>
-                    <SheetTitle>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                          <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-                        </div>
-                        <span className="font-bold">
-                          Quizzicallabs™
-                        </span>
+        <div className="mr-4 flex md:hidden">
+           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[240px]">
+                <SheetHeader>
+                  <SheetTitle>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                        <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                       </div>
-                    </SheetTitle>
-                  </SheetHeader>
-                  <nav className="grid gap-4 text-lg font-medium mt-8">
-                    {menuItems.map(item => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={cn(
-                          "transition-colors hover:text-foreground/80 flex items-center",
-                          pathname === item.href ? "text-foreground" : "text-foreground/60"
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                     <Link
-                      href="/profile"
+                      <span className="font-bold">
+                        Quizzicallabs™
+                      </span>
+                    </div>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="grid gap-4 text-lg font-medium mt-8">
+                  {menuItems.map(item => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={cn(
-                        "transition-colors hover:text-foreground/80 flex items-center pt-4 border-t",
-                        pathname === "/profile" ? "text-foreground" : "text-foreground/60"
+                        "transition-colors hover:text-foreground/80 flex items-center",
+                        pathname === item.href ? "text-foreground" : "text-foreground/60"
                       )}
                     >
-                      Profile
+                      {item.label}
                     </Link>
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            </div>
-          <Link href="/" className="hidden items-center space-x-2 md:flex">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold sm:inline-block">
-              Quizzicallabs™
-            </span>
-             <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>
-          </Link>
+                  ))}
+                   <Link
+                    href="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "transition-colors hover:text-foreground/80 flex items-center pt-4 border-t",
+                      pathname === "/profile" ? "text-foreground" : "text-foreground/60"
+                    )}
+                  >
+                    Profile
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
         </div>
-        
-        {/* Center Section (Desktop) / Mobile Logo */}
-         <div className="flex flex-1 justify-center md:justify-center">
-            <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-              {!isHomePage && menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "transition-colors hover:text-foreground/80",
-                    pathname === item.href
-                      ? "text-foreground"
-                      : "text-foreground/60"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/" className="flex items-center space-x-2 md:hidden">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                  <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-              </div>
-               <span className="font-bold sm:inline-block">
+
+        <div className="flex items-center gap-6">
+            <Link href="/" className="items-center space-x-2 md:flex hidden">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                    <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <span className="font-bold sm:inline-block">
                 Quizzicallabs™
-              </span>
+                </span>
+                <Badge variant="outline" className="ml-2 text-xs">Beta</Badge>
             </Link>
+            {!isHomePage && (
+                 <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+                {menuItems.map((item) => (
+                    <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                        "transition-colors hover:text-foreground/80",
+                        pathname === item.href
+                        ? "text-foreground"
+                        : "text-foreground/60"
+                    )}
+                    >
+                    {item.label}
+                    </Link>
+                ))}
+                </nav>
+            )}
         </div>
 
-
-        {/* Right Section */}
         <div className="flex flex-1 items-center justify-end gap-2">
           <ThemeToggle />
           {user ? (
