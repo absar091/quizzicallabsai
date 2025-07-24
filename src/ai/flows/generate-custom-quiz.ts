@@ -15,17 +15,15 @@ import {z} from 'genkit';
 const GenerateCustomQuizInputSchema = z.object({
   topic: z.string().describe('The topic of the quiz.'),
   difficulty: z
-    .enum(['easy', 'medium', 'hard'])
+    .enum(['easy', 'medium', 'hard', 'master'])
     .describe('The difficulty level of the quiz.'),
   numberOfQuestions: z
     .number()
     .min(1)
     .max(100)
     .describe('The number of questions in the quiz.'),
-  style: z
-    .string()
-    .optional()
-    .describe('The style or format of the quiz questions (e.g., multiple choice, true/false).'),
+  questionTypes: z.array(z.string()).describe('The types of questions to include (e.g., Multiple Choice, Fill in the Blank).'),
+  timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -55,11 +53,16 @@ const prompt = ai.definePrompt({
 Topic: {{{topic}}}
 Difficulty: {{{difficulty}}}
 Number of Questions: {{{numberOfQuestions}}}
-Style: {{{style}}}
+Question Types: {{{questionTypes}}}
+{{#if timeLimit}}
+Time Limit: {{{timeLimit}}} minutes
+{{/if}}
 
 Ensure that the quiz is accurate, relevant, and appropriate for the specified difficulty level.
+Generate a multiple choice quiz based on the parameters.
+For "Fill in the Blank" questions, provide them in a multiple-choice format where one option is the correct word to fill the blank.
 
-Quiz:`, // Ensure proper formatting for the quiz questions
+Quiz:`,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(
