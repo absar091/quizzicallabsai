@@ -5,7 +5,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Bookmark, Clock } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Bookmark, Clock, Download, Share2, MessageSquareQuote, History, Redo, LayoutDashboard } from "lucide-react";
+import jsPDF from 'jspdf';
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +32,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 
 const formSchema = z.object({
@@ -53,11 +56,13 @@ interface ExplanationState {
 
 export default function GenerateQuizPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [step, setStep] = useState(1);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -162,6 +167,7 @@ export default function GenerateQuizPage() {
     setCurrentQuestion(0);
     setUserAnswers([]);
     setStep(1);
+    setShowReview(false);
     form.reset();
   }
 
@@ -188,7 +194,7 @@ export default function GenerateQuizPage() {
       }));
 
     } catch (error) {
-      toast({
+       toast({
         title: "Error Generating Explanation",
         description: "An error occurred while generating the explanation. Please try again.",
         variant: "destructive",
@@ -200,6 +206,36 @@ export default function GenerateQuizPage() {
     }
   }
 
+  const downloadResultCard = () => {
+    const doc = new jsPDF();
+    const score = calculateScore();
+    const total = quiz?.length ?? 0;
+    const percentage = total > 0 ? (score / total) * 100 : 0;
+    const status = percentage >= 50 ? "PASS" : "FAIL";
+
+    doc.setFontSize(22);
+    doc.text("Quiz Result", 105, 20, { align: 'center' });
+    doc.setFontSize(16);
+    doc.text(`Topic: ${form.getValues("topic")}`, 105, 30, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text(`User: ${user?.displayName || 'N/A'}`, 20, 50);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 50);
+
+    doc.line(20, 60, 190, 60);
+
+    doc.setFontSize(14);
+    doc.text(`Obtained Marks: ${score} / ${total}`, 20, 70);
+    doc.text(`Percentage: ${percentage.toFixed(2)}%`, 20, 80);
+    doc.text(`Status: ${status}`, 20, 90);
+
+    doc.line(20, 100, 190, 100);
+
+    doc.setFontSize(10);
+    doc.text("This is a computer-generated result card.", 105, 110, { align: 'center'});
+    
+    doc.save(`Quiz_Result_${form.getValues("topic")}.pdf`);
+  }
 
   if (isGenerating) {
     return (
@@ -277,53 +313,114 @@ export default function GenerateQuizPage() {
     )
   }
 
-  if (showResults) {
+ if (showResults) {
     const score = calculateScore();
     const total = quiz?.length ?? 0;
+    const percentage = total > 0 ? (score / total) * 100 : 0;
+    const status = percentage >= 50 ? "PASS" : "FAIL";
+
+    if (showReview) {
+      return (
+        <div>
+          <PageHeader title="Review Answers" description={`You scored ${score} out of ${total}`} />
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              {quiz?.map((q, i) => (
+                <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswer ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
+                  <p className="font-semibold">{i + 1}. {q.question}</p>
+                  <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] || "Not answered"}</p>
+                  {userAnswers[i] !== q.correctAnswer && <p className="text-green-700">Correct answer: {q.correctAnswer}</p>}
+                  
+                  {userAnswers[i] !== q.correctAnswer && (
+                    <div className="mt-4">
+                      {explanations[i]?.isLoading ? (
+                        <Button disabled size="sm" variant="outline">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating Explanation
+                        </Button>
+                      ) : explanations[i]?.explanation ? (
+                        <Alert>
+                          <Sparkles className="h-4 w-4" />
+                          <AlertTitle>Explanation</AlertTitle>
+                          <AlertDescription>
+                          {explanations[i].explanation}
+                          </AlertDescription>
+                        </Alert>
+                      ) : (
+                        <Button onClick={() => getExplanation(i)} size="sm" variant="outline">
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Get AI Explanation
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <Button onClick={() => setShowReview(false)} className="mt-4">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Results
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )
+    }
+
     return (
-       <div>
-        <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}`} />
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            {quiz?.map((q, i) => (
-              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswer ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
-                <p className="font-semibold">{i + 1}. {q.question}</p>
-                <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] || "Not answered"}</p>
-                {userAnswers[i] !== q.correctAnswer && <p className="text-green-700">Correct answer: {q.correctAnswer}</p>}
-                
-                {userAnswers[i] !== q.correctAnswer && (
-                  <div className="mt-4">
-                    {explanations[i]?.isLoading ? (
-                      <Button disabled size="sm" variant="outline">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Explanation
-                      </Button>
-                    ) : explanations[i]?.explanation ? (
-                      <Alert>
-                        <Sparkles className="h-4 w-4" />
-                        <AlertTitle>Explanation</AlertTitle>
-                        <AlertDescription>
-                         {explanations[i].explanation}
-                        </AlertDescription>
-                      </Alert>
-                    ) : (
-                      <Button onClick={() => getExplanation(i)} size="sm" variant="outline">
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Get AI Explanation
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-            <Button onClick={resetQuiz} className="mt-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Take another quiz
+      <div className="bg-gray-900 text-white min-h-screen p-8 flex flex-col items-center">
+        <h1 className="text-3xl font-bold uppercase mb-2">Quiz Topic: {form.getValues("topic")}</h1>
+        
+        <div className="w-full max-w-3xl bg-gray-800 rounded-xl p-8 my-8">
+            <div className="grid grid-cols-3 gap-8 text-center">
+                <div>
+                    <p className="text-gray-400 text-sm font-bold">OBTAINED MARKS</p>
+                    <p className="text-5xl font-bold">{score} / {total}</p>
+                </div>
+                <div>
+                    <p className="text-gray-400 text-sm font-bold">PERCENTAGE</p>
+                    <p className="text-5xl font-bold">{percentage.toFixed(0)}%</p>
+                </div>
+                <div>
+                    <p className="text-gray-400 text-sm font-bold">STATUS</p>
+                    <p className={cn("text-5xl font-bold", status === 'PASS' ? 'text-green-500' : 'text-red-500')}>{status}</p>
+                </div>
+            </div>
+            <div className="text-center mt-8 text-xs text-gray-500">
+                <p>This is a computer-generated result card. Date: {new Date().toLocaleDateString()}</p>
+                <p>A Project By {user?.displayName || "a student"}</p>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl mb-4">
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white" onClick={downloadResultCard}>
+                <Download className="mr-2"/>
+                Download Result Card
             </Button>
-          </CardContent>
-        </Card>
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                <Share2 className="mr-2"/>
+                Share Score
+            </Button>
+             <Button variant="outline" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setShowReview(true)}>
+                <MessageSquareQuote className="mr-2"/>
+                Review Answers
+            </Button>
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                <History className="mr-2"/>
+                Study with Flashcards
+            </Button>
+        </div>
+         <div className="flex gap-4 w-full max-w-4xl">
+            <Button variant="outline" className="bg-primary text-primary-foreground hover:bg-primary/90 flex-1" onClick={resetQuiz}>
+                <Redo className="mr-2"/>
+                Retry Quiz
+            </Button>
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white flex-1" onClick={() => window.location.href = '/dashboard'}>
+                <LayoutDashboard className="mr-2"/>
+                View Dashboard
+            </Button>
+        </div>
       </div>
-    )
+    );
   }
   
   const questionTypes = [
@@ -524,3 +621,5 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
+
+    

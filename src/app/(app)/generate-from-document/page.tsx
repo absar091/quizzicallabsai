@@ -5,13 +5,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, UploadCloud } from "lucide-react";
+import { Loader2, UploadCloud, ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +22,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
 import { DocumentQuizQuestion } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
@@ -34,6 +34,8 @@ export default function GenerateFromDocumentPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [quiz, setQuiz] = useState<DocumentQuizQuestion[] | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<(number | null)[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,6 +49,8 @@ export default function GenerateFromDocumentPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
     setQuiz(null);
+    setShowResults(false);
+    setUserAnswers([]);
 
     const file = values.document[0];
     const reader = new FileReader();
@@ -60,6 +64,7 @@ export default function GenerateFromDocumentPage() {
         });
         const parsedQuiz = JSON.parse(result.quiz);
         setQuiz(parsedQuiz.questions);
+        setUserAnswers(new Array(parsedQuiz.questions.length).fill(null));
       } catch (error) {
         toast({
           title: "Error Generating Quiz",
@@ -73,6 +78,85 @@ export default function GenerateFromDocumentPage() {
     };
 
     reader.readAsDataURL(file);
+  }
+  
+  const handleAnswerSelect = (questionIndex: number, answerIndex: number) => {
+    const newAnswers = [...userAnswers];
+    newAnswers[questionIndex] = answerIndex;
+    setUserAnswers(newAnswers);
+  };
+
+  const calculateScore = () => {
+    return quiz?.reduce((score, question, index) => {
+      return score + (question.correctAnswerIndex === userAnswers[index] ? 1 : 0);
+    }, 0) ?? 0;
+  }
+
+  const resetQuiz = () => {
+    setQuiz(null);
+    setShowResults(false);
+    setUserAnswers([]);
+    form.reset();
+  }
+
+  if (showResults) {
+     const score = calculateScore();
+     const total = quiz?.length ?? 0;
+      return (
+       <div>
+        <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}`} />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            {quiz?.map((q, i) => (
+              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
+                <p className="font-semibold">{i + 1}. {q.question}</p>
+                <p className={`mt-2 ${userAnswers[i] === q.correctAnswerIndex ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
+                {userAnswers[i] !== q.correctAnswerIndex && <p className="text-green-700">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+              </div>
+            ))}
+            <Button onClick={resetQuiz} className="mt-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Take another quiz
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (isGenerating) {
+     return (
+        <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-4 text-muted-foreground">Generating quiz from your document...</p>
+        </div>
+    )
+  }
+  
+  if (quiz) {
+    return (
+        <div>
+            <PageHeader title="Quiz from Document" description="Answer the questions below." />
+            <Card>
+                <CardContent className="pt-6 space-y-6">
+                    {quiz.map((q, qIndex) => (
+                        <div key={qIndex}>
+                            <p className="font-semibold">{qIndex + 1}. {q.question}</p>
+                            <div className="mt-2 space-y-2">
+                                {q.answers.map((ans, ansIndex) => (
+                                    <div key={ansIndex} className="flex items-center">
+                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-2"/>
+                                        <label htmlFor={`q${qIndex}a${ansIndex}`}>{ans}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                    <Button onClick={() => setShowResults(true)}>Submit Quiz</Button>
+                </CardContent>
+            </Card>
+        </div>
+    )
   }
 
   return (
@@ -153,30 +237,9 @@ export default function GenerateFromDocumentPage() {
               <CardTitle>Generated Quiz</CardTitle>
             </CardHeader>
             <CardContent>
-              {isGenerating && (
-                <div className="flex items-center justify-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              )}
-              {quiz && (
-                <div className="space-y-6">
-                  {quiz.map((q, index) => (
-                    <div key={index}>
-                      <p className="font-semibold">{index + 1}. {q.question}</p>
-                      <ul className="mt-2 space-y-1 list-disc list-inside">
-                        {q.answers.map((ans, ansIndex) => (
-                          <li key={ansIndex} className={ansIndex === q.correctAnswerIndex ? 'text-green-600 font-semibold' : ''}>{ans}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {!isGenerating && !quiz && (
-                <div className="flex items-center justify-center h-64">
-                  <p className="text-muted-foreground">Your generated quiz will appear here.</p>
-                </div>
-              )}
+              <div className="flex items-center justify-center h-64">
+                  <p className="text-muted-foreground">Your generated quiz will appear here once you upload a document.</p>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -184,3 +247,6 @@ export default function GenerateFromDocumentPage() {
     </div>
   );
 }
+
+
+    

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -199,11 +198,21 @@ export default function GenerateQuestionsPage() {
                       <AccordionTrigger>{index + 1}. {q.question}</AccordionTrigger>
                       <AccordionContent>
                         {q.options && (
-                          <ul className="mb-2 space-y-1">
-                            {q.options.map((opt, i) => <li key={i}>{opt}</li>)}
-                          </ul>
+                          <div className="p-4 bg-muted rounded-md">
+                            <h4 className="font-semibold mb-2">Options:</h4>
+                            <ul className="space-y-2 list-disc list-inside">
+                              {q.options.map((opt, i) => (
+                                <li key={i} className={opt === q.answer ? "font-bold text-primary" : ""}>{opt}</li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
-                        <p className="font-semibold text-green-600">Answer: {q.answer}</p>
+                         <Alert className="mt-4">
+                            <AlertTitle className="text-green-600">Correct Answer</AlertTitle>
+                            <AlertDescription>
+                                {q.answer}
+                            </AlertDescription>
+                        </Alert>
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -221,3 +230,6 @@ export default function GenerateQuestionsPage() {
     </div>
   );
 }
+
+
+    
