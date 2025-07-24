@@ -23,6 +23,8 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generatePracticeQuestions, GeneratePracticeQuestionsOutput } from "@/ai/flows/generate-practice-questions";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
@@ -75,7 +77,7 @@ export default function GenerateQuestionsPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="bg-muted/30">
             <CardHeader>
               <CardTitle>Question Parameters</CardTitle>
             </CardHeader>
@@ -181,7 +183,7 @@ export default function GenerateQuestionsPage() {
           </Card>
         </div>
         <div className="lg:col-span-2">
-          <Card className="min-h-[400px]">
+          <Card className="min-h-[400px] bg-muted/30">
             <CardHeader>
               <CardTitle>Generated Questions</CardTitle>
             </CardHeader>
@@ -198,7 +200,7 @@ export default function GenerateQuestionsPage() {
                       <AccordionTrigger>{index + 1}. {q.question}</AccordionTrigger>
                       <AccordionContent>
                         {q.options && (
-                          <div className="p-4 bg-muted rounded-md">
+                          <div className="p-4 bg-background rounded-md">
                             <h4 className="font-semibold mb-2">Options:</h4>
                             <ul className="space-y-2 list-disc list-inside">
                               {q.options.map((opt, i) => (
@@ -207,7 +209,7 @@ export default function GenerateQuestionsPage() {
                             </ul>
                           </div>
                         )}
-                         <Alert className="mt-4">
+                         <Alert className="mt-4 border-green-500 text-green-500 bg-green-500/10">
                             <AlertTitle className="text-green-600">Correct Answer</AlertTitle>
                             <AlertDescription>
                                 {q.answer}
@@ -230,6 +232,3 @@ export default function GenerateQuestionsPage() {
     </div>
   );
 }
-
-
-    

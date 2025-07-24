@@ -23,12 +23,12 @@ export default function MdcatPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.map(subject => (
-            <Card key={subject.name}>
+            <Card key={subject.name} className="bg-muted/30">
                 <CardHeader>
                     <CardTitle>{subject.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Button asChild variant="outline">
+                    <Button asChild>
                         <Link href={subject.href}>Start Test <ArrowRight className="ml-2 h-4 w-4" /></Link>
                     </Button>
                 </CardContent>

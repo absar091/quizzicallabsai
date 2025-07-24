@@ -67,7 +67,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
+    <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle>Welcome Back</CardTitle>
         <CardDescription>Sign in to continue to Quizzicallabs AI.</CardDescription>

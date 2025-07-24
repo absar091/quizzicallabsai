@@ -19,7 +19,7 @@ export default function ProfilePage() {
         description="View and manage your account details."
       />
 
-      <Card>
+      <Card className="max-w-xl mx-auto bg-muted/30">
         <CardHeader>
             <CardTitle>Your Information</CardTitle>
             <CardDescription>This is the information associated with your account.</CardDescription>

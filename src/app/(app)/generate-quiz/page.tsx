@@ -250,27 +250,27 @@ export default function GenerateQuizPage() {
     const question = quiz[currentQuestion];
     const questionLetter = (index: number) => String.fromCharCode(65 + index);
     return (
-        <div className="bg-gray-900 text-white min-h-screen p-8">
+        <div className="bg-background text-foreground min-h-screen p-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold uppercase">{form.getValues("topic")}</h1>
-                    <div className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-lg">
+                    <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-lg">
                         <Clock className="h-6 w-6" />
                         <span className="text-xl font-semibold">{formatTime(timeLeft)}</span>
                     </div>
                 </div>
 
-                <Progress value={((currentQuestion + 1) / quiz.length) * 100} className="mb-4 h-2 bg-gray-700 [&>div]:bg-green-500" />
+                <Progress value={((currentQuestion + 1) / quiz.length) * 100} className="mb-4 h-2 bg-muted-foreground/20 [&>div]:bg-primary" />
                 
                 <div className="flex justify-between items-center mb-8">
-                    <Button variant="ghost" className="hover:bg-gray-700">
+                    <Button variant="ghost" className="hover:bg-accent">
                         <Bookmark className="mr-2 h-5 w-5" />
                         Bookmark
                     </Button>
-                    <span className="text-sm text-gray-400">Question {currentQuestion + 1} of {quiz.length}</span>
+                    <span className="text-sm text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</span>
                 </div>
 
-                <div className="bg-gray-800 p-8 rounded-xl">
+                <div className="bg-muted/30 p-8 rounded-xl">
                     <p className="text-xl font-semibold mb-8 text-center">{question.question}</p>
                     <RadioGroup onValueChange={handleAnswerSelect} value={userAnswers[currentQuestion]} className="space-y-4">
                       {question.answers.map((answer, index) => (
@@ -278,11 +278,11 @@ export default function GenerateQuizPage() {
                            <RadioGroupItem value={answer} id={`q${currentQuestion}-ans${index}`} className="sr-only" />
                            <Label htmlFor={`q${currentQuestion}-ans${index}`} className={cn(
                                 "flex-1 cursor-pointer rounded-lg border-2 p-4 transition-colors",
-                                "border-gray-600 bg-gray-700 hover:bg-gray-600",
+                                "border-border bg-muted/50 hover:bg-accent",
                                 userAnswers[currentQuestion] === answer && "border-primary bg-primary/20"
                             )}>
                                <div className="flex items-center">
-                                 <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-500 mr-4">
+                                 <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted-foreground mr-4">
                                      {questionLetter(index)}
                                  </div>
                                  <span className="font-medium">{answer}</span>
@@ -326,10 +326,10 @@ export default function GenerateQuizPage() {
           <Card>
             <CardContent className="pt-6 space-y-4">
               {quiz?.map((q, i) => (
-                <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswer ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
+                <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswer ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
                   <p className="font-semibold">{i + 1}. {q.question}</p>
-                  <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] || "Not answered"}</p>
-                  {userAnswers[i] !== q.correctAnswer && <p className="text-green-700">Correct answer: {q.correctAnswer}</p>}
+                  <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-500' : 'text-red-500'}`}>Your answer: {userAnswers[i] || "Not answered"}</p>
+                  {userAnswers[i] !== q.correctAnswer && <p className="text-green-500">Correct answer: {q.correctAnswer}</p>}
                   
                   {userAnswers[i] !== q.correctAnswer && (
                     <div className="mt-4">
@@ -367,25 +367,25 @@ export default function GenerateQuizPage() {
     }
 
     return (
-      <div className="bg-gray-900 text-white min-h-screen p-8 flex flex-col items-center">
+      <div className="bg-background text-foreground min-h-screen p-8 flex flex-col items-center">
         <h1 className="text-3xl font-bold uppercase mb-2">Quiz Topic: {form.getValues("topic")}</h1>
         
-        <div className="w-full max-w-3xl bg-gray-800 rounded-xl p-8 my-8">
+        <div className="w-full max-w-3xl bg-muted/30 rounded-xl p-8 my-8 border">
             <div className="grid grid-cols-3 gap-8 text-center">
                 <div>
-                    <p className="text-gray-400 text-sm font-bold">OBTAINED MARKS</p>
+                    <p className="text-muted-foreground text-sm font-bold">OBTAINED MARKS</p>
                     <p className="text-5xl font-bold">{score} / {total}</p>
                 </div>
                 <div>
-                    <p className="text-gray-400 text-sm font-bold">PERCENTAGE</p>
+                    <p className="text-muted-foreground text-sm font-bold">PERCENTAGE</p>
                     <p className="text-5xl font-bold">{percentage.toFixed(0)}%</p>
                 </div>
                 <div>
-                    <p className="text-gray-400 text-sm font-bold">STATUS</p>
+                    <p className="text-muted-foreground text-sm font-bold">STATUS</p>
                     <p className={cn("text-5xl font-bold", status === 'PASS' ? 'text-green-500' : 'text-red-500')}>{status}</p>
                 </div>
             </div>
-            <div className="text-center mt-8 text-xs text-gray-500">
+            <div className="text-center mt-8 text-xs text-muted-foreground">
                 <p>This is a computer-generated result card. Date: {new Date().toLocaleDateString()}</p>
                 <p>A Project By {user?.displayName || "a student"}</p>
             </div>
@@ -429,13 +429,13 @@ export default function GenerateQuizPage() {
   ];
 
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
        <PageHeader
         title={step === 1 ? "Custom Quiz" : "Fine-tune your quiz settings"}
         description={step === 1 ? "Tailor quizzes by topic, difficulty, and length to fit your study needs." : "Customize the details of your quiz."}
       />
       
-      <Card>
+      <Card className="bg-muted/30">
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -458,7 +458,7 @@ export default function GenerateQuizPage() {
               
                {step === 2 && (
                  <>
-                  <Progress value={50} className="w-full" />
+                  <Progress value={(step / 2) * 100} className="w-full h-2 mb-8 bg-muted-foreground/20 [&>div]:bg-primary" />
                   <FormField
                     control={form.control}
                     name="questionTypes"
@@ -468,6 +468,7 @@ export default function GenerateQuizPage() {
                           <FormLabel className="text-lg">Question Types</FormLabel>
                           <FormDescription>Select the types of questions to include.</FormDescription>
                         </div>
+                        <div className="space-y-2">
                         {questionTypes.map((item) => (
                           <FormField
                             key={item.id}
@@ -475,7 +476,7 @@ export default function GenerateQuizPage() {
                             name="questionTypes"
                             render={({ field }) => {
                               return (
-                                <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
                                       checked={field.value?.includes(item.id)}
@@ -490,12 +491,13 @@ export default function GenerateQuizPage() {
                                       }}
                                     />
                                   </FormControl>
-                                  <FormLabel className="font-normal">{item.label}</FormLabel>
+                                  <FormLabel className="font-normal text-base">{item.label}</FormLabel>
                                 </FormItem>
                               )
                             }}
                           />
                         ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -517,25 +519,25 @@ export default function GenerateQuizPage() {
                               <FormControl>
                                 <RadioGroupItem value="easy" id="easy" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="easy" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Easy</Label>
+                              <Label htmlFor="easy" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">Easy</Label>
                             </FormItem>
                              <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="medium" id="medium" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="medium" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Medium</Label>
+                              <Label htmlFor="medium" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">Medium</Label>
                             </FormItem>
                              <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="hard" id="hard" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="hard" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Hard</Label>
+                              <Label htmlFor="hard" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">Hard</Label>
                             </FormItem>
                               <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="master" id="master" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="master" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Master</Label>
+                              <Label htmlFor="master" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">Master</Label>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -586,7 +588,7 @@ export default function GenerateQuizPage() {
                   </>
                )}
               
-              <div className="flex justify-between">
+              <div className="flex justify-between mt-12">
                 {step === 2 && (
                   <Button type="button" variant="ghost" onClick={() => setStep(1)}>
                     <ArrowLeft className="mr-2 h-4 w-4"/>
@@ -596,7 +598,7 @@ export default function GenerateQuizPage() {
                 
                 <div className={cn(step === 1 && "w-full")}>
                   {step === 1 ? (
-                    <Button type="button" className="w-full" onClick={() => setStep(2)} disabled={!form.getValues('topic')}>
+                    <Button type="button" className="w-full" onClick={() => form.trigger('topic').then(isValid => isValid && setStep(2))}>
                       Next
                       <ArrowRight className="ml-2 h-4 w-4"/>
                     </Button>
@@ -621,5 +623,3 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
-
-    

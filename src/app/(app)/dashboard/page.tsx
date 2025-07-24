@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {featureCards.map((feature) => (
-          <Card key={feature.title} className="flex flex-col">
+          <Card key={feature.title} className="flex flex-col bg-muted/30">
             <CardHeader className="flex-row items-start justify-between">
               <div>
                 <feature.icon className="mb-4 h-8 w-8 text-primary" />
@@ -68,7 +68,7 @@ export default function DashboardPage() {
               {feature.badge && <Badge variant="outline">{feature.badge}</Badge>}
             </CardHeader>
             <CardFooter className="mt-auto">
-              <Button asChild className="w-full" variant="ghost">
+              <Button asChild className="w-full">
                 <Link href={feature.href}>
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -79,10 +79,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-2xl font-bold tracking-tight mb-4">Recent Activity</h2>
-        <Card>
+        <h2 className="text-2xl font-bold tracking-tight mb-4 text-center">Recent Activity</h2>
+        <Card className="bg-muted/30">
           <CardContent className="pt-6">
-            <p className="text-muted-foreground">No recent activity. Take a quiz to get started!</p>
+            <p className="text-muted-foreground text-center">No recent activity. Take a quiz to get started!</p>
           </CardContent>
         </Card>
       </div>

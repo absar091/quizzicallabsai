@@ -105,10 +105,10 @@ export default function GenerateFromDocumentPage() {
       return (
        <div>
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}`} />
-        <Card>
+        <Card className="bg-muted/30">
           <CardContent className="pt-6 space-y-4">
             {quiz?.map((q, i) => (
-              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
+              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
                 <p className="font-semibold">{i + 1}. {q.question}</p>
                 <p className={`mt-2 ${userAnswers[i] === q.correctAnswerIndex ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
                 {userAnswers[i] !== q.correctAnswerIndex && <p className="text-green-700">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
@@ -137,7 +137,7 @@ export default function GenerateFromDocumentPage() {
     return (
         <div>
             <PageHeader title="Quiz from Document" description="Answer the questions below." />
-            <Card>
+            <Card className="bg-muted/30">
                 <CardContent className="pt-6 space-y-6">
                     {quiz.map((q, qIndex) => (
                         <div key={qIndex}>
@@ -145,7 +145,7 @@ export default function GenerateFromDocumentPage() {
                             <div className="mt-2 space-y-2">
                                 {q.answers.map((ans, ansIndex) => (
                                     <div key={ansIndex} className="flex items-center">
-                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-2"/>
+                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-2 accent-primary"/>
                                         <label htmlFor={`q${qIndex}a${ansIndex}`}>{ans}</label>
                                     </div>
                                 ))}
@@ -168,7 +168,7 @@ export default function GenerateFromDocumentPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="bg-muted/30">
             <CardHeader>
               <CardTitle>Quiz Parameters</CardTitle>
             </CardHeader>
@@ -183,7 +183,7 @@ export default function GenerateFromDocumentPage() {
                         <FormLabel>Study Document</FormLabel>
                         <FormControl>
                           <div className="flex items-center justify-center w-full">
-                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/50">
+                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-background hover:bg-accent">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                                     <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
@@ -232,7 +232,7 @@ export default function GenerateFromDocumentPage() {
           </Card>
         </div>
         <div className="lg:col-span-2">
-          <Card className="min-h-[400px]">
+          <Card className="min-h-[400px] bg-muted/30">
             <CardHeader>
               <CardTitle>Generated Quiz</CardTitle>
             </CardHeader>
@@ -247,6 +247,3 @@ export default function GenerateFromDocumentPage() {
     </div>
   );
 }
-
-
-    

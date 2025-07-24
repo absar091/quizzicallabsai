@@ -49,22 +49,20 @@ const prompt = ai.definePrompt({
   name: 'generateCustomQuizPrompt',
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: `You are a quiz generator. Generate a quiz with the following parameters:
+  prompt: `You are an expert quiz generator. Your task is to create a quiz based on the exact parameters provided.
 
-Topic: {{{topic}}}
-Difficulty: {{{difficulty}}}
-Number of Questions: {{{numberOfQuestions}}}
-Question Types: {{{questionTypes}}}
-{{#if timeLimit}}
-Time Limit: {{{timeLimit}}} minutes
-{{/if}}
+  **Instructions:**
+  1.  **Topic:** The quiz must be strictly about '{{{topic}}}'. Do not deviate from this topic.
+  2.  **Difficulty:** The questions must match the specified difficulty level: '{{{difficulty}}}'.
+  3.  **Number of Questions:** You must generate exactly {{{numberOfQuestions}}} questions. No more, no less.
+  4.  **Question Types:** The quiz should only include the following types of questions: {{{questionTypes}}}.
+        *   For "Multiple Choice" questions, provide exactly 4 distinct options. One of these must be the correct answer.
+        *   For "Fill in the Blank" questions, present them in a multiple-choice format. This means you will provide the sentence with a blank, and the options will be the words that could fill that blank. One option must be the correct word.
+  5.  **Time Limit:** The quiz is designed to be completed within {{{timeLimit}}} minutes. Ensure the complexity and length of the questions are appropriate for this time constraint.
+  6.  **Accuracy & Relevance:** All questions and answers must be accurate, relevant to the topic, and appropriate for the specified difficulty level.
+  7.  **Format:** Your final output must be only the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting before or after the JSON.
 
-Generate exactly 4 multiple-choice options for each question.
-Ensure that the quiz is accurate, relevant, and appropriate for the specified difficulty level.
-Generate a multiple choice quiz based on the parameters.
-For "Fill in the Blank" questions, provide them in a multiple-choice format where one option is the correct word to fill the blank.
-
-Quiz:`,
+  Generate the quiz now.`,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(
@@ -78,5 +76,3 @@ const generateCustomQuizFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
