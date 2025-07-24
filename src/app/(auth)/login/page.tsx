@@ -49,6 +49,7 @@ export default function LoginPage() {
           description: "Please check your email and verify your account before logging in.",
           variant: "destructive",
         });
+        await auth.signOut(); // Log out the user if email is not verified
         return;
       }
 
@@ -58,9 +59,15 @@ export default function LoginPage() {
       });
       router.push("/dashboard");
     } catch (error: any) {
+       let errorMessage = "An unknown error occurred.";
+        if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+            errorMessage = "Invalid email or password. Please try again.";
+        } else {
+            errorMessage = error.message;
+        }
       toast({
         title: "Login Failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     }

@@ -8,9 +8,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  }
 
   return (
     <div>
@@ -37,7 +44,7 @@ export default function ProfilePage() {
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage src="https://placehold.co/100x100.png" alt={user.displayName ?? ""} data-ai-hint="user avatar" />
-                <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-xl font-semibold">{user.displayName}</p>
@@ -45,10 +52,10 @@ export default function ProfilePage() {
               </div>
             </div>
           ) : (
-            <p>Not logged in.</p>
+            <p>Not logged in. Redirecting...</p>
           )}
 
-           <Button onClick={logout} variant="destructive">
+           <Button onClick={handleLogout} variant="destructive">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
