@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -12,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 
@@ -78,6 +81,18 @@ export function AppHeader() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left">
+                        <SheetHeader>
+                            <SheetTitle>
+                                 <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                                    <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                                    </div>
+                                    <span className="font-bold sm:inline-block">
+                                    Quizzicallabs™
+                                    </span>
+                                </Link>
+                            </SheetTitle>
+                        </SheetHeader>
                         <nav className="grid gap-6 text-lg font-medium mt-8">
                             {menuItems.map(item => (
                                 <Link
