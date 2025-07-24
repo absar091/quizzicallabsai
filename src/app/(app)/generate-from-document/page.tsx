@@ -21,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
-import { DocumentQuizQuestion } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -107,7 +106,7 @@ export default function GenerateFromDocumentPage() {
       return (
        <div className="max-w-3xl mx-auto">
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
-        <Card className="bg-muted/30">
+        <Card className="bg-card/80 backdrop-blur-sm">
           <CardContent className="pt-6 space-y-4">
             {quiz.map((q, i) => (
               <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
@@ -143,7 +142,7 @@ export default function GenerateFromDocumentPage() {
     return (
         <div className="max-w-3xl mx-auto">
             <PageHeader title="Quiz from Document" description="Answer the questions below." />
-            <Card className="bg-muted/30">
+            <Card className="bg-card/80 backdrop-blur-sm">
                 <CardContent className="pt-6 space-y-6">
                     {quiz.map((q, qIndex) => (
                         <div key={qIndex}>
@@ -176,7 +175,7 @@ export default function GenerateFromDocumentPage() {
       />
 
       <div className="max-w-xl mx-auto">
-          <Card className="bg-muted/30">
+          <Card className="bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Quiz Parameters</CardTitle>
                <CardDescription>Upload a document and specify the number of questions you want.</CardDescription>
@@ -243,3 +242,5 @@ export default function GenerateFromDocumentPage() {
     </div>
   );
 }
+
+    

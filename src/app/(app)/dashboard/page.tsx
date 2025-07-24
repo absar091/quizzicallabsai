@@ -120,7 +120,7 @@ export default function DashboardPage() {
         <div>
            <h2 className="text-2xl font-bold tracking-tight mb-4">Performance Analytics</h2>
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-             <Card className="bg-muted/30">
+             <Card className="bg-card/80 backdrop-blur-sm">
                <CardHeader>
                  <CardTitle>Average Score by Topic</CardTitle>
                </CardHeader>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                 ) : <p className="text-muted-foreground text-center py-10">Take some quizzes to see your topic scores.</p>}
                </CardContent>
              </Card>
-             <Card className="bg-muted/30">
+             <Card className="bg-card/80 backdrop-blur-sm">
                <CardHeader>
                  <CardTitle>Recent Score Trend</CardTitle>
                  <CardDescription>Your scores on the last 10 quizzes.</CardDescription>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
            <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
             <BookMarked className="h-6 w-6" /> Bookmarked Questions
           </h2>
-          <Card className="bg-muted/30">
+          <Card className="bg-card/80 backdrop-blur-sm">
             {reviewing && bookmarkedQuestions.length > 0 ? (
                <CardContent className="pt-6">
                  <div className="p-4 bg-background rounded-lg">
@@ -243,7 +243,7 @@ export default function DashboardPage() {
 
          <div>
           <h2 className="text-2xl font-bold tracking-tight mb-4">Recent Activity</h2>
-          <Card className="bg-muted/30">
+          <Card className="bg-card/80 backdrop-blur-sm">
             <CardContent className="pt-6">
               {recentActivity.length > 0 ? (
                  <ul className="space-y-4">
@@ -267,3 +267,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

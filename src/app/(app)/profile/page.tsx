@@ -26,7 +26,7 @@ export default function ProfilePage() {
         description="View and manage your account details."
       />
 
-      <Card className="max-w-xl mx-auto bg-muted/30">
+      <Card className="max-w-xl mx-auto bg-card/80 backdrop-blur-sm">
         <CardHeader>
             <CardTitle>Your Information</CardTitle>
             <CardDescription>This is the information associated with your account.</CardDescription>
@@ -64,3 +64,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    

@@ -77,7 +77,7 @@ export default function GenerateQuestionsPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <Card className="bg-muted/30">
+          <Card className="bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Question Parameters</CardTitle>
             </CardHeader>
@@ -183,7 +183,7 @@ export default function GenerateQuestionsPage() {
           </Card>
         </div>
         <div className="lg:col-span-2">
-          <Card className="min-h-[400px] bg-muted/30">
+          <Card className="min-h-[400px] bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Generated Questions</CardTitle>
             </CardHeader>
@@ -232,3 +232,5 @@ export default function GenerateQuestionsPage() {
     </div>
   );
 }
+
+    

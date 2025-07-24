@@ -67,7 +67,7 @@ export default function GenerateStudyGuidePage() {
       />
 
       <div className="max-w-2xl mx-auto">
-          <Card className="bg-muted/30">
+          <Card className="bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Enter Your Topic</CardTitle>
             </CardHeader>
@@ -176,3 +176,5 @@ export default function GenerateStudyGuidePage() {
     </div>
   );
 }
+
+    
