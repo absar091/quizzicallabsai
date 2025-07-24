@@ -9,10 +9,24 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookMarked, Trash2 } from "lucide-react";
+import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle } from "lucide-react";
 import type { Quiz } from "@/app/(app)/generate-quiz/page";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 type BookmarkedQuestion = {
   question: string;
@@ -20,16 +34,28 @@ type BookmarkedQuestion = {
   topic: string;
 };
 
+type QuizResult = {
+  topic: string;
+  score: number;
+  total: number;
+  percentage: number;
+  date: string;
+};
+
 export default function DashboardPage() {
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
+  
+  const [reviewing, setReviewing] = useState(false);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
     const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
     if (storedBookmarks) {
       setBookmarkedQuestions(JSON.parse(storedBookmarks));
     }
-     const storedActivity = sessionStorage.getItem("quizResults");
+    const storedActivity = sessionStorage.getItem("quizResults");
     if (storedActivity) {
       setRecentActivity(JSON.parse(storedActivity));
     }
@@ -41,6 +67,48 @@ export default function DashboardPage() {
     sessionStorage.setItem("bookmarkedQuestions", JSON.stringify(updatedBookmarks));
   }
 
+  const startReview = () => {
+    setReviewing(true);
+    setCurrentReviewIndex(0);
+    setShowAnswer(false);
+  }
+
+  const nextReviewQuestion = () => {
+    if(currentReviewIndex < bookmarkedQuestions.length - 1) {
+      setCurrentReviewIndex(currentReviewIndex + 1);
+      setShowAnswer(false);
+    } else {
+      // End of review session
+      setReviewing(false);
+    }
+  }
+  
+  const processChartData = () => {
+    const topicScores: {[key: string]: {totalScore: number, count: number}} = {};
+    recentActivity.forEach(activity => {
+        if(!topicScores[activity.topic]){
+            topicScores[activity.topic] = { totalScore: 0, count: 0 };
+        }
+        topicScores[activity.topic].totalScore += activity.percentage;
+        topicScores[activity.topic].count++;
+    });
+
+    const averageScores = Object.keys(topicScores).map(topic => ({
+        topic,
+        averageScore: topicScores[topic].totalScore / topicScores[topic].count
+    }));
+
+    const scoreTrend = recentActivity.slice(0, 10).reverse().map((activity, index) => ({
+      name: `Quiz ${index + 1}`,
+      score: activity.percentage,
+      topic: activity.topic,
+    }));
+    
+    return { averageScores, scoreTrend };
+  }
+  
+  const { averageScores, scoreTrend } = processChartData();
+
   return (
     <div>
       <PageHeader
@@ -48,7 +116,132 @@ export default function DashboardPage() {
         description="Welcome back! Here's your progress and activity."
       />
       <div className="space-y-8">
+
         <div>
+           <h2 className="text-2xl font-bold tracking-tight mb-4">Performance Analytics</h2>
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+             <Card className="bg-muted/30">
+               <CardHeader>
+                 <CardTitle>Average Score by Topic</CardTitle>
+               </CardHeader>
+               <CardContent>
+                {averageScores.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                     <BarChart data={averageScores}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="topic" />
+                      <YAxis unit="%" />
+                      <Tooltip 
+                        content={<ChartTooltipContent 
+                          labelKey="averageScore"
+                          nameKey="topic"
+                          indicator="dot"
+                          formatter={(value) => [`${(value as number).toFixed(2)}%`, 'Avg Score']}
+                        />}
+                      />
+                      <Bar dataKey="averageScore" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : <p className="text-muted-foreground text-center py-10">Take some quizzes to see your topic scores.</p>}
+               </CardContent>
+             </Card>
+             <Card className="bg-muted/30">
+               <CardHeader>
+                 <CardTitle>Recent Score Trend</CardTitle>
+                 <CardDescription>Your scores on the last 10 quizzes.</CardDescription>
+               </CardHeader>
+               <CardContent>
+                  {scoreTrend.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={scoreTrend}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis unit="%" domain={[0,100]} />
+                        <Tooltip 
+                          content={<ChartTooltipContent 
+                            indicator="dot"
+                            formatter={(value, name, props) => [`${props.payload.topic}: ${(value as number).toFixed(2)}%`, null]}
+                          />}
+                         />
+                        <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : <p className="text-muted-foreground text-center py-10">Your score trend will appear here.</p>}
+               </CardContent>
+             </Card>
+           </div>
+        </div>
+
+        <div>
+           <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
+            <BookMarked className="h-6 w-6" /> Bookmarked Questions
+          </h2>
+          <Card className="bg-muted/30">
+            {reviewing && bookmarkedQuestions.length > 0 ? (
+               <CardContent className="pt-6">
+                 <div className="p-4 bg-background rounded-lg">
+                   <p className="font-semibold text-lg">{bookmarkedQuestions[currentReviewIndex].question}</p>
+                   <p className="text-xs text-muted-foreground mt-1">Topic: {bookmarkedQuestions[currentReviewIndex].topic}</p>
+                   
+                   <div className="mt-4">
+                      {showAnswer ? (
+                         <div>
+                          <p className="text-sm text-green-500 mt-2 font-semibold">Correct Answer: {bookmarkedQuestions[currentReviewIndex].correctAnswer}</p>
+                          <Button onClick={() => setShowAnswer(false)} variant="outline" size="sm" className="mt-2"><EyeOff className="mr-2 h-4 w-4" /> Hide Answer</Button>
+                         </div>
+                      ) : (
+                         <Button onClick={() => setShowAnswer(true)} variant="outline" size="sm"><Eye className="mr-2 h-4 w-4" /> Show Answer</Button>
+                      )}
+                   </div>
+                 </div>
+               </CardContent>
+            ) : (
+              <CardContent className="pt-6">
+                 {bookmarkedQuestions.length > 0 ? (
+                   <ul className="space-y-4">
+                      {bookmarkedQuestions.map((q, index) => (
+                        <li key={index} className="p-4 bg-background rounded-lg">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold pr-4">{q.question}</p>
+                              <p className="text-sm text-green-500 mt-2">Correct Answer: {q.correctAnswer}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Topic: {q.topic}</p>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => clearBookmark(q.question)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </li>
+                      ))}
+                   </ul>
+                ) : (
+                  <div className="text-center py-8">
+                     <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                     <p className="text-muted-foreground">You haven't bookmarked any questions yet.</p>
+                      <p className="text-xs text-muted-foreground mt-1">Bookmark questions during a quiz to review them later.</p>
+                  </div>
+                )}
+              </CardContent>
+            )}
+             <CardFooter className="flex justify-center border-t pt-4">
+                {reviewing ? (
+                    <div className="flex gap-2">
+                        <Button onClick={nextReviewQuestion}>
+                          {currentReviewIndex < bookmarkedQuestions.length - 1 ? "Next Question" : "Finish Review"}
+                        </Button>
+                        <Button variant="outline" onClick={() => setReviewing(false)}>End Session</Button>
+                    </div>
+                ) : (
+                    <Button onClick={startReview} disabled={bookmarkedQuestions.length === 0}>
+                        <PlayCircle className="mr-2 h-4 w-4" />
+                        Start Review Session
+                    </Button>
+                )}
+            </CardFooter>
+          </Card>
+        </div>
+
+         <div>
           <h2 className="text-2xl font-bold tracking-tight mb-4">Recent Activity</h2>
           <Card className="bg-muted/30">
             <CardContent className="pt-6">
@@ -66,35 +259,6 @@ export default function DashboardPage() {
                  </ul>
               ) : (
                 <p className="text-muted-foreground text-center py-8">No recent activity. Take a quiz to get started!</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-        <div>
-           <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
-            <BookMarked className="h-6 w-6" /> Bookmarked Questions
-          </h2>
-          <Card className="bg-muted/30">
-            <CardContent className="pt-6">
-               {bookmarkedQuestions.length > 0 ? (
-                 <ul className="space-y-4">
-                    {bookmarkedQuestions.map((q, index) => (
-                      <li key={index} className="p-4 bg-background rounded-lg">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold pr-4">{q.question}</p>
-                            <p className="text-sm text-green-500 mt-2">Correct Answer: {q.correctAnswer}</p>
-                            <p className="text-xs text-muted-foreground mt-1">Topic: {q.topic}</p>
-                          </div>
-                          <Button variant="ghost" size="icon" onClick={() => clearBookmark(q.question)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                 </ul>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">You haven't bookmarked any questions yet.</p>
               )}
             </CardContent>
           </Card>

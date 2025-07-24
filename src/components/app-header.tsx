@@ -26,6 +26,7 @@ const menuItems = [
   { href: "/generate-quiz", label: "Custom Quiz" },
   { href: "/generate-questions", label: "Practice Questions" },
   { href: "/generate-from-document", label: "Quiz from Doc" },
+  { href: "/generate-study-guide", label: "Study Guide" },
 ];
 
 export function AppHeader() {

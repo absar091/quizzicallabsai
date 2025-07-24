@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import { generateExplanationsForIncorrectAnswers } from "@/ai/flows/generate-explanations-for-incorrect-answers";
+import { generateSimpleExplanation } from "@/ai/flows/generate-simple-explanation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +51,8 @@ interface ExplanationState {
   [questionIndex: number]: {
     isLoading: boolean;
     explanation: string | null;
+    isSimpleLoading: boolean;
+    simpleExplanation: string | null;
   };
 }
 
@@ -193,7 +196,7 @@ export default function GenerateQuizPage() {
     const question = quiz[questionIndex];
     setExplanations((prev) => ({
       ...prev,
-      [questionIndex]: { isLoading: true, explanation: null },
+      [questionIndex]: { ...prev[questionIndex], isLoading: true, explanation: null },
     }));
 
     try {
@@ -205,7 +208,7 @@ export default function GenerateQuizPage() {
       });
       setExplanations((prev) => ({
         ...prev,
-        [questionIndex]: { isLoading: false, explanation: result.explanation },
+        [questionIndex]: { ...prev[questionIndex], isLoading: false, explanation: result.explanation },
       }));
     } catch (error) {
       toast({
@@ -215,11 +218,43 @@ export default function GenerateQuizPage() {
       });
        setExplanations((prev) => ({
         ...prev,
-        [questionIndex]: { isLoading: false, explanation: "Could not load explanation." },
+        [questionIndex]: { ...prev[questionIndex], isLoading: false, explanation: "Could not load explanation." },
       }));
       console.error(error);
     }
   };
+  
+  const getSimpleExplanation = async (questionIndex: number) => {
+    if (!quiz) return;
+    const question = quiz[questionIndex];
+    setExplanations((prev) => ({
+      ...prev,
+      [questionIndex]: { ...prev[questionIndex], isSimpleLoading: true, simpleExplanation: null },
+    }));
+    
+    try {
+        const result = await generateSimpleExplanation({
+            question: question.question,
+            correctAnswer: question.correctAnswer,
+            topic: form.getValues("topic"),
+        });
+        setExplanations((prev) => ({
+            ...prev,
+            [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: result.explanation },
+        }));
+    } catch (error) {
+        toast({
+            title: "Error Simplifying",
+            description: "Could not generate a simpler explanation at this time.",
+            variant: "destructive",
+        });
+        setExplanations((prev) => ({
+            ...prev,
+            [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: "Could not load simple explanation." },
+        }));
+    }
+  }
+
 
   const downloadQuestions = () => {
     if (!quiz) return;
@@ -470,7 +505,7 @@ export default function GenerateQuizPage() {
                             <div className="space-y-4">
                                 {incorrectAnswers.map((q, index) => {
                                     const originalIndex = quiz.findIndex(originalQ => originalQ.question === q.question);
-                                    const explanation = explanations[originalIndex];
+                                    const explanationState = explanations[originalIndex];
                                     return (
                                         <Card key={index} className="bg-muted/30">
                                             <CardContent className="pt-6">
@@ -478,20 +513,36 @@ export default function GenerateQuizPage() {
                                                 <p className="text-sm text-destructive mt-2">Your answer: {q.userAnswer || "Skipped"}</p>
                                                 <p className="text-sm text-green-500">Correct answer: {q.correctAnswer}</p>
                                                 
-                                                {explanation ? (
-                                                    explanation.isLoading ? (
-                                                        <div className="flex items-center mt-2"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>
-                                                    ) : (
-                                                        <Alert className="mt-4 border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
-                                                            <AlertTitle className="text-blue-600 dark:text-blue-300">Explanation</AlertTitle>
-                                                            <AlertDescription>{explanation.explanation}</AlertDescription>
+                                                <div className="space-y-2 mt-4">
+                                                    {explanationState?.explanation && (
+                                                        <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
+                                                            <AlertTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
+                                                            <AlertDescription>{explanationState.explanation}</AlertDescription>
                                                         </Alert>
-                                                    )
-                                                ) : (
-                                                    <Button variant="link" size="sm" onClick={() => getExplanation(originalIndex)} className="px-0 h-auto">
-                                                        <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
-                                                    </Button>
-                                                )}
+                                                    )}
+                                                    {explanationState?.simpleExplanation && (
+                                                         <Alert className="border-purple-500/50 text-purple-900 dark:text-purple-200 bg-purple-500/10">
+                                                            <AlertTitle className="text-purple-600 dark:text-purple-300 flex items-center gap-2"><Lightbulb className="h-4 w-4" /> Simple Explanation</AlertTitle>
+                                                            <AlertDescription>{explanationState.simpleExplanation}</AlertDescription>
+                                                        </Alert>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex gap-2 items-center mt-4">
+                                                    {!explanationState?.isLoading && !explanationState?.explanation && (
+                                                         <Button variant="link" size="sm" onClick={() => getExplanation(originalIndex)} className="px-0 h-auto">
+                                                            <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
+                                                        </Button>
+                                                    )}
+                                                    {explanationState?.isLoading && <div className="flex items-center text-sm"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
+                                                    
+                                                     {!explanationState?.isSimpleLoading && !explanationState?.simpleExplanation && (
+                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="px-0 h-auto text-purple-600">
+                                                            <Lightbulb className="mr-2 h-4 w-4"/> Explain Like I'm 5
+                                                        </Button>
+                                                    )}
+                                                    {explanationState?.isSimpleLoading && <div className="flex items-center text-sm"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Simplifying...</div>}
+                                                </div>
                                             </CardContent>
                                         </Card>
                                     )
