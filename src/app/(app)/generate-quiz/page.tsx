@@ -30,6 +30,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -117,14 +118,12 @@ export default function GenerateQuizPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-lg font-semibold mb-4">{question.question}</p>
-            <RadioGroup onValueChange={handleAnswerSelect} value={userAnswers[currentQuestion]}>
+            <RadioGroup onValueChange={handleAnswerSelect} value={userAnswers[currentQuestion]} className="space-y-2">
               {question.answers.map((answer, index) => (
-                <FormItem key={index} className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value={answer} />
-                  </FormControl>
-                  <FormLabel className="font-normal">{answer}</FormLabel>
-                </FormItem>
+                <div key={index} className="flex items-center space-x-3">
+                  <RadioGroupItem value={answer} id={`q${currentQuestion}-ans${index}`} />
+                  <Label htmlFor={`q${currentQuestion}-ans${index}`} className="font-normal">{answer}</Label>
+                </div>
               ))}
             </RadioGroup>
             <Button onClick={handleNextQuestion} className="mt-6" disabled={!userAnswers[currentQuestion]}>
