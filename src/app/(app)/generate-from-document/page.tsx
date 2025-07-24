@@ -25,7 +25,7 @@ import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/f
 import { DocumentQuizQuestion } from "@/lib/types";
 
 const formSchema = z.object({
-  document: z.any().refine((file) => file?.length == 1, "Please upload a document."),
+  document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
   quizLength: z.coerce.number().min(1, "Please enter a number of questions.").max(20),
 });
 
@@ -33,6 +33,7 @@ export default function GenerateFromDocumentPage() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [quiz, setQuiz] = useState<DocumentQuizQuestion[] | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -103,8 +104,12 @@ export default function GenerateFromDocumentPage() {
                                     <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                                     <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                     <p className="text-xs text-muted-foreground">PDF, DOCX (MAX. 5MB)</p>
+                                    {fileName && <p className="mt-2 text-xs text-primary">{fileName}</p>}
                                 </div>
-                                <input id="dropzone-file" type="file" className="hidden" {...fileRef} />
+                                <input id="dropzone-file" type="file" className="hidden" {...fileRef} onChange={(e) => {
+                                  field.onChange(e.target.files);
+                                  setFileName(e.target.files?.[0]?.name ?? null);
+                                }} />
                             </label>
                           </div>
                         </FormControl>
@@ -160,7 +165,7 @@ export default function GenerateFromDocumentPage() {
                       <p className="font-semibold">{index + 1}. {q.question}</p>
                       <ul className="mt-2 space-y-1 list-disc list-inside">
                         {q.answers.map((ans, ansIndex) => (
-                          <li key={ansIndex} className={ansIndex === q.correctAnswerIndex ? 'text-green-600' : ''}>{ans}</li>
+                          <li key={ansIndex} className={ansIndex === q.correctAnswerIndex ? 'text-green-600 font-semibold' : ''}>{ans}</li>
                         ))}
                       </ul>
                     </div>
