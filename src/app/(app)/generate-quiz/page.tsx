@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Bookmark, Clock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
@@ -39,7 +39,7 @@ const formSchema = z.object({
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
   }),
-  timeLimit: z.number().min(5).max(120),
+  timeLimit: z.number().min(1).max(120),
 });
 
 type Quiz = GenerateCustomQuizOutput["quiz"];
@@ -60,6 +60,7 @@ export default function GenerateQuizPage() {
   const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [step, setStep] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(0);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,9 +70,34 @@ export default function GenerateQuizPage() {
       difficulty: "medium",
       numberOfQuestions: 10,
       questionTypes: ["multipleChoice"],
-      timeLimit: 60,
+      timeLimit: 10,
     },
   });
+
+  useEffect(() => {
+    if (quiz && !showResults) {
+      if (timeLeft === 0) {
+        setTimeLeft(form.getValues("timeLimit") * 60);
+      }
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setShowResults(true); 
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [quiz, showResults, timeLeft, form]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
@@ -86,6 +112,7 @@ export default function GenerateQuizPage() {
         questionTypes: values.questionTypes.map(q => q === 'multipleChoice' ? 'Multiple Choice' : 'Fill in the Blank')
       });
       setQuiz(result.quiz);
+      setTimeLeft(values.timeLimit * 60);
     } catch (error) {
       toast({
         title: "Error Generating Quiz",
@@ -104,14 +131,25 @@ export default function GenerateQuizPage() {
     setUserAnswers(newAnswers);
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = useCallback(() => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setShowResults(true);
     }
+  }, [currentQuestion, quiz?.length]);
+  
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
   };
   
+  const handleSkipQuestion = () => {
+    handleNextQuestion();
+  }
+
+
   const calculateScore = () => {
     return quiz?.reduce((score, question, index) => {
       return score + (question.correctAnswer === userAnswers[index] ? 1 : 0);
@@ -174,28 +212,68 @@ export default function GenerateQuizPage() {
 
   if (quiz && !showResults) {
     const question = quiz[currentQuestion];
+    const questionLetter = (index: number) => String.fromCharCode(65 + index);
     return (
-      <div>
-        <PageHeader title={form.getValues("topic")} description={`Question ${currentQuestion + 1} of ${quiz.length}`} />
-         <Progress value={((currentQuestion + 1) / quiz.length) * 100} className="mb-4" />
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-lg font-semibold mb-4">{question.question}</p>
-            <RadioGroup onValueChange={handleAnswerSelect} value={userAnswers[currentQuestion]} className="space-y-2">
-              {question.answers.map((answer, index) => (
-                <div key={index} className="flex items-center space-x-3 p-4 border rounded-md has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                  <RadioGroupItem value={answer} id={`q${currentQuestion}-ans${index}`} />
-                  <Label htmlFor={`q${currentQuestion}-ans${index}`} className="font-normal flex-1 cursor-pointer">{answer}</Label>
+        <div className="bg-gray-900 text-white min-h-screen p-8">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-bold uppercase">{form.getValues("topic")}</h1>
+                    <div className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-lg">
+                        <Clock className="h-6 w-6" />
+                        <span className="text-xl font-semibold">{formatTime(timeLeft)}</span>
+                    </div>
                 </div>
-              ))}
-            </RadioGroup>
-            <Button onClick={handleNextQuestion} className="mt-6" disabled={!userAnswers[currentQuestion]}>
-              {currentQuestion < quiz.length - 1 ? "Next Question" : "Finish Quiz"}
-              <ArrowRight className="ml-2 h-4 w-4"/>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+
+                <Progress value={((currentQuestion + 1) / quiz.length) * 100} className="mb-4 h-2 bg-gray-700 [&>div]:bg-green-500" />
+                
+                <div className="flex justify-between items-center mb-8">
+                    <Button variant="ghost" className="hover:bg-gray-700">
+                        <Bookmark className="mr-2 h-5 w-5" />
+                        Bookmark
+                    </Button>
+                    <span className="text-sm text-gray-400">Question {currentQuestion + 1} of {quiz.length}</span>
+                </div>
+
+                <div className="bg-gray-800 p-8 rounded-xl">
+                    <p className="text-xl font-semibold mb-8 text-center">{question.question}</p>
+                    <RadioGroup onValueChange={handleAnswerSelect} value={userAnswers[currentQuestion]} className="space-y-4">
+                      {question.answers.map((answer, index) => (
+                        <div key={index} className="flex items-center space-x-4">
+                           <RadioGroupItem value={answer} id={`q${currentQuestion}-ans${index}`} className="sr-only" />
+                           <Label htmlFor={`q${currentQuestion}-ans${index}`} className={cn(
+                                "flex-1 cursor-pointer rounded-lg border-2 p-4 transition-colors",
+                                "border-gray-600 bg-gray-700 hover:bg-gray-600",
+                                userAnswers[currentQuestion] === answer && "border-primary bg-primary/20"
+                            )}>
+                               <div className="flex items-center">
+                                 <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-500 mr-4">
+                                     {questionLetter(index)}
+                                 </div>
+                                 <span className="font-medium">{answer}</span>
+                               </div>
+                           </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                </div>
+
+                <div className="flex justify-between mt-8">
+                     <Button onClick={handlePreviousQuestion} variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white" disabled={currentQuestion === 0}>
+                        <ArrowLeft className="mr-2 h-4 w-4"/>
+                        Back
+                    </Button>
+                    <div className="flex gap-4">
+                      <Button onClick={handleSkipQuestion} variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                          Skip
+                      </Button>
+                      <Button onClick={handleNextQuestion} className="bg-primary hover:bg-primary/90">
+                          {currentQuestion < quiz.length - 1 ? "Next Question" : "Finish Quiz"}
+                          <ArrowRight className="ml-2 h-4 w-4"/>
+                      </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
   }
 
@@ -210,7 +288,7 @@ export default function GenerateQuizPage() {
             {quiz?.map((q, i) => (
               <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswer ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50")}>
                 <p className="font-semibold">{i + 1}. {q.question}</p>
-                <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i]}</p>
+                <p className={`mt-2 ${userAnswers[i] === q.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>Your answer: {userAnswers[i] || "Not answered"}</p>
                 {userAnswers[i] !== q.correctAnswer && <p className="text-green-700">Correct answer: {q.correctAnswer}</p>}
                 
                 {userAnswers[i] !== q.correctAnswer && (
@@ -338,29 +416,29 @@ export default function GenerateQuizPage() {
                             defaultValue={field.value}
                             className="grid grid-cols-2 md:grid-cols-4 gap-4"
                           >
-                            <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="easy" id="easy" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="easy" className="w-full text-center p-4 border rounded-md cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">Easy</Label>
+                              <Label htmlFor="easy" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Easy</Label>
                             </FormItem>
-                             <FormItem className="flex items-center space-x-2 space-y-0">
+                             <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="medium" id="medium" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="medium" className="w-full text-center p-4 border rounded-md cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">Medium</Label>
+                              <Label htmlFor="medium" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Medium</Label>
                             </FormItem>
-                             <FormItem className="flex items-center space-x-2 space-y-0">
+                             <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="hard" id="hard" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="hard" className="w-full text-center p-4 border rounded-md cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">Hard</Label>
+                              <Label htmlFor="hard" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Hard</Label>
                             </FormItem>
-                              <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormItem>
                               <FormControl>
                                 <RadioGroupItem value="master" id="master" className="sr-only" />
                               </FormControl>
-                              <Label htmlFor="master" className="w-full text-center p-4 border rounded-md cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">Master</Label>
+                              <Label htmlFor="master" className="w-full text-center p-4 border rounded-md cursor-pointer has-[:checked]:bg-primary has-[:checked]:text-primary-foreground">Master</Label>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -400,7 +478,7 @@ export default function GenerateQuizPage() {
                             defaultValue={[field.value]}
                             onValueChange={(value) => field.onChange(value[0])}
                             max={120}
-                            min={5}
+                            min={1}
                             step={1}
                           />
                         </FormControl>
@@ -421,7 +499,7 @@ export default function GenerateQuizPage() {
                 
                 <div className={cn(step === 1 && "w-full")}>
                   {step === 1 ? (
-                    <Button type="button" className="w-full" onClick={() => setStep(2)}>
+                    <Button type="button" className="w-full" onClick={() => setStep(2)} disabled={!form.getValues('topic')}>
                       Next
                       <ArrowRight className="ml-2 h-4 w-4"/>
                     </Button>

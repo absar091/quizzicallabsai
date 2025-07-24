@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -58,6 +59,7 @@ Question Types: {{{questionTypes}}}
 Time Limit: {{{timeLimit}}} minutes
 {{/if}}
 
+Generate exactly 4 multiple-choice options for each question.
 Ensure that the quiz is accurate, relevant, and appropriate for the specified difficulty level.
 Generate a multiple choice quiz based on the parameters.
 For "Fill in the Blank" questions, provide them in a multiple-choice format where one option is the correct word to fill the blank.
@@ -76,3 +78,5 @@ const generateCustomQuizFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
