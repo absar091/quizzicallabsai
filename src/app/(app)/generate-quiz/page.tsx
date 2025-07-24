@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,7 @@ export default function GenerateQuizPage() {
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
+  const [step, setStep] = useState(1);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,6 +87,8 @@ export default function GenerateQuizPage() {
       timeLimit: 10,
     },
   });
+
+  const { trigger, getValues } = form;
 
   useEffect(() => {
     const savedState = sessionStorage.getItem("quizState");
@@ -301,6 +304,7 @@ export default function GenerateQuizPage() {
     setUserAnswers([]);
     setShowResults(false);
     setExplanations({});
+    setStep(1);
     sessionStorage.removeItem("quizState");
     form.reset();
   };
@@ -333,6 +337,19 @@ export default function GenerateQuizPage() {
       setIsGenerating(false);
     }
   }
+
+  const nextStep = async () => {
+    if (step === 1) {
+      const isValid = await trigger("topic");
+      if (isValid) setStep(2);
+    } else if (step === 2) {
+      const isValid = await trigger(["difficulty", "numberOfQuestions", "questionTypes", "timeLimit"]);
+      if(isValid) setStep(3);
+    }
+  };
+
+  const prevStep = () => setStep(step - 1);
+
 
   if (isGenerating) {
     return (
@@ -492,159 +509,209 @@ export default function GenerateQuizPage() {
     );
   }
 
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <CardContent className="pt-6">
+            <FormField
+              control={form.control}
+              name="topic"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg">What topic do you want a quiz on?</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        );
+      case 2:
+        return (
+          <CardContent className="pt-6 space-y-6">
+            <FormField
+              control={form.control}
+              name="questionTypes"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-lg">Question Types</FormLabel>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    {questionTypeOptions.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="questionTypes"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const currentValue = field.value || [];
+                                    return checked
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(
+                                          currentValue?.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        )
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer flex-1">
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg">Difficulty</FormLabel>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                  >
+                    {["easy", "medium", "hard", "master"].map((level) => (
+                       <FormItem key={level} className="flex-1">
+                          <FormControl>
+                             <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                          </FormControl>
+                          <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                          </Label>
+                        </FormItem>
+                    ))}
+                  </RadioGroup>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="numberOfQuestions"
+              render={({ field }) => (
+                 <FormItem>
+                  <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                   <FormControl>
+                      <Slider
+                          onValueChange={(value) => field.onChange(value[0])}
+                          defaultValue={[field.value]}
+                          max={55}
+                          min={1}
+                          step={1}
+                      />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="timeLimit"
+              render={({ field }) => (
+                 <FormItem>
+                  <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                   <FormControl>
+                      <Slider
+                          onValueChange={(value) => field.onChange(value[0])}
+                          defaultValue={[field.value]}
+                          max={120}
+                          min={1}
+                          step={1}
+                      />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        );
+        case 3: {
+            const values = getValues();
+            return (
+                <CardContent className="pt-6">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Review your quiz details:</h3>
+                        <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
+                            <p><strong>Topic:</strong> {values.topic}</p>
+                            <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
+                            <p><strong>Question Types:</strong> {values.questionTypes.join(', ')}</p>
+                            <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
+                            <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
+                        </div>
+                    </div>
+                </CardContent>
+            )
+        }
+      default:
+        return null;
+    }
+  };
+
+   const stepTitles = [
+    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
+    { icon: Settings, title: "Customize Quiz", description: "Adjust the quiz settings to your needs." },
+    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
+  ];
+
   return (
     <div>
       <PageHeader
-        title="Custom Quiz Generator"
-        description="Craft the perfect quiz tailored to your needs."
+        title={stepTitles[step - 1].title}
+        description={stepTitles[step - 1].description}
       />
 
       <div className="max-w-2xl mx-auto">
         <Card className="bg-card/80 backdrop-blur-sm">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <CardContent className="pt-6">
-                <div className="space-y-6">
-                 <FormField
-                    control={form.control}
-                    name="topic"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-lg">Topic</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              {renderStep()}
+              <CardFooter className="pt-6 border-t flex justify-between">
+                {step > 1 && (
+                  <Button type="button" variant="outline" onClick={prevStep}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                )}
+                {step < 3 && (
+                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full' : ''}>
+                    Next
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+                {step === 3 && (
+                  <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Crafting Your Quiz...
+                      </>
+                    ) : (
+                       <>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Generate Quiz with AI
+                       </>
                     )}
-                  />
-                  
-                   <FormField
-                    control={form.control}
-                    name="questionTypes"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel className="text-lg">Question Types</FormLabel>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                          {questionTypeOptions.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="questionTypes"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={item.id}
-                                    className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item.id)}
-                                        onCheckedChange={(checked) => {
-                                          const currentValue = field.value || [];
-                                          return checked
-                                            ? field.onChange([...currentValue, item.id])
-                                            : field.onChange(
-                                                currentValue?.filter(
-                                                  (value) => value !== item.id
-                                                )
-                                              )
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer flex-1">
-                                      {item.label}
-                                    </FormLabel>
-                                  </FormItem>
-                                )
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="difficulty"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-lg">Difficulty</FormLabel>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                        >
-                          {["easy", "medium", "hard", "master"].map((level) => (
-                             <FormItem key={level} className="flex-1">
-                                <FormControl>
-                                   <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                                </FormControl>
-                                <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                                  {level.charAt(0).toUpperCase() + level.slice(1)}
-                                </Label>
-                              </FormItem>
-                          ))}
-                        </RadioGroup>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="numberOfQuestions"
-                    render={({ field }) => (
-                       <FormItem>
-                        <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                         <FormControl>
-                            <Slider
-                                onValueChange={(value) => field.onChange(value[0])}
-                                defaultValue={[field.value]}
-                                max={55}
-                                min={1}
-                                step={1}
-                            />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="timeLimit"
-                    render={({ field }) => (
-                       <FormItem>
-                        <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                         <FormControl>
-                            <Slider
-                                onValueChange={(value) => field.onChange(value[0])}
-                                defaultValue={[field.value]}
-                                max={120}
-                                min={1}
-                                step={1}
-                            />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-              <CardFooter className="pt-6 border-t">
-                 <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Crafting Your Quiz...
-                    </>
-                  ) : (
-                     <>
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Generate Quiz with AI
-                     </>
-                  )}
-                </Button>
+                  </Button>
+                )}
               </CardFooter>
             </form>
           </Form>
