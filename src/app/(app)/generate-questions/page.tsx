@@ -197,21 +197,21 @@ export default function GenerateQuestionsPage() {
                  <Accordion type="single" collapsible className="w-full">
                   {questions.map((q, index) => (
                     <AccordionItem value={`item-${index}`} key={index}>
-                      <AccordionTrigger>{index + 1}. {q.question}</AccordionTrigger>
+                      <AccordionTrigger className="text-left">{index + 1}. {q.question}</AccordionTrigger>
                       <AccordionContent>
                         {q.options && (
-                          <div className="p-4 bg-background rounded-md">
-                            <h4 className="font-semibold mb-2">Options:</h4>
-                            <ul className="space-y-2 list-disc list-inside">
+                          <div className="p-4 bg-background rounded-md mb-4">
+                            <h4 className="font-semibold mb-3">Options:</h4>
+                            <ul className="space-y-2">
                               {q.options.map((opt, i) => (
-                                <li key={i} className={opt === q.answer ? "font-bold text-primary" : ""}>{opt}</li>
+                                <li key={i} className={`p-2 rounded-md ${opt === q.answer ? "font-bold text-primary bg-primary/10 border border-primary" : "text-muted-foreground"}`}>{opt}</li>
                               ))}
                             </ul>
                           </div>
                         )}
-                         <Alert className="mt-4 border-green-500 text-green-500 bg-green-500/10">
-                            <AlertTitle className="text-green-600">Correct Answer</AlertTitle>
-                            <AlertDescription>
+                         <Alert className="border-primary/50 text-primary-900 dark:text-primary-200 bg-primary/10">
+                            <AlertTitle className="text-primary dark:text-primary-300 font-bold">Correct Answer</AlertTitle>
+                            <AlertDescription className="text-primary/90 dark:text-primary-200/90">
                                 {q.answer}
                             </AlertDescription>
                         </Alert>
@@ -232,5 +232,3 @@ export default function GenerateQuestionsPage() {
     </div>
   );
 }
-
-    
