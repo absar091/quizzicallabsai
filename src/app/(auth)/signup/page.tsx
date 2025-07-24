@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 
@@ -29,8 +30,6 @@ const formSchema = z.object({
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { login } = useAuth();
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,14 +39,21 @@ export default function SignupPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Mock signup and login
-    login(values.email);
-    toast({
-      title: "Account Created",
-      description: "Welcome to Quizzicallabs AI! An email verification has been sent.",
-    });
-    router.push("/dashboard");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: "Account Created",
+        description: "Welcome to Quizzicallabs AI! You can now log in.",
+      });
+      router.push("/login");
+    } catch (error: any) {
+      toast({
+        title: "Signup Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -87,8 +93,8 @@ export default function SignupPage() {
             />
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">
-              Create Account
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Creating Account..." : "Create Account"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}

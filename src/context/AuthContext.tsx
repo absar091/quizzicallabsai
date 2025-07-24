@@ -2,20 +2,18 @@
 
 import type { ReactNode } from "react";
 import { createContext, useState, useMemo, useEffect } from "react";
+import { onAuthStateChanged, signOut as firebaseSignOut, type User as FirebaseUser } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
-  className: string;
-  fatherName: string;
-  isVerified: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string) => void;
   logout: () => void;
 }
 
@@ -26,37 +24,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock persistence check
-    const storedUser = localStorage.getItem("quiz-user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName || "User",
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const login = (email: string) => {
-    const mockUser: User = {
-      uid: "12345-mock",
-      email,
-      displayName: "Test User",
-      className: "12th Grade",
-      fatherName: "John Doe Sr.",
-      isVerified: true,
-    };
-    setUser(mockUser);
-    localStorage.setItem("quiz-user", JSON.stringify(mockUser));
+  const logout = async () => {
+    await firebaseSignOut(auth);
   };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("quiz-user");
-  };
-
+  
   const value = useMemo(
     () => ({
       user,
       loading,
-      login,
       logout,
     }),
     [user, loading]
