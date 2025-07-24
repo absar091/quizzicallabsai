@@ -21,7 +21,7 @@ const GenerateCustomQuizInputSchema = z.object({
   numberOfQuestions: z
     .number()
     .min(1)
-    .max(100)
+    .max(55)
     .describe('The number of questions in the quiz.'),
   questionTypes: z.array(z.string()).describe('The types of questions to include (e.g., Multiple Choice, Fill in the Blank).'),
   timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),

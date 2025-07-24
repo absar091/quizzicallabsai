@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -15,7 +16,7 @@ const GeneratePracticeQuestionsInputSchema = z.object({
   subject: z.string().describe('The subject for which to generate practice questions (e.g., Biology, Physics, Chemistry).'),
   topic: z.string().describe('The specific topic within the subject for which to generate practice questions (e.g., Photosynthesis, Thermodynamics, Organic Chemistry).'),
   difficulty: z.enum(['easy', 'medium', 'hard']).optional().describe('The difficulty level of the questions.'),
-  numberOfQuestions: z.number().int().min(1).max(10).optional().describe('The desired number of questions to generate (1-10).'),
+  numberOfQuestions: z.number().int().min(1).max(55).optional().describe('The desired number of questions to generate (1-55).'),
   questionType: z.enum(['multiple choice', 'true/false', 'short answer']).optional().describe('The question type to generate.'),
 });
 export type GeneratePracticeQuestionsInput = z.infer<typeof GeneratePracticeQuestionsInputSchema>;

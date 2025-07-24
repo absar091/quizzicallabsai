@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -17,7 +18,7 @@ const GenerateQuizFromDocumentInputSchema = z.object({
     .describe(
       "A document to generate a quiz from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  quizLength: z.number().describe('The number of questions to generate for the quiz.'),
+  quizLength: z.number().describe('The number of questions to generate for the quiz.').max(55),
 });
 export type GenerateQuizFromDocumentInput = z.infer<typeof GenerateQuizFromDocumentInputSchema>;
 

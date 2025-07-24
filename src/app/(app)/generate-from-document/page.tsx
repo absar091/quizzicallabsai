@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
-  quizLength: z.coerce.number().min(1, "Please enter a number of questions.").max(20),
+  quizLength: z.coerce.number().min(1, "Please enter a number of questions.").max(55),
 });
 
 export default function GenerateFromDocumentPage() {

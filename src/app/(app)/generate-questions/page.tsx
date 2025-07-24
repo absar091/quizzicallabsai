@@ -30,7 +30,7 @@ const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
   topic: z.string().min(1, "Topic is required."),
   difficulty: z.enum(["easy", "medium", "hard"]),
-  numberOfQuestions: z.coerce.number().min(1).max(10),
+  numberOfQuestions: z.coerce.number().min(1).max(55),
   questionType: z.enum(["multiple choice", "true/false", "short answer"]),
 });
 

@@ -38,7 +38,7 @@ import { useAuth } from "@/hooks/useAuth";
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
   difficulty: z.enum(["easy", "medium", "hard", "master"]),
-  numberOfQuestions: z.number().min(1).max(20),
+  numberOfQuestions: z.number().min(1).max(55),
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
   }),
@@ -549,7 +549,7 @@ export default function GenerateQuizPage() {
                            <Slider
                             defaultValue={[field.value]}
                             onValueChange={(value) => field.onChange(value[0])}
-                            max={20}
+                            max={55}
                             min={1}
                             step={1}
                           />
