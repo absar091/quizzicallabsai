@@ -64,7 +64,6 @@ export default function GenerateQuizPage() {
   const [showResults, setShowResults] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
-  const [step, setStep] = useState(1);
   const [timeLeft, setTimeLeft] = useState(0);
 
 
@@ -166,7 +165,6 @@ export default function GenerateQuizPage() {
     setShowResults(false);
     setCurrentQuestion(0);
     setUserAnswers([]);
-    setStep(1);
     setShowReview(false);
     form.reset();
   }
@@ -431,15 +429,14 @@ export default function GenerateQuizPage() {
   return (
     <div className="max-w-2xl mx-auto">
        <PageHeader
-        title={step === 1 ? "Custom Quiz" : "Fine-tune your quiz settings"}
-        description={step === 1 ? "Tailor quizzes by topic, difficulty, and length to fit your study needs." : "Customize the details of your quiz."}
+        title="Custom Quiz"
+        description="Tailor quizzes by topic, difficulty, and length to fit your study needs."
       />
       
       <Card className="bg-muted/30">
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-               {step === 1 && (
                  <FormField
                     control={form.control}
                     name="topic"
@@ -454,11 +451,7 @@ export default function GenerateQuizPage() {
                       </FormItem>
                     )}
                   />
-               )}
-              
-               {step === 2 && (
-                 <>
-                  <Progress value={(step / 2) * 100} className="w-full h-2 mb-8 bg-muted-foreground/20 [&>div]:bg-primary" />
+               
                   <FormField
                     control={form.control}
                     name="questionTypes"
@@ -585,37 +578,17 @@ export default function GenerateQuizPage() {
                       </FormItem>
                     )}
                   />
-                  </>
-               )}
               
-              <div className="flex justify-between mt-12">
-                {step === 2 && (
-                  <Button type="button" variant="ghost" onClick={() => setStep(1)}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/>
-                    Back
-                  </Button>
-                )}
-                
-                <div className={cn(step === 1 && "w-full")}>
-                  {step === 1 ? (
-                    <Button type="button" className="w-full" onClick={() => form.trigger('topic').then(isValid => isValid && setStep(2))}>
-                      Next
-                      <ArrowRight className="ml-2 h-4 w-4"/>
-                    </Button>
+                <Button type="submit" className="w-full" disabled={isGenerating}>
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating Quiz...
+                    </>
                   ) : (
-                    <Button type="submit" disabled={isGenerating}>
-                      {isGenerating ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating Quiz...
-                        </>
-                      ) : (
-                        "Generate Quiz"
-                      )}
-                    </Button>
+                    "Generate Quiz"
                   )}
-                </div>
-              </div>
+                </Button>
             </form>
           </Form>
         </CardContent>
