@@ -38,6 +38,9 @@ export function AppHeader() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
             </div>
+            <span className="hidden font-bold sm:inline-block">
+              Quizzicallabs™
+            </span>
           </Link>
           <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
             {menuItems.map((item) => (

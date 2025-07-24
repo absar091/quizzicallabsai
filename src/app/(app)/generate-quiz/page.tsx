@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -68,6 +68,7 @@ export default function GenerateQuizPage() {
   const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,19 +106,10 @@ export default function GenerateQuizPage() {
   const handleNext = () => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
       setCurrentQuestion(currentQuestion + 1);
+    } else {
+        handleSubmit();
     }
   };
-
-  const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
-  };
-  
-  const handleSkip = () => {
-    handleAnswer(""); // Store empty answer for skipped question
-    handleNext();
-  }
 
   const handleSubmit = () => {
     setShowResults(true);
@@ -249,55 +241,64 @@ export default function GenerateQuizPage() {
 
   if (quiz && !showResults) {
     const currentQ = quiz[currentQuestion];
+    const progress = ((currentQuestion + 1) / quiz.length) * 100;
     return (
-      <div className="max-w-4xl mx-auto p-4 md:p-8">
-        <Card className="bg-card/80 backdrop-blur-sm">
-            <CardHeader className="border-b">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <CardTitle>Topic: {form.getValues("topic")}</CardTitle>
-                        <p className="text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</p>
-                    </div>
-                    <div className="flex items-center gap-2 bg-destructive text-destructive-foreground px-3 py-1.5 rounded-md text-sm font-medium">
-                        <Clock className="h-4 w-4" />
-                        <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
-                    </div>
+      <div className="flex items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          <Card className="bg-card/80 backdrop-blur-sm shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold uppercase tracking-widest">{form.getValues("topic")}</h2>
+                <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+                  <Clock className="h-4 w-4" />
+                  <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-                <Progress value={((currentQuestion + 1) / quiz.length) * 100} className="mb-6 h-2" />
-                
-                <p className="text-xl font-semibold mb-6">{currentQ.question}</p>
-                
-                <RadioGroup value={userAnswers[currentQuestion]} onValueChange={handleAnswer} className="space-y-4">
-                    {currentQ.answers.map((answer, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                           <RadioGroupItem value={answer} id={`q${currentQuestion}-a${index}`} />
-                           <Label htmlFor={`q${currentQuestion}-a${index}`} className="text-base flex-1 cursor-pointer">{answer}</Label>
-                        </div>
-                    ))}
-                </RadioGroup>
-            </CardContent>
-            <CardContent className="flex justify-between items-center pt-4 border-t">
-                 <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back
+              </div>
+
+              <Progress value={progress} className="mb-4 h-2" />
+
+              <div className="flex justify-between items-center mb-8 text-sm text-muted-foreground">
+                <Button variant="ghost" size="sm" onClick={() => setIsBookmarked(!isBookmarked)}>
+                  <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
+                  Bookmark
                 </Button>
-                <div className="flex gap-2">
-                    <Button variant="ghost" onClick={handleSkip} disabled={currentQuestion === quiz.length - 1}>
-                        Skip
+                <span>Question {currentQuestion + 1} of {quiz.length}</span>
+              </div>
+
+              <p className="text-center text-xl font-semibold mb-8 min-h-[60px]">
+                {currentQ.question}
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {currentQ.answers.map((answer, index) => {
+                  const letter = String.fromCharCode(65 + index); // A, B, C, D
+                  const isSelected = userAnswers[currentQuestion] === answer;
+                  return (
+                    <Button
+                      key={index}
+                      variant={isSelected ? "default" : "outline"}
+                      className="w-full justify-start h-auto py-3 text-base"
+                      onClick={() => handleAnswer(answer)}
+                    >
+                      <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
+                        {letter}
+                      </div>
+                      {answer}
                     </Button>
-                    {currentQuestion === quiz.length - 1 ? (
-                        <Button onClick={handleSubmit}>
-                            Finish & See Results <ArrowRight className="ml-2 h-4 w-4"/>
-                        </Button>
-                    ) : (
-                        <Button onClick={handleNext}>
-                            Next <ArrowRight className="ml-2 h-4 w-4"/>
-                        </Button>
-                    )}
-                </div>
+                  )
+                })}
+              </div>
+
+              <div className="flex justify-end">
+                <Button size="lg" onClick={handleNext}>
+                  {currentQuestion === quiz.length - 1 ? "Finish Quiz" : "Next Question"}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
             </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
     );
   }
