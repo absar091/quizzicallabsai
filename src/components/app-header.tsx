@@ -136,7 +136,7 @@ export function AppHeader() {
           {user ? (
             <Link href="/profile">
               <Avatar className="h-9 w-9">
-                <AvatarImage src="https://placehold.co/100x100.png" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
+                <AvatarImage src="https://images.unsplash.com/photo-1566669419640-ae09e20a18d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxM3x8QlJBSU4lMjBBTklNSUV8ZW58MHx8fHwxNzUzMzc2NDQzfDA&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
                 <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
               </Avatar>
             </Link>
