@@ -51,8 +51,12 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      
+      // Combine father's name and class name for the display name
+      const displayName = `${values.fatherName}__CLASS__${values.className}`;
+      
       await updateProfile(userCredential.user, {
-        displayName: values.fatherName,
+        displayName: displayName,
       });
       await sendEmailVerification(userCredential.user);
 

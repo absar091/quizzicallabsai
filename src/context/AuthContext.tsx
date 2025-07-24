@@ -11,6 +11,7 @@ interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
+  className: string | null;
   emailVerified: boolean;
 }
 
@@ -30,10 +31,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser && firebaseUser.emailVerified) {
+        let displayName = firebaseUser.displayName || "User";
+        let className = "N/A";
+        
+        // Check if displayName contains the separator and parse it
+        if (displayName && displayName.includes("__CLASS__")) {
+          const parts = displayName.split("__CLASS__");
+          displayName = parts[0];
+          className = parts[1];
+        }
+
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          displayName: firebaseUser.displayName || "User",
+          displayName: displayName,
+          className: className,
           emailVerified: firebaseUser.emailVerified,
         });
       } else {
