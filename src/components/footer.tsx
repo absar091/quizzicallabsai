@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
@@ -36,7 +37,7 @@ export function Footer() {
                          <h3 className="font-semibold mb-4">Legal & Support</h3>
                         <nav className="flex flex-col gap-2 text-sm">
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
-                             <Link href="/#" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
+                             <Link href="/terms-of-use" className="text-muted-foreground hover:text-primary">Terms of Use</Link>
                             <Link href="/#" className="text-muted-foreground hover:text-primary">MIT License</Link>
                              <Link href="/#" className="text-muted-foreground hover:text-primary">Support Us</Link>
                         </nav>

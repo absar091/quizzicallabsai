@@ -30,27 +30,34 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. Sharing Your Information</h2>
-            <p>We do not share your personal information with third parties except as described in this Privacy Policy, such as to comply with legal obligations or to protect our rights.</p>
+            <h2 className="text-xl font-semibold text-foreground">3. Advertising and AdSense</h2>
+            <p>We use Google AdSense to serve ads when you visit our website. Our advertising partners may use cookies and web beacons on our site. Google, as a third-party vendor, uses cookies to serve ads based on a user's prior visits to our website or other websites.</p>
+             <p>Google's use of advertising cookies enables it and its partners to serve ads to your users based on their visit to your sites and/or other sites on the Internet. Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>.</p>
+             <p>Third-party vendors and ad networks may also be used to serve ads on our site. You can opt out of some third-party vendors' uses of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info/choices</a>.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">4. Data Storage and Security</h2>
+            <h2 className="text-xl font-semibold text-foreground">4. Sharing Your Information</h2>
+            <p>We do not share your personal information with third parties except as described in this Privacy Policy, such as to comply with legal obligations, to protect our rights, or with our advertising partners as described above.</p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">5. Data Storage and Security</h2>
             <p>Your data is stored securely. We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.</p>
           </div>
             
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">5. Cookies</h2>
-            <p>We use essential cookies to make our site functional. A cookie is a small text file stored on your device. By using our application, you consent to the use of these essential cookies.</p>
+            <h2 className="text-xl font-semibold text-foreground">6. Cookies</h2>
+            <p>We use essential cookies to make our site functional, as well as cookies for advertising purposes as detailed in the "Advertising and AdSense" section. A cookie is a small text file stored on your device. By using our application, you consent to the use of these cookies.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">6. Your Choices</h2>
-            <p>You may review, change, or terminate your account at any time. You can also manage your bookmarked questions and view your quiz history directly from your dashboard.</p>
+            <h2 className="text-xl font-semibold text-foreground">7. Your Choices</h2>
+            <p>You may review, change, or terminate your account at any time. You can also manage your bookmarked questions and view your quiz history directly from your dashboard. You have the right to opt-out of personalized advertising as mentioned above.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">7. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold text-foreground">8. Changes to This Policy</h2>
             <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
           </div>
 
