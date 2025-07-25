@@ -28,6 +28,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   className: z.string().min(1, { message: "Class is required." }),
+  age: z.coerce.number().min(5, "You must be at least 5 years old.").max(100, "Please enter a valid age."),
   agree: z.boolean().refine(val => val, {
     message: "You must accept the privacy policy to continue."
   })
@@ -52,7 +53,7 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
-      const displayName = `${values.fullName}__CLASS__${values.className}`;
+      const displayName = `${values.fullName}__CLASS__${values.className}__AGE__${values.age}`;
       
       await updateProfile(userCredential.user, {
         displayName: displayName,
@@ -114,19 +115,34 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="className"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Class</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., 10th Grade" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="className"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Class</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g., 10th Grade" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Age</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g., 16" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <FormField
               control={form.control}
               name="password"

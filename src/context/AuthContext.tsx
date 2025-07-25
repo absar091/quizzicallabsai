@@ -12,6 +12,7 @@ interface User {
   email: string | null;
   displayName: string | null;
   className: string | null;
+  age: number | null;
   emailVerified: boolean;
 }
 
@@ -34,12 +35,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser && firebaseUser.emailVerified) {
         let displayName = firebaseUser.displayName || "User";
         let className = "N/A";
+        let age = null;
         
-        // Check if displayName contains the separator and parse it
         if (displayName && displayName.includes("__CLASS__")) {
           const parts = displayName.split("__CLASS__");
           displayName = parts[0];
-          className = parts[1];
+          const rest = parts[1];
+          if(rest.includes("__AGE__")) {
+              const ageParts = rest.split("__AGE__");
+              className = ageParts[0];
+              age = parseInt(ageParts[1], 10) || null;
+          } else {
+              className = rest;
+          }
         }
 
         setUser({
@@ -47,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: firebaseUser.email,
           displayName: displayName,
           className: className,
+          age: age,
           emailVerified: firebaseUser.emailVerified,
         });
       } else {
@@ -62,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(auth);
     setUser(null);
     router.push('/login');
+    sessionStorage.clear();
   };
   
   const deleteAccount = async () => {
@@ -69,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (currentUser) {
       await deleteUser(currentUser);
       setUser(null);
+      sessionStorage.clear();
     } else {
         throw new Error("No user is currently signed in.");
     }
@@ -86,5 +97,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-    

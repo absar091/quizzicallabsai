@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,9 @@ const formSchema = z.object({
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
   }),
+  questionStyles: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one question style.",
+  }),
   timeLimit: z.number().min(1).max(120),
 });
 
@@ -63,8 +66,15 @@ type BookmarkedQuestion = {
 }
 
 const questionTypeOptions = [
-    { id: "Multiple Choice", label: "Multiple Choice" },
-    { id: "Fill in the Blank", label: "Fill in the Blank" },
+    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
+    { id: "Fill in the Blank", label: "Fill in the Blank", icon: Puzzle },
+]
+
+const questionStyleOptions = [
+    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
+    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
+    { id: "Numerical", label: "Numerical", icon: Settings },
+    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
 ]
 
 export default function GenerateQuizPage() {
@@ -87,6 +97,7 @@ export default function GenerateQuizPage() {
       difficulty: "medium",
       numberOfQuestions: 10,
       questionTypes: ["Multiple Choice"],
+      questionStyles: ["Knowledge-based", "Conceptual"],
       timeLimit: 10,
     },
   });
@@ -353,7 +364,11 @@ export default function GenerateQuizPage() {
     setExplanations({});
     
     try {
-      const result = await generateCustomQuiz(values);
+      const result = await generateCustomQuiz({
+        ...values,
+        userAge: user?.age,
+        userClass: user?.className,
+      });
       setQuiz(result.quiz);
       setUserAnswers(new Array(result.quiz.length).fill(""));
       setTimeLeft(values.timeLimit * 60);
@@ -378,7 +393,7 @@ export default function GenerateQuizPage() {
       const isValid = await trigger("topic");
       if (isValid) setStep(2);
     } else if (step === 2) {
-      const isValid = await trigger(["difficulty", "numberOfQuestions", "questionTypes", "timeLimit"]);
+      const isValid = await trigger(["difficulty", "numberOfQuestions", "questionTypes", "timeLimit", "questionStyles"]);
       if(isValid) setStep(3);
     }
   };
@@ -404,7 +419,7 @@ export default function GenerateQuizPage() {
     return (
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
-          <Card className="shadow-2xl">
+          <Card className="bg-card/80 backdrop-blur-sm shadow-2xl">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold uppercase tracking-widest">{form.getValues("topic")}</h2>
@@ -424,7 +439,7 @@ export default function GenerateQuizPage() {
                 <span>Question {currentQuestion + 1} of {quiz.length}</span>
               </div>
 
-              <p className="text-center text-xl font-semibold mb-8 min-h-[60px]">
+              <p className="text-center text-xl font-semibold mb-8 min-h-[60px] leading-relaxed">
                 {currentQ.question}
               </p>
 
@@ -442,7 +457,7 @@ export default function GenerateQuizPage() {
                       <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
                         {letter}
                       </div>
-                      <span className="flex-1">{answer}</span>
+                      <span className="flex-1 text-left">{answer}</span>
                     </Button>
                   )
                 })}
@@ -473,7 +488,7 @@ export default function GenerateQuizPage() {
     return (
        <div className="max-w-4xl mx-auto p-4 md:p-8">
             <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
-            <Card>
+            <Card className="bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                          <CardTitle>Result Details</CardTitle>
@@ -585,10 +600,37 @@ export default function GenerateQuizPage() {
           <CardContent className="pt-6 space-y-6">
             <FormField
               control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg">Difficulty</FormLabel>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                  >
+                    {["easy", "medium", "hard", "master"].map((level) => (
+                       <FormItem key={level} className="flex-1">
+                          <FormControl>
+                             <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                          </FormControl>
+                          <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                            {level}
+                          </Label>
+                        </FormItem>
+                    ))}
+                  </RadioGroup>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+             <FormField
+              control={form.control}
               name="questionTypes"
               render={() => (
                 <FormItem>
-                  <FormLabel className="text-lg">Question Types</FormLabel>
+                  <FormLabel className="text-lg">Question Formats</FormLabel>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     {questionTypeOptions.map((item) => (
                       <FormField
@@ -616,7 +658,8 @@ export default function GenerateQuizPage() {
                                   }}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal cursor-pointer flex-1">
+                              <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                <item.icon className="h-5 w-5" />
                                 {item.label}
                               </FormLabel>
                             </FormItem>
@@ -632,26 +675,47 @@ export default function GenerateQuizPage() {
 
             <FormField
               control={form.control}
-              name="difficulty"
-              render={({ field }) => (
+              name="questionStyles"
+              render={() => (
                 <FormItem>
-                  <FormLabel className="text-lg">Difficulty</FormLabel>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                  >
-                    {["easy", "medium", "hard", "master"].map((level) => (
-                       <FormItem key={level} className="flex-1">
-                          <FormControl>
-                             <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                          </FormControl>
-                          <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
-                            {level.charAt(0).toUpperCase() + level.slice(1)}
-                          </Label>
-                        </FormItem>
+                  <FormLabel className="text-lg">Question Styles</FormLabel>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    {questionStyleOptions.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="questionStyles"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    const currentValue = field.value || [];
+                                    return checked
+                                      ? field.onChange([...currentValue, item.id])
+                                      : field.onChange(
+                                          currentValue?.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        )
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                <item.icon className="h-5 w-5" />
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
                     ))}
-                  </RadioGroup>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -704,7 +768,8 @@ export default function GenerateQuizPage() {
                         <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
                             <p><strong>Topic:</strong> {values.topic}</p>
                             <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
-                            <p><strong>Question Types:</strong> {values.questionTypes.join(', ')}</p>
+                             <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
+                             <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
                             <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
                             <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
                         </div>
@@ -731,7 +796,7 @@ export default function GenerateQuizPage() {
       />
 
       <div className="max-w-2xl mx-auto">
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden bg-card/80 backdrop-blur-sm">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="transition-all duration-500">

@@ -24,7 +24,10 @@ const GenerateCustomQuizInputSchema = z.object({
     .max(55)
     .describe('The number of questions in the quiz.'),
   questionTypes: z.array(z.string()).describe('The types of questions to include (e.g., Multiple Choice, Fill in the Blank).'),
+  questionStyles: z.array(z.string()).describe('The style of questions (e.g. Conceptual, Numerical, etc).'),
   timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
+  userAge: z.number().optional().describe("The age of the user taking the quiz."),
+  userClass: z.string().optional().describe("The grade/class of the user taking the quiz."),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -49,18 +52,28 @@ const prompt = ai.definePrompt({
   name: 'generateCustomQuizPrompt',
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: `You are an expert quiz generator. Your task is to create a quiz based on the exact parameters provided.
+  prompt: `You are an expert quiz generator and an educator. Your task is to create a high-quality quiz based on the exact parameters provided. We believe in quality.
 
   **Instructions:**
   1.  **Topic:** The quiz must be strictly about '{{{topic}}}'. Do not deviate from this topic.
-  2.  **Difficulty:** The questions must match the specified difficulty level: '{{{difficulty}}}'.
-  3.  **Number of Questions:** You must generate exactly {{{numberOfQuestions}}} questions. No more, no less.
-  4.  **Question Types:** The quiz should only include the following types of questions: {{{questionTypes}}}.
-        *   For "Multiple Choice" questions, provide exactly 4 distinct options. One of these must be the correct answer.
-        *   For "Fill in the Blank" questions, present them in a multiple-choice format. This means you will provide the sentence with a blank, and the options will be the words that could fill that blank. One option must be the correct word.
-  5.  **Time Limit:** The quiz is designed to be completed within {{{timeLimit}}} minutes. Ensure the complexity and length of the questions are appropriate for this time constraint.
-  6.  **Accuracy & Relevance:** All questions and answers must be accurate, relevant to the topic, and appropriate for the specified difficulty level.
-  7.  **Format:** Your final output must be only the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting before or after the JSON.
+  2.  **Target Audience:** The user is {{#if userAge}}{{userAge}} years old{{/if}}{{#if userClass}} and is in class/grade '{{userClass}}'{{/if}}. Tailor the complexity and wording of the questions to be appropriate for this level.
+  3.  **Difficulty & Quality:** The questions must match the specified difficulty level: '{{{difficulty}}}'.
+        *   **Easy:** Basic recall of facts and definitions.
+        *   **Medium:** Requires some application of concepts.
+        *   **Hard:** Involves analysis, synthesis, or evaluation.
+        *   **Master:** Complex problems requiring deep understanding and integration of multiple concepts.
+        The quality of the questions is paramount. They should be clear, unambiguous, and a true test of knowledge for the given difficulty.
+  4.  **Number of Questions:** You must generate exactly {{{numberOfQuestions}}} questions.
+  5.  **Question Formats:** The quiz should only include the following formats: {{{questionTypes}}}.
+        *   For "Multiple Choice", provide exactly 4 distinct options. One must be correct.
+        *   For "Fill in the Blank", present it as a multiple-choice question where the options are words that could fill the blank.
+  6.  **Question Styles:** The questions should adhere to the following styles: {{{questionStyles}}}.
+        *   **Knowledge-based:** Test recall of facts, dates, and definitions.
+        *   **Conceptual:** Test understanding of ideas and principles.
+        *   **Numerical:** Involve calculations or data interpretation.
+        *   **Past Paper Style:** Mimic the format and style commonly found in standardized tests or past exam papers for the topic.
+  7.  **Accuracy & Relevance:** All questions and answers must be accurate, relevant, and well-written.
+  8.  **Format:** Your final output must be only the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting.
 
   Generate the quiz now.`,
 });

@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Mail, GraduationCap, Trash2, ShieldAlert } from "lucide-react";
+import { LogOut, User, Mail, GraduationCap, Trash2, ShieldAlert, Cake } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -42,7 +42,7 @@ export default function ProfilePage() {
     }
   }
 
-  const DetailRow = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | null | undefined }) => (
+  const DetailRow = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number | null | undefined }) => (
     <div className="flex items-center">
         <Icon className="h-5 w-5 text-muted-foreground" />
         <div className="ml-4">
@@ -87,36 +87,25 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="pt-6 space-y-6">
+                <CardContent className="pt-6">
                 {loading ? (
-                    <div className="space-y-6">
-                        <div className="flex items-center">
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                            <div className="ml-4 space-y-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-5 w-40" />
+                    <div className="grid md:grid-cols-2 gap-y-6">
+                        {[...Array(4)].map((_, i) => (
+                             <div key={i} className="flex items-center">
+                                <Skeleton className="h-5 w-5 rounded-full" />
+                                <div className="ml-4 space-y-2">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-5 w-40" />
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center">
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                            <div className="ml-4 space-y-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-5 w-48" />
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <Skeleton className="h-5 w-5 rounded-full" />
-                            <div className="ml-4 space-y-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-5 w-32" />
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 ) : user ? (
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6">
                         <DetailRow icon={User} label="Full Name" value={user.displayName} />
                         <DetailRow icon={Mail} label="Email Address" value={user.email} />
                         <DetailRow icon={GraduationCap} label="Class" value={user.className} />
+                        <DetailRow icon={Cake} label="Age" value={user.age} />
                     </div>
                 ) : (
                     <p>Not logged in. Redirecting...</p>
