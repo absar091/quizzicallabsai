@@ -773,5 +773,3 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
-
-    
