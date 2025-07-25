@@ -1,10 +1,58 @@
 
+"use client";
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle } from 'lucide-react';
+import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle, Copy, Check } from 'lucide-react';
 import { Button } from './ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { Input } from './ui/input';
 
 export function Footer() {
+    const { toast } = useToast();
     const currentYear = new Date().getFullYear();
+    const [showShareDialog, setShowShareDialog] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [appUrl, setAppUrl] = useState('');
+
+    useEffect(() => {
+        setAppUrl(window.location.origin);
+
+        const popUpCount = parseInt(sessionStorage.getItem('sharePopUpCount') || '0');
+        if (popUpCount < 2) {
+            const timer = setTimeout(() => {
+                setShowShareDialog(true);
+                sessionStorage.setItem('sharePopUpCount', String(popUpCount + 1));
+            }, 15000); // 15 seconds
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(appUrl);
+        setIsCopied(true);
+        toast({ title: 'Link Copied!', description: 'You can now share it with your friends.' });
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    const handleNativeShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Quizzicallabs™ AI',
+                    text: 'Check out this AI-powered learning platform!',
+                    url: appUrl,
+                });
+            } catch (error) {
+                console.error('Error sharing:', error);
+            }
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            setShowShareDialog(true);
+        }
+    };
+
     return (
         <footer className="border-t bg-background text-foreground">
             <div className="container mx-auto px-6 py-12">
@@ -44,10 +92,34 @@ export function Footer() {
                     </div>
                      <div>
                         <h3 className="font-semibold mb-4">Get Involved</h3>
-                        <div className="flex gap-2">
-                            <Button variant="outline"><Heart className="mr-2 h-4 w-4"/> Support</Button>
-                            <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/> Share</Button>
-                        </div>
+                        <AlertDialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+                            <div className="flex gap-2">
+                                <Button variant="outline"><Heart className="mr-2 h-4 w-4"/> Support</Button>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/> Share</Button>
+                                </AlertDialogTrigger>
+                            </div>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Share with Friends!</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Enjoying Quizzicallabs? Help us grow by sharing this app with your friends and classmates.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <div className="flex items-center space-x-2">
+                                    <Input value={appUrl} readOnly />
+                                    <Button size="icon" onClick={handleCopy}>
+                                        {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                                    </Button>
+                                </div>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                 {navigator.share && (
+                                    <AlertDialogAction onClick={handleNativeShare}>Share Natively</AlertDialogAction>
+                                )}
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </div>
                  <div className="mt-12 border-t pt-8 text-center space-y-4">
