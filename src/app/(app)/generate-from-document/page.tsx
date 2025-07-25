@@ -106,14 +106,14 @@ export default function GenerateFromDocumentPage() {
       return (
        <div className="max-w-3xl mx-auto">
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
-        <Card className="bg-card/80 backdrop-blur-sm">
+        <Card>
           <CardContent className="pt-6 space-y-4">
             {quiz.map((q, i) => (
-              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
+              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-primary bg-primary/10" : "border-destructive bg-destructive/10")}>
                 <p className="font-semibold">{i + 1}. {q.question}</p>
                  <div className="mt-2 text-sm space-y-1">
-                   <p className={cn(userAnswers[i] === q.correctAnswerIndex ? 'text-green-700' : 'text-red-700')}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
-                   {userAnswers[i] !== q.correctAnswerIndex && <p className="text-green-700">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+                   <p className={cn(userAnswers[i] === q.correctAnswerIndex ? 'text-primary' : 'text-destructive')}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
+                   {userAnswers[i] !== q.correctAnswerIndex && <p className="text-primary">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
                 </div>
               </div>
             ))}
@@ -142,7 +142,7 @@ export default function GenerateFromDocumentPage() {
     return (
         <div className="max-w-3xl mx-auto">
             <PageHeader title="Quiz from Document" description="Answer the questions below." />
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                 <CardContent className="pt-6 space-y-6">
                     {quiz.map((q, qIndex) => (
                         <div key={qIndex}>
@@ -175,7 +175,7 @@ export default function GenerateFromDocumentPage() {
       />
 
       <div className="max-w-xl mx-auto">
-          <Card className="bg-card/80 backdrop-blur-sm">
+          <Card>
             <CardHeader>
               <CardTitle>Quiz Parameters</CardTitle>
                <CardDescription>Upload a document and specify the number of questions you want.</CardDescription>

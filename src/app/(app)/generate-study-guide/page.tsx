@@ -171,7 +171,7 @@ export default function GenerateStudyGuidePage() {
       />
 
       <div className="max-w-2xl mx-auto">
-          <Card className="bg-card/80 backdrop-blur-sm">
+          <Card>
             <CardHeader>
               <CardTitle>Enter Your Topic</CardTitle>
             </CardHeader>
@@ -219,7 +219,7 @@ export default function GenerateStudyGuidePage() {
 
       {studyGuide && (
         <div className="max-w-4xl mx-auto mt-12">
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                 <CardHeader className="text-center border-b pb-6">
                      <div className="flex flex-col items-center text-center">
                         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
@@ -272,8 +272,8 @@ export default function GenerateStudyGuidePage() {
                                <AccordionItem value={`quiz-${index}`} key={index}>
                                  <AccordionTrigger>{item.question}</AccordionTrigger>
                                  <AccordionContent>
-                                    <Alert className="mt-2 border-green-500 text-green-500 bg-green-500/10">
-                                        <AlertTitle className="text-green-600">Answer</AlertTitle>
+                                    <Alert className="mt-2 border-primary/50 text-primary bg-primary/10">
+                                        <AlertTitle className="text-primary">Answer</AlertTitle>
                                         <AlertDescription>{item.answer}</AlertDescription>
                                     </Alert>
                                  </AccordionContent>

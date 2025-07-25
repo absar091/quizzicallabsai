@@ -404,7 +404,7 @@ export default function GenerateQuizPage() {
     return (
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
-          <Card className="bg-card/80 backdrop-blur-sm shadow-2xl">
+          <Card className="shadow-2xl">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold uppercase tracking-widest">{form.getValues("topic")}</h2>
@@ -473,7 +473,7 @@ export default function GenerateQuizPage() {
     return (
        <div className="max-w-4xl mx-auto p-4 md:p-8">
             <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                 <CardHeader>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                          <CardTitle>Result Details</CardTitle>
@@ -495,7 +495,7 @@ export default function GenerateQuizPage() {
                         </Card>
                          <Card>
                             <CardHeader><CardTitle>Status</CardTitle></CardHeader>
-                            <CardContent><p className={cn("text-3xl font-bold", percentage >= 50 ? "text-green-500" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</p></CardContent>
+                            <CardContent><p className={cn("text-3xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</p></CardContent>
                         </Card>
                     </div>
 
@@ -511,7 +511,7 @@ export default function GenerateQuizPage() {
                                             <CardContent className="pt-6">
                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
                                                 <p className="text-sm text-destructive mt-2">Your answer: {q.userAnswer || "Skipped"}</p>
-                                                <p className="text-sm text-green-500">Correct answer: {q.correctAnswer}</p>
+                                                <p className="text-sm text-primary">Correct answer: {q.correctAnswer}</p>
                                                 
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
@@ -731,7 +731,7 @@ export default function GenerateQuizPage() {
       />
 
       <div className="max-w-2xl mx-auto">
-        <Card className="bg-card/80 backdrop-blur-sm overflow-hidden">
+        <Card className="overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="transition-all duration-500">
