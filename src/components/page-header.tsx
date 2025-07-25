@@ -13,10 +13,12 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
        <div className="flex flex-col items-center justify-center">
          <div>
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-          {description && <p className="text-muted-foreground mt-2">{description}</p>}
+          {description && <p className="text-foreground/80 mt-2 max-w-prose">{description}</p>}
          </div>
         {children}
       </div>
     </header>
   );
 }
+
+    

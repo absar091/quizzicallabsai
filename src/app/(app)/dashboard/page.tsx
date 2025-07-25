@@ -130,7 +130,7 @@ export default function DashboardPage() {
         {/* Left Column for Analytics */}
         <div className="lg:col-span-3 space-y-8">
            <div>
-             <h2 className="text-2xl font-bold tracking-tight mb-4">Performance Analytics</h2>
+             <h2 className="text-2xl font-bold tracking-tight mb-4 px-2">Performance Analytics</h2>
              <div className="space-y-6">
                <Card className="bg-card/90 backdrop-blur-sm">
                  <CardHeader>
@@ -146,7 +146,6 @@ export default function DashboardPage() {
                         <ChartTooltip 
                           cursor={false}
                           content={<ChartTooltipContent 
-                            nameKey="topic"
                             formatter={(value, name) => [`${(value as number).toFixed(2)}%`, name]}
                           />}
                         />
@@ -188,7 +187,7 @@ export default function DashboardPage() {
         {/* Right Column for Bookmarks and Activity */}
         <div className="lg:col-span-2 space-y-8">
            <div>
-             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
+             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2 px-2">
               <BookMarked className="h-6 w-6" /> Bookmarked Questions
             </h2>
             <Card className="bg-card/90 backdrop-blur-sm">
@@ -259,7 +258,7 @@ export default function DashboardPage() {
           </div>
 
            <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><Activity className="h-6 w-6"/> Recent Activity</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2 px-2"><Activity className="h-6 w-6"/> Recent Activity</h2>
             <Card className="bg-card/90 backdrop-blur-sm">
               <CardContent className="pt-6">
                 {recentActivity.length > 0 ? (
