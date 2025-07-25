@@ -436,13 +436,13 @@ export default function GenerateQuizPage() {
                     <Button
                       key={index}
                       variant={isSelected ? "default" : "outline"}
-                      className="w-full justify-start h-auto py-3 text-base"
+                      className="w-full justify-start h-auto py-3 text-base whitespace-normal text-left leading-snug"
                       onClick={() => handleAnswer(answer)}
                     >
-                      <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
+                      <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
                         {letter}
                       </div>
-                      {answer}
+                      <span className="flex-1">{answer}</span>
                     </Button>
                   )
                 })}

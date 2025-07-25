@@ -130,6 +130,9 @@ export function AppHeader() {
                     <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="font-bold sm:inline-block">Quizzicallabs™</span>
+                <Badge variant="outline" className="text-xs">
+                  Beta
+                </Badge>
             </Link>
         </div>
 
