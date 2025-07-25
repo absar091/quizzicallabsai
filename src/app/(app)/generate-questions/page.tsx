@@ -68,7 +68,7 @@ export default function GenerateQuestionsPage() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Practice Questions"
         description="Generate practice questions for any subject and topic instantly."
@@ -228,6 +228,6 @@ export default function GenerateQuestionsPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 }
