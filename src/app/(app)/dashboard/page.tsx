@@ -25,7 +25,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
-import { ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type BookmarkedQuestion = {
@@ -41,6 +41,17 @@ type QuizResult = {
   percentage: number;
   date: string;
 };
+
+const chartConfig = {
+  score: {
+    label: "Score",
+    color: "hsl(var(--primary))",
+  },
+  averageScore: {
+    label: "Average Score",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
 
 export default function DashboardPage() {
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
@@ -127,20 +138,21 @@ export default function DashboardPage() {
                  </CardHeader>
                  <CardContent>
                   {averageScores.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={300}>
-                       <BarChart data={averageScores}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="topic" />
+                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                       <BarChart accessibilityLayer data={averageScores}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="topic" tickLine={false} tickMargin={10} axisLine={false} />
                         <YAxis unit="%" />
-                        <Tooltip 
+                        <ChartTooltip 
+                          cursor={false}
                           content={<ChartTooltipContent 
                             nameKey="topic"
                             formatter={(value, name) => [`${(value as number).toFixed(2)}%`, name]}
                           />}
                         />
-                        <Bar dataKey="averageScore" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="averageScore" fill="var(--color-averageScore)" radius={4} />
                       </BarChart>
-                    </ResponsiveContainer>
+                    </ChartContainer>
                   ) : <p className="text-muted-foreground text-center py-10">Take some quizzes to see your topic scores.</p>}
                  </CardContent>
                </Card>
@@ -151,20 +163,21 @@ export default function DashboardPage() {
                  </CardHeader>
                  <CardContent>
                     {scoreTrend.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={scoreTrend}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
+                      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                        <LineChart accessibilityLayer data={scoreTrend}>
+                          <CartesianGrid vertical={false} />
+                          <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
                           <YAxis unit="%" domain={[0,100]} />
-                          <Tooltip 
+                          <ChartTooltip 
+                            cursor={false}
                             content={<ChartTooltipContent 
                               indicator="dot"
                               formatter={(value, name, props) => [`${props.payload.topic}: ${(value as number).toFixed(2)}%`, null]}
                             />}
                            />
-                          <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} />
+                          <Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} />
                         </LineChart>
-                      </ResponsiveContainer>
+                      </ChartContainer>
                     ) : <p className="text-muted-foreground text-center py-10">Your score trend will appear here.</p>}
                  </CardContent>
                </Card>
