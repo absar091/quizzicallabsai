@@ -731,10 +731,12 @@ export default function GenerateQuizPage() {
       />
 
       <div className="max-w-2xl mx-auto">
-        <Card className="bg-card/80 backdrop-blur-sm">
+        <Card className="bg-card/80 backdrop-blur-sm overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              {renderStep()}
+              <div className="transition-all duration-500">
+                {renderStep()}
+              </div>
               <CardFooter className="pt-6 border-t flex justify-between">
                 {step > 1 && (
                   <Button type="button" variant="outline" onClick={prevStep}>
@@ -743,13 +745,13 @@ export default function GenerateQuizPage() {
                   </Button>
                 )}
                 {step < 3 && (
-                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full' : ''}>
+                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full ml-auto' : ''}>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 )}
                 {step === 3 && (
-                  <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
+                  <Button type="submit" size="lg" className="w-full text-lg ml-auto" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -771,3 +773,5 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
+
+    
