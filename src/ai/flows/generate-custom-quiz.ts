@@ -26,8 +26,8 @@ const GenerateCustomQuizInputSchema = z.object({
   questionTypes: z.array(z.string()).describe('The types of questions to include (e.g., Multiple Choice, Fill in the Blank).'),
   questionStyles: z.array(z.string()).describe('The style of questions (e.g. Conceptual, Numerical, etc).'),
   timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
-  userAge: z.number().optional().describe("The age of the user taking the quiz."),
-  userClass: z.string().optional().describe("The grade/class of the user taking the quiz."),
+  userAge: z.number().optional().nullable().describe("The age of the user taking the quiz."),
+  userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz."),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
