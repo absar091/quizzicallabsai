@@ -376,6 +376,8 @@ export default function GenerateQuizPage() {
         let errorMessage = "An unknown error occurred.";
         if (error.message.includes("503") || error.message.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
+        } else if (error.message) {
+            errorMessage = error.message;
         }
       toast({
         title: "Error Generating Quiz",
