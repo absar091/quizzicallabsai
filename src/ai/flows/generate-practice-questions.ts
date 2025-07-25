@@ -26,7 +26,8 @@ const GeneratePracticeQuestionsOutputSchema = z.object({
     z.object({
       question: z.string().describe('The practice question.'),
       answer: z.string().describe('The answer to the practice question.'),
-      options: z.array(z.string()).optional().describe('Multiple choice options, if applicable.')
+      options: z.array(z.string()).optional().describe('Multiple choice options, if applicable.'),
+      explanation: z.string().describe('A detailed explanation of why the answer is correct.')
     })
   ).describe('An array of generated practice questions and their answers.')
 });
@@ -63,7 +64,9 @@ const prompt = ai.definePrompt({
   The question type should be {{{questionType}}}.
   {{/if}}
 
-  Format the output as a JSON array of questions, where each question has a "question" field and an "answer" field.
+  For each question, provide a detailed explanation of why the answer is correct.
+
+  Format the output as a JSON array of questions, where each question has a "question" field, an "answer" field, and an "explanation" field.
   If the question type is multiple choice, include an "options" field with an array of options.
   `,
 });
