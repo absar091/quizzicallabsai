@@ -419,7 +419,7 @@ export default function GenerateQuizPage() {
     return (
       <div className="flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
-          <Card className="bg-card/80 backdrop-blur-sm shadow-2xl">
+          <Card className="shadow-2xl">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold uppercase tracking-widest">{form.getValues("topic")}</h2>
@@ -488,7 +488,7 @@ export default function GenerateQuizPage() {
     return (
        <div className="max-w-4xl mx-auto p-4 md:p-8">
             <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                 <CardHeader>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                          <CardTitle>Result Details</CardTitle>
@@ -789,14 +789,14 @@ export default function GenerateQuizPage() {
   ];
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <PageHeader
         title={stepTitles[step - 1].title}
         description={stepTitles[step - 1].description}
       />
 
-      <div className="max-w-2xl mx-auto">
-        <Card className="overflow-hidden bg-card/80 backdrop-blur-sm">
+      <div className="max-w-2xl w-full">
+        <Card className="overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="transition-all duration-500">
