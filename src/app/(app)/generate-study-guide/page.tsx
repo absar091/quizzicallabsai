@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download } from "lucide-react";
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -219,17 +221,17 @@ export default function GenerateStudyGuidePage() {
         <div className="max-w-4xl mx-auto mt-12">
             <Card className="bg-card/80 backdrop-blur-sm">
                 <CardHeader className="text-center border-b pb-6">
-                    <div className="flex justify-center items-start">
-                         <div className="flex-1 text-center">
-                            <BookOpen className="mx-auto h-12 w-12 text-primary mb-4" />
-                            <CardTitle className="text-3xl">{studyGuide.title}</CardTitle>
-                            <CardDescription>{studyGuide.summary}</CardDescription>
-                         </div>
-                         <Button variant="outline" size="sm" onClick={downloadStudyGuide} className="ml-4">
-                            <Download className="h-4 w-4 mr-2"/>
-                            Download
-                         </Button>
-                    </div>
+                     <div className="flex flex-col items-center text-center">
+                        <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
+                            <BookOpen className="h-12 w-12 text-primary" />
+                            <Button variant="outline" size="sm" onClick={downloadStudyGuide} className="w-full md:w-auto">
+                                <Download className="h-4 w-4 mr-2"/>
+                                Download
+                            </Button>
+                        </div>
+                        <CardTitle className="text-3xl mt-4">{studyGuide.title}</CardTitle>
+                        <CardDescription className="mt-2">{studyGuide.summary}</CardDescription>
+                     </div>
                 </CardHeader>
                 <CardContent className="space-y-8 pt-6">
                     <div>
