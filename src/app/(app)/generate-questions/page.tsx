@@ -25,7 +25,6 @@ import { generatePracticeQuestions, GeneratePracticeQuestionsOutput } from "@/ai
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
   topic: z.string().min(1, "Topic is required."),
