@@ -8,6 +8,7 @@ import * as z from "zod";
 import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download } from "lucide-react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import type { Metadata } from "next";
 
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,11 @@ import { useToast } from "@/hooks/use-toast";
 import { generateStudyGuide, GenerateStudyGuideOutput } from "@/ai/flows/generate-study-guide";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+export const metadata: Metadata = {
+    title: "AI Study Guide Generator",
+    description: "Enter any topic and instantly get a comprehensive, AI-generated study guide. Includes key concepts, simple analogies, and a self-quiz to boost your learning.",
+};
 
 
 const formSchema = z.object({

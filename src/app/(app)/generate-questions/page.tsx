@@ -25,6 +25,12 @@ import { generatePracticeQuestions, GeneratePracticeQuestionsOutput } from "@/ai
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "AI Practice Question Generator",
+    description: "Instantly generate practice questions for any subject and topic. Choose difficulty, question type, and number of questions to create the perfect study set.",
+};
 
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
@@ -150,7 +156,7 @@ export default function GenerateQuestionsPage() {
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a question type" />
-                            </SelectTrigger>
+                            </Trigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="multiple choice">Multiple Choice</SelectItem>

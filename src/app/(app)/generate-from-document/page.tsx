@@ -22,6 +22,13 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
 import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Quiz from Document",
+    description: "Upload your study materials like PDF or DOCX files and instantly generate a quiz based on their content. A powerful study tool to test your knowledge.",
+};
+
 
 const formSchema = z.object({
   document: z.any().refine((files) => files?.length == 1, "Please upload a document."),

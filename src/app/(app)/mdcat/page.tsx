@@ -4,6 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "MDCAT Preparation",
+    description: "Prepare for the MDCAT with specialized subject-wise tests in Biology, Chemistry, Physics, English, and Logical Reasoning, plus full-length mock tests.",
+};
 
 const subjects = [
     { name: 'Biology', href: '/mdcat/biology' },

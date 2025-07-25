@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy } from "lucide-react";
 import jsPDF from 'jspdf';
+import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +34,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Clock } from "lucide-react";
-
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
