@@ -51,9 +51,12 @@ export function Footer() {
                     </div>
                 </div>
                  <div className="mt-12 border-t pt-8 text-center space-y-4">
-                    <div className="flex items-center justify-center gap-2 text-sm text-amber-600 dark:text-amber-400">
-                        <AlertTriangle className="h-4 w-4" />
-                        <p>Disclaimer: This is a beta project. Features may change and errors may occur.</p>
+                    <div className="flex flex-col items-center justify-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+                        <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4" />
+                             <p>This is a beta project. Features may change and errors may occur.</p>
+                        </div>
+                         <p className="text-xs text-muted-foreground max-w-2xl">This application is an AI-powered study tool intended to assist with your learning. While we strive to provide accurate and helpful content, we do not guarantee success in any exam. We strongly recommend consulting with your teachers and educational professionals as part of your study plan.</p>
                     </div>
                     <p className="text-sm text-muted-foreground">&copy; {currentYear} Quizzicallabs™. All Rights Reserved.</p>
                 </div>
