@@ -86,7 +86,7 @@ export default function Home() {
               <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
                 Master Any Subject, <span className="text-primary">Instantly.</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl">
+              <p className="text-lg text-foreground/80 max-w-2xl">
                 Welcome to Quizzicallabs™, the ultimate study tool. Generate, take, and share personalized quizzes to conquer your exams with the power of AI.
               </p>
               <div className="flex gap-4">
