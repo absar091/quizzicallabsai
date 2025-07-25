@@ -56,7 +56,9 @@ const prompt = ai.definePrompt({
 
   **Instructions:**
   1.  **Topic:** The quiz must be strictly about '{{{topic}}}'. Do not deviate from this topic.
-  2.  **Target Audience:** The user is {{#if userAge}}{{userAge}} years old{{/if}}{{#if userClass}} and is in class/grade '{{userClass}}'{{/if}}. Tailor the complexity and wording of the questions to be appropriate for this level.
+  2.  **Target Audience:** Tailor the complexity and wording of the questions to be appropriate for the following user. If no details are provided, generate a general quiz for a high school level.
+      {{#if userAge}}*   **Age:** {{userAge}} years old{{/if}}
+      {{#if userClass}}*   **Class/Grade:** '{{userClass}}'{{/if}}
   3.  **Difficulty & Quality:** The questions must match the specified difficulty level: '{{{difficulty}}}'.
         *   **Easy:** Basic recall of facts and definitions.
         *   **Medium:** Requires some application of concepts.
