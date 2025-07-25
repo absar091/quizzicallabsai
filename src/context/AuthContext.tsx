@@ -3,7 +3,7 @@
 
 import type { ReactNode } from "react";
 import { createContext, useState, useMemo, useEffect } from "react";
-import { onAuthStateChanged, signOut as firebaseSignOut, type User as FirebaseUser } from "firebase/auth";
+import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +19,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   logout: () => void;
+  deleteAccount: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,14 +64,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
   
+  const deleteAccount = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await deleteUser(currentUser);
+      setUser(null);
+    } else {
+        throw new Error("No user is currently signed in.");
+    }
+  }
+  
   const value = useMemo(
     () => ({
       user,
       loading,
       logout,
+      deleteAccount
     }),
     [user, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
+    
