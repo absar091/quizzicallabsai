@@ -5,7 +5,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,6 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Clock } from "lucide-react";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -80,14 +80,16 @@ export default function GenerateQuizPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -107,12 +109,14 @@ export default function GenerateQuizPage() {
     const savedState = sessionStorage.getItem("quizState");
     if (savedState) {
         const { quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions } = JSON.parse(savedState);
-        setQuiz(quiz);
-        setCurrentQuestion(currentQuestion);
-        setUserAnswers(userAnswers);
-        setTimeLeft(timeLeft);
-        setBookmarkedQuestions(bookmarkedQuestions || []);
-        form.reset(formValues);
+        if(quiz) {
+            setQuiz(quiz);
+            setCurrentQuestion(currentQuestion);
+            setUserAnswers(userAnswers);
+            setTimeLeft(timeLeft);
+            setBookmarkedQuestions(bookmarkedQuestions || []);
+            form.reset(formValues);
+        }
     }
      const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
     if (storedBookmarks) {
@@ -121,7 +125,7 @@ export default function GenerateQuizPage() {
   }, [form]);
 
   useEffect(() => {
-    if (quiz) {
+    if (quiz && !showResults) {
       const quizState = {
         quiz,
         currentQuestion,
@@ -131,11 +135,10 @@ export default function GenerateQuizPage() {
         bookmarkedQuestions,
       };
       sessionStorage.setItem("quizState", JSON.stringify(quizState));
-    } else {
+    } else if(showResults) {
         sessionStorage.removeItem("quizState");
     }
-  }, [quiz, currentQuestion, userAnswers, timeLeft, form, bookmarkedQuestions]);
-  
+  }, [quiz, currentQuestion, userAnswers, timeLeft, form, bookmarkedQuestions, showResults]);
 
   useEffect(() => {
     if (quiz && !showResults && timeLeft > 0) {
@@ -157,18 +160,13 @@ export default function GenerateQuizPage() {
     const newAnswers = [...userAnswers];
     newAnswers[currentQuestion] = answer;
     setUserAnswers(newAnswers);
+    setTimeout(() => handleNext(1), 300);
   };
   
-  const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
-  };
-
-
-  const handleNext = () => {
+  const handleNext = (newDirection: number) => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+        setDirection(newDirection);
+        setCurrentQuestion(currentQuestion + 1);
     } else {
         handleSubmit();
     }
@@ -176,7 +174,6 @@ export default function GenerateQuizPage() {
 
   const handleSubmit = useCallback(() => {
     setShowResults(true);
-    window.scrollTo(0, 0);
     const { score, percentage } = calculateScore();
     if(quiz) {
         const newResult = {
@@ -189,8 +186,8 @@ export default function GenerateQuizPage() {
         const existingResults = JSON.parse(sessionStorage.getItem("quizResults") || "[]");
         sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
     }
-  }, [quiz, userAnswers, form, calculateScore]);
-
+    window.scrollTo(0, 0);
+  }, [quiz, userAnswers, form]);
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0 };
@@ -212,7 +209,7 @@ export default function GenerateQuizPage() {
     try {
       const result = await generateExplanationsForIncorrectAnswers({
         question: question.question,
-        studentAnswer: userAnswers[questionIndex],
+        studentAnswer: userAnswers[questionIndex] || "",
         correctAnswer: question.correctAnswer,
         topic: form.getValues("topic"),
       });
@@ -265,7 +262,6 @@ export default function GenerateQuizPage() {
     }
   }
 
-
   const downloadQuestions = () => {
     if (!quiz) return;
     const doc = new jsPDF();
@@ -309,6 +305,7 @@ export default function GenerateQuizPage() {
   };
 
   const downloadResultCard = () => {
+    if (!quiz) return;
     const { score, percentage } = calculateScore();
     const doc = new jsPDF();
     
@@ -342,7 +339,6 @@ export default function GenerateQuizPage() {
     sessionStorage.setItem("bookmarkedQuestions", JSON.stringify(updatedBookmarks));
   };
 
-
   const resetQuiz = () => {
     setQuiz(null);
     setCurrentQuestion(0);
@@ -357,6 +353,19 @@ export default function GenerateQuizPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
+    setGenerationProgress(0);
+    
+    // Simulate loading
+    const interval = setInterval(() => {
+        setGenerationProgress(prev => {
+            if (prev >= 95) {
+                clearInterval(interval);
+                return prev;
+            }
+            return prev + 5;
+        })
+    }, 500);
+
     setQuiz(null);
     setCurrentQuestion(0);
     setUserAnswers([]);
@@ -369,11 +378,20 @@ export default function GenerateQuizPage() {
         userAge: user?.age,
         userClass: user?.className,
       });
-      setQuiz(result.quiz);
-      setUserAnswers(new Array(result.quiz.length).fill(""));
-      setTimeLeft(values.timeLimit * 60);
-      window.scrollTo(0, 0);
+      clearInterval(interval);
+      setGenerationProgress(100);
+
+      setTimeout(() => {
+        setQuiz(result.quiz);
+        setUserAnswers(new Array(result.quiz.length).fill(null));
+        setTimeLeft(values.timeLimit * 60);
+        setIsGenerating(false);
+        window.scrollTo(0, 0);
+      }, 500)
+
     } catch (error: any) {
+        clearInterval(interval);
+        setIsGenerating(false);
         let errorMessage = "An unknown error occurred.";
         if (error.message.includes("503") || error.message.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
@@ -386,8 +404,6 @@ export default function GenerateQuizPage() {
         variant: "destructive",
       });
       console.error(error);
-    } finally {
-      setIsGenerating(false);
     }
   }
 
@@ -409,75 +425,103 @@ export default function GenerateQuizPage() {
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
         <h2 className="text-2xl font-semibold mb-2">Generating Your Quiz...</h2>
-        <p className="text-muted-foreground max-w-sm">Please wait while our AI crafts the perfect quiz for you.</p>
+        <p className="text-muted-foreground max-w-sm mb-6">Please wait while our AI crafts the perfect quiz for you.</p>
+        <div className="w-full max-w-sm">
+           <Progress value={generationProgress} />
+           <p className="text-sm mt-2 text-primary font-medium">{generationProgress}%</p>
+        </div>
       </div>
     );
   }
+  
+  const cardVariants = {
+    enter: (direction: number) => {
+        return {
+        x: direction > 0 ? 1000 : -1000,
+        opacity: 0,
+        };
+    },
+    center: {
+        zIndex: 1,
+        x: 0,
+        opacity: 1,
+    },
+    exit: (direction: number) => {
+        return {
+        zIndex: 0,
+        x: direction < 0 ? 1000 : -1000,
+        opacity: 0,
+        };
+    },
+  };
 
   if (quiz && !showResults) {
     const currentQ = quiz[currentQuestion];
-    const progress = ((currentQuestion + 1) / quiz.length) * 100;
+    const progress = ((currentQuestion) / quiz.length) * 100;
     const isBookmarked = bookmarkedQuestions.some(bm => bm.question === currentQ.question);
 
     return (
-      <div className="w-full max-w-2xl mx-auto p-4">
-        <Card className="shadow-2xl">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex justify-between items-center mb-4 gap-4">
+      <div className="flex flex-col items-center p-4 overflow-x-hidden">
+         <div className="w-full max-w-2xl mx-auto mb-4">
+            <div className="flex justify-between items-center mb-2 gap-4">
                 <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{form.getValues("topic")}</h2>
                 <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
                   <Clock className="h-4 w-4" />
                   <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
-              </div>
-
-              <Progress value={progress} className="mb-4 h-2" />
-
-              <div className="flex justify-between items-center mb-8 text-sm text-muted-foreground">
+            </div>
+            <Progress value={progress} className="h-2" />
+             <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
+                <p>Question {currentQuestion + 1} of {quiz.length}</p>
                 <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
                   <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
                   Bookmark
                 </Button>
-                <span>Question {currentQuestion + 1} of {quiz.length}</span>
               </div>
+         </div>
 
-              <p className="text-center text-lg sm:text-xl font-semibold mb-8 min-h-[60px] leading-relaxed">
-                {currentQ.question}
-              </p>
-
-              <div className="space-y-4 mb-8">
-                {currentQ.answers.map((answer, index) => {
-                  const letter = String.fromCharCode(65 + index); // A, B, C, D
-                  const isSelected = userAnswers[currentQuestion] === answer;
-                  return (
-                    <Button
-                      key={index}
-                      variant={isSelected ? "default" : "outline"}
-                      className="w-full justify-start h-auto min-h-[48px] py-3 text-base whitespace-normal text-left leading-snug"
-                      onClick={() => handleAnswer(answer)}
-                    >
-                      <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
-                        {letter}
-                      </div>
-                      <span className="flex-1 text-left">{answer}</span>
-                    </Button>
-                  )
-                })}
-              </div>
-
-              <div className="flex justify-between">
-                 <Button size="lg" onClick={handleBack} disabled={currentQuestion === 0} variant="outline">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                </Button>
-                <Button size="lg" onClick={handleNext}>
-                  {currentQuestion === quiz.length - 1 ? "Finish Quiz" : "Next Question"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-
-            </CardContent>
-          </Card>
+        <div className="relative w-full max-w-2xl h-[65vh] flex items-center justify-center">
+            <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                    key={currentQuestion}
+                    custom={direction}
+                    variants={cardVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 },
+                    }}
+                    className="absolute w-full h-full"
+                >
+                    <Card className="w-full h-full flex flex-col justify-between shadow-2xl p-4 sm:p-6">
+                        <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
+                            {currentQ.question}
+                        </p>
+                        <div className="space-y-3">
+                            {currentQ.answers.map((answer, index) => {
+                            const letter = String.fromCharCode(65 + index);
+                            return (
+                                <Button
+                                key={index}
+                                variant={userAnswers[currentQuestion] === answer ? "default" : "outline"}
+                                className="w-full justify-start h-auto min-h-[48px] py-3 text-base whitespace-normal text-left leading-snug"
+                                onClick={() => handleAnswer(answer)}
+                                >
+                                <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", userAnswers[currentQuestion] === answer ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
+                                    {letter}
+                                </div>
+                                <span className="flex-1 text-left">{answer}</span>
+                                </Button>
+                            )
+                            })}
+                        </div>
+                        <div></div>
+                    </Card>
+                </motion.div>
+            </AnimatePresence>
+        </div>
       </div>
     );
   }
@@ -501,17 +545,17 @@ export default function GenerateQuizPage() {
                 </CardHeader>
                 <CardContent className="pt-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
-                        <Card>
-                            <CardHeader><CardTitle>Marks Obtained</CardTitle></CardHeader>
-                            <CardContent><p className="text-3xl font-bold">{score}/{quiz.length}</p></CardContent>
+                        <Card className="pt-6 bg-muted/50">
+                            <CardTitle className="text-4xl font-bold">{score}/{quiz.length}</CardTitle>
+                            <CardDescription>Score</CardDescription>
                         </Card>
-                         <Card>
-                            <CardHeader><CardTitle>Percentage</CardTitle></CardHeader>
-                            <CardContent><p className="text-3xl font-bold">{percentage.toFixed(2)}%</p></CardContent>
+                         <Card className="pt-6 bg-muted/50">
+                            <CardTitle className="text-4xl font-bold">{percentage.toFixed(0)}%</CardTitle>
+                             <CardDescription>Percentage</CardDescription>
                         </Card>
-                         <Card>
-                            <CardHeader><CardTitle>Status</CardTitle></CardHeader>
-                            <CardContent><p className={cn("text-3xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</p></CardContent>
+                         <Card className="pt-6 bg-muted/50">
+                            <CardTitle className={cn("text-4xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
+                             <CardDescription>Status</CardDescription>
                         </Card>
                     </div>
 
@@ -522,12 +566,22 @@ export default function GenerateQuizPage() {
                                 {incorrectAnswers.map((q, index) => {
                                     const originalIndex = quiz.findIndex(originalQ => originalQ.question === q.question);
                                     const explanationState = explanations[originalIndex];
+                                    const isCorrect = q.correctAnswer === q.userAnswer;
+                                    
                                     return (
                                         <Card key={index} className="bg-muted/30">
                                             <CardContent className="p-4 sm:p-6">
                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
-                                                <p className="text-sm text-destructive mt-2">Your answer: {q.userAnswer || "Skipped"}</p>
-                                                <p className="text-sm text-primary">Correct answer: {q.correctAnswer}</p>
+                                                <div className="text-sm mt-2 space-y-1">
+                                                     <p className="text-destructive flex items-center gap-2">
+                                                        <XCircle className="h-4 w-4 shrink-0" />
+                                                        Your answer: {q.userAnswer || "Skipped"}
+                                                     </p>
+                                                     <p className="text-primary flex items-center gap-2">
+                                                        <CheckCircle className="h-4 w-4 shrink-0" />
+                                                        Correct answer: {q.correctAnswer}
+                                                     </p>
+                                                </div>
                                                 
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
@@ -540,7 +594,7 @@ export default function GenerateQuizPage() {
                                                          <Alert className="border-purple-500/50 text-purple-900 dark:text-purple-200 bg-purple-500/10">
                                                             <AlertTitle className="text-purple-600 dark:text-purple-300 flex items-center gap-2"><Lightbulb className="h-4 w-4" /> Simple Explanation</AlertTitle>
                                                             <AlertDescription>{explanationState.simpleExplanation}</AlertDescription>
-                                                        </Alert>
+                                                         </Alert>
                                                     )}
                                                 </div>
 
@@ -810,13 +864,12 @@ export default function GenerateQuizPage() {
                     Back
                   </Button>
                 ) : <div />}
-                {step < 3 && (
-                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full' : ''}>
+                {step < 3 ? (
+                  <Button type="button" onClick={nextStep} className={cn(step === 1 && 'w-full')}>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                )}
-                {step === 3 && (
+                ) : (
                   <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
                     {isGenerating ? (
                       <>

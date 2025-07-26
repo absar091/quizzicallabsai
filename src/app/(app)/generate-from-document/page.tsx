@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, UploadCloud, ArrowLeft } from "lucide-react";
+import { Loader2, UploadCloud, ArrowLeft, CheckCircle, XCircle, FileQuestion } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
@@ -59,7 +60,7 @@ export default function GenerateFromDocumentPage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
-        const result: GenerateQuizFromDocumentOutput = await generateQuizFromDocument({
+        const result = await generateQuizFromDocument({
           documentDataUri: dataUri,
           quizLength: values.quizLength,
         });
@@ -86,11 +87,12 @@ export default function GenerateFromDocumentPage() {
     setUserAnswers(newAnswers);
   };
 
-  const calculateScore = () => {
+  const calculateScore = useCallback(() => {
     return quiz?.reduce((score, question, index) => {
       return score + (question.correctAnswerIndex === userAnswers[index] ? 1 : 0);
     }, 0) ?? 0;
-  }
+  }, [quiz, userAnswers]);
+
 
   const resetQuiz = () => {
     setQuiz(null);
@@ -103,20 +105,43 @@ export default function GenerateFromDocumentPage() {
   if (showResults && quiz) {
      const score = calculateScore();
      const total = quiz.length;
+     const percentage = (score / total) * 100;
       return (
        <div className="max-w-3xl mx-auto">
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
         <Card>
-          <CardContent className="pt-6 space-y-4">
-            {quiz.map((q, i) => (
-              <div key={i} className={cn("p-4 border rounded-lg", userAnswers[i] === q.correctAnswerIndex ? "border-primary bg-primary/10" : "border-destructive bg-destructive/10")}>
-                <p className="font-semibold">{i + 1}. {q.question}</p>
-                 <div className="mt-2 text-sm space-y-1">
-                   <p className={cn(userAnswers[i] === q.correctAnswerIndex ? 'text-primary' : 'text-destructive')}>Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}</p>
-                   {userAnswers[i] !== q.correctAnswerIndex && <p className="text-primary">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+            <CardHeader>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <Card className="pt-6 bg-muted/50">
+                        <CardTitle className="text-4xl font-bold">{score}/{total}</CardTitle>
+                        <CardDescription>Score</CardDescription>
+                    </Card>
+                     <Card className="pt-6 bg-muted/50">
+                        <CardTitle className="text-4xl font-bold">{percentage.toFixed(0)}%</CardTitle>
+                        <CardDescription>Percentage</CardDescription>
+                    </Card>
+                     <Card className="pt-6 bg-muted/50">
+                        <CardTitle className={cn("text-4xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
+                        <CardDescription>Status</CardDescription>
+                    </Card>
                 </div>
-              </div>
-            ))}
+            </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            {quiz.map((q, i) => {
+                const isCorrect = userAnswers[i] === q.correctAnswerIndex;
+                return (
+                 <div key={i} className={cn("p-4 border rounded-lg", isCorrect ? "border-primary bg-primary/10" : "border-destructive bg-destructive/10")}>
+                    <p className="font-semibold">{i + 1}. {q.question}</p>
+                    <div className="mt-2 text-sm space-y-1">
+                        <p className={cn("flex items-center gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
+                            {isCorrect ? <CheckCircle className="h-4 w-4"/> : <XCircle className="h-4 w-4"/>}
+                            Your answer: {userAnswers[i] !== null ? q.answers[userAnswers[i] as number] : "Not answered"}
+                        </p>
+                       {!isCorrect && <p className="text-primary ml-6">Correct answer: {q.answers[q.correctAnswerIndex]}</p>}
+                    </div>
+                </div>
+                )
+            })}
           </CardContent>
            <CardFooter>
             <Button onClick={resetQuiz} className="mt-4">
@@ -134,6 +159,7 @@ export default function GenerateFromDocumentPage() {
         <div className="flex flex-col items-center justify-center h-[60vh]">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
             <p className="text-xl text-muted-foreground">Generating quiz from your document...</p>
+            <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
         </div>
     )
   }
@@ -146,12 +172,12 @@ export default function GenerateFromDocumentPage() {
                 <CardContent className="pt-6 space-y-6">
                     {quiz.map((q, qIndex) => (
                         <div key={qIndex}>
-                            <p className="font-semibold">{qIndex + 1}. {q.question}</p>
-                            <div className="mt-2 space-y-2">
+                            <p className="font-semibold text-lg">{qIndex + 1}. {q.question}</p>
+                            <div className="mt-4 space-y-3">
                                 {q.answers.map((ans, ansIndex) => (
-                                    <div key={ansIndex} className="flex items-center p-3 rounded-md border has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
-                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-3 accent-primary" />
-                                        <label htmlFor={`q${qIndex}a${ansIndex}`} className="flex-1 cursor-pointer">{ans}</label>
+                                    <div key={ansIndex} className="flex items-center p-4 rounded-md border has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-200">
+                                        <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-3 h-4 w-4 accent-primary" />
+                                        <label htmlFor={`q${qIndex}a${ansIndex}`} className="flex-1 cursor-pointer text-base">{ans}</label>
                                     </div>
                                 ))}
                             </div>
@@ -168,7 +194,7 @@ export default function GenerateFromDocumentPage() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Quiz from Document"
         description="Upload your study materials (PDF, DOCX) to create a quiz."
@@ -239,6 +265,6 @@ export default function GenerateFromDocumentPage() {
             </CardContent>
           </Card>
       </div>
-    </div>
+    </>
   );
 }
