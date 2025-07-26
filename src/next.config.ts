@@ -4,9 +4,6 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
-  experimental: {
-    unstable_searchParamsBailout: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
