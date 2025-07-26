@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy } from "lucide-react";
 import jsPDF from 'jspdf';
-import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -177,6 +176,7 @@ export default function GenerateQuizPage() {
 
   const handleSubmit = useCallback(() => {
     setShowResults(true);
+    window.scrollTo(0, 0);
     const { score, percentage } = calculateScore();
     if(quiz) {
         const newResult = {
@@ -189,8 +189,7 @@ export default function GenerateQuizPage() {
         const existingResults = JSON.parse(sessionStorage.getItem("quizResults") || "[]");
         sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
     }
-
-  }, [quiz, userAnswers, form]);
+  }, [quiz, userAnswers, form, calculateScore]);
 
 
   const calculateScore = useCallback(() => {
@@ -353,6 +352,7 @@ export default function GenerateQuizPage() {
     setStep(1);
     sessionStorage.removeItem("quizState");
     form.reset();
+    window.scrollTo(0, 0);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -372,6 +372,7 @@ export default function GenerateQuizPage() {
       setQuiz(result.quiz);
       setUserAnswers(new Array(result.quiz.length).fill(""));
       setTimeLeft(values.timeLimit * 60);
+      window.scrollTo(0, 0);
     } catch (error: any) {
         let errorMessage = "An unknown error occurred.";
         if (error.message.includes("503") || error.message.includes("overloaded")) {
@@ -405,10 +406,10 @@ export default function GenerateQuizPage() {
 
   if (isGenerating) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center">
+      <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
         <h2 className="text-2xl font-semibold mb-2">Generating Your Quiz...</h2>
-        <p className="text-muted-foreground">Please wait while our AI crafts the perfect quiz for you.</p>
+        <p className="text-muted-foreground max-w-sm">Please wait while our AI crafts the perfect quiz for you.</p>
       </div>
     );
   }
@@ -419,13 +420,12 @@ export default function GenerateQuizPage() {
     const isBookmarked = bookmarkedQuestions.some(bm => bm.question === currentQ.question);
 
     return (
-      <div className="flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl">
-          <Card className="shadow-2xl">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold uppercase tracking-widest">{form.getValues("topic")}</h2>
-                <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+      <div className="w-full max-w-2xl mx-auto p-4">
+        <Card className="shadow-2xl">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-4 gap-4">
+                <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{form.getValues("topic")}</h2>
+                <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
                   <Clock className="h-4 w-4" />
                   <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
@@ -441,7 +441,7 @@ export default function GenerateQuizPage() {
                 <span>Question {currentQuestion + 1} of {quiz.length}</span>
               </div>
 
-              <p className="text-center text-xl font-semibold mb-8 min-h-[60px] leading-relaxed">
+              <p className="text-center text-lg sm:text-xl font-semibold mb-8 min-h-[60px] leading-relaxed">
                 {currentQ.question}
               </p>
 
@@ -453,7 +453,7 @@ export default function GenerateQuizPage() {
                     <Button
                       key={index}
                       variant={isSelected ? "default" : "outline"}
-                      className="w-full justify-start h-auto py-3 text-base whitespace-normal text-left leading-snug"
+                      className="w-full justify-start h-auto min-h-[48px] py-3 text-base whitespace-normal text-left leading-snug"
                       onClick={() => handleAnswer(answer)}
                     >
                       <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", isSelected ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
@@ -478,7 +478,6 @@ export default function GenerateQuizPage() {
 
             </CardContent>
           </Card>
-        </div>
       </div>
     );
   }
@@ -492,16 +491,16 @@ export default function GenerateQuizPage() {
             <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
             <Card>
                 <CardHeader>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                          <CardTitle>Result Details</CardTitle>
-                         <div className="flex gap-2">
+                         <div className="flex flex-wrap gap-2">
                             <Button variant="outline" onClick={downloadQuestions}><Download className="mr-2 h-4 w-4" /> Questions</Button>
                             <Button onClick={downloadResultCard}><Download className="mr-2 h-4 w-4" /> Result Card</Button>
                          </div>
                     </div>
                 </CardHeader>
                 <CardContent className="pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
                         <Card>
                             <CardHeader><CardTitle>Marks Obtained</CardTitle></CardHeader>
                             <CardContent><p className="text-3xl font-bold">{score}/{quiz.length}</p></CardContent>
@@ -525,7 +524,7 @@ export default function GenerateQuizPage() {
                                     const explanationState = explanations[originalIndex];
                                     return (
                                         <Card key={index} className="bg-muted/30">
-                                            <CardContent className="pt-6">
+                                            <CardContent className="p-4 sm:p-6">
                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
                                                 <p className="text-sm text-destructive mt-2">Your answer: {q.userAnswer || "Skipped"}</p>
                                                 <p className="text-sm text-primary">Correct answer: {q.correctAnswer}</p>
@@ -545,16 +544,16 @@ export default function GenerateQuizPage() {
                                                     )}
                                                 </div>
 
-                                                <div className="flex gap-2 items-center mt-4">
+                                                <div className="flex flex-wrap gap-2 items-center mt-4">
                                                     {!explanationState?.isLoading && !explanationState?.explanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getExplanation(originalIndex)} className="px-0 h-auto">
+                                                         <Button variant="link" size="sm" onClick={() => getExplanation(originalIndex)} className="p-0 h-auto">
                                                             <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
                                                         </Button>
                                                     )}
                                                     {explanationState?.isLoading && <div className="flex items-center text-sm"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
                                                     
                                                      {!explanationState?.isSimpleLoading && !explanationState?.simpleExplanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="px-0 h-auto text-purple-600">
+                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="p-0 h-auto text-purple-600">
                                                             <Lightbulb className="mr-2 h-4 w-4"/> Explain Like I'm 5
                                                         </Button>
                                                     )}
@@ -568,7 +567,7 @@ export default function GenerateQuizPage() {
                         </div>
                     )}
                 </CardContent>
-                 <CardFooter className="flex justify-center gap-2 pt-4 border-t">
+                 <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
                     <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> Take Again</Button>
                     <Button variant="outline" asChild><a href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</a></Button>
                 </CardFooter>
@@ -589,9 +588,9 @@ export default function GenerateQuizPage() {
                 <FormItem className="w-full">
                   <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6" />
+                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-center"/>
                 </FormItem>
               )}
             />
@@ -791,7 +790,7 @@ export default function GenerateQuizPage() {
   ];
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full">
       <PageHeader
         title={stepTitles[step - 1].title}
         description={stepTitles[step - 1].description}
@@ -801,33 +800,33 @@ export default function GenerateQuizPage() {
         <Card className="overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="transition-all duration-500">
+              <div className="transition-all duration-500 p-4 sm:p-0">
                 {renderStep()}
               </div>
-              <CardFooter className="pt-6 border-t flex justify-between">
-                {step > 1 && (
+              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between">
+                {step > 1 ? (
                   <Button type="button" variant="outline" onClick={prevStep}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
                   </Button>
-                )}
+                ) : <div />}
                 {step < 3 && (
-                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full ml-auto' : ''}>
+                  <Button type="button" onClick={nextStep} className={step === 1 ? 'w-full' : ''}>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 )}
                 {step === 3 && (
-                  <Button type="submit" size="lg" className="w-full text-lg ml-auto" disabled={isGenerating}>
+                  <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Crafting Your Quiz...
+                        Crafting Quiz...
                       </>
                     ) : (
                        <>
                           <Sparkles className="mr-2 h-5 w-5" />
-                          Generate Quiz with AI
+                          Generate Quiz
                        </>
                     )}
                   </Button>
