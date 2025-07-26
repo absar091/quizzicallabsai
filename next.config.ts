@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
   experimental: {
-    ppr: true,
     unstable_searchParamsBailout: true,
   },
   typescript: {
