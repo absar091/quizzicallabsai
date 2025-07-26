@@ -13,6 +13,8 @@ import {
   Settings,
   BotMessageSquare,
   BookOpen,
+  User,
+  HelpCircle,
 } from "lucide-react";
 
 import {
@@ -23,46 +25,67 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarMenuBadge,
+  useSidebar,
+  SidebarTrigger,
+  SidebarGroup,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { Separator } from "./ui/separator";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  {
-    href: "/generate-quiz",
-    label: "Custom Quiz",
-    icon: BotMessageSquare,
-  },
-  {
-    href: "/generate-questions",
-    label: "Practice Questions",
-    icon: BookOpen,
-  },
-  {
-    href: "/generate-from-document",
-    label: "Quiz from Document",
-    icon: FileUp,
-  },
-  { href: "/mdcat", label: "MDCAT Prep", icon: GraduationCap },
 ];
+
+const generationTools = [
+    {
+        href: "/generate-quiz",
+        label: "Custom Quiz",
+        icon: BotMessageSquare,
+    },
+    {
+        href: "/generate-questions",
+        label: "Practice Questions",
+        icon: BookOpen,
+    },
+    {
+        href: "/generate-from-document",
+        label: "Quiz from Document",
+        icon: FileUp,
+    },
+    {
+        href: "/generate-study-guide",
+        label: "Study Guide",
+        icon: FileText,
+    },
+];
+
+const examPrep = [
+    { href: "/mdcat", label: "MDCAT Prep", icon: GraduationCap },
+]
 
 export function MainSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { open } = useSidebar();
 
   return (
     <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <BrainCircuit className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-semibold text-primary">Quizzical</span>
-        </div>
-      </SidebarHeader>
       <SidebarContent>
+        <SidebarHeader>
+           <div className="flex items-center gap-2">
+            <SidebarTrigger />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
+              style={{ opacity: open ? 1 : 0, transition: 'opacity 0.3s' }}
+            >
+                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold text-primary"
+             style={{ opacity: open ? 1 : 0, transition: 'opacity 0.3s' }}
+            >Quizzical</span>
+           </div>
+        </SidebarHeader>
+        
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
@@ -79,25 +102,62 @@ export function MainSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
+
+        <Separator className="my-2" />
+
+        <SidebarGroup>
+            <SidebarMenu>
+                 {generationTools.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={pathname === item.href}
+                            tooltip={{ children: item.label }}
+                        >
+                            <Link href={item.href}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+        </SidebarGroup>
+        
+        <Separator className="my-2" />
+
+        <SidebarGroup>
+            <SidebarMenu>
+                 {examPrep.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={pathname.startsWith(item.href)}
+                            tooltip={{ children: item.label }}
+                        >
+                            <Link href={item.href}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+        </SidebarGroup>
+
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === '/profile'}>
+           <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Profile" isActive={pathname === '/profile'}>
                <Link href="/profile">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1662120455989-5a433cec9980?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxRVUlafGVufDB8fHx8MTc1MzM3NjU3M3ww&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
-                  <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col text-left">
-                  <span className="text-sm font-medium">{user?.displayName}</span>
-                  <span className="text-xs text-muted-foreground">{user?.email}</span>
-                </div>
-              </Link>
+                  <User />
+                  <span>Profile</span>
+               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <SidebarMenuButton onClick={logout}>
+            <SidebarMenuButton onClick={logout} tooltip="Logout">
               <LogOut />
               <span>Logout</span>
             </SidebarMenuButton>

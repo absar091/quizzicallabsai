@@ -26,6 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
+import { PageHeader } from "@/components/page-header";
 
 type BookmarkedQuestion = {
   question: string;
@@ -122,18 +123,19 @@ export default function DashboardPage() {
   const dailyGoalProgress = Math.min((recentActivity.length / 5) * 100, 100); // Example: 5 quizzes a day goal
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Welcome back, {user?.displayName}!</h1>
-        <p className="text-muted-foreground">Let's make today a productive day. Seize the moment!</p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader 
+        title={`Welcome back, ${user?.displayName?.split(' ')[0]}!`}
+        description="Let's make today a productive day. Seize the moment!"
+      />
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <div className="lg:col-span-2 space-y-8">
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="flex flex-col justify-between">
+              <Card>
                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Target className="text-primary"/> Daily Goal</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-base"><Target className="text-primary"/> Daily Goal</CardTitle>
                     <CardDescription>Complete 5 quizzes today.</CardDescription>
                  </CardHeader>
                  <CardContent>
@@ -141,49 +143,30 @@ export default function DashboardPage() {
                     <p className="text-sm text-muted-foreground mt-2">{recentActivity.length} of 5 completed</p>
                  </CardContent>
               </Card>
-               <Card className="flex flex-col justify-between">
+               <Card>
                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><PlayCircle className="text-primary"/> Pick up where you left off</CardTitle>
-                    <CardDescription>{lastQuizTopic ? `Last quiz on: ${lastQuizTopic}` : "No recent quizzes."}</CardDescription>
+                    <CardTitle className="flex items-center gap-2 text-base"><PlayCircle className="text-primary"/> Pick up</CardTitle>
+                    <CardDescription>{lastQuizTopic ? `Last quiz: ${lastQuizTopic}` : "No recent quizzes."}</CardDescription>
                  </CardHeader>
                  <CardContent>
-                     <Button asChild variant="outline" disabled={!lastQuizTopic}>
+                     <Button asChild variant="outline" disabled={!lastQuizTopic} size="sm">
                         <Link href="/generate-quiz">Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
                     </Button>
                  </CardContent>
               </Card>
-              <Card className="flex flex-col justify-between">
+              <Card>
                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Zap className="text-primary"/> Quick Start</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-base"><Zap className="text-primary"/> Quick Start</CardTitle>
                     <CardDescription>Start a new quiz in seconds.</CardDescription>
                  </CardHeader>
                  <CardContent>
-                    <Button asChild>
+                    <Button asChild size="sm">
                         <Link href="/generate-quiz">New Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
                     </Button>
                  </CardContent>
               </Card>
            </div>
-            <div>
-             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
-                <Shapes className="h-6 w-6"/> Topic Mastery
-             </h2>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {averageScores.length > 0 ? averageScores.map(item => (
-                <Card key={item.topic}>
-                  <CardContent className="pt-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-semibold">{item.topic}</h3>
-                      <p className="text-sm font-bold text-primary">{item.averageScore.toFixed(0)}%</p>
-                    </div>
-                    <Progress value={item.averageScore} />
-                  </CardContent>
-                </Card>
-              )) : (
-                 <p className="text-muted-foreground text-center py-10 col-span-2">Take some quizzes to see your topic mastery.</p>
-              )}
-             </div>
-           </div>
+           
            <Card>
              <CardHeader>
                <CardTitle>Recent Score Trend</CardTitle>
@@ -209,6 +192,28 @@ export default function DashboardPage() {
                 ) : <p className="text-muted-foreground text-center py-10">Your score trend will appear here.</p>}
              </CardContent>
            </Card>
+           
+           <div>
+             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
+                <Shapes className="h-6 w-6"/> Topic Mastery
+             </h2>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {averageScores.length > 0 ? averageScores.map(item => (
+                <Card key={item.topic}>
+                  <CardContent className="pt-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold">{item.topic}</h3>
+                      <p className="text-sm font-bold text-primary">{item.averageScore.toFixed(0)}%</p>
+                    </div>
+                    <Progress value={item.averageScore} />
+                  </CardContent>
+                </Card>
+              )) : (
+                 <p className="text-muted-foreground text-center py-10 col-span-2">Take some quizzes to see your topic mastery.</p>
+              )}
+             </div>
+           </div>
+
         </div>
 
         <div className="lg:col-span-1 space-y-8">
@@ -219,7 +224,7 @@ export default function DashboardPage() {
             <Card>
               {reviewing && bookmarkedQuestions.length > 0 ? (
                  <CardContent className="pt-6">
-                   <div className="p-4 bg-background rounded-lg">
+                   <div className="p-4 bg-muted rounded-lg">
                      <p className="font-semibold text-lg">{bookmarkedQuestions[currentReviewIndex].question}</p>
                      <p className="text-xs text-muted-foreground mt-1">Topic: {bookmarkedQuestions[currentReviewIndex].topic}</p>
                      
@@ -241,7 +246,7 @@ export default function DashboardPage() {
                      <ScrollArea className="h-[200px] pr-4">
                        <ul className="space-y-4">
                           {bookmarkedQuestions.map((q, index) => (
-                            <li key={index} className="p-4 bg-background rounded-lg">
+                            <li key={index} className="p-4 bg-muted rounded-lg">
                               <div className="flex justify-between items-start">
                                 <div className="flex-1">
                                   <p className="font-semibold pr-4">{q.question}</p>
@@ -258,7 +263,7 @@ export default function DashboardPage() {
                      </ScrollArea>
                   ) : (
                     <div className="text-center py-8">
-                       <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                       <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
                        <p className="text-muted-foreground">You haven't bookmarked any questions yet.</p>
                         <p className="text-xs text-muted-foreground mt-1">Bookmark questions during a quiz to review them later.</p>
                     </div>
@@ -291,7 +296,7 @@ export default function DashboardPage() {
                    <ScrollArea className="h-[250px] pr-4">
                      <ul className="space-y-4">
                         {recentActivity.map((activity, index) => (
-                          <li key={index} className="flex justify-between items-center p-4 bg-background rounded-lg">
+                          <li key={index} className="flex justify-between items-center p-4 bg-muted rounded-lg">
                             <div>
                               <p className="font-semibold">{activity.topic}</p>
                               <p className="text-sm text-muted-foreground">Score: {activity.score}/{activity.total} ({activity.percentage.toFixed(2)}%)</p>

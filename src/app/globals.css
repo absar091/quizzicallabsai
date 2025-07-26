@@ -38,6 +38,15 @@
     --chart-1: 173 80% 40%;
     --chart-2: 215 80% 60%;
 
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 224 71.4% 4.1%;
+    --sidebar-primary: 173 84% 34%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 92.1%;
+    --sidebar-accent-foreground: 224 71.4% 4.1%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 173 84% 34%;
+
   }
  
   .dark {
@@ -71,6 +80,15 @@
 
     --chart-1: 173 70% 50%;
     --chart-2: 215 70% 60%;
+
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 173 75% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 173 75% 45%;
   }
 }
  
@@ -80,10 +98,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #f2f8f7; /* Desaturated teal */
-  }
-
-  .dark body {
-     background-color: hsl(var(--background));
   }
 }

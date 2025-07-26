@@ -4,12 +4,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, BrainCircuit, ArrowRight, AlertTriangle, FileText, BotMessageSquare, BarChart2, BookOpen, CheckCircle } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, BarChart2, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const features = [
@@ -35,24 +34,6 @@ const features = [
   },
 ];
 
-const howToSteps = [
-    {
-        icon: CheckCircle,
-        title: "Create Your Account",
-        description: "Sign up with your email to get started."
-    },
-    {
-        icon: CheckCircle,
-        title: "Generate a Quiz or Guide",
-        description: "Choose a feature, enter your topic, and let the AI do the work."
-    },
-    {
-        icon: CheckCircle,
-        title: "Take the Quiz & Review",
-        description: "Test your knowledge and review your results with AI explanations."
-    }
-]
-
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -63,50 +44,51 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  if (user) {
-    return null; // or a loading spinner, as the redirect is happening
-  }
-
   return (
-    <div className="flex min-h-screen flex-col">
-       <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"></div><div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div>
+    <div className="flex min-h-screen flex-col bg-muted/20">
       <AppHeader />
       <main className="flex-1">
-        <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-16 text-center md:py-24">
-         
+        <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-24 text-center md:py-32">
           <div className="flex flex-col items-center space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                 Master Any Subject, <span className="text-primary">Instantly.</span>
               </h1>
-              <p className="text-lg text-foreground/80 max-w-2xl">
-                Welcome to Quizzicallabs™, the ultimate study tool. Generate, take, and share personalized quizzes to conquer your exams with the power of AI.
+              <p className="max-w-3xl text-muted-foreground md:text-xl">
+                Welcome to Quizzicallabs, the ultimate AI-powered study partner. Generate personalized quizzes, get detailed study guides, and track your progress to conquer any exam.
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <Button size="lg" asChild>
-                  <Link href="/generate-quiz">Create a Quiz <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  <Link href="/signup">Get Started for Free <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
                  <Button size="lg" variant="outline" asChild>
-                  <Link href="/dashboard">View Dashboard</Link>
+                  <Link href="#features">Learn More</Link>
                 </Button>
               </div>
             </div>
         </section>
 
         <section id="features" className="container mx-auto py-16 md:py-24">
-            <h2 className="text-3xl font-bold text-center mb-12">Core Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Why Choose Quizzicallabs?</h2>
+                <p className="max-w-2xl text-muted-foreground mt-4">
+                    Our platform is designed to make learning more efficient and effective. Here’s how we help you succeed.
+                </p>
+            </div>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                 {features.map((feature, index) => (
-                    <Card key={index} className="text-center bg-card/80 backdrop-blur-sm">
+                    <Card key={index} className="text-center transition-all hover:shadow-lg hover:-translate-y-1">
                         <CardHeader>
-                            <feature.icon className="h-12 w-12 mx-auto text-primary mb-4" />
+                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mb-4">
+                                <feature.icon className="h-8 w-8 text-primary" />
+                            </div>
                             <CardTitle>{feature.title}</CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -115,19 +97,6 @@ export default function Home() {
                     </Card>
                 ))}
             </div>
-        </section>
-        
-        <section id="how-to-use" className="container mx-auto py-16 md:py-24 bg-muted/30 rounded-lg">
-             <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {howToSteps.map((step, index) => (
-                     <div key={index} className="flex flex-col items-center text-center">
-                        <step.icon className="h-10 w-10 text-primary mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                        <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                ))}
-             </div>
         </section>
       </main>
       <Footer />

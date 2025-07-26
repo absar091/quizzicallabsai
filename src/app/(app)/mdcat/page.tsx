@@ -1,6 +1,6 @@
 
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 const subjects = [
-    { name: 'Biology', href: '/mdcat/biology' },
-    { name: 'Chemistry', href: '/mdcat/chemistry' },
-    { name: 'Physics', href: '/mdcat/physics' },
-    { name: 'English', href: '/mdcat/english' },
-    { name: 'Logical Reasoning', href: '/mdcat/logical-reasoning' },
+    { name: 'Biology', description: "Comprehensive tests covering all biology topics.", href: '/mdcat/biology' },
+    { name: 'Chemistry', description: "Test your knowledge in organic and inorganic chemistry.", href: '/mdcat/chemistry' },
+    { name: 'Physics', description: "Practice problems from mechanics to modern physics.", href: '/mdcat/physics' },
+    { name: 'English', description: "Improve your grammar, vocabulary, and comprehension skills.", href: '/mdcat/english' },
+    { name: 'Logical Reasoning', description: "Sharpen your critical thinking and problem-solving abilities.", href: '/mdcat/logical-reasoning' },
 ]
 
 export default function MdcatPage() {
@@ -29,11 +29,12 @@ export default function MdcatPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.map(subject => (
-            <Card key={subject.name} className="bg-card/80 backdrop-blur-sm">
+            <Card key={subject.name} className="flex flex-col">
                 <CardHeader>
                     <CardTitle>{subject.name}</CardTitle>
+                    <CardDescription>{subject.description}</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="mt-auto">
                     <Button asChild>
                         <Link href={subject.href}>Start Test <ArrowRight className="ml-2 h-4 w-4" /></Link>
                     </Button>
@@ -43,6 +44,7 @@ export default function MdcatPage() {
         <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-primary text-primary-foreground">
             <CardHeader>
                 <CardTitle>Full-Length Mock Test</CardTitle>
+                <CardDescription className="text-primary-foreground/80">Simulate the real exam experience with our full-length mock test.</CardDescription>
             </CardHeader>
             <CardContent>
                  <Button asChild variant="secondary">

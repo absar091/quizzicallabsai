@@ -175,21 +175,20 @@ export default function GenerateStudyGuidePage() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-4">
                   <FormField
                     control={form.control}
                     name="topic"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Topic</FormLabel>
+                      <FormItem className="flex-1">
                         <FormControl>
-                          <Input placeholder="e.g., The French Revolution, Quantum Mechanics, Machine Learning" {...field} />
+                          <Input placeholder="e.g., The French Revolution, Quantum Mechanics..." {...field} className="h-12" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={isGenerating}>
+                  <Button type="submit" size="lg" className="h-12" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -218,22 +217,19 @@ export default function GenerateStudyGuidePage() {
       {studyGuide && (
         <div className="max-w-4xl mx-auto mt-12">
             <Card>
-                <CardHeader className="text-center border-b pb-6">
-                     <div className="flex flex-col items-center text-center">
-                        <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
-                            <BookOpen className="h-12 w-12 text-primary" />
-                            <Button variant="outline" size="sm" onClick={downloadStudyGuide} className="w-full md:w-auto">
-                                <Download className="h-4 w-4 mr-2"/>
-                                Download
-                            </Button>
-                        </div>
-                        <CardTitle className="text-3xl mt-4">{studyGuide.title}</CardTitle>
+                <CardHeader className="border-b pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                     <div className="flex-1">
+                        <CardTitle className="text-3xl">{studyGuide.title}</CardTitle>
                         <CardDescription className="mt-2">{studyGuide.summary}</CardDescription>
                      </div>
+                     <Button variant="outline" onClick={downloadStudyGuide}>
+                        <Download className="h-4 w-4 mr-2"/>
+                        Download as PDF
+                    </Button>
                 </CardHeader>
                 <CardContent className="space-y-8 pt-6">
                     <div>
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Brain className="h-5 w-5" /> Key Concepts</h3>
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Brain className="h-5 w-5 text-primary" /> Key Concepts</h3>
                          <Accordion type="single" collapsible className="w-full">
                             {studyGuide.keyConcepts.map((item, index) => (
                                <AccordionItem value={`item-${index}`} key={index}>
@@ -251,7 +247,7 @@ export default function GenerateStudyGuidePage() {
                     </div>
 
                     <div>
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Lightbulb className="h-5 w-5" /> Simple Analogies</h3>
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Lightbulb className="h-5 w-5 text-primary" /> Simple Analogies</h3>
                         <div className="space-y-4">
                         {studyGuide.analogies.map((item, index) => (
                              <Card key={index} className="bg-muted/30">
@@ -264,7 +260,7 @@ export default function GenerateStudyGuidePage() {
                         </div>
                     </div>
                      <div>
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><HelpCircle className="h-5 w-5" /> Quiz Yourself</h3>
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><HelpCircle className="h-5 w-5 text-primary" /> Quiz Yourself</h3>
                          <Accordion type="single" collapsible className="w-full">
                             {studyGuide.quizYourself.map((item, index) => (
                                <AccordionItem value={`quiz-${index}`} key={index}>

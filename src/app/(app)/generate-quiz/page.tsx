@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
@@ -462,7 +462,7 @@ export default function GenerateQuizPage() {
 
     return (
       <div className="flex flex-col items-center p-4 overflow-x-hidden">
-         <div className="w-full max-w-2xl mx-auto mb-4">
+         <div className="w-full max-w-3xl mx-auto mb-4">
             <div className="flex justify-between items-center mb-2 gap-4">
                 <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{form.getValues("topic")}</h2>
                 <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
@@ -480,7 +480,7 @@ export default function GenerateQuizPage() {
               </div>
          </div>
 
-        <div className="relative w-full max-w-2xl h-[65vh] flex items-center justify-center">
+        <div className="relative w-full max-w-3xl h-[65vh] flex items-center justify-center">
             <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                     key={currentQuestion}
@@ -499,7 +499,7 @@ export default function GenerateQuizPage() {
                         <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
                             {currentQ.question}
                         </p>
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {currentQ.answers.map((answer, index) => {
                             const letter = String.fromCharCode(65 + index);
                             return (
@@ -531,7 +531,7 @@ export default function GenerateQuizPage() {
     const incorrectAnswers = quiz.map((q, i) => ({ ...q, userAnswer: userAnswers[i] })).filter((q, i) => q.correctAnswer !== userAnswers[i]);
 
     return (
-       <div className="max-w-4xl mx-auto p-4 md:p-8">
+       <div className="max-w-4xl mx-auto">
             <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
             <Card>
                 <CardHeader>
@@ -566,20 +566,19 @@ export default function GenerateQuizPage() {
                                 {incorrectAnswers.map((q, index) => {
                                     const originalIndex = quiz.findIndex(originalQ => originalQ.question === q.question);
                                     const explanationState = explanations[originalIndex];
-                                    const isCorrect = q.correctAnswer === q.userAnswer;
                                     
                                     return (
                                         <Card key={index} className="bg-muted/30">
                                             <CardContent className="p-4 sm:p-6">
                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
                                                 <div className="text-sm mt-2 space-y-1">
-                                                     <p className="text-destructive flex items-center gap-2">
-                                                        <XCircle className="h-4 w-4 shrink-0" />
-                                                        Your answer: {q.userAnswer || "Skipped"}
+                                                     <p className="text-destructive flex items-start gap-2">
+                                                        <XCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                                        <span>Your answer: {q.userAnswer || "Skipped"}</span>
                                                      </p>
-                                                     <p className="text-primary flex items-center gap-2">
-                                                        <CheckCircle className="h-4 w-4 shrink-0" />
-                                                        Correct answer: {q.correctAnswer}
+                                                     <p className="text-primary flex items-start gap-2">
+                                                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                                        <span>Correct answer: {q.correctAnswer}</span>
                                                      </p>
                                                 </div>
                                                 
@@ -604,14 +603,14 @@ export default function GenerateQuizPage() {
                                                             <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
                                                         </Button>
                                                     )}
-                                                    {explanationState?.isLoading && <div className="flex items-center text-sm"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
+                                                    {explanationState?.isLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
                                                     
                                                      {!explanationState?.isSimpleLoading && !explanationState?.simpleExplanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="p-0 h-auto text-purple-600">
+                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="p-0 h-auto text-purple-600 dark:text-purple-400">
                                                             <Lightbulb className="mr-2 h-4 w-4"/> Explain Like I'm 5
                                                         </Button>
                                                     )}
-                                                    {explanationState?.isSimpleLoading && <div className="flex items-center text-sm"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Simplifying...</div>}
+                                                    {explanationState?.isSimpleLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Simplifying...</div>}
                                                 </div>
                                             </CardContent>
                                         </Card>
@@ -854,10 +853,10 @@ export default function GenerateQuizPage() {
         <Card className="overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="transition-all duration-500 p-4 sm:p-0">
+              <div className="transition-all duration-500 p-2 sm:p-6">
                 {renderStep()}
               </div>
-              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between">
+              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
                 {step > 1 ? (
                   <Button type="button" variant="outline" onClick={prevStep}>
                     <ArrowLeft className="mr-2 h-4 w-4" />

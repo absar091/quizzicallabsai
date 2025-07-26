@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     },
   },
   keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform"],
-
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({

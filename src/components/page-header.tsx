@@ -11,14 +11,10 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, children, className }: PageHeaderProps) {
   return (
-    <header className={cn("mb-8 text-center", className)}>
-       <div className="flex flex-col items-center justify-center">
-         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-          {description && <p className="text-foreground/80 mt-2 max-w-prose">{description}</p>}
-         </div>
-        {children}
-      </div>
-    </header>
+    <div className={cn("mb-8", className)}>
+      <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
+      {description && <p className="text-muted-foreground mt-2 max-w-2xl">{description}</p>}
+      {children && <div className="mt-4">{children}</div>}
+    </div>
   );
 }

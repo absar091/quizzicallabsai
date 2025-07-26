@@ -61,7 +61,7 @@ export default function ProfilePage() {
 
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2">
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                 <CardHeader className="border-b">
                     <div className="flex items-center gap-6">
                         {loading ? (
@@ -115,7 +115,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="md:col-span-1">
-            <Card className="bg-card/80 backdrop-blur-sm">
+            <Card>
                  <CardHeader>
                     <CardTitle>Account Actions</CardTitle>
                     <CardDescription>Manage your account settings and actions.</CardDescription>
@@ -178,5 +178,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    

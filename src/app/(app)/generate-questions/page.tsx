@@ -25,12 +25,13 @@ import { generatePracticeQuestions, GeneratePracticeQuestionsOutput } from "@/ai
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
   topic: z.string().min(1, "Topic is required."),
   difficulty: z.enum(["easy", "medium", "hard"]),
-  numberOfQuestions: z.coerce.number().min(1).max(55),
+  numberOfQuestions: z.number().min(1).max(55),
   questionType: z.enum(["multiple choice", "true/false", "short answer"]),
 });
 
@@ -84,7 +85,7 @@ export default function GenerateQuestionsPage() {
       />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <Card className="bg-card/80 backdrop-blur-sm sticky top-24">
+          <Card className="sticky top-20">
             <CardHeader>
               <CardTitle>Question Parameters</CardTitle>
             </CardHeader>
@@ -166,15 +167,21 @@ export default function GenerateQuestionsPage() {
                     name="numberOfQuestions"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Number of Questions</FormLabel>
+                        <FormLabel>Number of Questions: <span className="font-bold text-primary">{field.value}</span></FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Slider
+                              onValueChange={(value) => field.onChange(value[0])}
+                              defaultValue={[field.value]}
+                              max={55}
+                              min={1}
+                              step={1}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={isGenerating}>
+                  <Button type="submit" className="w-full" size="lg" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -190,7 +197,7 @@ export default function GenerateQuestionsPage() {
           </Card>
         </div>
         <div className="lg:col-span-2">
-          <Card className="min-h-[400px] bg-card/80 backdrop-blur-sm">
+          <Card className="min-h-[400px]">
             <CardHeader>
               <CardTitle>Generated Questions</CardTitle>
               <CardDescription>Click on a question to see the options and reveal the answer.</CardDescription>
@@ -205,7 +212,7 @@ export default function GenerateQuestionsPage() {
                  <Accordion type="single" collapsible className="w-full space-y-4">
                   {questions.map((q, index) => (
                     <AccordionItem value={`item-${index}`} key={index} className="border-b-0">
-                       <Card className="bg-background/70">
+                       <Card className="bg-muted/50">
                         <AccordionTrigger className="text-left p-6 hover:no-underline">
                           <span className="flex-1 font-semibold">{index + 1}. {q.question}</span>
                         </AccordionTrigger>
@@ -217,7 +224,7 @@ export default function GenerateQuestionsPage() {
                                 {q.options.map((opt, i) => (
                                   <li key={i} className={cn(
                                     "p-3 rounded-md border text-sm",
-                                    visibleAnswers[index] && opt === q.answer ? "border-primary bg-primary/10 font-semibold" : "bg-muted/50"
+                                    visibleAnswers[index] && opt === q.answer ? "border-primary bg-primary/10 font-semibold" : "bg-muted"
                                     )}
                                   >
                                     {opt}
@@ -235,7 +242,7 @@ export default function GenerateQuestionsPage() {
                                       {q.answer}
                                   </AlertDescription>
                               </Alert>
-                               <Alert variant="default" className="bg-muted/50">
+                               <Alert variant="default" className="bg-background">
                                 <AlertTitle className="font-semibold">Explanation</AlertTitle>
                                 <AlertDescription>
                                   {q.explanation}
@@ -256,7 +263,7 @@ export default function GenerateQuestionsPage() {
               )}
               {!isGenerating && !questions && (
                 <div className="flex flex-col items-center justify-center h-64 text-center">
-                  <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                  <BookOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
                   <p className="text-muted-foreground">Your generated questions will appear here.</p>
                   <p className="text-xs text-muted-foreground mt-1">Fill out the form to get started.</p>
                 </div>

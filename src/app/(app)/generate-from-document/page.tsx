@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, UploadCloud, ArrowLeft, CheckCircle, XCircle, FileQuestion } from "lucide-react";
+import { Loader2, UploadCloud, ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,10 +23,11 @@ import { useToast } from "@/hooks/use-toast";
 import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/flows/generate-quiz-from-document";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Slider } from "@/components/ui/slider";
 
 const formSchema = z.object({
   document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
-  quizLength: z.coerce.number().min(1, "Please enter a number of questions.").max(55),
+  quizLength: z.number().min(1).max(55),
 });
 
 type Quiz = GenerateQuizFromDocumentOutput["quiz"];
@@ -107,7 +108,7 @@ export default function GenerateFromDocumentPage() {
      const total = quiz.length;
      const percentage = (score / total) * 100;
       return (
-       <div className="max-w-3xl mx-auto">
+       <div className="max-w-4xl mx-auto">
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
         <Card>
             <CardHeader>
@@ -166,7 +167,7 @@ export default function GenerateFromDocumentPage() {
   
   if (quiz) {
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
             <PageHeader title="Quiz from Document" description="Answer the questions below." />
             <Card>
                 <CardContent className="pt-6 space-y-6">
@@ -175,10 +176,10 @@ export default function GenerateFromDocumentPage() {
                             <p className="font-semibold text-lg">{qIndex + 1}. {q.question}</p>
                             <div className="mt-4 space-y-3">
                                 {q.answers.map((ans, ansIndex) => (
-                                    <div key={ansIndex} className="flex items-center p-4 rounded-md border has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-200">
+                                    <label key={ansIndex} className="flex items-center p-4 rounded-md border has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all duration-200 cursor-pointer">
                                         <input type="radio" id={`q${qIndex}a${ansIndex}`} name={`q${qIndex}`} value={ansIndex} onChange={() => handleAnswerSelect(qIndex, ansIndex)} className="mr-3 h-4 w-4 accent-primary" />
-                                        <label htmlFor={`q${qIndex}a${ansIndex}`} className="flex-1 cursor-pointer text-base">{ans}</label>
-                                    </div>
+                                        <span className="flex-1 text-base">{ans}</span>
+                                    </label>
                                 ))}
                             </div>
                         </div>
@@ -200,7 +201,7 @@ export default function GenerateFromDocumentPage() {
         description="Upload your study materials (PDF, DOCX) to create a quiz."
       />
 
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>Quiz Parameters</CardTitle>
@@ -208,7 +209,7 @@ export default function GenerateFromDocumentPage() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                   <FormField
                     control={form.control}
                     name="document"
@@ -241,16 +242,22 @@ export default function GenerateFromDocumentPage() {
                     name="quizLength"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Number of Questions</FormLabel>
+                        <FormLabel>Number of Questions: <span className="font-bold text-primary">{field.value}</span></FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="e.g., 10" {...field} />
+                           <Slider
+                            onValueChange={(value) => field.onChange(value[0])}
+                            defaultValue={[field.value]}
+                            max={55}
+                            min={1}
+                            step={1}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <Button type="submit" className="w-full" disabled={isGenerating}>
+                  <Button type="submit" className="w-full" size="lg" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
