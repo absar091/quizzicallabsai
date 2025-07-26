@@ -581,13 +581,13 @@ export default function GenerateQuizPage() {
     switch (step) {
       case 1:
         return (
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 flex flex-col items-center">
             <FormField
               control={form.control}
               name="topic"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg">What topic do you want a quiz on?</FormLabel>
+                <FormItem className="w-full">
+                  <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6" />
                   </FormControl>
