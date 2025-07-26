@@ -82,7 +82,6 @@ export default function GenerateQuestionsPage() {
         title="Practice Questions"
         description="Generate practice questions for any subject and topic instantly."
       />
-
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <Card className="bg-card/80 backdrop-blur-sm sticky top-24">
