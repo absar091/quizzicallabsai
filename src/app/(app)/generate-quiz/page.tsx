@@ -950,10 +950,9 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
             title={stepTitles[step - 1].title}
             description={stepTitles[step - 1].description}
           />
-          <div className="max-w-2xl w-full">
-            <FormProvider {...formMethods}>
-              <form onSubmit={(e) => e.preventDefault()}>
-                  <Card>
+          <FormProvider {...formMethods}>
+             <form onSubmit={(e) => e.preventDefault()} className="max-w-2xl w-full">
+                 <Card>
                     <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
                         <AnimatePresence mode="wait" initial={false} custom={direction}>
                             {renderStepContent()}
@@ -983,13 +982,10 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
                     </CardFooter>
                   </Card>
               </form>
-            </FormProvider>
+          </FormProvider>
             <p className="text-center text-xs text-muted-foreground mt-4">
                 You have used {quizCount} of {DAILY_LIMIT} free quiz generations today.
             </p>
-          </div>
         </div>
     )
 }
-
-    
