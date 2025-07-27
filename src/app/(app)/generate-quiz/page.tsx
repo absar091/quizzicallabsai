@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -940,8 +940,7 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
             title={stepTitles[step - 1].title}
             description={stepTitles[step - 1].description}
           />
-           <Form {...useFormContext<QuizFormValues>()}>
-             <form onSubmit={(e) => e.preventDefault()} className="max-w-2xl w-full">
+           <form onSubmit={(e) => e.preventDefault()} className="max-w-2xl w-full">
                  <Card>
                     <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
                         <AnimatePresence mode="wait" initial={false} custom={direction}>
@@ -972,7 +971,6 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
                     </CardFooter>
                   </Card>
               </form>
-          </Form>
             <p className="text-center text-xs text-muted-foreground mt-4">
                 You have used {quizCount} of {DAILY_LIMIT} free quiz generations today.
             </p>
