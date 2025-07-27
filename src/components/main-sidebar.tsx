@@ -13,6 +13,7 @@ import {
   User,
   BotMessageSquare,
   BookOpen,
+  ClipboardSignature,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const generationTools = [
     { href: "/generate-questions", label: "Practice Questions", icon: BookOpen },
     { href: "/generate-from-document", label: "Quiz from Document", icon: FileUp },
     { href: "/generate-study-guide", label: "Study Guide", icon: FileText },
+    { href: "/generate-paper", label: "Generate Paper", icon: ClipboardSignature },
 ];
 
 const examPrep = [
