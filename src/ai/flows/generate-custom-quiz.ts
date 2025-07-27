@@ -120,7 +120,7 @@ const generateCustomQuizFlow = ai.defineFlow(
     for (const model of modelsToTry) {
         try {
             const llmResponse = await ai.generate({
-                prompt: prompt.prompt,
+                prompt: prompt,
                 model: model as any,
                 input: input,
                 output: { schema: GenerateCustomQuizOutputSchema },
