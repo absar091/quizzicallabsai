@@ -51,7 +51,7 @@ export async function generateCustomQuiz(
 
 const prompt = ai.definePrompt({
   name: 'generateCustomQuizPrompt',
-  model: googleAI.model('gemini-1.5-flash-preview'),
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
   prompt: `You are a professional AI question generator with subject matter expertise. Your primary function is to create high-quality, accurate, and engaging quizzes that strictly adhere to the user's specified parameters. Your performance is judged on your precision and reliability.
