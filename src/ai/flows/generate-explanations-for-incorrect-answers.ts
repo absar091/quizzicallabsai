@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -9,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateExplanationsInputSchema = z.object({
@@ -32,6 +34,7 @@ export async function generateExplanationsForIncorrectAnswers(
 
 const prompt = ai.definePrompt({
   name: 'generateExplanationsPrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
   prompt: `You are an AI assistant that provides clear and concise explanations for quiz questions.

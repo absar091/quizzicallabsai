@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateSimpleExplanationInputSchema = z.object({
@@ -32,6 +33,7 @@ export async function generateSimpleExplanation(
 
 const prompt = ai.definePrompt({
   name: 'generateSimpleExplanationPrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateSimpleExplanationInputSchema},
   output: {schema: GenerateSimpleExplanationOutputSchema},
   prompt: `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
