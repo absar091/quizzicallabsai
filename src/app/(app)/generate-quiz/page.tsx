@@ -161,15 +161,21 @@ export default function GenerateQuizPage() {
     const newAnswers = [...userAnswers];
     newAnswers[currentQuestion] = answer;
     setUserAnswers(newAnswers);
-    setTimeout(() => handleNext(1), 300);
   };
   
-  const handleNext = (newDirection: number) => {
+  const handleNext = () => {
+    setDirection(1);
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
-        setDirection(newDirection);
-        setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion + 1);
     } else {
-        handleSubmit();
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    setDirection(-1);
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -504,25 +510,40 @@ export default function GenerateQuizPage() {
                         <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
                             {currentQ.question}
                         </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {currentQ.answers.map((answer, index) => {
-                            const letter = String.fromCharCode(65 + index);
-                            return (
-                                <Button
-                                key={index}
-                                variant={userAnswers[currentQuestion] === answer ? "default" : "outline"}
-                                className="w-full justify-start h-auto min-h-[48px] py-3 text-base whitespace-normal text-left leading-snug"
-                                onClick={() => handleAnswer(answer)}
-                                >
-                                <div className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0", userAnswers[currentQuestion] === answer ? "bg-primary-foreground text-primary" : "bg-muted text-muted-foreground")}>
-                                    {letter}
-                                </div>
-                                <span className="flex-1 text-left">{answer}</span>
+                        <div>
+                            <RadioGroup
+                                value={userAnswers[currentQuestion] || ""}
+                                onValueChange={handleAnswer}
+                                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                            >
+                                {currentQ.answers.map((answer, index) => {
+                                const letter = String.fromCharCode(65 + index);
+                                return (
+                                    <FormItem key={index}>
+                                        <FormControl>
+                                            <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
+                                        </FormControl>
+                                        <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
+                                            <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground")}>
+                                                {letter}
+                                            </span>
+                                            <span className="flex-1 text-left text-base">{answer}</span>
+                                        </Label>
+                                    </FormItem>
+                                )
+                                })}
+                            </RadioGroup>
+                            <div className="flex justify-between mt-6">
+                                <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Back
                                 </Button>
-                            )
-                            })}
+                                <Button onClick={handleNext}>
+                                    {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next"}
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
-                        <div></div>
                     </Card>
                 </motion.div>
             </AnimatePresence>
@@ -855,3 +876,5 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
+
+    
