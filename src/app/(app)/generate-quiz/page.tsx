@@ -35,6 +35,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
+import { db } from "@/lib/firebase";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -190,7 +192,7 @@ export default function GenerateQuizPage() {
         setIsGenerating(false);
         let errorMessage = "An unexpected response was received from the server.";
         if (error?.message?.includes("429")) {
-            errorMessage = "The AI model is currently overloaded or you have hit a rate limit. Please try again in a few moments.";
+            errorMessage = "The AI model is currently overloaded or you have hit a rate limit. Please try again after some time.";
         } else if (error?.message?.includes("503") || error?.message?.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
         } else if (error.message && !error.message.includes('Unexpected')) {
@@ -694,7 +696,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const prevStep = () => {
         if (step > 1) {
             setDirection(-1);
-            setStep(s => s - 1);
+            setStep(s => s + 1);
         }
     };
 
@@ -903,3 +905,4 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+

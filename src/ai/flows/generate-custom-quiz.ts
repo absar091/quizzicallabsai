@@ -48,11 +48,6 @@ export async function generateCustomQuiz(
   return generateCustomQuizFlow(input);
 }
 
-const modelsToTry = [
-    'googleai/gemini-2.0-flash-preview',
-    'googleai/gemini-1.5-flash-preview',
-];
-
 const prompt = ai.definePrompt({
   name: 'generateCustomQuizPrompt',
   input: {schema: GenerateCustomQuizInputSchema},
@@ -116,31 +111,7 @@ const generateCustomQuizFlow = ai.defineFlow(
     outputSchema: GenerateCustomQuizOutputSchema,
   },
   async (input) => {
-    let lastError: any;
-    for (const model of modelsToTry) {
-        try {
-            const llmResponse = await ai.generate({
-                prompt: prompt,
-                model: model as any,
-                input: input,
-                output: { schema: GenerateCustomQuizOutputSchema },
-            });
-            const output = llmResponse.output;
-            if (output) {
-                return output;
-            }
-        } catch (error: any) {
-            lastError = error;
-            // Check if the error is a rate limit error (e.g., status code 429)
-            if (error.status === 429 || (error.message && error.message.includes('429'))) {
-                console.warn(`Model ${model} is rate-limited. Trying next model.`);
-                continue; // Try the next model
-            }
-            // For other errors, throw them immediately
-            throw error;
-        }
-    }
-    // If all models fail, throw the last captured error
-    throw new Error(`All models failed. Last error: ${lastError?.message || 'Unknown error'}`);
+    const { output } = await prompt(input);
+    return output!;
   }
 );
