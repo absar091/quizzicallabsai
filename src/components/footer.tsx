@@ -79,6 +79,7 @@ export function Footer() {
                         <nav className="flex flex-col gap-2 text-sm">
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
                              <Link href="/terms-of-use" className="text-muted-foreground hover:text-primary">Terms of Use</Link>
+                              <Link href="/disclaimer" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
                         </nav>
                     </div>
                      <div>

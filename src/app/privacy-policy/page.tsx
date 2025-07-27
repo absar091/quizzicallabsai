@@ -1,20 +1,26 @@
 
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="container py-8 max-w-4xl mx-auto">
-      <PageHeader title="Privacy Policy" description="Last updated: July 29, 2024" />
+      <PageHeader title="Privacy Policy" description="Last updated: July 30, 2024" />
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
-            Quizzicallabs™ ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application.
+            Quizzicallabs™ ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application. By using our service, you agree to the collection and use of information in accordance with this policy.
           </p>
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">1. Information We Collect</h2>
-            <p>We may collect personal information that you provide directly to us, such as when you create an account, including your name, email address, and class information. We also collect information automatically as you navigate the site, such as your usage data and quiz performance.</p>
+            <p>We may collect the following types of information:</p>
+            <ul className="list-disc list-inside pl-4 space-y-1">
+                <li><strong>Personal Identification Information:</strong> Name, email address, age, and class/grade information that you provide when you register an account.</li>
+                <li><strong>Usage Data:</strong> Information on how you use the application, such as features used, quizzes taken, scores, and performance analytics. This is collected automatically.</li>
+                <li><strong>Content Data:</strong> Documents you upload for quiz generation. This data is used solely for the purpose of generating the quiz and is not stored long-term.</li>
+                <li><strong>Device and Connection Information:</strong> We collect standard information such as your IP address, browser type, and operating system for security and analytics purposes.</li>
+            </ul>
           </div>
 
           <div className="space-y-2">
@@ -23,42 +29,39 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc list-inside pl-4 space-y-1">
               <li>Create and manage your account.</li>
               <li>Provide, operate, and maintain our services.</li>
-              <li>Personalize and improve your experience.</li>
-              <li>Monitor and analyze usage and trends.</li>
-              <li>Communicate with you, including for customer service.</li>
+              <li>Personalize and improve your experience, for example, by tailoring AI-generated content to your age and class level.</li>
+              <li>Monitor and analyze usage and trends to improve the application.</li>
+              <li>Communicate with you for customer service, updates, and other informational purposes.</li>
+              <li>Prevent fraud and ensure the security of our services.</li>
             </ul>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. Advertising and AdSense</h2>
-            <p>We use Google AdSense to serve ads when you visit our website. Our advertising partners may use cookies and web beacons on our site. Google, as a third-party vendor, uses cookies to serve ads based on a user's prior visits to our website or other websites.</p>
-             <p>Google's use of advertising cookies enables it and its partners to serve ads to your users based on their visit to your sites and/or other sites on the Internet. Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>.</p>
-             <p>Third-party vendors and ad networks may also be used to serve ads on our site. You can opt out of some third-party vendors' uses of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info/choices</a>.</p>
+            <h2 className="text-xl font-semibold text-foreground">3. Advertising, Cookies, and AdSense</h2>
+            <p>We use Google AdSense to serve ads. Our advertising partners, including Google, may use cookies to serve ads based on your prior visits to our website or other websites. This enables personalized advertising.</p>
+            <p>You can opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>. You can also opt out of some third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info/choices</a>.</p>
+             <p>We also use essential cookies required for site functionality, such as keeping you logged in. By using our application, you consent to the use of these necessary cookies.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">4. Sharing Your Information</h2>
-            <p>We do not share your personal information with third parties except as described in this Privacy Policy, such as to comply with legal obligations, to protect our rights, or with our advertising partners as described above.</p>
+            <h2 className="text-xl font-semibold text-foreground">4. Data Storage, Retention, and Security</h2>
+            <p>Your data is stored securely on servers managed by Firebase (a Google company). We use administrative, technical, and physical security measures to protect your personal information. Uploaded documents for quiz generation are processed and then discarded; they are not stored on our servers.</p>
+            <p>We retain your account information and quiz history as long as your account is active. If you delete your account, your personal data will be permanently removed from our active databases.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">5. Data Storage and Security</h2>
-            <p>Your data is stored securely. We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.</p>
+            <h2 className="text-xl font-semibold text-foreground">5. Children's Privacy</h2>
+            <p>Our service is available to users of all ages, including those under 13. We collect age information at signup to comply with relevant regulations and to tailor content appropriately. We do not knowingly collect more information than is reasonably necessary to provide the service.</p>
           </div>
             
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">6. Cookies</h2>
-            <p>We use essential cookies to make our site functional, as well as cookies for advertising purposes as detailed in the "Advertising and AdSense" section. A cookie is a small text file stored on your device. By using our application, you consent to the use of these cookies.</p>
+            <h2 className="text-xl font-semibold text-foreground">6. Your Data Rights</h2>
+            <p>You have the right to access, update, or delete your information at any time through your Profile page. This includes the permanent deletion of your account and all associated data.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">7. Your Choices</h2>
-            <p>You may review, change, or terminate your account at any time. You can also manage your bookmarked questions and view your quiz history directly from your dashboard. You have the right to opt-out of personalized advertising as mentioned above.</p>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">8. Changes to This Policy</h2>
-            <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+            <h2 className="text-xl font-semibold text-foreground">7. Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
           </div>
 
           <div className="space-y-2">

@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Eye, BookOpen } from "lucide-react";
+import { Loader2, Eye, BookOpen, Download } from "lucide-react";
+import jsPDF from "jspdf";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -75,6 +76,53 @@ export default function GenerateQuestionsPage() {
 
   const toggleAnswerVisibility = (index: number) => {
     setVisibleAnswers(prev => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const downloadPdf = () => {
+    if (!questions) return;
+    const doc = new jsPDF();
+    const topic = form.getValues('topic');
+    let y = 20;
+
+    doc.setFontSize(18);
+    doc.text(`Practice Questions: ${topic}`, 15, y);
+    y += 15;
+
+    questions.forEach((q, index) => {
+        if (y > 270) {
+            doc.addPage();
+            y = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        const questionText = doc.splitTextToSize(`${index + 1}. ${q.question}`, 180);
+        doc.text(questionText, 15, y);
+        y += (questionText.length * 5) + 5;
+
+        doc.setFont('helvetica', 'normal');
+        if (q.options) {
+            q.options.forEach((opt, i) => {
+                const optionText = doc.splitTextToSize(`(${String.fromCharCode(97 + i)}) ${opt}`, 170);
+                doc.text(optionText, 20, y);
+                y += (optionText.length * 4) + 2;
+            });
+        }
+        
+        y += 3;
+        doc.setFont('helvetica', 'bold');
+        const answerText = doc.splitTextToSize(`Answer: ${q.answer}`, 180);
+        doc.text(answerText, 15, y);
+        y += (answerText.length * 5);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFont('helvetica', 'italic');
+        const explanationText = doc.splitTextToSize(`Explanation: ${q.explanation}`, 180);
+        doc.text(explanationText, 15, y);
+        y += (explanationText.length * 5) + 10;
+    });
+
+    doc.save(`${topic}_practice_questions.pdf`);
   };
 
   return (
@@ -198,9 +246,17 @@ export default function GenerateQuestionsPage() {
         </div>
         <div className="lg:col-span-2">
           <Card className="min-h-[400px]">
-            <CardHeader>
-              <CardTitle>Generated Questions</CardTitle>
-              <CardDescription>Click on a question to see the options and reveal the answer.</CardDescription>
+            <CardHeader className="flex-row items-center justify-between">
+              <div>
+                <CardTitle>Generated Questions</CardTitle>
+                <CardDescription>Click on a question to see the options and reveal the answer.</CardDescription>
+              </div>
+              {questions && questions.length > 0 && (
+                <Button onClick={downloadPdf} variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF
+                </Button>
+              )}
             </CardHeader>
             <CardContent>
               {isGenerating && (
