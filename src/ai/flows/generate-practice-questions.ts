@@ -40,7 +40,7 @@ export async function generatePracticeQuestions(input: GeneratePracticeQuestions
 
 const prompt = ai.definePrompt({
   name: 'generatePracticeQuestionsPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'gemini-1.5-flash',
   input: {schema: GeneratePracticeQuestionsInputSchema},
   output: {schema: GeneratePracticeQuestionsOutputSchema},
   prompt: `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content.
@@ -48,33 +48,26 @@ const prompt = ai.definePrompt({
 Follow these strict rules to ensure accuracy, quality, and user satisfaction:
 
 ✅ GENERAL RULES:
-1.  Stay strictly within the correct facts of the subject matter. If unsure about a fact, do not guess or include incorrect information.
-2.  Always verify your answers before giving them—wrong answers damage trust.
-3.  Ensure that all options are plausible—no obviously wrong, silly, or unrelated options.
-4.  There must be only one correct answer per question. Avoid tricky or ambiguous wording.
-5.  Use clear and concise language.
-6.  Vary the question structure and wording to keep the user engaged.
+1.  **FACTUAL ACCURACY IS PARAMOUNT:** You MUST stay strictly within the correct facts of the subject matter. If you are even slightly unsure about a fact, do not guess or include incorrect information.
+2.  **VERIFY ANSWERS:** You MUST internally verify all answers before outputting them. Wrong answers are a critical failure and destroy user trust.
+3.  **PLAUSIBLE OPTIONS:** For "multiple choice" questions, all incorrect options must be plausible and based on common misconceptions. They must not be obviously wrong, silly, or unrelated.
+4.  **CLARITY AND PRECISION:** Use clear, concise, and unambiguous language. Avoid tricky or ambiguous wording that could confuse the user.
+5.  **VARIETY:** Vary the question structure and wording to keep the user engaged and test concepts from different angles.
 
 🎯 QUESTION STRUCTURE:
-For each question, you must provide:
-*   The question text.
-*   The correct answer.
-*   A one-line explanation for why the answer is correct.
-*   For "multiple choice" questions, provide exactly 4 plausible options.
+For each question, you MUST provide:
+*   `question`: The question text.
+*   `answer`: The single, unequivocally correct answer.
+*   `explanation`: A concise, one-line explanation for why the answer is correct.
+*   `options`: For "multiple choice" questions, provide exactly 4 plausible options, one of which MUST be the correct answer.
 
 🔢 DIFFICULTY LEVELS:
-*   **Easy:** Basic recall or definitions.
-*   **Medium:** Requires some reasoning or understanding.
-*   **Hard:** Involves analysis, application, or combination of ideas.
+*   **Easy:** Basic recall of definitions and facts.
+*   **Medium:** Requires some reasoning, application, or interpretation.
+*   **Hard:** Involves analysis, synthesis of ideas, or multi-step problem-solving.
 
-❗ CRITICAL INSTRUCTIONS:
-*   NEVER give wrong facts.
-*   DO NOT invent terms or concepts that don’t exist.
-*   DO NOT create questions that are too confusing, vague, or irrelevant.
-*   Your job is to assist, not to confuse.
-
-✅ PRACTICE QUESTION TASK:
-Generate practice questions based on the following parameters:
+❗ CRITICAL TASK INSTRUCTIONS:
+Generate practice questions based on the following parameters. You must adhere to these precisely.
 
 *   **Subject:** {{{subject}}}
 *   **Topic:** {{{topic}}}
@@ -82,7 +75,7 @@ Generate practice questions based on the following parameters:
 *   **Number of Questions:** {{#if numberOfQuestions}}{{{numberOfQuestions}}}{{else}}5{{/if}}
 *   **Question Type:** {{#if questionType}}{{{questionType}}}{{else}}multiple choice{{/if}}
 
-Your final output must be ONLY the JSON object specified in the output schema. Do not include any extra text or commentary.
+Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting.
 `,
 });
 

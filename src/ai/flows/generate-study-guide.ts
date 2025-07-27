@@ -51,21 +51,25 @@ export async function generateStudyGuide(
 
 const prompt = ai.definePrompt({
   name: 'generateStudyGuidePrompt',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'gemini-1.5-flash',
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
-  prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, easy-to-digest study guide for the following topic: {{{topic}}}.
+  prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
 
-  The study guide should be structured to help a student quickly grasp the most critical information.
+  The study guide MUST be structured to help a student quickly grasp the most critical information and must be factually correct.
 
-  **Instructions:**
-  1.  **Title:** Create a clear, compelling title for the study guide.
-  2.  **Summary:** Write a short, engaging summary (2-3 sentences) of the overall topic.
-  3.  **Key Concepts:** Identify the 5-7 most important key concepts, terms, or ideas related to the topic. For each concept, provide a simple definition and a brief explanation of why it's important.
-  4.  **Analogies:** Create 2-3 simple, real-world analogies to explain the most complex or abstract parts of the topic.
-  5.  **Quiz Yourself:** Generate 3-4 quick questions to help the user check their understanding. Provide the correct answer for each question.
+  **Critical Instructions:**
+  1.  **ACCURACY IS KEY:** All definitions, explanations, and facts must be 100% accurate and verified. Do not include speculative or incorrect information.
+  2.  **STRUCTURED CONTENT:** Follow the output structure precisely.
+      *   **Title:** Create a clear, compelling title for the study guide.
+      *   **Summary:** Write a short, engaging, and accurate summary (2-3 sentences) of the overall topic.
+      *   **Key Concepts:** Identify the 5-7 most important key concepts, terms, or ideas related to the topic. For each concept, you MUST provide a simple, clear definition and a brief explanation of why it's truly important for understanding the topic.
+      *   **Analogies:** Create 2-3 simple, effective, real-world analogies to explain the most complex or abstract parts of the topic. The analogy must be easy to understand and directly relevant.
+      *   **Quiz Yourself:** Generate 3-4 high-quality questions that effectively test the understanding of the key concepts. Provide the correct and concise answer for each question.
+  3.  **CLARITY:** Use language that is easy to understand, avoiding jargon where possible or explaining it clearly when necessary.
+  4.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
 
-  Your final output must be only the JSON object specified in the output schema. Do not include any extra text or markdown formatting.`,
+  Generate the study guide now.`,
 });
 
 const generateStudyGuideFlow = ai.defineFlow(

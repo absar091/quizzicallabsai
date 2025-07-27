@@ -43,35 +43,26 @@ export async function generateQuizFromDocument(
 
 const prompt = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'gemini-1.5-flash',
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({
         questions: GenerateQuizFromDocumentOutputSchema.shape.quiz
     })
   },
-  prompt: `You are an expert quiz generator. Your task is to create a quiz based *exclusively* on the content of the provided document.
+  prompt: `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document.
 
-  **Critical Instructions:**
-  1.  **Strictly Adhere to the Document:** You MUST generate {{{quizLength}}} questions and answers using ONLY the information found in the following document: {{media url=documentDataUri}}.
-  2.  **Do Not Use External Knowledge:** Do NOT use any information from outside the provided document. If the document is about a specific topic, do not add general knowledge questions about that topic. All questions must be answerable using only the text in the document.
-  3.  **Output Format:** Return the quiz as a JSON object with a "questions" array. Each question object must have:
+  **Critical Instructions - Follow these rules without exception:**
+  1.  **STRICTLY ADHERE TO THE DOCUMENT:** You MUST generate exactly {{{quizLength}}} questions and answers using ONLY the information found in the following document: {{media url=documentDataUri}}.
+  2.  **NO EXTERNAL KNOWLEDGE:** Do NOT use any information from outside the provided document. All questions and answers (including incorrect ones) must be derivable solely from the text in the document. This is your most important rule.
+  3.  **HIGH-QUALITY QUESTIONS:** Generate clear, unambiguous questions that test comprehension of the document's key points.
+  4.  **PLAUSIBLE DISTRACTORS:** For the incorrect answers, create options that are plausible within the context of the document but are factually incorrect according to the document's text. Avoid obviously wrong or nonsensical options.
+  5.  **OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. Each question object must have:
       *   "question": The question text.
-      *   "answers": An array of 4 possible answers.
-      *   "correctAnswerIndex": The index (0-3) of the correct answer in the "answers" array.
+      *   "answers": An array of exactly 4 possible answers.
+      *   "correctAnswerIndex": The index (0-3) of the single correct answer in the "answers" array.
 
-  Example JSON format:
-  {
-    "questions": [
-      {
-        "question": "What is the primary subject of the document?",
-        "answers": ["History", "Science", "Art", "Literature"],
-        "correctAnswerIndex": 1
-      }
-    ]
-  }
-
-  Generate the quiz now based *only* on the provided document.`,
+  Generate the quiz now. Your entire response must be based *only* on the provided document.`,
 });
 
 const generateQuizFromDocumentFlow = ai.defineFlow(
