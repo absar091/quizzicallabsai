@@ -36,10 +36,10 @@ function MdcatTestFlow() {
                 const result = await generateCustomQuiz({
                     topic: topic,
                     difficulty: difficulty as any,
-                    numberOfQuestions: 15, // A reasonable number for a chapter test
+                    numberOfQuestions: 50,
                     questionTypes: ["Multiple Choice"],
                     questionStyles: questionStyles.split(','),
-                    timeLimit: 15,
+                    timeLimit: 50,
                     userAge: null,
                     userClass: "MDCAT Student",
                 });
@@ -85,12 +85,6 @@ function MdcatTestFlow() {
     }
 
     if (quiz) {
-        // We are passing the generated quiz directly to the GenerateQuizPage component.
-        // We also need to modify GenerateQuizPage to accept this quiz as a prop.
-        // For now, let's assume we can pass it and it will render the quiz part.
-        // We need to make `GenerateQuizPage` more of a "QuizUI" component.
-        // This is a big refactor, let's do it step by step.
-        // The best way for now is to pass the quiz and initial form values to the component directly.
         return <GenerateQuizPage 
             initialQuiz={quiz} 
             initialFormValues={{
@@ -99,7 +93,7 @@ function MdcatTestFlow() {
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles.split(','),
-                 timeLimit: 15,
+                 timeLimit: 50,
             }}
          />
     }
@@ -108,18 +102,14 @@ function MdcatTestFlow() {
 }
 
 function MdcatTestPage() {
-    // This component will now decide whether to show the setup card or the actual test flow.
     const searchParams = useSearchParams();
     const subject = searchParams.get('subject');
     const chapter = searchParams.get('chapter');
 
-    // If we have subject and chapter, we can proceed to generate.
-    // The "topic" will be the chapter name.
     if (subject && chapter) {
         return <MdcatTestFlow />;
     }
 
-    // Fallback if the URL is incomplete
     return (
         <div className="max-w-2xl mx-auto">
              <PageHeader title="MDCAT Test Setup" description="Configure your chapter test." />
