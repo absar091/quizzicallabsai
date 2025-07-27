@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -408,7 +408,15 @@ export default function GenerateQuizPage() {
   }
 
   const nextStep = async () => {
-    const isValid = await trigger(step === 1 ? "topic" : ["difficulty", "numberOfQuestions", "questionTypes", "timeLimit", "questionStyles"]);
+    const validationMap = {
+      1: ["topic"],
+      2: ["difficulty", "numberOfQuestions", "timeLimit"],
+      3: ["questionTypes", "questionStyles"]
+    }
+    
+    const fieldsToValidate = validationMap[step as keyof typeof validationMap];
+
+    const isValid = await trigger(fieldsToValidate as any);
     if (isValid) {
       setDirection(1);
       setStep(s => s + 1);
@@ -630,15 +638,15 @@ export default function GenerateQuizPage() {
     switch (step) {
       case 1:
         return (
-          <motion.div key="step1" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
+          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="w-full">
             <FormField
               control={form.control}
               name="topic"
               render={({ field }) => (
-                <FormItem className="w-full">
+                <FormItem className="w-full flex flex-col items-center">
                   <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center" />
+                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
                   </FormControl>
                   <FormMessage className="text-center"/>
                 </FormItem>
@@ -648,7 +656,7 @@ export default function GenerateQuizPage() {
         );
       case 2:
         return (
-          <motion.div key="step2" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }} className="space-y-6">
+          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
             <FormField
               control={form.control}
               name="difficulty"
@@ -671,66 +679,6 @@ export default function GenerateQuizPage() {
                         </FormItem>
                     ))}
                   </RadioGroup>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="questionTypes"
-              render={() => (
-                <FormItem>
-                  <FormLabel className="text-lg">Question Formats</FormLabel>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {questionTypeOptions.map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={form.control}
-                        name="questionTypes"
-                        render={({ field }) => (
-                            <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                              <FormControl>
-                                <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                <item.icon className="h-5 w-5" />
-                                {item.label}
-                              </FormLabel>
-                            </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="questionStyles"
-              render={() => (
-                <FormItem>
-                  <FormLabel className="text-lg">Question Styles</FormLabel>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {questionStyleOptions.map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={form.control}
-                        name="questionStyles"
-                        render={({ field }) => (
-                            <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                              <FormControl>
-                                <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                <item.icon className="h-5 w-5" />
-                                {item.label}
-                              </FormLabel>
-                            </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -761,19 +709,84 @@ export default function GenerateQuizPage() {
             />
           </motion.div>
         );
-        case 3: {
+      case 3:
+          return (
+             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+                 <FormField
+                  control={form.control}
+                  name="questionTypes"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Question Formats</FormLabel>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        {questionTypeOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="questionTypes"
+                            render={({ field }) => (
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                  <FormControl>
+                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                    <item.icon className="h-5 w-5" />
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="questionStyles"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Question Styles</FormLabel>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        {questionStyleOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="questionStyles"
+                            render={({ field }) => (
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                  <FormControl>
+                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                    <item.icon className="h-5 w-5" />
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+             </motion.div>
+          );
+        case 4: {
             const values = getValues();
             return (
-                <motion.div key="step3" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
+                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="w-full">
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
                         <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
                             <p><strong>Topic:</strong> {values.topic}</p>
                             <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
-                             <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
-                             <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
                             <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
                             <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
+                            <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
+                            <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -786,7 +799,8 @@ export default function GenerateQuizPage() {
 
    const stepTitles = [
     { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
-    { icon: Settings, title: "Customize Quiz", description: "Adjust the quiz settings to your needs." },
+    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
+    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
     { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
   ];
 
@@ -813,7 +827,7 @@ export default function GenerateQuizPage() {
                     Back
                   </Button>
                 ) : <div />}
-                {step < 3 ? (
+                {step < 4 ? (
                   <Button type="button" onClick={nextStep}>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
