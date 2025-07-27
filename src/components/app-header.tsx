@@ -88,11 +88,6 @@ export function AppHeader() {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          <Button variant="ghost" size="icon">
-              <HelpCircle className="h-5 w-5" />
-              <span className="sr-only">Help</span>
-          </Button>
-
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
