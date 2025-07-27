@@ -8,8 +8,7 @@ import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert } from "lucide-react";
 import jsPDF from 'jspdf';
-import { get, ref, set } from "firebase/database";
-import { db } from "@/lib/firebase";
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +34,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -67,8 +67,6 @@ type BookmarkedQuestion = {
     topic: string;
 }
 
-const DAILY_LIMIT = 12;
-
 // --- Main Page Component ---
 export default function GenerateQuizPage() {
   const { toast } = useToast();
@@ -84,10 +82,6 @@ export default function GenerateQuizPage() {
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [direction, setDirection] = useState(0);
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
-
-  const [quizCount, setQuizCount] = useState(0);
-  const [isLimitReached, setIsLimitReached] = useState(false);
-  const [isCountLoading, setIsCountLoading] = useState(true);
   
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
@@ -100,44 +94,6 @@ export default function GenerateQuizPage() {
       timeLimit: 10,
     },
   });
-
-  const checkQuizLimit = useCallback(async () => {
-    if (!user) return;
-    setIsCountLoading(true);
-    const today = new Date().toISOString().split('T')[0];
-    const userCountRef = ref(db, `quizCounts/${user.uid}/${today}`);
-    
-    try {
-        const snapshot = await get(userCountRef);
-        const count = snapshot.val()?.count || 0;
-        setQuizCount(count);
-
-        if (count >= DAILY_LIMIT) {
-            setIsLimitReached(true);
-            toast({
-                title: "Daily Limit Reached",
-                description: `You have generated ${count} quizzes today. The limit is ${DAILY_LIMIT}. Please try again tomorrow.`,
-                variant: "destructive"
-            });
-        } else {
-            setIsLimitReached(false);
-        }
-    } catch(error) {
-        console.error("Error fetching quiz count:", error);
-        toast({
-            title: "Error",
-            description: "Could not verify your quiz generation limit. Please try again later.",
-            variant: "destructive"
-        })
-    } finally {
-        setIsCountLoading(false);
-    }
-  }, [user, toast]);
-  
-  useEffect(() => {
-    checkQuizLimit();
-  }, [checkQuizLimit]);
-  
 
   useEffect(() => {
     const savedState = sessionStorage.getItem("quizState");
@@ -192,11 +148,6 @@ export default function GenerateQuizPage() {
   }, [quiz, showResults, timeLeft]);
   
   const handleGenerateQuiz = async (values: QuizFormValues) => {
-    if (!user || isLimitReached) {
-        toast({ title: "Cannot Generate Quiz", description: "You have reached your daily limit.", variant: "destructive" });
-        return;
-    }
-
     setIsGenerating(true);
     setFormValues(values);
     setGenerationProgress(0);
@@ -226,13 +177,6 @@ export default function GenerateQuizPage() {
       clearInterval(interval);
       setGenerationProgress(100);
       
-      const today = new Date().toISOString().split('T')[0];
-      const userCountRef = ref(db, `quizCounts/${user.uid}/${today}`);
-      const newCount = quizCount + 1;
-      await set(userCountRef, { count: newCount });
-      setQuizCount(newCount);
-
-
       setTimeout(() => {
         setQuiz(result.quiz);
         setUserAnswers(new Array(result.quiz.length).fill(null));
@@ -459,7 +403,6 @@ export default function GenerateQuizPage() {
     setShowResults(false);
     setExplanations({});
     setFormValues(null);
-    checkQuizLimit(); // Re-check limit when starting a new quiz
     sessionStorage.removeItem("quizState");
     window.scrollTo(0, 0);
   };
@@ -687,14 +630,16 @@ export default function GenerateQuizPage() {
     );
   }
 
+  const {
+    control,
+    handleSubmit: handleFormSubmitHook,
+    trigger,
+    getValues,
+  } = formMethods;
+
   return (
     <FormProvider {...formMethods}>
-      <QuizSetupForm 
-        onGenerateQuiz={handleGenerateQuiz} 
-        isLimitReached={isLimitReached} 
-        isCountLoading={isCountLoading}
-        quizCount={quizCount}
-      />
+      <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
     </FormProvider>
   );
 }
@@ -722,13 +667,10 @@ const stepTitles = [
 
 type QuizSetupFormProps = {
     onGenerateQuiz: (values: QuizFormValues) => void;
-    isLimitReached: boolean;
-    isCountLoading: boolean;
-    quizCount: number;
 }
 
-function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCount }: QuizSetupFormProps) {
-    const { handleSubmit, trigger, getValues, control } = useFormContext<QuizFormValues>();
+function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
+    const { control, trigger, getValues, handleSubmit } = useFormContext<QuizFormValues>();
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0);
 
@@ -916,15 +858,6 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
                                 <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
                                 <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
                             </div>
-                            {isLimitReached && (
-                                <Alert variant="destructive">
-                                    <ShieldAlert className="h-4 w-4" />
-                                    <AlertTitle>Daily Limit Reached</AlertTitle>
-                                    <AlertDescription>
-                                        You have used all your free quiz generations for today. Please upgrade or try again tomorrow.
-                                    </AlertDescription>
-                                </Alert>
-                            )}
                         </div>
                     </motion.div>
                 )
@@ -960,20 +893,13 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                         ) : (
-                        <Button type="button" onClick={handleFormSubmit} size="lg" disabled={isLimitReached || isCountLoading}>
-                           {isCountLoading ? (
-                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Verifying...</>
-                            ) : (
-                                <><Sparkles className="mr-2 h-5 w-5" /> Generate Quiz</>
-                            )}
+                        <Button type="button" onClick={handleFormSubmit} size="lg">
+                            <Sparkles className="mr-2 h-5 w-5" /> Generate Quiz
                         </Button>
                         )}
                     </CardFooter>
                   </Card>
               </form>
-            <p className="text-center text-xs text-muted-foreground mt-4">
-                You have used {quizCount} of {DAILY_LIMIT} free quiz generations today.
-            </p>
         </div>
     )
 }
