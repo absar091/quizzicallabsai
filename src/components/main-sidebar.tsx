@@ -34,9 +34,10 @@ const examPrep = [
 
 type MainSidebarProps = {
   onNavigate?: () => void;
+  isMobile?: boolean;
 }
 
-export function MainSidebar({ onNavigate }: MainSidebarProps) {
+const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   const pathname = usePathname();
   const { logout } = useAuth();
 
@@ -60,18 +61,10 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
     if (onNavigate) onNavigate();
     logout();
   }
-
+  
   return (
-    <div className="flex flex-col h-full bg-muted/40">
-      <div className="hidden md:flex h-16 items-center border-b px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold" onClick={onNavigate}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-lg">Quizzicallabs™</span>
-        </Link>
-      </div>
-      <div className="flex-1 overflow-auto py-2">
+    <>
+       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium">
           <h3 className="px-3 py-2 text-xs font-semibold text-muted-foreground/70">Main</h3>
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
@@ -96,6 +89,27 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
           </button>
          </nav>
       </div>
+    </>
+  )
+}
+
+export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
+  
+  if(isMobile) {
+    return <SidebarContent onNavigate={onNavigate} />
+  }
+
+  return (
+    <div className="hidden md:flex flex-col h-full bg-muted/40 w-[250px] border-r">
+      <div className="flex h-16 items-center border-b px-6">
+        <Link href="/" className="flex items-center gap-2 font-semibold" onClick={onNavigate}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <span className="text-lg">Quizzicallabs™</span>
+        </Link>
+      </div>
+      <SidebarContent onNavigate={onNavigate} />
     </div>
   );
 }

@@ -51,11 +51,11 @@ export function AppHeader() {
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon"><Menu/></Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[250px] p-0">
+              <SheetContent side="left" className="w-[250px] p-0 flex flex-col">
                  <SheetHeader className="p-4 border-b">
                     <SheetTitle>Menu</SheetTitle>
                  </SheetHeader>
-                 <MainSidebar onNavigate={() => setMobileMenuOpen(false)} />
+                 <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
               </SheetContent>
             </Sheet>
           </div>

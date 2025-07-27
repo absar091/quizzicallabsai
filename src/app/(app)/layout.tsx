@@ -31,7 +31,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
        <div className="flex flex-1">
-        <MainSidebar />
+        <MainSidebar isMobile={false} />
         <div className="flex flex-col flex-1">
           <AppHeader />
           <main className="flex-1 p-4 md:p-6 lg:p-8">
