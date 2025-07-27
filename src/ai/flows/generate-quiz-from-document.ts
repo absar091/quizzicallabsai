@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateQuizFromDocumentInputSchema = z.object({
@@ -41,6 +42,7 @@ export async function generateQuizFromDocument(
 
 const prompt = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({

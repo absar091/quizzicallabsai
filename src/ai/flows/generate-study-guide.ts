@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateStudyGuideInputSchema = z.object({
@@ -50,6 +51,7 @@ export async function generateStudyGuide(
 
 const prompt = ai.definePrompt({
   name: 'generateStudyGuidePrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, easy-to-digest study guide for the following topic: {{{topic}}}.
