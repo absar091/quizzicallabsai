@@ -45,6 +45,7 @@ export default function SignupPage() {
       email: "",
       password: "",
       className: "",
+      age: undefined,
       agree: false,
     },
   });
