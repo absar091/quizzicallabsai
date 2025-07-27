@@ -684,22 +684,24 @@ export default function GenerateQuizPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-lg">Difficulty</FormLabel>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                  >
-                    {["easy", "medium", "hard", "master"].map((level) => (
-                       <FormItem key={level} className="flex-1">
-                          <FormControl>
-                             <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                          </FormControl>
-                          <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                            {level}
-                          </Label>
-                        </FormItem>
-                    ))}
-                  </RadioGroup>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                    >
+                      {["easy", "medium", "hard", "master"].map((level) => (
+                         <FormItem key={level} className="flex-1">
+                            <FormControl>
+                               <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                            </FormControl>
+                            <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                              {level}
+                            </Label>
+                          </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -876,3 +878,5 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
+
+    
