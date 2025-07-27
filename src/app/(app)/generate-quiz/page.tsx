@@ -880,5 +880,3 @@ export default function GenerateQuizPage() {
 
   return <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />;
 }
-
-    
