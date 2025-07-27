@@ -659,7 +659,7 @@ export default function GenerateQuizPage() {
     switch (step) {
       case 1:
         return (
-          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="w-full">
+          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
             <FormField
               control={form.control}
               name="topic"
@@ -677,7 +677,7 @@ export default function GenerateQuizPage() {
         );
       case 2:
         return (
-          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
             <FormField
               control={form.control}
               name="difficulty"
@@ -732,7 +732,7 @@ export default function GenerateQuizPage() {
         );
       case 3:
           return (
-             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
                  <FormField
                   control={form.control}
                   name="questionTypes"
@@ -798,7 +798,7 @@ export default function GenerateQuizPage() {
         case 4: {
             const values = getValues();
             return (
-                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? -50 : 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? 50 : -50 }} transition={{ duration: 0.3 }} className="w-full">
+                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
                         <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
@@ -876,5 +876,3 @@ export default function GenerateQuizPage() {
     </div>
   );
 }
-
-    
