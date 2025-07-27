@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
   experimental: {
+    // This is required to suppress the warning about winston-transport not being found.
+    // It is a dependency of a dependency and not used in the app.
+    serverComponentsExternalPackages: ['@opentelemetry/winston-transport', 'handlebars'],
   },
   typescript: {
     ignoreBuildErrors: true,
