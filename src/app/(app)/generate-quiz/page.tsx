@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -47,6 +47,7 @@ const formSchema = z.object({
   timeLimit: z.number().min(1).max(120),
 });
 
+type QuizFormValues = z.infer<typeof formSchema>;
 export type Quiz = GenerateCustomQuizOutput["quiz"];
 
 interface ExplanationState {
@@ -76,22 +77,19 @@ const questionStyleOptions = [
     { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
 ]
 
-export default function GenerateQuizPage() {
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
-  const [showResults, setShowResults] = useState(false);
-  const [explanations, setExplanations] = useState<ExplanationState>({});
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
+const stepTitles = [
+    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
+    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
+    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
+    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
+];
+
+// --- Multi-step Form Component ---
+function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void }) {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(0);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: "",
@@ -105,6 +103,252 @@ export default function GenerateQuizPage() {
 
   const { trigger, getValues } = form;
 
+  const nextStep = async () => {
+    const validationMap = {
+      1: ["topic"],
+      2: ["difficulty", "numberOfQuestions", "timeLimit"],
+      3: ["questionTypes", "questionStyles"]
+    }
+    const fieldsToValidate = validationMap[step as keyof typeof validationMap];
+    const isValid = await trigger(fieldsToValidate as any);
+    if (isValid) {
+      setDirection(1);
+      setStep(s => s + 1);
+    }
+  };
+
+  const prevStep = () => {
+    setDirection(-1);
+    setStep(s => s - 1)
+  };
+
+  const handleFormSubmit = form.handleSubmit((values) => {
+    onGenerateQuiz(values);
+  });
+  
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+            <FormField
+              control={form.control}
+              name="topic"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col items-center">
+                  <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
+                  </FormControl>
+                  <FormMessage className="text-center"/>
+                </FormItem>
+              )}
+            />
+          </motion.div>
+        );
+      case 2:
+        return (
+          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+            <FormField
+              control={form.control}
+              name="difficulty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-lg">Difficulty</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                    >
+                      {["easy", "medium", "hard", "master"].map((level) => (
+                         <FormItem key={level} className="flex-1">
+                            <FormControl>
+                               <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                            </FormControl>
+                            <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                              {level}
+                            </Label>
+                          </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="numberOfQuestions"
+              render={({ field }) => (
+                 <FormItem>
+                  <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                   <FormControl>
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="timeLimit"
+              render={({ field }) => (
+                 <FormItem>
+                  <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                   <FormControl>
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </motion.div>
+        );
+      case 3:
+          return (
+             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+                 <FormField
+                  control={form.control}
+                  name="questionTypes"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Question Formats</FormLabel>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        {questionTypeOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="questionTypes"
+                            render={({ field }) => (
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                  <FormControl>
+                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                    <item.icon className="h-5 w-5" />
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="questionStyles"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel className="text-lg">Question Styles</FormLabel>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        {questionStyleOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="questionStyles"
+                            render={({ field }) => (
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                  <FormControl>
+                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                    <item.icon className="h-5 w-5" />
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+             </motion.div>
+          );
+        case 4: {
+            const values = getValues();
+            return (
+                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
+                        <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
+                            <p><strong>Topic:</strong> {values.topic}</p>
+                            <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
+                            <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
+                            <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
+                            <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
+                            <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
+                        </div>
+                    </div>
+                </motion.div>
+            )
+        }
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <PageHeader
+        title={stepTitles[step - 1].title}
+        description={stepTitles[step - 1].description}
+      />
+      <div className="max-w-2xl w-full">
+        <FormProvider {...form}>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <Card>
+              <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
+                <AnimatePresence mode="wait" initial={false} custom={direction}>
+                  {renderStepContent()}
+                </AnimatePresence>
+              </CardContent>
+              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
+                {step > 1 ? (
+                  <Button type="button" variant="outline" onClick={prevStep}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                ) : <div />}
+                {step < 4 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={handleFormSubmit} size="lg">
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Generate Quiz
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          </form>
+        </FormProvider>
+      </div>
+    </div>
+  )
+}
+
+// --- Main Page Component ---
+export default function GenerateQuizPage() {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [explanations, setExplanations] = useState<ExplanationState>({});
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
+  const [direction, setDirection] = useState(0);
+  const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
+  
   useEffect(() => {
     const savedState = sessionStorage.getItem("quizState");
     if (savedState) {
@@ -115,14 +359,14 @@ export default function GenerateQuizPage() {
             setUserAnswers(userAnswers);
             setTimeLeft(timeLeft);
             setBookmarkedQuestions(bookmarkedQuestions || []);
-            form.reset(formValues);
+            setFormValues(formValues);
         }
     }
      const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
     if (storedBookmarks) {
       setBookmarkedQuestions(JSON.parse(storedBookmarks));
     }
-  }, [form]);
+  }, []);
 
   useEffect(() => {
     if (quiz && !showResults) {
@@ -131,14 +375,14 @@ export default function GenerateQuizPage() {
         currentQuestion,
         userAnswers,
         timeLeft,
-        formValues: form.getValues(),
+        formValues,
         bookmarkedQuestions,
       };
       sessionStorage.setItem("quizState", JSON.stringify(quizState));
     } else if(showResults) {
         sessionStorage.removeItem("quizState");
     }
-  }, [quiz, currentQuestion, userAnswers, timeLeft, form, bookmarkedQuestions, showResults]);
+  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions, showResults]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -181,10 +425,10 @@ export default function GenerateQuizPage() {
 
   const handleSubmit = useCallback(() => {
     setShowResults(true);
-    if(quiz) {
+    if(quiz && formValues) {
         const { score, percentage } = calculateScore();
         const newResult = {
-            topic: form.getValues("topic"),
+            topic: formValues.topic,
             score,
             total: quiz.length,
             percentage,
@@ -194,7 +438,7 @@ export default function GenerateQuizPage() {
         sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
     }
     window.scrollTo(0, 0);
-  }, [quiz, userAnswers, form]);
+  }, [quiz, userAnswers, formValues]);
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0 };
@@ -206,7 +450,7 @@ export default function GenerateQuizPage() {
   }, [quiz, userAnswers]);
 
   const getExplanation = async (questionIndex: number) => {
-    if (!quiz) return;
+    if (!quiz || !formValues) return;
     const question = quiz[questionIndex];
     setExplanations((prev) => ({
       ...prev,
@@ -218,7 +462,7 @@ export default function GenerateQuizPage() {
         question: question.question,
         studentAnswer: userAnswers[questionIndex] || "",
         correctAnswer: question.correctAnswer,
-        topic: form.getValues("topic"),
+        topic: formValues.topic,
       });
       setExplanations((prev) => ({
         ...prev,
@@ -239,7 +483,7 @@ export default function GenerateQuizPage() {
   };
   
   const getSimpleExplanation = async (questionIndex: number) => {
-    if (!quiz) return;
+    if (!quiz || !formValues) return;
     const question = quiz[questionIndex];
     setExplanations((prev) => ({
       ...prev,
@@ -250,7 +494,7 @@ export default function GenerateQuizPage() {
         const result = await generateSimpleExplanation({
             question: question.question,
             correctAnswer: question.correctAnswer,
-            topic: form.getValues("topic"),
+            topic: formValues.topic,
         });
         setExplanations((prev) => ({
             ...prev,
@@ -270,10 +514,10 @@ export default function GenerateQuizPage() {
   }
 
   const downloadQuestions = () => {
-    if (!quiz) return;
+    if (!quiz || !formValues) return;
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text(`Quiz on: ${form.getValues('topic')}`, 10, 10);
+    doc.text(`Quiz on: ${formValues.topic}`, 10, 10);
     doc.setFontSize(12);
     let y = 20;
 
@@ -312,7 +556,7 @@ export default function GenerateQuizPage() {
   };
 
   const downloadResultCard = () => {
-    if (!quiz) return;
+    if (!quiz || !formValues) return;
     const { score, percentage } = calculateScore();
     const doc = new jsPDF();
     
@@ -321,7 +565,7 @@ export default function GenerateQuizPage() {
 
     doc.setFontSize(14);
     doc.text(`Student: ${user?.displayName || 'N/A'}`, 20, 40);
-    doc.text(`Topic: ${form.getValues('topic')}`, 20, 50);
+    doc.text(`Topic: ${formValues.topic}`, 20, 50);
 
     doc.setFontSize(16);
     doc.text(`Score: ${score}/${quiz?.length}`, 20, 70);
@@ -332,7 +576,8 @@ export default function GenerateQuizPage() {
   };
   
   const toggleBookmark = (question: string, correctAnswer: string) => {
-    const topic = form.getValues("topic");
+    if(!formValues) return;
+    const topic = formValues.topic;
     const newBookmark: BookmarkedQuestion = { question, correctAnswer, topic };
     let updatedBookmarks;
 
@@ -352,14 +597,14 @@ export default function GenerateQuizPage() {
     setUserAnswers([]);
     setShowResults(false);
     setExplanations({});
-    setStep(1);
+    setFormValues(null);
     sessionStorage.removeItem("quizState");
-    form.reset();
     window.scrollTo(0, 0);
   };
-
-  const handleGenerateQuiz = form.handleSubmit(async (values: z.infer<typeof formSchema>) => {
+  
+  const handleGenerateQuiz = async (values: QuizFormValues) => {
     setIsGenerating(true);
+    setFormValues(values);
     setGenerationProgress(0);
     
     const interval = setInterval(() => {
@@ -399,7 +644,7 @@ export default function GenerateQuizPage() {
         clearInterval(interval);
         setIsGenerating(false);
         let errorMessage = "An unexpected response was received from the server.";
-        if (error.message.includes("503") || error.message.includes("overloaded")) {
+        if (error?.message?.includes("503") || error?.message?.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
         } else if (error.message && !error.message.includes('Unexpected')) {
             errorMessage = error.message;
@@ -411,30 +656,8 @@ export default function GenerateQuizPage() {
       });
       console.error(error);
     }
-  });
-
-
-  const nextStep = async () => {
-    const validationMap = {
-      1: ["topic"],
-      2: ["difficulty", "numberOfQuestions", "timeLimit"],
-      3: ["questionTypes", "questionStyles"]
-    }
-    
-    const fieldsToValidate = validationMap[step as keyof typeof validationMap];
-
-    const isValid = await trigger(fieldsToValidate as any);
-    if (isValid) {
-      setDirection(1);
-      setStep(s => s + 1);
-    }
   };
 
-  const prevStep = () => {
-    setDirection(-1);
-    setStep(s => s - 1)
-  };
-  
   if (isGenerating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
@@ -474,14 +697,14 @@ export default function GenerateQuizPage() {
     return (
       <div className="flex flex-col items-center p-4 overflow-x-hidden">
          <div className="w-full max-w-3xl mx-auto mb-4">
+            <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{formValues?.topic}</h2>
             <div className="flex justify-between items-center mb-2 gap-4">
-                <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{form.getValues("topic")}</h2>
+                <Progress value={progress} className="h-2 flex-1" />
                 <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
                   <Clock className="h-4 w-4" />
                   <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
             </div>
-            <Progress value={progress} className="h-2" />
              <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
                 <p>Question {currentQuestion + 1} of {quiz.length}</p>
                 <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
@@ -655,230 +878,5 @@ export default function GenerateQuizPage() {
     );
   }
 
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return (
-          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
-            <FormField
-              control={form.control}
-              name="topic"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col items-center">
-                  <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
-                  </FormControl>
-                  <FormMessage className="text-center"/>
-                </FormItem>
-              )}
-            />
-          </motion.div>
-        );
-      case 2:
-        return (
-          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
-            <FormField
-              control={form.control}
-              name="difficulty"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg">Difficulty</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                    >
-                      {["easy", "medium", "hard", "master"].map((level) => (
-                         <FormItem key={level} className="flex-1">
-                            <FormControl>
-                               <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                            </FormControl>
-                            <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                              {level}
-                            </Label>
-                          </FormItem>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="numberOfQuestions"
-              render={({ field }) => (
-                 <FormItem>
-                  <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                   <FormControl>
-                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="timeLimit"
-              render={({ field }) => (
-                 <FormItem>
-                  <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                   <FormControl>
-                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </motion.div>
-        );
-      case 3:
-          return (
-             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
-                 <FormField
-                  control={form.control}
-                  name="questionTypes"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Question Formats</FormLabel>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        {questionTypeOptions.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={form.control}
-                            name="questionTypes"
-                            render={({ field }) => (
-                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                  <FormControl>
-                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                    <item.icon className="h-5 w-5" />
-                                    {item.label}
-                                  </FormLabel>
-                                </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="questionStyles"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Question Styles</FormLabel>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        {questionStyleOptions.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={form.control}
-                            name="questionStyles"
-                            render={({ field }) => (
-                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                  <FormControl>
-                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                    <item.icon className="h-5 w-5" />
-                                    {item.label}
-                                  </FormLabel>
-                                </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-             </motion.div>
-          );
-        case 4: {
-            const values = getValues();
-            return (
-                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
-                        <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
-                            <p><strong>Topic:</strong> {values.topic}</p>
-                            <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
-                            <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
-                            <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
-                            <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
-                            <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
-                        </div>
-                    </div>
-                </motion.div>
-            )
-        }
-      default:
-        return null;
-    }
-  };
-
-   const stepTitles = [
-    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
-    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
-    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
-    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
-  ];
-  
-  if (!isGenerating && !quiz && !showResults) {
-    return (
-      <div className="flex flex-col items-center w-full">
-        <PageHeader
-          title={stepTitles[step - 1].title}
-          description={stepTitles[step - 1].description}
-        />
-        <div className="max-w-2xl w-full">
-          <Form {...form}>
-            <form>
-              <Card>
-                <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
-                    <AnimatePresence mode="wait" initial={false} custom={direction}>
-                      {renderStepContent()}
-                    </AnimatePresence>
-                </CardContent>
-                <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
-                    {step > 1 ? (
-                    <Button type="button" variant="outline" onClick={prevStep}>
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
-                    </Button>
-                    ) : <div />}
-                    {step < 4 ? (
-                    <Button type="button" onClick={nextStep}>
-                        Next
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    ) : (
-                    <Button type="button" onClick={handleGenerateQuiz} size="lg" disabled={isGenerating}>
-                        {isGenerating ? (
-                        <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Crafting Quiz...
-                        </>
-                        ) : (
-                        <>
-                            <Sparkles className="mr-2 h-5 w-5" />
-                            Generate Quiz
-                        </>
-                        )}
-                    </Button>
-                    )}
-                </CardFooter>
-              </Card>
-            </form>
-          </Form>
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback for other states (already generating, quiz active, results shown)
-  return null;
+  return <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />;
 }
