@@ -43,7 +43,7 @@ export async function generateQuizFromDocument(
 
 const prompt = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt',
-  model: 'gemini-1.5-flash',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({

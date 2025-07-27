@@ -40,7 +40,7 @@ export async function generatePracticeQuestions(input: GeneratePracticeQuestions
 
 const prompt = ai.definePrompt({
   name: 'generatePracticeQuestionsPrompt',
-  model: 'gemini-1.5-flash',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GeneratePracticeQuestionsInputSchema},
   output: {schema: GeneratePracticeQuestionsOutputSchema},
   prompt: `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content.

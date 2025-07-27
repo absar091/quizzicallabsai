@@ -51,7 +51,7 @@ export async function generateStudyGuide(
 
 const prompt = ai.definePrompt({
   name: 'generateStudyGuidePrompt',
-  model: 'gemini-1.5-flash',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
