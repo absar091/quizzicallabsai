@@ -632,13 +632,6 @@ export default function GenerateQuizPage() {
     );
   }
 
-  const {
-    control,
-    handleSubmit: handleFormSubmitHook,
-    trigger,
-    getValues,
-  } = formMethods;
-
   return (
     <FormProvider {...formMethods}>
       <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
@@ -696,7 +689,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const prevStep = () => {
         if (step > 1) {
             setDirection(-1);
-            setStep(s => s + 1);
+            setStep(s => s - 1);
         }
     };
 
@@ -905,4 +898,3 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
-
