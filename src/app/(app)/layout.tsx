@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarRail } from "@/components/ui/sidebar";
 import { MainSidebar } from "@/components/main-sidebar";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -30,19 +29,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen flex-col">
-        <AppHeader />
-        <div className="flex flex-1">
-          <MainSidebar />
-          <SidebarInset>
-            <main className="flex-1 p-4 md:p-6 lg:p-8">
-              {children}
-            </main>
-            <Footer />
-          </SidebarInset>
+    <div className="flex min-h-screen flex-col">
+       <div className="flex flex-1">
+        <MainSidebar />
+        <div className="flex flex-col flex-1">
+          <AppHeader />
+          <main className="flex-1 p-4 md:p-6 lg:p-8">
+            {children}
+          </main>
+          <Footer />
         </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }

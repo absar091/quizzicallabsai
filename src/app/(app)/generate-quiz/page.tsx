@@ -141,8 +141,9 @@ export default function GenerateQuizPage() {
   }, [quiz, currentQuestion, userAnswers, timeLeft, form, bookmarkedQuestions, showResults]);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (quiz && !showResults && timeLeft > 0) {
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(timer);
@@ -152,8 +153,8 @@ export default function GenerateQuizPage() {
           return prevTime - 1;
         });
       }, 1000);
-      return () => clearInterval(timer);
     }
+    return () => clearInterval(timer);
   }, [quiz, showResults, timeLeft]);
 
   const handleAnswer = (answer: string) => {
@@ -174,8 +175,8 @@ export default function GenerateQuizPage() {
 
   const handleSubmit = useCallback(() => {
     setShowResults(true);
-    const { score, percentage } = calculateScore();
     if(quiz) {
+        const { score, percentage } = calculateScore();
         const newResult = {
             topic: form.getValues("topic"),
             score,
@@ -355,7 +356,6 @@ export default function GenerateQuizPage() {
     setIsGenerating(true);
     setGenerationProgress(0);
     
-    // Simulate loading
     const interval = setInterval(() => {
         setGenerationProgress(prev => {
             if (prev >= 95) {
@@ -408,16 +408,17 @@ export default function GenerateQuizPage() {
   }
 
   const nextStep = async () => {
-    if (step === 1) {
-      const isValid = await trigger("topic");
-      if (isValid) setStep(2);
-    } else if (step === 2) {
-      const isValid = await trigger(["difficulty", "numberOfQuestions", "questionTypes", "timeLimit", "questionStyles"]);
-      if(isValid) setStep(3);
+    const isValid = await trigger(step === 1 ? "topic" : ["difficulty", "numberOfQuestions", "questionTypes", "timeLimit", "questionStyles"]);
+    if (isValid) {
+      setDirection(1);
+      setStep(s => s + 1);
     }
   };
 
-  const prevStep = () => setStep(step - 1);
+  const prevStep = () => {
+    setDirection(-1);
+    setStep(s => s - 1)
+  };
 
 
   if (isGenerating) {
@@ -435,24 +436,20 @@ export default function GenerateQuizPage() {
   }
   
   const cardVariants = {
-    enter: (direction: number) => {
-        return {
-        x: direction > 0 ? 1000 : -1000,
-        opacity: 0,
-        };
-    },
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
     center: {
-        zIndex: 1,
-        x: 0,
-        opacity: 1,
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
     },
-    exit: (direction: number) => {
-        return {
-        zIndex: 0,
-        x: direction < 0 ? 1000 : -1000,
-        opacity: 0,
-        };
-    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
   };
 
   if (quiz && !showResults) {
@@ -629,11 +626,11 @@ export default function GenerateQuizPage() {
     );
   }
 
-  const renderStep = () => {
+  const renderStepContent = () => {
     switch (step) {
       case 1:
         return (
-          <CardContent className="pt-6 flex flex-col items-center">
+          <motion.div key="step1" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
             <FormField
               control={form.control}
               name="topic"
@@ -647,11 +644,11 @@ export default function GenerateQuizPage() {
                 </FormItem>
               )}
             />
-          </CardContent>
+          </motion.div>
         );
       case 2:
         return (
-          <CardContent className="pt-6 space-y-6">
+          <motion.div key="step2" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }} className="space-y-6">
             <FormField
               control={form.control}
               name="difficulty"
@@ -678,7 +675,6 @@ export default function GenerateQuizPage() {
                 </FormItem>
               )}
             />
-            
              <FormField
               control={form.control}
               name="questionTypes"
@@ -691,34 +687,17 @@ export default function GenerateQuizPage() {
                         key={item.id}
                         control={form.control}
                         name="questionTypes"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={item.id}
-                              className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary"
-                            >
+                        render={({ field }) => (
+                            <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                               <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = field.value || [];
-                                    return checked
-                                      ? field.onChange([...currentValue, item.id])
-                                      : field.onChange(
-                                          currentValue?.filter(
-                                            (value) => value !== item.id
-                                          )
-                                        )
-                                  }}
-                                />
+                                <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
                               </FormControl>
                               <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
                                 <item.icon className="h-5 w-5" />
                                 {item.label}
                               </FormLabel>
                             </FormItem>
-                          )
-                        }}
+                        )}
                       />
                     ))}
                   </div>
@@ -726,7 +705,6 @@ export default function GenerateQuizPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="questionStyles"
@@ -739,34 +717,17 @@ export default function GenerateQuizPage() {
                         key={item.id}
                         control={form.control}
                         name="questionStyles"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={item.id}
-                              className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary"
-                            >
+                        render={({ field }) => (
+                            <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
                               <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = field.value || [];
-                                    return checked
-                                      ? field.onChange([...currentValue, item.id])
-                                      : field.onChange(
-                                          currentValue?.filter(
-                                            (value) => value !== item.id
-                                          )
-                                        )
-                                  }}
-                                />
+                                <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
                               </FormControl>
                               <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
                                 <item.icon className="h-5 w-5" />
                                 {item.label}
                               </FormLabel>
                             </FormItem>
-                          )
-                        }}
+                        )}
                       />
                     ))}
                   </div>
@@ -774,7 +735,6 @@ export default function GenerateQuizPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="numberOfQuestions"
@@ -782,13 +742,7 @@ export default function GenerateQuizPage() {
                  <FormItem>
                   <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
                    <FormControl>
-                      <Slider
-                          onValueChange={(value) => field.onChange(value[0])}
-                          defaultValue={[field.value]}
-                          max={55}
-                          min={1}
-                          step={1}
-                      />
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                   </FormControl>
                 </FormItem>
               )}
@@ -800,25 +754,19 @@ export default function GenerateQuizPage() {
                  <FormItem>
                   <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
                    <FormControl>
-                      <Slider
-                          onValueChange={(value) => field.onChange(value[0])}
-                          defaultValue={[field.value]}
-                          max={120}
-                          min={1}
-                          step={1}
-                      />
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
                   </FormControl>
                 </FormItem>
               )}
             />
-          </CardContent>
+          </motion.div>
         );
         case 3: {
             const values = getValues();
             return (
-                <CardContent className="pt-6">
+                <motion.div key="step3" initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.3 }}>
                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Review your quiz details:</h3>
+                        <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
                         <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
                             <p><strong>Topic:</strong> {values.topic}</p>
                             <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
@@ -828,7 +776,7 @@ export default function GenerateQuizPage() {
                             <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
                         </div>
                     </div>
-                </CardContent>
+                </motion.div>
             )
         }
       default:
@@ -853,9 +801,11 @@ export default function GenerateQuizPage() {
         <Card className="overflow-hidden">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="transition-all duration-500 p-2 sm:p-6">
-                {renderStep()}
-              </div>
+              <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
+                 <AnimatePresence mode="wait" initial={false} custom={direction}>
+                    {renderStepContent()}
+                 </AnimatePresence>
+              </CardContent>
               <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
                 {step > 1 ? (
                   <Button type="button" variant="outline" onClick={prevStep}>
@@ -864,12 +814,12 @@ export default function GenerateQuizPage() {
                   </Button>
                 ) : <div />}
                 {step < 3 ? (
-                  <Button type="button" onClick={nextStep} className={cn(step === 1 && 'w-full')}>
+                  <Button type="button" onClick={nextStep}>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button type="submit" size="lg" className="w-full text-lg" disabled={isGenerating}>
+                  <Button type="submit" size="lg" disabled={isGenerating}>
                     {isGenerating ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
