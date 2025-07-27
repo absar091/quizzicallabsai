@@ -6,7 +6,7 @@
  *
  * It includes:
  * - generateCustomQuiz: An async function that takes quiz parameters as input and returns a generated quiz.
- * - GenerateCustomQuizInput: The input type for the generateCustomQuiz function, defining the schema for quiz customization options.
+ * - GenerateCustomQuizInput: The input type for the generateCustomquiz function, defining the schema for quiz customization options.
  * - GenerateCustomQuizOutput: The output type for the generateCustomQuiz function, defining the structure of the generated quiz.
  */
 
@@ -47,6 +47,11 @@ export async function generateCustomQuiz(
 ): Promise<GenerateCustomQuizOutput> {
   return generateCustomQuizFlow(input);
 }
+
+const modelsToTry = [
+    'googleai/gemini-2.0-flash-preview',
+    'googleai/gemini-1.5-flash-preview',
+];
 
 const prompt = ai.definePrompt({
   name: 'generateCustomQuizPrompt',
@@ -110,10 +115,32 @@ const generateCustomQuizFlow = ai.defineFlow(
     inputSchema: GenerateCustomQuizInputSchema,
     outputSchema: GenerateCustomQuizOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    let lastError: any;
+    for (const model of modelsToTry) {
+        try {
+            const llmResponse = await ai.generate({
+                prompt: prompt.prompt,
+                model: model as any,
+                input: input,
+                output: { schema: GenerateCustomQuizOutputSchema },
+            });
+            const output = llmResponse.output;
+            if (output) {
+                return output;
+            }
+        } catch (error: any) {
+            lastError = error;
+            // Check if the error is a rate limit error (e.g., status code 429)
+            if (error.status === 429 || (error.message && error.message.includes('429'))) {
+                console.warn(`Model ${model} is rate-limited. Trying next model.`);
+                continue; // Try the next model
+            }
+            // For other errors, throw them immediately
+            throw error;
+        }
+    }
+    // If all models fail, throw the last captured error
+    throw new Error(`All models failed. Last error: ${lastError?.message || 'Unknown error'}`);
   }
 );
-
-    
