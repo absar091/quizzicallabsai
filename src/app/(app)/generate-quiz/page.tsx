@@ -6,8 +6,10 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert } from "lucide-react";
 import jsPDF from 'jspdf';
+import { get, ref, set } from "firebase/database";
+import { db } from "@/lib/firebase";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -65,24 +67,7 @@ type BookmarkedQuestion = {
     topic: string;
 }
 
-const questionTypeOptions = [
-    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
-    { id: "Fill in the Blank", label: "Fill in the Blank", icon: Puzzle },
-]
-
-const questionStyleOptions = [
-    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
-    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
-    { id: "Numerical", label: "Numerical", icon: Settings },
-    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
-]
-
-const stepTitles = [
-    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
-    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
-    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
-    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
-];
+const DAILY_LIMIT = 12;
 
 // --- Main Page Component ---
 export default function GenerateQuizPage() {
@@ -99,10 +84,11 @@ export default function GenerateQuizPage() {
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [direction, setDirection] = useState(0);
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
-  
-  // Multi-step form state
-  const [step, setStep] = useState(1);
 
+  const [quizCount, setQuizCount] = useState(0);
+  const [isLimitReached, setIsLimitReached] = useState(false);
+  const [isCountLoading, setIsCountLoading] = useState(true);
+  
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -116,6 +102,44 @@ export default function GenerateQuizPage() {
   });
 
   const { trigger, getValues, control } = formMethods;
+
+  const checkQuizLimit = useCallback(async () => {
+    if (!user) return;
+    setIsCountLoading(true);
+    const today = new Date().toISOString().split('T')[0];
+    const userCountRef = ref(db, `quizCounts/${user.uid}/${today}`);
+    
+    try {
+        const snapshot = await get(userCountRef);
+        const count = snapshot.val()?.count || 0;
+        setQuizCount(count);
+
+        if (count >= DAILY_LIMIT) {
+            setIsLimitReached(true);
+            toast({
+                title: "Daily Limit Reached",
+                description: `You have generated ${count} quizzes today. The limit is ${DAILY_LIMIT}. Please try again tomorrow.`,
+                variant: "destructive"
+            });
+        } else {
+            setIsLimitReached(false);
+        }
+    } catch(error) {
+        console.error("Error fetching quiz count:", error);
+        toast({
+            title: "Error",
+            description: "Could not verify your quiz generation limit. Please try again later.",
+            variant: "destructive"
+        })
+    } finally {
+        setIsCountLoading(false);
+    }
+  }, [user, toast]);
+  
+  useEffect(() => {
+    checkQuizLimit();
+  }, [checkQuizLimit]);
+  
 
   useEffect(() => {
     const savedState = sessionStorage.getItem("quizState");
@@ -170,6 +194,11 @@ export default function GenerateQuizPage() {
   }, [quiz, showResults, timeLeft]);
   
   const handleGenerateQuiz = async (values: QuizFormValues) => {
+    if (!user || isLimitReached) {
+        toast({ title: "Cannot Generate Quiz", description: "You have reached your daily limit.", variant: "destructive" });
+        return;
+    }
+
     setIsGenerating(true);
     setFormValues(values);
     setGenerationProgress(0);
@@ -198,6 +227,13 @@ export default function GenerateQuizPage() {
       });
       clearInterval(interval);
       setGenerationProgress(100);
+      
+      const today = new Date().toISOString().split('T')[0];
+      const userCountRef = ref(db, `quizCounts/${user.uid}/${today}`);
+      const newCount = quizCount + 1;
+      await set(userCountRef, { count: newCount });
+      setQuizCount(newCount);
+
 
       setTimeout(() => {
         setQuiz(result.quiz);
@@ -211,7 +247,9 @@ export default function GenerateQuizPage() {
         clearInterval(interval);
         setIsGenerating(false);
         let errorMessage = "An unexpected response was received from the server.";
-        if (error?.message?.includes("503") || error?.message?.includes("overloaded")) {
+        if (error?.message?.includes("429")) {
+            errorMessage = "The AI model is currently overloaded or you have hit a rate limit. Please try again in a few moments.";
+        } else if (error?.message?.includes("503") || error?.message?.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
         } else if (error.message && !error.message.includes('Unexpected')) {
             errorMessage = error.message;
@@ -423,40 +461,11 @@ export default function GenerateQuizPage() {
     setShowResults(false);
     setExplanations({});
     setFormValues(null);
-    setStep(1);
-    formMethods.reset();
+    checkQuizLimit(); // Re-check limit when starting a new quiz
     sessionStorage.removeItem("quizState");
     window.scrollTo(0, 0);
   };
   
-  // --- Step navigation logic ---
-  const nextStep = async () => {
-    const validationMap = {
-      1: ["topic"],
-      2: ["difficulty", "numberOfQuestions", "timeLimit"],
-      3: ["questionTypes", "questionStyles"]
-    } as const;
-    const fieldsToValidate = validationMap[step as keyof typeof validationMap];
-    if (fieldsToValidate) {
-        const isValid = await trigger(fieldsToValidate);
-        if (!isValid) return;
-    }
-    if (step < 4) {
-      setDirection(1);
-      setStep(s => s + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (step > 1) {
-        setDirection(-1);
-        setStep(s => s - 1);
-    }
-  };
-
-  const handleFormSubmit = formMethods.handleSubmit((values) => {
-    handleGenerateQuiz(values);
-  });
   
   // --- Conditional Rendering ---
 
@@ -681,211 +690,298 @@ export default function GenerateQuizPage() {
   }
 
   // --- Render multi-step form ---
-  const renderStepContent = () => {
-    switch (step) {
-      case 1:
-        return (
-          <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
-            <FormField
-              control={control}
-              name="topic"
-              render={({ field }) => (
-                <FormItem className="w-full flex flex-col items-center">
-                  <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
-                  </FormControl>
-                  <FormMessage className="text-center"/>
-                </FormItem>
-              )}
-            />
-          </motion.div>
-        );
-      case 2:
-        return (
-          <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
-            <FormField
-              control={control}
-              name="difficulty"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg">Difficulty</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                    >
-                      {["easy", "medium", "hard", "master"].map((level) => (
-                         <FormItem key={level} className="flex-1">
-                            <FormControl>
-                               <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                            </FormControl>
-                            <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                              {level}
-                            </Label>
-                          </FormItem>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="numberOfQuestions"
-              render={({ field }) => (
-                 <FormItem>
-                  <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                   <FormControl>
-                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="timeLimit"
-              render={({ field }) => (
-                 <FormItem>
-                  <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                   <FormControl>
-                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </motion.div>
-        );
-      case 3:
-          return (
-             <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
-                 <FormField
+  return (
+    <FormProvider {...formMethods}>
+      <QuizSetupForm 
+        onGenerateQuiz={handleGenerateQuiz} 
+        isLimitReached={isLimitReached} 
+        isCountLoading={isCountLoading}
+        quizCount={quizCount}
+      />
+    </FormProvider>
+  );
+}
+
+
+// --- Form Component ---
+const questionTypeOptions = [
+    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
+    { id: "Fill in the Blank", label: "Fill in the Blank", icon: Puzzle },
+]
+
+const questionStyleOptions = [
+    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
+    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
+    { id: "Numerical", label: "Numerical", icon: Settings },
+    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
+]
+
+const stepTitles = [
+    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
+    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
+    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
+    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
+];
+
+type QuizSetupFormProps = {
+    onGenerateQuiz: (values: QuizFormValues) => void;
+    isLimitReached: boolean;
+    isCountLoading: boolean;
+    quizCount: number;
+}
+
+function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCount }: QuizSetupFormProps) {
+    const formMethods = useFormContext<QuizFormValues>();
+    const { trigger, getValues, control } = formMethods;
+    const [step, setStep] = useState(1);
+    const [direction, setDirection] = useState(0);
+
+    const nextStep = async () => {
+        const validationMap = {
+          1: ["topic"],
+          2: ["difficulty", "numberOfQuestions", "timeLimit"],
+          3: ["questionTypes", "questionStyles"]
+        } as const;
+        const fieldsToValidate = validationMap[step as keyof typeof validationMap];
+        if (fieldsToValidate) {
+            const isValid = await trigger(fieldsToValidate);
+            if (!isValid) return;
+        }
+        if (step < 4) {
+          setDirection(1);
+          setStep(s => s + 1);
+        }
+    };
+
+    const prevStep = () => {
+        if (step > 1) {
+            setDirection(-1);
+            setStep(s => s - 1);
+        }
+    };
+
+    const handleFormSubmit = formMethods.handleSubmit((values) => {
+      onGenerateQuiz(values);
+    });
+
+    const renderStepContent = () => {
+        switch (step) {
+          case 1:
+            return (
+              <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+                <FormField
                   control={control}
-                  name="questionTypes"
-                  render={() => (
+                  name="topic"
+                  render={({ field }) => (
+                    <FormItem className="w-full flex flex-col items-center">
+                      <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
+                      </FormControl>
+                      <FormMessage className="text-center"/>
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+            );
+          case 2:
+            return (
+              <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+                <FormField
+                  control={control}
+                  name="difficulty"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Question Formats</FormLabel>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        {questionTypeOptions.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={control}
-                            name="questionTypes"
-                            render={({ field }) => (
-                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                  <FormControl>
-                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                    <item.icon className="h-5 w-5" />
-                                    {item.label}
-                                  </FormLabel>
-                                </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
+                      <FormLabel className="text-lg">Difficulty</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                        >
+                          {["easy", "medium", "hard", "master"].map((level) => (
+                             <FormItem key={level} className="flex-1">
+                                <FormControl>
+                                   <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                                </FormControl>
+                                <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                                  {level}
+                                </Label>
+                              </FormItem>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={control}
-                  name="questionStyles"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Question Styles</FormLabel>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        {questionStyleOptions.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={control}
-                            name="questionStyles"
-                            render={({ field }) => (
-                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                  <FormControl>
-                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                    <item.icon className="h-5 w-5" />
-                                    {item.label}
-                                  </FormLabel>
-                                </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
+                  name="numberOfQuestions"
+                  render={({ field }) => (
+                     <FormItem>
+                      <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                       <FormControl>
+                          <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
-             </motion.div>
-          );
-        case 4: {
-            const values = getValues();
-            return (
-                <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
-                        <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
-                            <p><strong>Topic:</strong> {values.topic}</p>
-                            <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
-                            <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
-                            <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
-                            <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
-                            <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
+                <FormField
+                  control={control}
+                  name="timeLimit"
+                  render={({ field }) => (
+                     <FormItem>
+                      <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                       <FormControl>
+                          <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+            );
+          case 3:
+              return (
+                 <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+                     <FormField
+                      control={control}
+                      name="questionTypes"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className="text-lg">Question Formats</FormLabel>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            {questionTypeOptions.map((item) => (
+                              <FormField
+                                key={item.id}
+                                control={control}
+                                name="questionTypes"
+                                render={({ field }) => (
+                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                      <FormControl>
+                                        <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                      </FormControl>
+                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                        <item.icon className="h-5 w-5" />
+                                        {item.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name="questionStyles"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className="text-lg">Question Styles</FormLabel>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            {questionStyleOptions.map((item) => (
+                              <FormField
+                                key={item.id}
+                                control={control}
+                                name="questionStyles"
+                                render={({ field }) => (
+                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                      <FormControl>
+                                        <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                      </FormControl>
+                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                        <item.icon className="h-5 w-5" />
+                                        {item.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                 </motion.div>
+              );
+            case 4: {
+                const values = getValues();
+                return (
+                    <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
+                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
+                                <p><strong>Topic:</strong> {values.topic}</p>
+                                <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
+                                <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
+                                <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
+                                <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
+                                <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
+                            </div>
+                            {isLimitReached && (
+                                <Alert variant="destructive">
+                                    <ShieldAlert className="h-4 w-4" />
+                                    <AlertTitle>Daily Limit Reached</AlertTitle>
+                                    <AlertDescription>
+                                        You have used all your free quiz generations for today. Please upgrade or try again tomorrow.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                         </div>
-                    </div>
-                </motion.div>
-            )
+                    </motion.div>
+                )
+            }
+          default:
+            return null;
         }
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center w-full">
-      <PageHeader
-        title={stepTitles[step - 1].title}
-        description={stepTitles[step - 1].description}
-      />
-      <div className="max-w-2xl w-full">
-        <FormProvider {...formMethods}>
-          <Form {...formMethods}>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <Card>
-                <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
-                    <AnimatePresence mode="wait" initial={false} custom={direction}>
-                    {renderStepContent()}
-                    </AnimatePresence>
-                </CardContent>
-                <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
-                    {step > 1 ? (
-                    <Button type="button" variant="outline" onClick={prevStep}>
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
-                    </Button>
-                    ) : <div />}
-                    {step < 4 ? (
-                    <Button type="button" onClick={nextStep}>
-                        Next
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    ) : (
-                    <Button type="button" onClick={handleFormSubmit} size="lg">
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Generate Quiz
-                    </Button>
-                    )}
-                </CardFooter>
-                </Card>
-            </form>
-          </Form>
-        </FormProvider>
-      </div>
-    </div>
-  )
+    };
+    
+    return (
+        <div className="flex flex-col items-center w-full">
+          <PageHeader
+            title={stepTitles[step - 1].title}
+            description={stepTitles[step - 1].description}
+          />
+          <div className="max-w-2xl w-full">
+            <Form {...formMethods}>
+              <form onSubmit={(e) => e.preventDefault()}>
+                  <Card>
+                    <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
+                        <AnimatePresence mode="wait" initial={false} custom={direction}>
+                            {renderStepContent()}
+                        </AnimatePresence>
+                    </CardContent>
+                    <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
+                        {step > 1 ? (
+                        <Button type="button" variant="outline" onClick={prevStep}>
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back
+                        </Button>
+                        ) : <div />}
+                        {step < 4 ? (
+                        <Button type="button" onClick={nextStep}>
+                            Next
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                        ) : (
+                        <Button type="button" onClick={handleFormSubmit} size="lg" disabled={isLimitReached || isCountLoading}>
+                           {isCountLoading ? (
+                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Verifying...</>
+                            ) : (
+                                <><Sparkles className="mr-2 h-5 w-5" /> Generate Quiz</>
+                            )}
+                        </Button>
+                        )}
+                    </CardFooter>
+                  </Card>
+              </form>
+            </Form>
+            <p className="text-center text-xs text-muted-foreground mt-4">
+                You have used {quizCount} of {DAILY_LIMIT} free quiz generations today.
+            </p>
+          </div>
+        </div>
+    )
 }
