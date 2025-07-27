@@ -25,8 +25,22 @@ import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Slider } from "@/components/ui/slider";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_FILE_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 const formSchema = z.object({
-  document: z.any().refine((files) => files?.length == 1, "Please upload a document."),
+  document: z
+    .any()
+    .refine((files) => files?.length == 1, "Please upload a document.")
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+    .refine(
+      (files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type),
+      ".pdf, .doc, and .docx files are accepted."
+    ),
   quizLength: z.number().min(1).max(55),
 });
 
@@ -228,6 +242,7 @@ export default function GenerateFromDocumentPage() {
                                 <input id="dropzone-file" type="file" className="hidden" {...fileRef} onChange={(e) => {
                                   field.onChange(e.target.files);
                                   setFileName(e.target.files?.[0]?.name ?? null);
+                                  form.trigger("document");
                                 }} accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                             </label>
                           </div>

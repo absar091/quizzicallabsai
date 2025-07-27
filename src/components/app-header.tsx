@@ -103,15 +103,17 @@ export function AppHeader() {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>How to Use Quizzicallabs AI</AlertDialogTitle>
-                  <AlertDialogDescription className="text-left">
-                    Welcome! Here’s a quick guide to get you started:
-                    <ul className="list-disc pl-5 mt-4 space-y-2">
-                        <li><b>Dashboard:</b> Your central hub to see recent activity, bookmarked questions, and track your progress.</li>
-                        <li><b>Generation Tools:</b> Use the sidebar to navigate. You can generate custom quizzes, practice questions, study guides, or even create a quiz from a document you upload.</li>
-                        <li><b>MDCAT Prep:</b> Access specialized tests for medical entry exam preparation.</li>
-                        <li><b>Profile:</b> Manage your account details and log out from the profile page.</li>
-                        <li><b>Theme:</b> Use the sun/moon icon in the header to switch between light and dark mode.</li>
-                    </ul>
+                  <AlertDialogDescription asChild>
+                    <div className="text-left text-sm text-muted-foreground">
+                        Welcome! Here’s a quick guide to get you started:
+                        <ul className="list-disc pl-5 mt-4 space-y-2">
+                            <li><b>Dashboard:</b> Your central hub to see recent activity, bookmarked questions, and track your progress.</li>
+                            <li><b>Generation Tools:</b> Use the sidebar to navigate. You can generate custom quizzes, practice questions, study guides, or even create a quiz from a document you upload.</li>
+                            <li><b>MDCAT Prep:</b> Access specialized tests for medical entry exam preparation.</li>
+                            <li><b>Profile:</b> Manage your account details and log out from the profile page.</li>
+                            <li><b>Theme:</b> Use the sun/moon icon in the header to switch between light and dark mode.</li>
+                        </ul>
+                    </div>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
