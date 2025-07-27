@@ -68,7 +68,7 @@ export default function ProfilePage() {
                             <Skeleton className="h-24 w-24 rounded-full" />
                         ) : (
                             <Avatar className="h-24 w-24">
-                                <AvatarImage src="https://images.unsplash.com/photo-1662120455989-5a433cec9980?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxRVUlafGVufDB8fHx8MTc1MzM3NjU3M3ww&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
+                                <AvatarImage src="https://images.unsplash.com/photo-1678931547963-ab9017fc35c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8YnJhaW4lMjBhbmltaWV8ZW58MHx8fHwxNzUzNjE1NjAwfDA&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? ""} data-ai-hint="user avatar" />
                                 <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                         )}
