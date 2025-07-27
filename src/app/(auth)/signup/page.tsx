@@ -62,8 +62,8 @@ export default function SignupPage() {
       await sendEmailVerification(userCredential.user);
 
       toast({
-        title: "Account Created",
-        description: "A verification email has been sent. Please check your inbox to log in.",
+        title: "Account Created! Please Verify Your Email",
+        description: "A verification email has been sent to your inbox. Please also check your spam folder.",
       });
       router.push("/login");
     } catch (error: any) {
