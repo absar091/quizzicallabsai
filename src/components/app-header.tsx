@@ -21,6 +21,8 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { MainSidebar } from "./main-sidebar";
@@ -48,6 +50,9 @@ export function AppHeader() {
                 <Button variant="ghost" size="icon"><Menu/></Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[250px] p-0">
+                 <SheetHeader className="p-4 border-b">
+                    <SheetTitle>Menu</SheetTitle>
+                 </SheetHeader>
                  <MainSidebar />
               </SheetContent>
             </Sheet>
