@@ -63,6 +63,11 @@ export default function GeneratePaperPage() {
       numberOfQuestions: 10,
       difficulty: "medium",
       includeAnswerKey: true,
+      age: undefined,
+      testDate: "",
+      timeLimit: undefined,
+      totalMarks: undefined,
+      teacherName: "",
     },
   });
 
