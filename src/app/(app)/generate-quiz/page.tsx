@@ -89,7 +89,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(0);
 
-  const form = useForm<QuizFormValues>({
+  const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: "",
@@ -101,7 +101,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
     },
   });
 
-  const { trigger, getValues } = form;
+  const { trigger, getValues, control } = formMethods;
 
   const nextStep = async () => {
     const validationMap = {
@@ -122,7 +122,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
     setStep(s => s - 1)
   };
 
-  const handleFormSubmit = form.handleSubmit((values) => {
+  const handleFormSubmit = formMethods.handleSubmit((values) => {
     onGenerateQuiz(values);
   });
   
@@ -132,7 +132,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         return (
           <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
             <FormField
-              control={form.control}
+              control={control}
               name="topic"
               render={({ field }) => (
                 <FormItem className="w-full flex flex-col items-center">
@@ -150,7 +150,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         return (
           <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
             <FormField
-              control={form.control}
+              control={control}
               name="difficulty"
               render={({ field }) => (
                 <FormItem>
@@ -178,7 +178,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
               )}
             />
             <FormField
-              control={form.control}
+              control={control}
               name="numberOfQuestions"
               render={({ field }) => (
                  <FormItem>
@@ -190,7 +190,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
               )}
             />
             <FormField
-              control={form.control}
+              control={control}
               name="timeLimit"
               render={({ field }) => (
                  <FormItem>
@@ -207,7 +207,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
           return (
              <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
                  <FormField
-                  control={form.control}
+                  control={control}
                   name="questionTypes"
                   render={() => (
                     <FormItem>
@@ -216,7 +216,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                         {questionTypeOptions.map((item) => (
                           <FormField
                             key={item.id}
-                            control={form.control}
+                            control={control}
                             name="questionTypes"
                             render={({ field }) => (
                                 <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
@@ -237,7 +237,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                   )}
                 />
                 <FormField
-                  control={form.control}
+                  control={control}
                   name="questionStyles"
                   render={() => (
                     <FormItem>
@@ -246,7 +246,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                         {questionStyleOptions.map((item) => (
                           <FormField
                             key={item.id}
-                            control={form.control}
+                            control={control}
                             name="questionStyles"
                             render={({ field }) => (
                                 <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
@@ -298,7 +298,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         description={stepTitles[step - 1].description}
       />
       <div className="max-w-2xl w-full">
-        <FormProvider {...form}>
+        <FormProvider {...formMethods}>
           <form onSubmit={(e) => e.preventDefault()}>
             <Card>
               <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
@@ -880,3 +880,5 @@ export default function GenerateQuizPage() {
 
   return <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />;
 }
+
+    
