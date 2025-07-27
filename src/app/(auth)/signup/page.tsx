@@ -45,7 +45,7 @@ export default function SignupPage() {
       email: "",
       password: "",
       className: "",
-      age: undefined,
+      age: '' as unknown as number, // Initialize with empty string to prevent uncontrolled input error
       agree: false,
     },
   });
