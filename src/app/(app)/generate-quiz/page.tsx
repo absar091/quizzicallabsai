@@ -93,14 +93,18 @@ const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
     doc.text(`Page ${pageNumber} of ${pageCount}`, 105, 290, { align: 'center' });
 }
 
+type GenerateQuizPageProps = {
+  initialQuiz?: Quiz;
+  initialFormValues?: QuizFormValues;
+}
 
 // --- Main Page Component ---
-export default function GenerateQuizPage() {
+export default function GenerateQuizPage({ initialQuiz, initialFormValues }: GenerateQuizPageProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<Quiz | null>(initialQuiz || null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -108,11 +112,11 @@ export default function GenerateQuizPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [direction, setDirection] = useState(0);
-  const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
+  const [formValues, setFormValues] = useState<QuizFormValues | null>(initialFormValues || null);
   
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialFormValues || {
       topic: "",
       difficulty: "medium",
       numberOfQuestions: 10,
@@ -123,6 +127,18 @@ export default function GenerateQuizPage() {
   });
 
   useEffect(() => {
+    if (initialQuiz && initialFormValues) {
+        setQuiz(initialQuiz);
+        setUserAnswers(new Array(initialQuiz.length).fill(null));
+        setTimeLeft(initialFormValues.timeLimit * 60);
+        setFormValues(initialFormValues);
+    }
+  }, [initialQuiz, initialFormValues])
+
+  useEffect(() => {
+    // Don't persist MDCAT quizzes
+    if(initialQuiz) return;
+
     const savedState = sessionStorage.getItem("quizState");
     if (savedState) {
         const { quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions } = JSON.parse(savedState);
@@ -139,9 +155,12 @@ export default function GenerateQuizPage() {
     if (storedBookmarks) {
       setBookmarkedQuestions(JSON.parse(storedBookmarks));
     }
-  }, []);
+  }, [initialQuiz]);
 
   useEffect(() => {
+     // Don't persist MDCAT quizzes
+    if(initialQuiz) return;
+
     if (quiz && !showResults) {
       const quizState = {
         quiz,
@@ -155,7 +174,7 @@ export default function GenerateQuizPage() {
     } else if(showResults) {
         sessionStorage.removeItem("quizState");
     }
-  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions, showResults]);
+  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions, showResults, initialQuiz]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -433,6 +452,11 @@ export default function GenerateQuizPage() {
   };
 
   const resetQuiz = () => {
+    if(initialQuiz) {
+        // For MDCAT quizzes, just go back to the MDCAT home
+        window.location.href = '/mdcat';
+        return;
+    }
     setQuiz(null);
     setCurrentQuestion(0);
     setUserAnswers([]);
@@ -660,7 +684,7 @@ export default function GenerateQuizPage() {
                     )}
                 </CardContent>
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
-                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> Take Again</Button>
+                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'MDCAT Home' : 'Take Again'}</Button>
                     <Button variant="outline" asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>

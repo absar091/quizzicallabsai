@@ -1,66 +1,139 @@
 
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams, useRouter, notFound } from "next/navigation";
-import { GenerateQuizPage, Quiz } from "../../generate-quiz/page";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
+import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Link from 'next/link';
+import Link from "next/link";
 
-// Since the main component is client-side, we can just re-export it.
-// However, we'll wrap it in a new component to handle the specific logic for MDCAT tests.
-
-function MdcatTest() {
+function MdcatTestFlow() {
     const searchParams = useSearchParams();
-    const router = useRouter();
+    const { toast } = useToast();
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const subject = searchParams.get('subject');
     const chapter = searchParams.get('chapter');
+    const topic = searchParams.get('topic');
+    const difficulty = searchParams.get('difficulty') || 'hard';
+    const questionStyles = searchParams.get('questionStyles') || 'Past Paper Style';
 
-    if (!subject || !chapter) {
-        // Or render a message asking them to select a chapter
+    useEffect(() => {
+        if (!topic) {
+            setError("No topic specified for the test.");
+            setIsLoading(false);
+            return;
+        }
+
+        const generateTest = async () => {
+            try {
+                const result = await generateCustomQuiz({
+                    topic: topic,
+                    difficulty: difficulty as any,
+                    numberOfQuestions: 15, // A reasonable number for a chapter test
+                    questionTypes: ["Multiple Choice"],
+                    questionStyles: questionStyles.split(','),
+                    timeLimit: 15,
+                    userAge: null,
+                    userClass: "MDCAT Student",
+                });
+                setQuiz(result.quiz);
+            } catch (err: any) {
+                let errorMessage = "An unexpected error occurred while generating the test.";
+                 if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
+                    errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+                }
+                setError(errorMessage);
+                toast({
+                    title: "Failed to Generate Test",
+                    description: errorMessage,
+                    variant: "destructive",
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        generateTest();
+    }, [topic, difficulty, questionStyles, toast]);
+
+    if (isLoading) {
         return (
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                <p className="text-xl text-muted-foreground">Preparing your MDCAT test for "{topic}"...</p>
+                <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+            </div>
+        )
+    }
+
+    if (error) {
+         return (
             <div className="text-center">
-                <PageHeader title="Invalid Test" description="Please select a subject and chapter to start an MDCAT test."/>
+                <PageHeader title="Could Not Generate Test" description={error}/>
                 <Button asChild>
                     <Link href="/mdcat">Back to MDCAT Prep</Link>
                 </Button>
             </div>
         );
     }
+
+    if (quiz) {
+        // We are passing the generated quiz directly to the GenerateQuizPage component.
+        // We also need to modify GenerateQuizPage to accept this quiz as a prop.
+        // For now, let's assume we can pass it and it will render the quiz part.
+        // We need to make `GenerateQuizPage` more of a "QuizUI" component.
+        // This is a big refactor, let's do it step by step.
+        // The best way for now is to pass the quiz and initial form values to the component directly.
+        return <GenerateQuizPage 
+            initialQuiz={quiz} 
+            initialFormValues={{
+                 topic: topic || "MDCAT Test",
+                 difficulty: difficulty as any,
+                 numberOfQuestions: quiz.length,
+                 questionTypes: ["Multiple Choice"],
+                 questionStyles: questionStyles.split(','),
+                 timeLimit: 15,
+            }}
+         />
+    }
     
-    // Here you could pass pre-filled form values to the GenerateQuizPage
-    // For now, we will let the user set the number of questions etc.
-    // The topic will be pre-filled from the chapter name.
-    
-    // This is a simplified approach. We're re-using the `GenerateQuizPage` component.
-    // We would need to modify `GenerateQuizPage` to accept initial values via props to pre-fill the form.
-    // For this iteration, we will just use the GenerateQuizPage as is, which means the user will have to
-    // manually enter the topic again. A future improvement would be to pass props.
-    
-    // For now, redirecting to the generate-quiz page with query params is a better approach
-    // as it doesn't require complex state sharing between pages.
-    // Let's modify GenerateQuizPage to read from query params.
-    
-    // The component is large so we are not going to render it directly.
-    // Instead we will show a "start test" page that redirects to generate-quiz
-    
+    return null; // Should not be reached
+}
+
+function MdcatTestPage() {
+    // This component will now decide whether to show the setup card or the actual test flow.
+    const searchParams = useSearchParams();
+    const subject = searchParams.get('subject');
+    const chapter = searchParams.get('chapter');
+
+    // If we have subject and chapter, we can proceed to generate.
+    // The "topic" will be the chapter name.
+    if (subject && chapter) {
+        return <MdcatTestFlow />;
+    }
+
+    // Fallback if the URL is incomplete
     return (
         <div className="max-w-2xl mx-auto">
-             <PageHeader title="MDCAT Chapter Test" description="Prepare for your test on the selected chapter." />
+             <PageHeader title="MDCAT Test Setup" description="Configure your chapter test." />
              <Card>
                 <CardHeader>
                     <CardTitle>Test Details</CardTitle>
-                    <CardDescription>You are about to start a test for the following chapter. Click below to configure and start your quiz.</CardDescription>
+                    <CardDescription>You are about to start a test. Click below to configure and start your quiz.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p><strong>Subject:</strong> <span className="capitalize">{subject}</span></p>
-                    <p><strong>Chapter:</strong> {chapter}</p>
-                     <Button asChild className="mt-6 w-full" size="lg">
-                        <Link href={`/generate-quiz?topic=${encodeURIComponent(chapter)}&difficulty=hard&questionStyles=Past Paper Style`}>
-                           Proceed to Quiz Setup
+                    <p><strong>Subject:</strong> <span className="capitalize">{subject || 'Not selected'}</span></p>
+                    <p><strong>Chapter:</strong> {chapter || 'Not selected'}</p>
+                     <Button asChild className="mt-6 w-full" size="lg" disabled={!subject || !chapter}>
+                        <Link href={`/generate-quiz?topic=${encodeURIComponent(chapter || '')}&difficulty=hard&questionStyles=Past Paper Style`}>
+                           Proceed to Custom Quiz Setup
                         </Link>
                     </Button>
                 </CardContent>
@@ -70,10 +143,15 @@ function MdcatTest() {
 }
 
 
-export default function MdcatTestPage() {
+export default function MdcatTestSuspenseWrapper() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <MdcatTest />
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-xl text-muted-foreground">Loading test parameters...</p>
+            </div>
+        }>
+            <MdcatTestPage />
         </Suspense>
     )
 }
