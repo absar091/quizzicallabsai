@@ -61,7 +61,7 @@ const prompt = ai.definePrompt({
 3.  **PLAUSIBLE OPTIONS:** For multiple-choice questions, all distractors (incorrect options) must be plausible and relevant to the topic to create a meaningful challenge. Avoid silly or obviously wrong options.
 4.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question should be unique in its wording and approach.
 5.  **CLEAR LANGUAGE:** Use clear, unambiguous language. The complexity of the language should match the specified difficulty level.
-6.  **FINAL OUTPUT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting.
+6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. The 'correctAnswer' field MUST EXACTLY MATCH one of the strings in the 'answers' array for each question.
 
 ---
 
@@ -72,13 +72,13 @@ const prompt = ai.definePrompt({
 
 **2. DIFFICULTY LEVEL: '{{{difficulty}}}'**
    - You MUST generate ALL questions at this precise difficulty level. Do NOT mix difficulties.
-     *   **Easy:** Requires basic recall of definitions, facts, and simple concepts. (e.g., "Who was the first president of the United States?")
-     *   **Medium:** Requires application of knowledge, simple calculations, or interpretation of information. (e.g., "Explain the main cause of the American Revolution.")
-     *   **Hard:** Requires analysis, synthesis of multiple concepts, or complex problem-solving. Questions may have subtle nuances. (e.g., "Analyze the economic impact of the Louisiana Purchase on different regions of the U.S.")
-     *   **Master:** Requires expert-level understanding, evaluation of complex scenarios, and integration of multiple advanced topics. These should be exceptionally challenging. (e.g., "Evaluate the long-term consequences of the Marshall Court's decisions on federal versus state power, citing specific cases.")
+     *   **Easy:** Requires basic recall of definitions, facts, and simple concepts.
+     *   **Medium:** Requires application of knowledge, simple calculations, or interpretation of information.
+     *   **Hard:** Requires analysis, synthesis of multiple concepts, or complex problem-solving. Questions may have subtle nuances.
+     *   **Master:** Requires expert-level understanding, evaluation of complex scenarios, and integration of multiple advanced topics. These should be exceptionally challenging.
 
 **3. QUESTION FORMATS: {{{questionTypes}}}**
-   - Generate questions ONLY in the specified formats. For "Multiple Choice", provide exactly 4 distinct options.
+   - Generate questions ONLY in the specified formats. For "Multiple Choice", provide exactly 4 distinct options in the 'answers' array. The 'correctAnswer' field must be one of those strings.
 
 **4. QUESTION STYLES: {{{questionStyles}}}**
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
@@ -101,7 +101,7 @@ const prompt = ai.definePrompt({
 "A projectile is fired from the ground at an angle of 60 degrees with an initial velocity of 100 m/s. Neglecting air resistance, what is the maximum height it reaches? (g = 9.8 m/s^2)"
  - This is a good example because it requires a specific formula and calculation, fitting both "Hard" and "Numerical" styles.
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now.`,
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema.`,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(
@@ -115,3 +115,5 @@ const generateCustomQuizFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

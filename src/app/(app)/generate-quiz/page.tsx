@@ -358,7 +358,7 @@ export default function GenerateQuizPage() {
     window.scrollTo(0, 0);
   };
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleGenerateQuiz = form.handleSubmit(async (values: z.infer<typeof formSchema>) => {
     setIsGenerating(true);
     setGenerationProgress(0);
     
@@ -398,10 +398,10 @@ export default function GenerateQuizPage() {
     } catch (error: any) {
         clearInterval(interval);
         setIsGenerating(false);
-        let errorMessage = "An unknown error occurred.";
+        let errorMessage = "An unexpected response was received from the server.";
         if (error.message.includes("503") || error.message.includes("overloaded")) {
             errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
-        } else if (error.message) {
+        } else if (error.message && !error.message.includes('Unexpected')) {
             errorMessage = error.message;
         }
       toast({
@@ -411,7 +411,8 @@ export default function GenerateQuizPage() {
       });
       console.error(error);
     }
-  }
+  });
+
 
   const nextStep = async () => {
     const validationMap = {
@@ -433,7 +434,7 @@ export default function GenerateQuizPage() {
     setDirection(-1);
     setStep(s => s - 1)
   };
-
+  
   if (isGenerating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
@@ -825,54 +826,59 @@ export default function GenerateQuizPage() {
     { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
     { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
   ];
-
-  return (
-    <Form {...form}>
+  
+  if (!isGenerating && !quiz && !showResults) {
+    return (
       <div className="flex flex-col items-center w-full">
         <PageHeader
           title={stepTitles[step - 1].title}
           description={stepTitles[step - 1].description}
         />
         <div className="max-w-2xl w-full">
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Card>
-              <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
-                  <AnimatePresence mode="wait" initial={false} custom={direction}>
-                    {renderStepContent()}
-                  </AnimatePresence>
-              </CardContent>
-              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
-                  {step > 1 ? (
-                  <Button type="button" variant="outline" onClick={prevStep}>
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Back
-                  </Button>
-                  ) : <div />}
-                  {step < 4 ? (
-                  <Button type="button" onClick={nextStep}>
-                      Next
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  ) : (
-                  <Button type="submit" size="lg" disabled={isGenerating}>
-                      {isGenerating ? (
-                      <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Crafting Quiz...
-                      </>
-                      ) : (
-                      <>
-                          <Sparkles className="mr-2 h-5 w-5" />
-                          Generate Quiz
-                      </>
-                      )}
-                  </Button>
-                  )}
-              </CardFooter>
-            </Card>
-          </form>
+          <Form {...form}>
+            <form>
+              <Card>
+                <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
+                    <AnimatePresence mode="wait" initial={false} custom={direction}>
+                      {renderStepContent()}
+                    </AnimatePresence>
+                </CardContent>
+                <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
+                    {step > 1 ? (
+                    <Button type="button" variant="outline" onClick={prevStep}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
+                    </Button>
+                    ) : <div />}
+                    {step < 4 ? (
+                    <Button type="button" onClick={nextStep}>
+                        Next
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    ) : (
+                    <Button type="button" onClick={handleGenerateQuiz} size="lg" disabled={isGenerating}>
+                        {isGenerating ? (
+                        <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Crafting Quiz...
+                        </>
+                        ) : (
+                        <>
+                            <Sparkles className="mr-2 h-5 w-5" />
+                            Generate Quiz
+                        </>
+                        )}
+                    </Button>
+                    )}
+                </CardFooter>
+              </Card>
+            </form>
+          </Form>
         </div>
       </div>
-    </Form>
-  );
+    );
+  }
+
+  // Fallback for other states (already generating, quiz active, results shown)
+  return null;
 }
