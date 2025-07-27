@@ -60,10 +60,11 @@ const prompt = ai.definePrompt({
 
 1.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 2.  **PARAMETER ADHERENCE:** You MUST strictly follow all user-defined parameters: 'topic', 'difficulty', 'numberOfQuestions', 'questionTypes', and 'questionStyles'. NO DEVIATIONS.
-3.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
-4.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-5.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
-6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. The 'correctAnswer' field MUST EXACTLY MATCH one of the strings in the 'answers' array for each question.
+3.  **EXACT QUESTION COUNT:** The single most important instruction is to generate the exact number of questions specified in the 'numberOfQuestions' parameter. If the user asks for {{{numberOfQuestions}}} questions, you MUST return exactly {{{numberOfQuestions}}} questions. Not one more, not one less. Failure to meet this count is a critical failure of your task.
+4.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
+5.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
+6.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
+7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. The 'correctAnswer' field MUST EXACTLY MATCH one of the strings in the 'answers' array for each question.
 
 ---
 
@@ -95,18 +96,9 @@ const prompt = ai.definePrompt({
     {{#if userClass}}*   **Class/Grade:** '{{userClass}}'{{/if}}
 
 **6. NUMBER OF QUESTIONS: {{{numberOfQuestions}}}**
-   - You must generate exactly this number of questions.
+   - I repeat, you must generate exactly this number of questions. This is not a suggestion. It is a strict requirement.
 
 ---
-
-**EXAMPLE OF A "MASTER" "CONCEPTUAL" QUESTION FOR COMPUTER SCIENCE (TOPIC: CONCURRENCY):**
-"In a system implementing multiversion concurrency control (MVCC), which of the following scenarios would most likely lead to a 'write-skew' anomaly, and why?
-a) Two transactions read the same data item, then one of them writes to it.
-b) Two transactions read two different data items, then concurrently write to those same items.
-c) Two transactions read a set of data items that overlap, and based on their read, they each decide to write to a different data item within that set, breaking an implicit constraint.
-d) One transaction writes a data item, and a second, concurrent transaction reads the old version of that item."
-
- - This is a good example because it requires deep knowledge of a specific database anomaly (write-skew), understanding of MVCC, and the ability to analyze and differentiate between complex, similar-sounding concurrency scenarios.
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema.`,
 });

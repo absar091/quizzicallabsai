@@ -34,7 +34,7 @@ const formSchema = z.object({
   schoolName: z.string().min(1, "School name is required."),
   className: z.string().min(1, "Class name is required."),
   subject: z.string().min(1, "Subject/Topic is required."),
-  numberOfQuestions: z.number().min(1).max(50),
+  numberOfQuestions: z.number().min(1).max(55),
   difficulty: z.enum(["easy", "medium", "hard", "master"]),
   age: z.coerce.number().min(5, "Age must be at least 5.").max(100).optional(),
   includeAnswerKey: z.boolean().default(true),
@@ -135,7 +135,7 @@ export default function GeneratePaperPage() {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
 
-        let subjectLine = `Class: ${formValues.className} \u2013 Subject: ${formValues.subject}`;
+        let subjectLine = `Class: ${formValues.className} – Subject: ${formValues.subject}`;
         doc.text(subjectLine, pageWidth / 2, 22, { align: 'center' });
 
         doc.setFontSize(10);
@@ -177,7 +177,7 @@ export default function GeneratePaperPage() {
             }).flat();
             
             const totalHeight = (questionText.length * 4.5) + (answersText.length * 4.5) + 6;
-            return { text: [...questionText, ...answersText], height: totalHeight, question: q };
+            return { text: [...questionText, ...answersText], height: totalHeight };
         });
 
         // Pre-calculate total pages
@@ -196,7 +196,16 @@ export default function GeneratePaperPage() {
             }
             tempY[tempCol] += qDoc.height;
         });
-        totalPages = tempPageCount + (formValues.includeAnswerKey ? 1 : 0);
+        totalPages = tempPageCount;
+        if(formValues.includeAnswerKey) {
+            const answerKeyRows = Math.ceil(questions.length / 4);
+            const answerKeyHeight = answerKeyRows * 8 + contentStartY + 20;
+            if(answerKeyHeight > contentEndY) {
+                totalPages++;
+            }
+            totalPages++;
+        }
+
 
         addHeader();
 
@@ -246,13 +255,7 @@ export default function GeneratePaperPage() {
         }
     }
     
-    // Clear the default blank page
-    doc.deletePage(1);
-
-    if (formValues.layoutStyle === 'two-column') {
-        renderTwoColumnLayout();
-    } else {
-      // Single Column Logic (condensed for brevity, similar principle)
+    const renderSingleColumnLayout = () => {
         let y = contentStartY;
         const qDocs = questions.map((q, i) => {
             doc.setFontSize(10);
@@ -272,9 +275,16 @@ export default function GeneratePaperPage() {
             }
             tempY += qDoc.height;
         });
-        totalPages = tempPageCount + (formValues.includeAnswerKey ? 1 : 0);
+        totalPages = tempPageCount;
+         if(formValues.includeAnswerKey) {
+            const answerKeyRows = Math.ceil(questions.length / 4);
+            const answerKeyHeight = answerKeyRows * 8 + contentStartY + 20;
+            if(answerKeyHeight > contentEndY) {
+                totalPages++;
+            }
+            totalPages++;
+        }
         
-        doc.addPage();
         addHeader();
         
         questions.forEach((q, i) => {
@@ -302,9 +312,17 @@ export default function GeneratePaperPage() {
             y += 4;
         });
         addFooter(pageNumber, totalPages);
-        doc.deletePage(1); // Remove the first blank page that was added
     }
+    
+    // Clear the default blank page
+    doc.deletePage(1);
+    doc.addPage();
 
+    if (formValues.layoutStyle === 'two-column') {
+        renderTwoColumnLayout();
+    } else {
+        renderSingleColumnLayout();
+    }
 
     if (formValues.includeAnswerKey) {
         doc.addPage();
@@ -341,6 +359,9 @@ export default function GeneratePaperPage() {
         }
         addFooter(pageNumber, totalPages);
     }
+    
+    // Remove the first blank page that was added
+    doc.deletePage(1);
 
     doc.save(`${formValues.subject}_paper.pdf`);
   };
@@ -483,7 +504,7 @@ export default function GeneratePaperPage() {
                   <FormItem>
                     <FormLabel>Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
                     <FormControl>
-                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={50} min={1} step={1} />
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                     </FormControl>
                   </FormItem>
                 )}
