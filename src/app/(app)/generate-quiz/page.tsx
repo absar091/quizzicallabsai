@@ -101,8 +101,6 @@ export default function GenerateQuizPage() {
     },
   });
 
-  const { trigger, getValues, control } = formMethods;
-
   const checkQuizLimit = useCallback(async () => {
     if (!user) return;
     setIsCountLoading(true);
@@ -691,14 +689,12 @@ export default function GenerateQuizPage() {
 
   // --- Render multi-step form ---
   return (
-    <FormProvider {...formMethods}>
-      <QuizSetupForm 
-        onGenerateQuiz={handleGenerateQuiz} 
-        isLimitReached={isLimitReached} 
-        isCountLoading={isCountLoading}
-        quizCount={quizCount}
-      />
-    </FormProvider>
+    <QuizSetupForm 
+      onGenerateQuiz={handleGenerateQuiz} 
+      isLimitReached={isLimitReached} 
+      isCountLoading={isCountLoading}
+      quizCount={quizCount}
+    />
   );
 }
 
@@ -731,7 +727,17 @@ type QuizSetupFormProps = {
 }
 
 function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCount }: QuizSetupFormProps) {
-    const formMethods = useFormContext<QuizFormValues>();
+    const formMethods = useForm<QuizFormValues>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            topic: "",
+            difficulty: "medium",
+            numberOfQuestions: 10,
+            questionTypes: ["Multiple Choice"],
+            questionStyles: ["Knowledge-based", "Conceptual"],
+            timeLimit: 10,
+        },
+    });
     const { trigger, getValues, control } = formMethods;
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0);
@@ -945,7 +951,7 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
             description={stepTitles[step - 1].description}
           />
           <div className="max-w-2xl w-full">
-            <Form {...formMethods}>
+            <FormProvider {...formMethods}>
               <form onSubmit={(e) => e.preventDefault()}>
                   <Card>
                     <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
@@ -977,7 +983,7 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
                     </CardFooter>
                   </Card>
               </form>
-            </Form>
+            </FormProvider>
             <p className="text-center text-xs text-muted-foreground mt-4">
                 You have used {quizCount} of {DAILY_LIMIT} free quiz generations today.
             </p>
@@ -985,3 +991,5 @@ function QuizSetupForm({ onGenerateQuiz, isLimitReached, isCountLoading, quizCou
         </div>
     )
 }
+
+    
