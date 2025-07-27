@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -15,8 +14,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { Separator } from "./ui/separator";
-import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
 
 const mainNav = [
@@ -36,7 +33,7 @@ const examPrep = [
 
 export function MainSidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname.startsWith(href);
