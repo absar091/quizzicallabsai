@@ -93,7 +93,7 @@ export default function GeneratePaperPage() {
         topic: values.subject,
         difficulty: values.difficulty,
         numberOfQuestions: values.numberOfQuestions,
-        questionTypes: ["Multiple Choice", "Fill in the Blank"],
+        questionTypes: ["Multiple Choice"],
         questionStyles: ["Knowledge-based", "Conceptual"],
         userAge: values.age || null,
         userClass: values.className,
@@ -121,18 +121,24 @@ export default function GeneratePaperPage() {
         const pageWidth = doc.internal.pageSize.getWidth();
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(18);
-        doc.text(formValues.schoolName, pageWidth / 2, 20, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Class: ${formValues.className} | Subject: ${formValues.subject}`, pageWidth / 2, 28, { align: 'center' });
+        doc.text(formValues.schoolName.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
         
-        let metaInfo = [];
-        if(formValues.totalMarks) metaInfo.push(`Total Marks: ${formValues.totalMarks}`);
-        if(formValues.timeLimit) metaInfo.push(`Time: ${formValues.timeLimit} min`);
-        if(formValues.testDate) metaInfo.push(`Date: ${formValues.testDate}`);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        
+        let metaInfo = [`Class: ${formValues.className}`, `Subject: ${formValues.subject}`];
+        if (formValues.testDate) metaInfo.push(`Date: ${formValues.testDate}`);
         if(formValues.teacherName) metaInfo.push(`Teacher: ${formValues.teacherName}`);
         
-        doc.text(metaInfo.join(' | '), pageWidth / 2, 35, { align: 'center' });
+        let metaInfo2 = [];
+        if(formValues.totalMarks) metaInfo2.push(`Total Marks: ${formValues.totalMarks}`);
+        if(formValues.timeLimit) metaInfo2.push(`Time: ${formValues.timeLimit} min`);
+        
+        doc.text(metaInfo.join(' | '), pageWidth / 2, 28, { align: 'center' });
+        if(metaInfo2.length > 0) {
+            doc.text(metaInfo2.join(' | '), pageWidth / 2, 35, { align: 'center' });
+        }
+        
         doc.setLineWidth(0.5);
         doc.line(15, 40, pageWidth - 15, 40);
     };
@@ -144,27 +150,19 @@ export default function GeneratePaperPage() {
     };
 
     const renderQuestions = (isTwoColumn: boolean) => {
-        let y = 50;
         const margin = 15;
         const pageHeight = doc.internal.pageSize.getHeight();
         const usableWidth = doc.internal.pageSize.getWidth() - margin * 2;
         const columnGap = 10;
         const columnWidth = isTwoColumn ? (usableWidth - columnGap) / 2 : usableWidth;
-        let currentColumn = 0; // 0 for left, 1 for right
         let columnY = [50, 50]; // Y position for each column
+        let currentColumn = 0; // 0 for left, 1 for right
 
-        const checkPageBreak = (neededHeight: number) => {
-            if (columnY[currentColumn] + neededHeight > pageHeight - 20) {
-                 if (isTwoColumn && currentColumn === 0) { // Move to next column
-                    currentColumn = 1;
-                } else { // New page
-                    addFooter(doc, (doc as any).internal.getNumberOfPages());
-                    doc.addPage();
-                    currentColumn = 0;
-                    columnY = [50, 50];
-                    addHeader(doc, (doc as any).internal.getNumberOfPages());
-                }
-            }
+        const checkPageBreak = (neededHeight: number, currentColumnY: number): boolean => {
+             if (currentColumnY + neededHeight > pageHeight - 20) {
+                return true;
+             }
+             return false;
         };
 
         addHeader(doc, 1);
@@ -174,26 +172,48 @@ export default function GeneratePaperPage() {
             doc.setFont('helvetica', 'bold');
             
             const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
+            doc.setFont('helvetica', 'normal');
             const optionsText = q.answers.map((ans, ansIndex) => 
                 doc.splitTextToSize(`(${String.fromCharCode(97 + ansIndex)}) ${ans}`, columnWidth - 5)
             ).flat();
             
-            const totalHeight = (questionText.length * 5) + (optionsText.length * 4) + 10;
-            checkPageBreak(totalHeight);
+            const questionHeight = (questionText.length * 5);
+            const optionsHeight = optionsText.reduce((total, line) => total + (Array.isArray(line) ? line.length : 1) * 4, 0) + 5;
+            const totalHeight = questionHeight + optionsHeight + 5;
+
+            if(checkPageBreak(totalHeight, columnY[currentColumn])) {
+                 if (isTwoColumn && currentColumn === 0) {
+                    currentColumn = 1;
+                    if(checkPageBreak(totalHeight, columnY[currentColumn])) {
+                         addFooter(doc, (doc as any).internal.getNumberOfPages());
+                         doc.addPage();
+                         addHeader(doc, (doc as any).internal.getNumberOfPages());
+                         currentColumn = 0;
+                         columnY = [50, 50];
+                    }
+                 } else {
+                     addFooter(doc, (doc as any).internal.getNumberOfPages());
+                     doc.addPage();
+                     addHeader(doc, (doc as any).internal.getNumberOfPages());
+                     currentColumn = 0;
+                     columnY = [50, 50];
+                 }
+            }
 
             let currentX = margin + (currentColumn * (columnWidth + columnGap));
             let yPos = columnY[currentColumn];
             
+            doc.setFont('helvetica', 'bold');
             doc.text(questionText, currentX, yPos);
-            yPos += (questionText.length * 5) + 3;
+            yPos += questionHeight + 3;
             
             doc.setFont('helvetica', 'normal');
             q.answers.forEach((ans, ansIndex) => {
-                const answerText = doc.splitTextToSize(`(${String.fromCharCode(97 + ansIndex)}) ${ans}`, columnWidth - 5);
-                doc.text(answerText, currentX + 5, yPos);
-                yPos += (answerText.length * 4) + 1;
+                const answerLines = doc.splitTextToSize(`(${String.fromCharCode(97 + ansIndex)}) ${ans}`, columnWidth - 5);
+                doc.text(answerLines, currentX + 5, yPos);
+                yPos += answerLines.length * 4 + 1;
             });
-
+            
             columnY[currentColumn] = yPos + 5; // Add some space between questions
         });
 
@@ -223,13 +243,15 @@ export default function GeneratePaperPage() {
                 xPos = 15;
             }
             if(y > 270) {
+                 addFooter(doc, (doc as any).internal.getNumberOfPages());
                  doc.addPage();
                  y = 50;
                  addHeader(doc, (doc as any).internal.getNumberOfPages());
             }
 
-            const keyText = `${i + 1}. ${q.correctAnswer}`;
-            doc.text(keyText, xPos, y);
+            const correctAnswerLetter = String.fromCharCode(97 + q.answers.findIndex(ans => ans === q.correctAnswer));
+            const keyText = `${i + 1}. ${correctAnswerLetter}) ${q.correctAnswer}`;
+            doc.text(keyText, xPos, y, { maxWidth: answerColumnWidth - 5 });
             xPos += answerColumnWidth;
         });
         addFooter(doc, (doc as any).internal.getNumberOfPages());
@@ -521,3 +543,5 @@ export default function GeneratePaperPage() {
     </div>
   );
 }
+
+    
