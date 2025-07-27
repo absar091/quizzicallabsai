@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     template: "%s | Quizzicallabs AI",
   },
   description: "Generate custom quizzes, practice questions, and study guides with the power of AI. Master any subject, instantly.",
+  verification: {
+    google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
+  },
   openGraph: {
     title: "Quizzicallabs AI",
     description: "The ultimate AI-powered platform for quiz generation and personalized learning.",
