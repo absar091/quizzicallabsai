@@ -449,83 +449,85 @@ export default function GenerateQuizPage() {
     const isBookmarked = bookmarkedQuestions.some(bm => bm.question === currentQ.question);
 
     return (
-      <div className="flex flex-col items-center p-4 overflow-x-hidden">
-         <div className="w-full max-w-3xl mx-auto mb-4">
-            <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{formValues?.topic}</h2>
-            <div className="flex justify-between items-center mb-2 gap-4">
-                <Progress value={progress} className="h-2 flex-1" />
-                <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
-                  <Clock className="h-4 w-4" />
-                  <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
-                </div>
-            </div>
-             <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
-                <p>Question {currentQuestion + 1} of {quiz.length}</p>
-                <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
-                  <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
-                  Bookmark
-                </Button>
+      <FormProvider {...formMethods}>
+        <div className="flex flex-col items-center p-4 overflow-x-hidden">
+          <div className="w-full max-w-3xl mx-auto mb-4">
+              <h2 className="text-lg sm:text-2xl font-bold uppercase tracking-widest truncate">{formValues?.topic}</h2>
+              <div className="flex justify-between items-center mb-2 gap-4">
+                  <Progress value={progress} className="h-2 flex-1" />
+                  <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
+                    <Clock className="h-4 w-4" />
+                    <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                  </div>
               </div>
-         </div>
+              <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
+                  <p>Question {currentQuestion + 1} of {quiz.length}</p>
+                  <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
+                    <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
+                    Bookmark
+                  </Button>
+                </div>
+          </div>
 
-        <div className="relative w-full max-w-3xl h-[65vh] flex items-center justify-center">
-            <AnimatePresence initial={false} custom={direction}>
-                <motion.div
-                    key={currentQuestion}
-                    custom={direction}
-                    variants={cardVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 },
-                    }}
-                    className="absolute w-full h-full"
-                >
-                    <Card className="w-full h-full flex flex-col justify-between shadow-2xl p-4 sm:p-6">
-                        <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
-                            {currentQ.question}
-                        </p>
-                        <div>
-                            <RadioGroup
-                                value={userAnswers[currentQuestion] || ""}
-                                onValueChange={handleAnswer}
-                                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                            >
-                                {currentQ.answers.map((answer, index) => {
-                                const letter = String.fromCharCode(65 + index);
-                                return (
-                                    <FormItem key={index}>
-                                        <FormControl>
-                                            <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
-                                        </FormControl>
-                                        <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
-                                            <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground")}>
-                                                {letter}
-                                            </span>
-                                            <span className="flex-1 text-left text-base">{answer}</span>
-                                        </Label>
-                                    </FormItem>
-                                )
-                                })}
-                            </RadioGroup>
-                            <div className="flex justify-between mt-6">
-                                <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    Back
-                                </Button>
-                                <Button onClick={handleNext}>
-                                    {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next"}
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    </Card>
-                </motion.div>
-            </AnimatePresence>
+          <div className="relative w-full max-w-3xl h-[65vh] flex items-center justify-center">
+              <AnimatePresence initial={false} custom={direction}>
+                  <motion.div
+                      key={currentQuestion}
+                      custom={direction}
+                      variants={cardVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                          x: { type: "spring", stiffness: 300, damping: 30 },
+                          opacity: { duration: 0.2 },
+                      }}
+                      className="absolute w-full h-full"
+                  >
+                      <Card className="w-full h-full flex flex-col justify-between shadow-2xl p-4 sm:p-6">
+                          <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
+                              {currentQ.question}
+                          </p>
+                          <div>
+                              <RadioGroup
+                                  value={userAnswers[currentQuestion] || ""}
+                                  onValueChange={handleAnswer}
+                                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                              >
+                                  {currentQ.answers.map((answer, index) => {
+                                  const letter = String.fromCharCode(65 + index);
+                                  return (
+                                      <FormItem key={index}>
+                                          <FormControl>
+                                              <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
+                                          </FormControl>
+                                          <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
+                                              <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground")}>
+                                                  {letter}
+                                              </span>
+                                              <span className="flex-1 text-left text-base">{answer}</span>
+                                          </Label>
+                                      </FormItem>
+                                  )
+                                  })}
+                              </RadioGroup>
+                              <div className="flex justify-between mt-6">
+                                  <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
+                                      <ArrowLeft className="mr-2 h-4 w-4" />
+                                      Back
+                                  </Button>
+                                  <Button onClick={handleNext}>
+                                      {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next"}
+                                      <ArrowRight className="ml-2 h-4 w-4" />
+                                  </Button>
+                              </div>
+                          </div>
+                      </Card>
+                  </motion.div>
+              </AnimatePresence>
+          </div>
         </div>
-      </div>
+      </FormProvider>
     );
   }
   
