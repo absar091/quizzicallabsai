@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { use } from "react";
 
 type SubjectPageProps = {
   params: {
