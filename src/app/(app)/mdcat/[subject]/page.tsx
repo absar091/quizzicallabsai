@@ -1,6 +1,3 @@
-
-"use client";
-
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,13 +9,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { use } from "react";
 
 type SubjectPageProps = {
-  params: {
+  params: Promise<{
     subject: string;
-  };
+  }>;
 };
 
 export default function MdcatSubjectPage({ params }: SubjectPageProps) {
-  const subjectKey = params.subject;
+  const { subject: subjectKey } = use(params);
   const subject = mdcatSyllabus[subjectKey];
 
   if (!subject) {
@@ -51,7 +48,7 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
                 <AccordionContent className="px-6 pb-6">
                     <p className="text-muted-foreground mb-4">Ready to test your knowledge on this chapter?</p>
                      <Button asChild>
-                        <Link href={`/mdcat/test?subject=${subject.slug}&chapter=${encodeURIComponent(chapter.name)}`}>
+                        <Link href={`/mdcat/test?subject=${subject.slug}&chapter=${encodeURIComponent(chapter.name)}&topic=${encodeURIComponent(chapter.name)}`}>
                             Generate Test <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
