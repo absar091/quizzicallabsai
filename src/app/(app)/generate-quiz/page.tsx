@@ -835,45 +835,47 @@ export default function GenerateQuizPage() {
       />
       <div className="max-w-2xl w-full">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Card className="overflow-hidden">
-              <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
-                <AnimatePresence mode="wait" initial={false} custom={direction}>
-                  {renderStepContent()}
-                </AnimatePresence>
-              </CardContent>
-              <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
-                {step > 1 ? (
-                  <Button type="button" variant="outline" onClick={prevStep}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
-                  </Button>
-                ) : <div />}
-                {step < 4 ? (
-                  <Button type="button" onClick={nextStep}>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button type="submit" size="lg" disabled={isGenerating}>
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Crafting Quiz...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Generate Quiz
-                      </>
-                    )}
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          </form>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <Card className="overflow-hidden">
+                    <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
+                        <AnimatePresence mode="wait" initial={false} custom={direction}>
+                        {renderStepContent()}
+                        </AnimatePresence>
+                    </CardContent>
+                    <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
+                        {step > 1 ? (
+                        <Button type="button" variant="outline" onClick={prevStep}>
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back
+                        </Button>
+                        ) : <div />}
+                        {step < 4 ? (
+                        <Button type="button" onClick={nextStep}>
+                            Next
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                        ) : (
+                        <Button type="submit" size="lg" disabled={isGenerating}>
+                            {isGenerating ? (
+                            <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                Crafting Quiz...
+                            </>
+                            ) : (
+                            <>
+                                <Sparkles className="mr-2 h-5 w-5" />
+                                Generate Quiz
+                            </>
+                            )}
+                        </Button>
+                        )}
+                    </CardFooter>
+                </Card>
+            </form>
         </Form>
       </div>
     </div>
   );
 }
+
+    
