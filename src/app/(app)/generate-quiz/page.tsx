@@ -6,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit } from "lucide-react";
 import jsPDF from 'jspdf';
 
 
@@ -68,6 +68,31 @@ type BookmarkedQuestion = {
     correctAnswer: string;
     topic: string;
 }
+
+const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-circuit"><path d="M12 5a3 3 0 1 0-5.993.129"></path><path d="M12 5a3 3 0 1 0 5.993.129"></path><path d="M15 12a3 3 0 1 0-5.993.129"></path><path d="M15 12a3 3 0 1 0 5.993.129"></path><path d="M9 12a3 3 0 1 0-5.993.129"></path><path d="M9 12a3 3 0 1 0 5.993.129"></path><path d="M6.007 8.87C6 9 6 9 6 9.13v0c0 .04.007.08.007.12"></path><path d="m6.007 15.13-.002-.005c-.005-.035-.005-.07-.005-.1v0c0-.04.005-.08.005-.12"></path><path d="M18.007 8.87C18 9 18 9 18 9.13v0c0 .04.007.08.007.12"></path><path d="m18.007 15.13-.002-.005c-.005-.035-.005-.07-.005-.1v0c0-.04.005-.08.005-.12"></path><path d="M21 12h-3"></path><path d="M6 12H3"></path><path d="M12 18v3"></path><path d="M12 6V3"></path><path d="M9 12a3 3 0 0 0 5.993-.129"></path></svg>`;
+
+    // Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text("Quizzicallabs AI", 20, 15);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    
+    // Watermark
+    doc.saveGraphicsState();
+    doc.setFontSize(60);
+    doc.setTextColor(220, 220, 220); // Light grey
+    doc.setGState(new doc.GState({opacity: 0.5}));
+    doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
+    doc.restoreGraphicsState();
+
+    // Footer
+    doc.setFontSize(8);
+    doc.text(`Page ${pageNumber} of ${pageCount}`, 105, 290, { align: 'center' });
+}
+
 
 // --- Main Page Component ---
 export default function GenerateQuizPage() {
@@ -323,37 +348,44 @@ export default function GenerateQuizPage() {
   const downloadQuestions = () => {
     if (!quiz || !formValues) return;
     const doc = new jsPDF();
+    let y = 30; // Start content lower to accommodate header
+    const pageHeight = 270; // Adjust for footer
+    const margin = 20;
+    const maxWidth = doc.internal.pageSize.getWidth() - (margin * 2);
+
+    addPdfHeaderAndFooter(doc, 1);
+
     doc.setFontSize(16);
-    doc.text(`Quiz on: ${formValues.topic}`, 10, 10);
+    doc.text(`Quiz on: ${formValues.topic}`, margin, y);
+    y += 10;
+    
     doc.setFontSize(12);
-    let y = 20;
 
     quiz.forEach((q, i) => {
-        if (y > 280) { // check for page break
-            doc.addPage();
-            y = 10;
-        }
-        const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, 180);
-        doc.text(questionText, 10, y);
+        const checkPageBreak = (neededHeight: number) => {
+            if (y + neededHeight > pageHeight) {
+                doc.addPage();
+                y = 30;
+                addPdfHeaderAndFooter(doc, (doc as any).internal.getNumberOfPages());
+            }
+        };
+
+        const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, maxWidth);
+        checkPageBreak(questionText.length * 5 + 5);
+        doc.text(questionText, margin, y);
         y += (questionText.length * 5) + 5;
 
         q.answers.forEach((a) => {
-            const answerText = doc.splitTextToSize(`- ${a}`, 170);
-            if (y + (answerText.length * 4) + 2 > 280) {
-                 doc.addPage();
-                 y = 10;
-            }
-            doc.text(answerText, 15, y);
+            const answerText = doc.splitTextToSize(`- ${a}`, maxWidth - 5);
+            checkPageBreak(answerText.length * 4 + 2);
+            doc.text(answerText, margin + 5, y);
             y += (answerText.length * 4) + 2;
         });
 
-        const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, 170);
+        const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5);
+        checkPageBreak(correctAnswerText.length * 5 + 10);
         doc.setFont('helvetica', 'bold');
-        if (y + (correctAnswerText.length * 5) + 10 > 280) {
-            doc.addPage();
-            y = 10;
-        }
-        doc.text(correctAnswerText, 15, y);
+        doc.text(correctAnswerText, margin + 5, y);
         doc.setFont('helvetica', 'normal');
 
         y += (correctAnswerText.length * 5) + 10;
@@ -367,17 +399,19 @@ export default function GenerateQuizPage() {
     const { score, percentage } = calculateScore();
     const doc = new jsPDF();
     
+    addPdfHeaderAndFooter(doc, 1);
+
     doc.setFontSize(22);
-    doc.text("Quiz Result Card", 105, 20, { align: 'center' });
+    doc.text("Quiz Result Card", 105, 40, { align: 'center' });
 
     doc.setFontSize(14);
-    doc.text(`Student: ${user?.displayName || 'N/A'}`, 20, 40);
-    doc.text(`Topic: ${formValues.topic}`, 20, 50);
+    doc.text(`Student: ${user?.displayName || 'N/A'}`, 20, 60);
+    doc.text(`Topic: ${formValues.topic}`, 20, 70);
 
     doc.setFontSize(16);
-    doc.text(`Score: ${score}/${quiz?.length}`, 20, 70);
-    doc.text(`Percentage: ${percentage.toFixed(2)}%`, 20, 80);
-    doc.text(`Status: ${percentage >= 50 ? 'Pass' : 'Fail'}`, 20, 90);
+    doc.text(`Score: ${score}/${quiz?.length}`, 20, 90);
+    doc.text(`Percentage: ${percentage.toFixed(2)}%`, 20, 100);
+    doc.text(`Status: ${percentage >= 50 ? 'Pass' : 'Fail'}`, 20, 110);
 
     doc.save('quiz_result_card.pdf');
   };

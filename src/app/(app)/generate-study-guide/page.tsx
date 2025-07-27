@@ -30,6 +30,29 @@ const formSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
 });
 
+const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    
+    // Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text("Quizzicallabs AI", 20, 15);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    
+    // Watermark
+    doc.saveGraphicsState();
+    doc.setFontSize(60);
+    doc.setTextColor(220, 220, 220); // Light grey
+    doc.setGState(new doc.GState({opacity: 0.5}));
+    doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
+    doc.restoreGraphicsState();
+
+    // Footer
+    doc.setFontSize(8);
+    doc.text(`Page ${pageNumber} of ${pageCount}`, 105, 290, { align: 'center' });
+}
+
 export default function GenerateStudyGuidePage() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -65,17 +88,20 @@ export default function GenerateStudyGuidePage() {
     
     const doc = new jsPDF();
     const topic = form.getValues('topic');
-    let y = 15;
-    const pageHeight = 280;
-    const margin = 10;
-    const maxWidth = 180;
+    let y = 30; // Start content lower
+    const pageHeight = 270; // Adjust for footer
+    const margin = 20;
+    const maxWidth = doc.internal.pageSize.getWidth() - (margin * 2);
     
     const checkPageBreak = (neededHeight: number) => {
         if(y + neededHeight > pageHeight) {
             doc.addPage();
-            y = 15;
+            y = 30;
+            addPdfHeaderAndFooter(doc, (doc as any).internal.getNumberOfPages());
         }
     }
+
+    addPdfHeaderAndFooter(doc, 1);
 
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
@@ -90,9 +116,9 @@ export default function GenerateStudyGuidePage() {
     y += (summaryLines.length * 5) + 10;
 
     // Key Concepts
+    checkPageBreak(10);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    checkPageBreak(10);
     doc.text("Key Concepts", margin, y);
     y += 8;
 
