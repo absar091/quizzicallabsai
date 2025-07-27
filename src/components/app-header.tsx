@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrainCircuit, Menu, HelpCircle, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -39,13 +40,14 @@ export function AppHeader() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const isHomePage = pathname === "/";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex items-center gap-2 md:gap-6">
           <div className="md:hidden">
-            <Sheet>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon"><Menu/></Button>
               </SheetTrigger>
@@ -53,7 +55,7 @@ export function AppHeader() {
                  <SheetHeader className="p-4 border-b">
                     <SheetTitle>Menu</SheetTitle>
                  </SheetHeader>
-                 <MainSidebar />
+                 <MainSidebar onNavigate={() => setMobileMenuOpen(false)} />
               </SheetContent>
             </Sheet>
           </div>
