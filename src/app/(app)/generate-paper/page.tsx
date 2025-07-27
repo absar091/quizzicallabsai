@@ -119,7 +119,9 @@ export default function GeneratePaperPage() {
     const margin = 15;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    
+    const contentStartY = 50;
+    const contentEndY = pageHeight - 20;
+
     const addHeader = () => {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(18);
@@ -146,21 +148,23 @@ export default function GeneratePaperPage() {
         doc.line(margin, 48, pageWidth - margin, 48);
     };
 
-    const addFooter = () => {
-        const pageNumber = (doc as any).internal.getNumberOfPages();
+    const addFooter = (pageNumber: number, totalPages: number) => {
         doc.setFontSize(8);
-        doc.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.setLineWidth(0.2);
+        doc.line(margin, contentEndY, pageWidth - margin, contentEndY);
+        doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth / 2, contentEndY + 5, { align: 'center' });
     };
 
     const renderQuestions = (isTwoColumn: boolean) => {
         const usableWidth = pageWidth - margin * 2;
         const columnGap = 10;
         const columnWidth = isTwoColumn ? (usableWidth - columnGap) / 2 : usableWidth;
-        let columnY = [60, 60];
+        
+        let columnY = [contentStartY, contentStartY];
         let currentColumn = 0;
 
-        const checkPageBreak = (neededHeight: number, currentColumnIndex: number): number => {
-            if (columnY[currentColumnIndex] + neededHeight > pageHeight - 20) {
+        const checkPageBreak = (neededHeight: number, currentColumnIndex: number) => {
+            if (columnY[currentColumnIndex] + neededHeight > contentEndY - 10) {
                 if (isTwoColumn && currentColumnIndex === 0) {
                     return 1; // Move to next column
                 }
@@ -168,65 +172,88 @@ export default function GeneratePaperPage() {
             }
             return 0; // No break needed
         };
+        
+        doc.addPage();
+        doc.deletePage(1); // Remove default blank page
 
-        addHeader();
-
+        let pages: { pageNumber: number, content: (() => void)[] }[] = [{ pageNumber: 1, content: [] }];
+        
         questions.forEach((q, i) => {
+            const addQuestionToPage = () => {
+                const currentPage = pages[pages.length - 1];
+                currentPage.content.push(() => {
+                    const xPos = margin + (currentColumn * (columnWidth + columnGap));
+                    let yPos = columnY[currentColumn];
+                    
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(10);
+                    const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
+                    doc.text(questionText, xPos, yPos);
+                    yPos += questionText.length * 4.5 + 2;
+                    
+                    doc.setFont('helvetica', 'normal');
+                    q.answers.forEach((ans, ansIndex) => {
+                        const answerLetter = String.fromCharCode(65 + ansIndex);
+                        const answerLines = doc.splitTextToSize(`${answerLetter}. ${ans}`, columnWidth - 5);
+                        doc.text(answerLines, xPos + 5, yPos);
+                        yPos += answerLines.length * 4.5;
+                    });
+                    columnY[currentColumn] = yPos + 6;
+                });
+            }
+
             doc.setFontSize(10);
-            const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
             doc.setFont('helvetica', 'bold');
-            const questionHeight = questionText.length * 5;
+            const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
+            const questionHeight = questionText.length * 4.5;
             
+            doc.setFont('helvetica', 'normal');
             const optionsText = q.answers.map((ans, ansIndex) => 
                 doc.splitTextToSize(`${String.fromCharCode(65 + ansIndex)}. ${ans}`, columnWidth - 5)
             ).flat();
-            doc.setFont('helvetica', 'normal');
-            const optionsHeight = optionsText.length * 5;
+            const optionsHeight = optionsText.length * 4.5;
             const totalHeight = questionHeight + optionsHeight + 8; // question + options + spacing
 
             let breakStatus = checkPageBreak(totalHeight, currentColumn);
 
             if (breakStatus === 1) { // Move to next column
                 currentColumn = 1;
-                columnY[currentColumn] = 60; // Reset Y for new column
-                breakStatus = checkPageBreak(totalHeight, currentColumn); // Re-check on new column
+                columnY[currentColumn] = contentStartY;
+                breakStatus = checkPageBreak(totalHeight, currentColumn);
             }
 
             if (breakStatus === 2 || (breakStatus === 1 && isTwoColumn)) { // Move to new page
-                addFooter();
-                doc.addPage();
-                addHeader();
+                pages.push({ pageNumber: pages.length + 1, content: [] });
                 currentColumn = 0;
-                columnY = [60, 60];
+                columnY = [contentStartY, contentStartY];
             }
-
-            const xPos = margin + (currentColumn * (columnWidth + columnGap));
-            let yPos = columnY[currentColumn];
             
-            doc.setFont('helvetica', 'bold');
-            doc.text(questionText, xPos, yPos);
-            yPos += questionHeight + 2;
-            
-            doc.setFont('helvetica', 'normal');
-            q.answers.forEach((ans, ansIndex) => {
-                const answerLetter = String.fromCharCode(65 + ansIndex);
-                const answerLines = doc.splitTextToSize(`${answerLetter}. ${ans}`, columnWidth - 5);
-                doc.text(answerLines, xPos + 5, yPos);
-                yPos += answerLines.length * 5;
-            });
-            
-            columnY[currentColumn] = yPos + 6;
+            addQuestionToPage();
         });
 
-        addFooter();
+        // Render all pages
+        const totalPages = pages.length + (formValues.includeAnswerKey ? 1 : 0);
+        pages.forEach((page, pageIndex) => {
+            doc.addPage();
+            addHeader();
+            page.content.forEach(renderFunc => renderFunc());
+            if (isTwoColumn && page.content.length > 0) {
+                 doc.setLineWidth(0.2);
+                 doc.line(pageWidth/2, contentStartY - 2, pageWidth/2, contentEndY);
+            }
+            addFooter(pageIndex + 1, totalPages);
+        });
+        doc.deletePage(1);
+
     };
 
     renderQuestions(formValues.layoutStyle === 'two-column');
 
     if (formValues.includeAnswerKey) {
+        const totalPages = (doc as any).internal.getNumberOfPages() + 1;
         doc.addPage();
         addHeader();
-        let y = 60;
+        let y = contentStartY;
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.text("Answer Key", pageWidth / 2, y, { align: 'center' });
@@ -239,15 +266,10 @@ export default function GeneratePaperPage() {
         let xPos = margin;
         
         questions.forEach((q, i) => {
-            if (i > 0 && i % 4 === 0) { // New row after every 4 answers
-                y += 10;
-                xPos = margin;
-            }
-             if (y > pageHeight - 30) {
-                 addFooter();
+            if (i > 0 && i % 25 === 0) { // New column on page
                  doc.addPage();
                  addHeader();
-                 y = 60;
+                 y = contentStartY;
                  doc.setFontSize(16);
                  doc.setFont('helvetica', 'bold');
                  doc.text("Answer Key", pageWidth / 2, y, { align: 'center' });
@@ -255,13 +277,18 @@ export default function GeneratePaperPage() {
                  doc.setFontSize(11);
                  doc.setFont('helvetica', 'normal');
             }
+            const rowInCol = i % 25;
+            if (rowInCol > 0 && rowInCol % 25 === 0) {
+                xPos += answerColumnWidth;
+                y = contentStartY + 15;
+            }
 
             const correctAnswerLetter = String.fromCharCode(65 + q.answers.findIndex(ans => ans === q.correctAnswer));
             const keyText = `${i + 1}. ${correctAnswerLetter}`;
             doc.text(keyText, xPos, y, { maxWidth: answerColumnWidth - 5 });
-            xPos += answerColumnWidth;
+            y += 8;
         });
-        addFooter();
+        addFooter(totalPages, totalPages);
     }
 
     doc.save(`${formValues.subject}_paper.pdf`);
@@ -348,7 +375,7 @@ export default function GeneratePaperPage() {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><User className="h-4 w-4"/> Teacher's Name (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Mr. Smith" {...field} />
+                      <Input placeholder="e.g., Mr. Saleem" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -550,3 +577,4 @@ export default function GeneratePaperPage() {
     </div>
   );
 }
+
