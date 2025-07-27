@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "quizCounts": {
+      "$uid": {
+        // Allow users to read and write their own quiz counts.
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    }
+  }
+}
