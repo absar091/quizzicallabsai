@@ -56,10 +56,10 @@ Follow these strict rules to ensure accuracy, quality, and user satisfaction:
 
 🎯 QUESTION STRUCTURE:
 For each question, you MUST provide:
-*   `question`: The question text.
-*   `answer`: The single, unequivocally correct answer.
-*   `explanation`: A concise, one-line explanation for why the answer is correct.
-*   `options`: For "multiple choice" questions, provide exactly 4 plausible options, one of which MUST be the correct answer.
+*   'question': The question text.
+*   'answer': The single, unequivocally correct answer.
+*   'explanation': A concise, one-line explanation for why the answer is correct.
+*   'options': For "multiple choice" questions, provide exactly 4 plausible options, one of which MUST be the correct answer.
 
 🔢 DIFFICULTY LEVELS:
 *   **Easy:** Basic recall of definitions and facts.
