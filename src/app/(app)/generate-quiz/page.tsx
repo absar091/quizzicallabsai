@@ -6,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle } from "lucide-react";
 import jsPDF from 'jspdf';
 
 
@@ -703,7 +703,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 // --- Form Component ---
 const questionTypeOptions = [
     { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
-    { id: "Fill in the Blank", label: "Fill in the Blank", icon: Puzzle },
+    { id: "Descriptive", label: "Descriptive", icon: FileText },
 ]
 
 const questionStyleOptions = [
@@ -817,6 +817,12 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                        <FormControl>
                           <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                       </FormControl>
+                       <Alert className="mt-2 text-xs p-2">
+                         <AlertTriangle className="h-4 w-4"/>
+                         <AlertDescription>
+                           We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
+                         </AlertDescription>
+                       </Alert>
                     </FormItem>
                   )}
                 />

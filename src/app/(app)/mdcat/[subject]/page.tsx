@@ -24,7 +24,7 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
     notFound();
   }
   
-  const generateTestLink = (topic: string, numberOfQuestions: number = 20) => {
+  const generateTestLink = (topic: string, numberOfQuestions: number) => {
      return `/mdcat/test?subject=${subject.slug}&topic=${encodeURIComponent(topic)}&numQuestions=${numberOfQuestions}`;
   }
 
@@ -57,7 +57,7 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
                     <div className="p-6">
                         <h4 className="text-md font-semibold mb-4 flex items-center gap-2 text-muted-foreground"><Target className="h-4 w-4" /> Test Options</h4>
                          <Button asChild>
-                            <Link href={generateTestLink(chapter.name, 30)}>
+                            <Link href={generateTestLink(chapter.name, 55)}>
                                 Test Entire Chapter <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
@@ -81,7 +81,7 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
                                         </ul>
                                      </div>
                                       <Button asChild variant="outline" size="sm">
-                                        <Link href={generateTestLink(`${chapter.name} - ${subtopic.name}: ${subtopic.learningObjectives.map(lo => lo.text).join(', ')}`, 15)}>
+                                        <Link href={generateTestLink(`${chapter.name} - ${subtopic.name}: ${subtopic.learningObjectives.map(lo => lo.text).join(', ')}`, 45)}>
                                             Test this Subtopic <ArrowRight className="ml-2 h-4 w-4" />
                                         </Link>
                                     </Button>
@@ -100,5 +100,3 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
     </div>
   );
 }
-
-    

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace } from "lucide-react";
+import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace, AlertTriangle } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert } from "@/components/ui/alert";
+
 
 type Quiz = GenerateCustomQuizOutput["quiz"];
 type QuizVariant = {
@@ -131,10 +133,10 @@ export default function GeneratePaperPage() {
   const downloadPdf = () => {
     if (!quizVariants || !formValues) return;
     const doc = new jsPDF();
-    doc.deletePage(1); // Delete the default blank page
-
-    quizVariants.forEach((variantData) => {
-        doc.addPage();
+    
+    quizVariants.forEach((variantData, variantIndex) => {
+        if(variantIndex > 0) doc.addPage();
+        
         const { variant, questions } = variantData;
         
         let y = 15;
@@ -456,6 +458,12 @@ export default function GeneratePaperPage() {
                     <FormControl>
                       <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                     </FormControl>
+                    <Alert className="mt-2 text-xs p-2">
+                      <AlertTriangle className="h-4 w-4"/>
+                      <AlertDescription>
+                        We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
+                      </AlertDescription>
+                    </Alert>
                   </FormItem>
                 )}
               />
@@ -499,9 +507,9 @@ export default function GeneratePaperPage() {
                   control={form.control}
                   name="layoutStyle"
                   render={({ field }) => (
-                    <FormItem className="md:col-span-2">
+                    <FormItem className={cn("md:col-span-2", { 'hidden': !form.getValues('questionTypes').includes('Multiple Choice') })}>
                       <FormLabel>Layout Style</FormLabel>
-                      <CardDescription className="text-xs mb-2">Note: The two-column layout is currently disabled. All papers will be generated in a single column.</CardDescription>
+                      <CardDescription className="text-xs mb-2">Note: The two-column layout is currently disabled for descriptive questions. All papers with descriptive questions will be generated in a single column.</CardDescription>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -519,11 +527,11 @@ export default function GeneratePaperPage() {
                              </FormItem>
                              <FormItem>
                                <FormControl>
-                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled />
+                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled={form.getValues('questionTypes').includes('Descriptive')} />
                                </FormControl>
-                               <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-not-allowed capitalize opacity-50">
+                               <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize disabled:cursor-not-allowed disabled:opacity-50">
                                   <Columns2 className="h-6 w-6 mb-2"/>
-                                  Two Column (Soon)
+                                  Two Column
                                </Label>
                              </FormItem>
                         </RadioGroup>

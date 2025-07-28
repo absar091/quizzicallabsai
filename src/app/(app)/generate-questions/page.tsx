@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Eye, BookOpen, Download } from "lucide-react";
+import { Loader2, Eye, BookOpen, Download, AlertTriangle } from "lucide-react";
 import jsPDF from "jspdf";
 
 import { Button } from "@/components/ui/button";
@@ -225,6 +225,12 @@ export default function GenerateQuestionsPage() {
                               step={1}
                           />
                         </FormControl>
+                        <Alert className="mt-2 text-xs p-2">
+                           <AlertTriangle className="h-4 w-4"/>
+                           <AlertDescription>
+                             We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
+                           </AlertDescription>
+                        </Alert>
                         <FormMessage />
                       </FormItem>
                     )}

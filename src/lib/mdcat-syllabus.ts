@@ -20,14 +20,12 @@ export type Subject = {
   name: string;
   slug: string;
   chapters: Chapter[];
-  mcqs: number;
 };
 
 export const mdcatSyllabus: Record<string, Subject> = {
   biology: {
     name: "Biology",
     slug: "biology",
-    mcqs: 81,
     chapters: [
       { id: "bio-1", name: "Acellular Life", subtopics: [
           { id: "bio-1-1", name: "Viruses", learningObjectives: [
@@ -225,7 +223,6 @@ export const mdcatSyllabus: Record<string, Subject> = {
   chemistry: {
     name: "Chemistry",
     slug: "chemistry",
-    mcqs: 45,
     chapters: [
         { id: "chem-1", name: "Introduction to Fundamental Concepts of Chemistry", subtopics: [
             { id: "chem-1-1", name: "Moles and Avogadro's Numbers", learningObjectives: [
@@ -586,7 +583,6 @@ export const mdcatSyllabus: Record<string, Subject> = {
   physics: {
     name: "Physics",
     slug: "physics",
-    mcqs: 36,
     chapters: [
         { id: "phy-1", name: "Vectors and Equilibrium", subtopics: [
             { id: "phy-1-1", name: "Addition of Vectors (Rectangular Components)", learningObjectives: [
@@ -757,7 +753,6 @@ export const mdcatSyllabus: Record<string, Subject> = {
   english: {
     name: "English",
     slug: "english",
-    mcqs: 9,
     chapters: [
         { id: "eng-1", name: "Reading and Thinking Skills", subtopics: [
             { id: "eng-1-1", name: "Reading and Thinking Skills", learningObjectives: [
@@ -797,7 +792,6 @@ export const mdcatSyllabus: Record<string, Subject> = {
   "logical-reasoning": {
     name: "Logical Reasoning",
     slug: "logical-reasoning",
-    mcqs: 9,
     chapters: [
         { id: "lr-1", name: "Critical Thinking", subtopics: [
             { id: "lr-1-1", name: "Critical Thinking", learningObjectives: [
@@ -842,5 +836,3 @@ export const mdcatSyllabus: Record<string, Subject> = {
     ],
   },
 };
-
-    
