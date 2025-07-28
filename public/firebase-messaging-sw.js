@@ -1,10 +1,11 @@
-// This file must be in the public folder.
+// This file must be in the /public directory
 
-// Scripts for firebase and firebase messaging
-importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
-// Your web app's Firebase configuration
+// Initialize the Firebase app in the service worker
+// Be sure to replace the config values below with your app's own
+// config values from your project's settings page
 const firebaseConfig = {
   apiKey: "AIzaSyCzRpRNFBAodjKhmmJAMvaBiDNH9-vK1Yg",
   authDomain: "quizzicallab-ai.firebaseapp.com",
@@ -15,10 +16,10 @@ const firebaseConfig = {
   appId: "1:208281807503:web:6185af3a3b1c80ee7f1efa"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Retrieve an instance of Firebase Messaging so that it can handle background messages.
+// Retrieve an instance of Firebase Messaging so that it can handle background
+// messages.
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
@@ -30,7 +31,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: '/icon-192x192.png' // default icon
+    icon: "/logo.png",
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
