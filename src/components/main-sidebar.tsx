@@ -97,17 +97,7 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
         </nav>
       </div>
       <div className="mt-auto p-4 border-t">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src="https://images.unsplash.com/photo-1678931547963-ab9017fc35c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8YnJhaW4lMjBhbmltaWV8ZW58MHx8fHwxNzUzNjE1NjAwfDA&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? "User"} data-ai-hint="user avatar" />
-            <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 truncate">
-            <p className="text-sm font-semibold truncate">{user?.displayName}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-          </div>
-        </div>
-        <nav className="mt-4 flex flex-col gap-1">
+        <nav className="flex flex-col gap-1">
           <Link href="/profile" onClick={onNavigate} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm", pathname === "/profile" && "bg-muted text-primary")}>
             <User className="h-4 w-4" /> Profile
           </Link>
