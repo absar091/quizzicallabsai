@@ -63,7 +63,8 @@ export default function SignupPage() {
 
       toast({
         title: "Account Created! Please Verify Your Email",
-        description: "A verification email has been sent to your inbox. Please also check your spam folder.",
+        description: "A verification email has been sent. Please check your main inbox and also your spam/junk folder.",
+        duration: 9000,
       });
       router.push("/login");
     } catch (error: any) {

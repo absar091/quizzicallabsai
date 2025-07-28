@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle, Copy, Check } from 'lucide-react';
+import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle, Copy, Check, HelpCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -77,6 +77,7 @@ export function Footer() {
                     <div>
                          <h3 className="font-semibold mb-4">Legal & Support</h3>
                         <nav className="flex flex-col gap-2 text-sm">
+                            <Link href="/how-to-use" className="text-muted-foreground hover:text-primary flex items-center gap-2"><HelpCircle className="h-4 w-4"/> How to Use</Link>
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
                              <Link href="/terms-of-use" className="text-muted-foreground hover:text-primary">Terms of Use</Link>
                               <Link href="/disclaimer" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
