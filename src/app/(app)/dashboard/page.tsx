@@ -51,44 +51,66 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadData() {
-      if (user) {
-        setLoading(true);
-        // Fetch from Firebase as the source of truth
-        const bookmarksRef = ref(db, `bookmarks/${user.uid}`);
-        const activityRef = ref(db, `quizResults/${user.uid}`);
+      if (!user) return;
 
-        const [bookmarksSnapshot, activitySnapshot] = await Promise.all([
-            get(bookmarksRef),
-            get(activityRef)
-        ]);
+      setLoading(true);
 
-        const bookmarks = bookmarksSnapshot.exists() ? Object.values(bookmarksSnapshot.val()) as BookmarkedQuestion[] : [];
-        const activityData = activitySnapshot.exists() ? Object.values(activitySnapshot.val()) as QuizResult[] : [];
+      // --- Step 1: Load from IndexedDB first for instant UI ---
+      const [localBookmarks, localActivity] = await Promise.all([
+        getBookmarks(user.uid),
+        getQuizResults(user.uid)
+      ]);
+      
+      setBookmarkedQuestions(localBookmarks);
+      setRecentActivity(localActivity);
+      
+      if (localActivity.length > 0) {
+        setLastQuizTopic(localActivity[0].topic);
+      }
+      setLoading(false); // UI is now populated, stop loading spinner
 
-        // Sort activity by date, descending
-        activityData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        
-        setBookmarkedQuestions(bookmarks);
-        setRecentActivity(activityData);
+      // --- Step 2: Sync with Firebase in the background ---
+      const bookmarksRef = ref(db, `bookmarks/${user.uid}`);
+      const activityRef = ref(db, `quizResults/${user.uid}`);
 
-        if (activityData.length > 0) {
-          setLastQuizTopic(activityData[0].topic);
-        }
+      const [bookmarksSnapshot, activitySnapshot] = await Promise.all([
+          get(bookmarksRef),
+          get(activityRef)
+      ]);
 
-        // Sync to IndexedDB for offline access
-        for (const bookmark of bookmarks) { await saveBookmark(bookmark); }
-        for (const result of activityData) { await saveQuizResult(result); }
-        
-        setLoading(false);
+      const firebaseBookmarks: BookmarkedQuestion[] = [];
+      if (bookmarksSnapshot.exists()) {
+          const val = bookmarksSnapshot.val();
+          Object.keys(val).forEach(key => firebaseBookmarks.push(val[key]));
+      }
+      
+      const firebaseActivityData: QuizResult[] = activitySnapshot.exists() ? Object.values(activitySnapshot.val()) as QuizResult[] : [];
+
+      // Sort activity by date, descending
+      firebaseActivityData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      // --- Step 3: Update state and IndexedDB if Firebase has newer data ---
+      if (firebaseBookmarks.length > localBookmarks.length) {
+          setBookmarkedQuestions(firebaseBookmarks);
+          for (const bookmark of firebaseBookmarks) { await saveBookmark(bookmark); }
+      }
+      if (firebaseActivityData.length > localActivity.length) {
+          setRecentActivity(firebaseActivityData);
+          if (firebaseActivityData.length > 0) {
+            setLastQuizTopic(firebaseActivityData[0].topic);
+          }
+          for (const result of firebaseActivityData) { await saveQuizResult(result); }
       }
     }
+
     loadData();
   }, [user]);
   
   const clearBookmark = async (questionToRemove: string) => {
     if(user) {
-        // Remove from Firebase and then from local state/IndexedDB
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${btoa(questionToRemove)}`);
+        // Use btoa for a safe key
+        const bookmarkId = btoa(questionToRemove);
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
         await remove(bookmarkRef);
         await deleteBookmark(user.uid, questionToRemove);
         const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
@@ -174,7 +196,7 @@ export default function DashboardPage() {
                  </CardHeader>
                  <CardContent>
                      <Button asChild variant="outline" disabled={!lastQuizTopic} size="sm">
-                        <Link href={`/mdcat/test?topic=${encodeURIComponent(lastQuizTopic || '')}`}>Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        <Link href={`/generate-quiz?topic=${encodeURIComponent(lastQuizTopic || '')}`}>Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
                     </Button>
                  </CardContent>
               </Card>
