@@ -15,6 +15,14 @@ export default function NotificationHandler() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       const messaging = getMessaging(app);
 
+      // Register the service worker
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch((err) => {
+          console.error('Service worker registration failed:', err);
+        });
+
       const requestPermission = async () => {
         try {
           const permission = await Notification.requestPermission();
@@ -26,7 +34,7 @@ export default function NotificationHandler() {
                 return;
             }
 
-            const fcmToken = await getToken(messaging, { vapidKey: vapidKey });
+            const fcmToken = await getToken(messaging, { vapidKey: vapidKey, serviceWorkerRegistration: await navigator.serviceWorker.ready });
             if (fcmToken) {
               console.log('FCM Token:', fcmToken);
               // Save the token to your database (e.g., Firestore) associated with the user
@@ -48,13 +56,17 @@ export default function NotificationHandler() {
 
       requestPermission();
 
-      onMessage(messaging, (payload) => {
+      const unsubscribe = onMessage(messaging, (payload) => {
         console.log('Message received. ', payload);
         toast({
           title: payload.notification?.title,
           description: payload.notification?.body,
         });
       });
+      
+      return () => {
+          unsubscribe();
+      }
     }
   }, [toast]);
 

@@ -1,11 +1,10 @@
-// This file must be in the /public directory
 
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
+// Import the Firebase app and messaging libraries.
+// In a service worker, you can't use ES6 modules, so we use importScripts.
+importScripts('https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging-compat.js');
 
-// Initialize the Firebase app in the service worker
-// Be sure to replace the config values below with your app's own
-// config values from your project's settings page
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCzRpRNFBAodjKhmmJAMvaBiDNH9-vK1Yg",
   authDomain: "quizzicallab-ai.firebaseapp.com",
@@ -13,25 +12,22 @@ const firebaseConfig = {
   projectId: "quizzicallab-ai",
   storageBucket: "quizzicallab-ai.appspot.com",
   messagingSenderId: "208281807503",
-  appId: "1:208281807503:web:6185af3a3b1c80ee7f1efa"
+  appId: "1:208281807503:web:e2b34335a9601f0c7f1efa"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Retrieve an instance of Firebase Messaging so that it can handle background
-// messages.
+// Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
-  // Customize notification here
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "/logo.png",
+    icon: '/favicon.ico' // You can add a default icon here
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
