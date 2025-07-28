@@ -72,6 +72,7 @@ export function Footer() {
                             <Link href="/" className="text-muted-foreground hover:text-primary">Home</Link>
                             <Link href="/dashboard" className="text-muted-foreground hover:text-primary">Dashboard</Link>
                             <Link href="/generate-quiz" className="text-muted-foreground hover:text-primary">New Quiz</Link>
+                            <Link href="/about-us" className="text-muted-foreground hover:text-primary">About Us</Link>
                         </nav>
                     </div>
                     <div>
