@@ -4,10 +4,6 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
-  experimental: {
-    // This is required by Genkit to function correctly.
-    serverComponentsExternalPackages: ['handlebars'],
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
