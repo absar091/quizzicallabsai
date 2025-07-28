@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square } from "lucide-react";
+import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -27,15 +27,24 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 type Quiz = GenerateCustomQuizOutput["quiz"];
+type QuizVariant = {
+    variant: string;
+    questions: Quiz;
+}
 
 const formSchema = z.object({
   schoolName: z.string().min(1, "School name is required."),
   className: z.string().min(1, "Class name is required."),
   subject: z.string().min(1, "Subject/Topic is required."),
   numberOfQuestions: z.number().min(1).max(55),
+  numberOfVariants: z.number().min(1).max(5),
   difficulty: z.enum(["easy", "medium", "hard", "master"]),
+  questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one question type.",
+  }),
   age: z.coerce.number().min(5, "Age must be at least 5.").max(100).optional(),
   includeAnswerKey: z.boolean().default(true),
   testDate: z.string().optional(),
@@ -47,10 +56,15 @@ const formSchema = z.object({
 
 type PaperFormValues = z.infer<typeof formSchema>;
 
+const questionTypeOptions = [
+    { id: "Multiple Choice", label: "Multiple Choice" },
+    { id: "Descriptive", label: "Short/Long Questions" },
+]
+
 export default function GeneratePaperPage() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [questions, setQuestions] = useState<Quiz | null>(null);
+  const [quizVariants, setQuizVariants] = useState<QuizVariant[] | null>(null);
   const [formValues, setFormValues] = useState<PaperFormValues | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
 
@@ -61,7 +75,9 @@ export default function GeneratePaperPage() {
       className: "",
       subject: "",
       numberOfQuestions: 10,
+      numberOfVariants: 1,
       difficulty: "medium",
+      questionTypes: ["Multiple Choice"],
       includeAnswerKey: true,
       age: undefined,
       testDate: "",
@@ -74,316 +90,213 @@ export default function GeneratePaperPage() {
 
   async function onSubmit(values: PaperFormValues) {
     setIsGenerating(true);
-    setQuestions(null);
+    setQuizVariants(null);
     setFormValues(values);
     setGenerationProgress(0);
 
-    const interval = setInterval(() => {
-        setGenerationProgress(prev => {
-            if (prev >= 95) {
-                clearInterval(interval);
-                return prev;
-            }
-            return prev + 5;
-        })
-    }, 500);
-
     try {
-      const result = await generateCustomQuiz({
-        topic: values.subject,
-        difficulty: values.difficulty,
-        numberOfQuestions: values.numberOfQuestions,
-        questionTypes: ["Multiple Choice"],
-        questionStyles: ["Knowledge-based", "Conceptual"],
-        userAge: values.age || null,
-        userClass: values.className,
-      });
-      clearInterval(interval);
-      setGenerationProgress(100);
-      setQuestions(result.quiz);
+        const variants: QuizVariant[] = [];
+        for (let i = 0; i < values.numberOfVariants; i++) {
+            const progress = ((i + 1) / values.numberOfVariants) * 100;
+            setGenerationProgress(progress);
+            
+            const result = await generateCustomQuiz({
+                topic: values.subject,
+                difficulty: values.difficulty,
+                numberOfQuestions: values.numberOfQuestions,
+                questionTypes: values.questionTypes as ("Multiple Choice" | "Descriptive")[],
+                questionStyles: ["Knowledge-based", "Conceptual", "Past Paper Style"],
+                userAge: values.age || null,
+                userClass: values.className,
+            });
+
+            variants.push({
+                variant: String.fromCharCode(65 + i), // A, B, C...
+                questions: result.quiz,
+            });
+        }
+        setQuizVariants(variants);
     } catch (error) {
-      clearInterval(interval);
       toast({
         title: "Error Generating Paper",
         description: "An error occurred while generating questions. The AI model might be busy. Please try again.",
         variant: "destructive",
       });
     } finally {
-        setTimeout(() => setIsGenerating(false), 500);
+        setIsGenerating(false);
     }
   }
 
   const downloadPdf = () => {
-    if (!questions || !formValues) return;
+    if (!quizVariants || !formValues) return;
     const doc = new jsPDF();
-
-    const margin = 15;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const contentWidth = pageWidth - margin * 2;
-    const contentStartY = 45;
-    const contentEndY = pageHeight - 15;
     
-    let pageNumber = 1;
-    let totalPages = 1; // Start with 1, will calculate later
+    // Delete the default blank page
+    doc.deletePage(1);
 
-    const addHeader = () => {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.text(formValues.schoolName.toUpperCase(), pageWidth / 2, 15, { align: 'center' });
-        
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
+    quizVariants.forEach((variantData, variantIndex) => {
+        const { variant, questions } = variantData;
+        let isFirstPageOfVariant = true;
 
-        let subjectLine = `Class: ${formValues.className} – Subject: ${formValues.subject}`;
-        doc.text(subjectLine, pageWidth / 2, 22, { align: 'center' });
+        const margin = 15;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const contentWidth = pageWidth - margin * 2;
+        const contentStartY = 45;
+        const contentEndY = pageHeight - 20;
 
-        doc.setFontSize(10);
-        let dateLine = formValues.testDate ? `Date: ${new Date(formValues.testDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` : '';
-        let marksLine = formValues.totalMarks ? `Total Marks: ${formValues.totalMarks}` : '';
-        doc.text(dateLine, margin, 30);
-        doc.text(marksLine, margin, 35);
-        
-        let teacherLine = formValues.teacherName ? `Teacher: ${formValues.teacherName}` : '';
-        let timeLine = formValues.timeLimit ? `Time Allowed: ${formValues.timeLimit} minutes` : '';
-        doc.text(teacherLine, pageWidth - margin, 30, { align: 'right' });
-        doc.text(timeLine, pageWidth - margin, 35, { align: 'right' });
-
-        doc.setLineWidth(0.5);
-        doc.line(margin, 40, pageWidth - margin, 40);
-    };
-    
-    const addFooter = (pageNum: number, totalNum: number) => {
-        doc.setLineWidth(0.2);
-        doc.line(margin, contentEndY, pageWidth - margin, contentEndY);
-        doc.setFontSize(8);
-        doc.text(`Page ${pageNum} of ${totalNum}`, pageWidth - margin, contentEndY + 5, {align: 'right'});
-    };
-
-    const renderTwoColumnLayout = () => {
-        const columnWidth = (contentWidth - 10) / 2;
-        let columnHeights = [contentStartY, contentStartY];
-        let currentColumn = 0;
-        
-        const questionDocs: { text: string[], height: number }[] = questions.map((q, i) => {
-            doc.setFontSize(10);
+        const addHeader = (variantId: string) => {
             doc.setFont('helvetica', 'bold');
-            const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
+            doc.setFontSize(16);
+            doc.text(formValues.schoolName.toUpperCase(), pageWidth / 2, 15, { align: 'center' });
             
             doc.setFont('helvetica', 'normal');
-            const answersText = q.answers.map((ans, ansIndex) => {
-                const letter = String.fromCharCode(65 + ansIndex);
-                return doc.splitTextToSize(`${letter}. ${ans}`, columnWidth - 5);
-            }).flat();
+            doc.setFontSize(12);
+
+            let subjectLine = `Class: ${formValues.className} – Subject: ${formValues.subject}`;
+            doc.text(subjectLine, pageWidth / 2, 22, { align: 'center' });
             
-            const totalHeight = (questionText.length * 4.5) + (answersText.length * 4.5) + 6;
-            return { text: [...questionText, ...answersText], height: totalHeight };
-        });
-
-        // Pre-calculate total pages
-        let tempY = [contentStartY, contentStartY];
-        let tempCol = 0;
-        let tempPageCount = 1;
-        questionDocs.forEach(qDoc => {
-             if (tempY[tempCol] + qDoc.height > contentEndY) {
-                tempCol++;
-                if (tempCol > 1) {
-                    tempPageCount++;
-                    tempCol = 0;
-                    tempY = [contentStartY, contentStartY];
-                }
-                 tempY[tempCol] = contentStartY;
-            }
-            tempY[tempCol] += qDoc.height;
-        });
-        totalPages = tempPageCount;
-        if(formValues.includeAnswerKey) {
-            const answerKeyRows = Math.ceil(questions.length / 4);
-            const answerKeyHeight = answerKeyRows * 8 + contentStartY + 20;
-            if(answerKeyHeight > contentEndY) {
-                totalPages++;
-            }
-            totalPages++;
-        }
+            let variantLine = `Version: ${variantId}`;
+            doc.text(variantLine, pageWidth / 2, 29, {align: 'center'});
 
 
-        addHeader();
-
-        questions.forEach((q, i) => {
             doc.setFontSize(10);
-            const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, columnWidth);
-            const answersText = q.answers.map((ans, ansIndex) => doc.splitTextToSize(`${String.fromCharCode(65 + ansIndex)}. ${ans}`, columnWidth - 5));
-            const totalHeight = (questionText.length * 4.5) + (answersText.flat().length * 4.5) + 6;
-
-            if (columnHeights[currentColumn] + totalHeight > contentEndY) {
-                currentColumn++;
-                if (currentColumn > 1) {
-                    addFooter(pageNumber, totalPages);
-                    doc.addPage();
-                    pageNumber++;
-                    currentColumn = 0;
-                    columnHeights = [contentStartY, contentStartY];
-                    addHeader();
-                } else {
-                     columnHeights[currentColumn] = contentStartY;
-                }
-            }
+            let dateLine = formValues.testDate ? `Date: ${new Date(formValues.testDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` : '';
+            let marksLine = formValues.totalMarks ? `Total Marks: ${formValues.totalMarks}` : '';
+            doc.text(dateLine, margin, 35);
+            doc.text(marksLine, margin, 40);
             
-            let yPos = columnHeights[currentColumn];
-            const xPos = margin + (currentColumn * (columnWidth + 10));
+            let teacherLine = formValues.teacherName ? `Teacher: ${formValues.teacherName}` : '';
+            let timeLine = formValues.timeLimit ? `Time Allowed: ${formValues.timeLimit} minutes` : '';
+            doc.text(teacherLine, pageWidth - margin, 35, { align: 'right' });
+            doc.text(timeLine, pageWidth - margin, 40, { align: 'right' });
 
-            doc.setFont('helvetica', 'bold');
-            doc.text(questionText, xPos, yPos);
-            yPos += questionText.length * 4.5 + 2;
+            doc.setLineWidth(0.5);
+            doc.line(margin, 45, pageWidth - margin, 45);
+        };
+        
+        const addFooter = () => {
+            const pageNum = doc.getNumberOfPages();
+            doc.setLineWidth(0.2);
+            doc.line(margin, contentEndY + 5, pageWidth - margin, contentEndY + 5);
+            doc.setFontSize(8);
+            doc.text(`Page ${pageNum}`, pageWidth - margin, contentEndY + 10, {align: 'right'});
+        };
 
-            doc.setFont('helvetica', 'normal');
-            answersText.forEach(ansLines => {
-                doc.text(ansLines, xPos + 5, yPos);
-                yPos += ansLines.length * 4.5;
-            });
-            
-            columnHeights[currentColumn] = yPos + 4;
-        });
-
-        for (let i = 1; i <= pageNumber; i++) {
-            doc.setPage(i);
-            addFooter(i, totalPages);
-            if (i < pageNumber || columnHeights[1] > contentStartY) {
-              doc.setLineWidth(0.2);
-              doc.line(pageWidth / 2, contentStartY - 2, pageWidth / 2, contentEndY);
-            }
-        }
-    }
-    
-    const renderSingleColumnLayout = () => {
-        let y = contentStartY;
-        const qDocs = questions.map((q, i) => {
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            const qText = doc.splitTextToSize(`${i + 1}. ${q.question}`, contentWidth);
-            doc.setFont('helvetica', 'normal');
-            const aText = q.answers.map((a,idx) => doc.splitTextToSize(`${String.fromCharCode(65 + idx)}. ${a}`, contentWidth - 5)).flat();
-            return { height: (qText.length * 4.5) + (aText.length * 4.5) + 6 };
-        });
-        
-        let tempPageCount = 1;
-        let tempY = contentStartY;
-        qDocs.forEach(qDoc => {
-             if (tempY + qDoc.height > contentEndY) {
-                tempPageCount++;
-                tempY = contentStartY;
-            }
-            tempY += qDoc.height;
-        });
-        totalPages = tempPageCount;
-         if(formValues.includeAnswerKey) {
-            const answerKeyRows = Math.ceil(questions.length / 4);
-            const answerKeyHeight = answerKeyRows * 8 + contentStartY + 20;
-            if(answerKeyHeight > contentEndY) {
-                totalPages++;
-            }
-            totalPages++;
-        }
-        
-        addHeader();
-        
-        questions.forEach((q, i) => {
-            const qText = doc.splitTextToSize(`${i + 1}. ${q.question}`, contentWidth);
-            const aText = q.answers.map((a,idx) => doc.splitTextToSize(`${String.fromCharCode(65 + idx)}. ${a}`, contentWidth - 5));
-            const totalHeight = (qText.length * 4.5) + (aText.flat().length * 4.5) + 6;
-            
-            if(y + totalHeight > contentEndY){
-                addFooter(pageNumber, totalPages);
+        const renderPage = (pageContent: () => void) => {
+            if (!isFirstPageOfVariant) {
                 doc.addPage();
-                pageNumber++;
-                y = contentStartY;
-                addHeader();
+            } else {
+                 // Add new page for new variant, except for the very first one
+                if (variantIndex > 0) doc.addPage();
+                isFirstPageOfVariant = false;
             }
-
-            doc.setFont('helvetica', 'bold');
-            doc.text(qText, margin, y);
-            y += qText.length * 4.5 + 2;
-
-            doc.setFont('helvetica', 'normal');
-            aText.forEach(lines => {
-                doc.text(lines, margin + 5, y);
-                y += lines.length * 4.5;
-            });
-            y += 4;
-        });
-        addFooter(pageNumber, totalPages);
-    }
-    
-    // Clear the default blank page
-    doc.deletePage(1);
-    doc.addPage();
-
-    if (formValues.layoutStyle === 'two-column') {
-        renderTwoColumnLayout();
-    } else {
-        renderSingleColumnLayout();
-    }
-
-    if (formValues.includeAnswerKey) {
-        doc.addPage();
-        pageNumber++;
-        addHeader();
-        let y = contentStartY + 10;
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Answer Key", pageWidth / 2, y, { align: 'center' });
-        y += 10;
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        
-        const answerColumnWidth = 35;
-        const columns = 4;
-        const rowsPerColumn = Math.ceil(questions.length / columns);
-        
-        for (let i = 0; i < questions.length; i++) {
-            const col = Math.floor(i / rowsPerColumn);
-            const row = i % rowsPerColumn;
-            
-            const xPos = margin + (col * answerColumnWidth);
-            const yPos = y + (row * 8);
-
-            if (yPos > contentEndY) { // Failsafe, should not happen with this logic
-                // This would need a new page, but we assume the key fits
-            }
-
-            const q = questions[i];
-            const correctAnswerLetter = String.fromCharCode(65 + q.answers.findIndex(ans => ans === q.correctAnswer));
-            const keyText = `${i + 1}. ${correctAnswerLetter}`;
-            doc.text(keyText, xPos, yPos);
+            addHeader(variant);
+            pageContent();
+            addFooter();
         }
-        addFooter(pageNumber, totalPages);
-    }
-    
-    // Remove the first blank page that was added
-    doc.deletePage(1);
 
-    doc.save(`${formValues.subject}_paper.pdf`);
+        let y = contentStartY + 5;
+        
+        const renderSingleColumn = () => {
+             doc.addPage();
+             addHeader(variant);
+             y = contentStartY + 5;
+
+             questions.forEach((q, i) => {
+                const questionNumberText = `${i + 1}. `;
+                doc.setFont('helvetica', 'bold');
+                const questionLines = doc.splitTextToSize(q.question, contentWidth - 5);
+                const totalHeight = (questionLines.length * 5) + 5 + (q.type === 'multiple-choice' ? (q.answers?.length || 0) * 8 : 15);
+
+                if (y + totalHeight > contentEndY) {
+                    addFooter();
+                    doc.addPage();
+                    addHeader(variant);
+                    y = contentStartY + 5;
+                }
+                
+                doc.text(questionNumberText, margin, y);
+                doc.text(questionLines, margin + 5, y);
+                y += questionLines.length * 5 + 2;
+                doc.setFont('helvetica', 'normal');
+
+                if (q.type === 'multiple-choice' && q.answers) {
+                    q.answers.forEach((ans, ansIndex) => {
+                        const answerLetter = String.fromCharCode(65 + ansIndex);
+                        const answerLines = doc.splitTextToSize(`${answerLetter}. ${ans}`, contentWidth - 10);
+                        doc.text(answerLines, margin + 10, y);
+                        y += answerLines.length * 4.5 + 2;
+                    });
+                } else if (q.type === 'descriptive') {
+                    y += 20; // Space for written answer
+                    doc.line(margin, y, contentWidth + margin, y);
+                }
+                 y += 6;
+             });
+             addFooter();
+        }
+        
+        renderSingleColumn();
+
+        // Answer Key for this variant
+        if (formValues.includeAnswerKey) {
+            const mcqs = questions.filter(q => q.type === 'multiple-choice');
+            if (mcqs.length > 0) {
+                 renderPage(() => {
+                    let yPos = contentStartY + 10;
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("Answer Key", pageWidth / 2, yPos, { align: 'center' });
+                    yPos += 15;
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    const answerColumnWidth = 35;
+                    const columns = 4;
+                    const rowsPerColumn = Math.ceil(mcqs.length / columns);
+                    
+                    mcqs.forEach((q, i) => {
+                        const col = Math.floor(i / rowsPerColumn);
+                        const row = i % rowsPerColumn;
+                        const originalIndex = questions.findIndex(origQ => origQ.question === q.question);
+
+                        const xPos = margin + 20 + (col * answerColumnWidth);
+                        const yPosKey = yPos + (row * 8);
+
+                        const correctAnswerLetter = String.fromCharCode(65 + (q.answers?.findIndex(ans => ans === q.correctAnswer) ?? 0));
+                        const keyText = `${originalIndex + 1}. ${correctAnswerLetter}`;
+                        doc.text(keyText, xPos, yPosKey);
+                    });
+                });
+            }
+        }
+    });
+
+    doc.save(`${formValues.subject}_paper_${quizVariants?.length > 1 ? `${quizVariants.length}_variants` : ''}.pdf`);
   };
 
   if (isGenerating) {
     return (
        <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <Wand2 className="h-12 w-12 text-primary mb-4 animate-pulse" />
         <h2 className="text-2xl font-semibold mb-2">Generating Your Paper...</h2>
-        <p className="text-muted-foreground max-w-sm mb-6">Our AI is preparing the questions. Please wait a moment.</p>
+        <p className="text-muted-foreground max-w-sm mb-6">
+            {quizVariants ? `Generating variant ${quizVariants.length + 1} of ${formValues?.numberOfVariants}...` : 'Starting AI generation...'}
+        </p>
         <div className="w-full max-w-sm">
            <Progress value={generationProgress} />
-           <p className="text-sm mt-2 text-primary font-medium">{generationProgress}%</p>
+           <p className="text-sm mt-2 text-primary font-medium">{generationProgress.toFixed(0)}%</p>
         </div>
       </div>
     );
   }
 
-  if (questions && formValues) {
+  if (quizVariants && formValues) {
     return (
       <div className="max-w-4xl mx-auto">
-        <PageHeader title="Paper Generated Successfully" description="Your exam paper is ready. You can preview it below or download it as a PDF." />
+        <PageHeader title="Paper Generated Successfully" description={`Your exam paper with ${quizVariants.length} variant(s) is ready.`} />
         <Card>
           <CardHeader>
             <CardTitle>{formValues.schoolName}</CardTitle>
@@ -392,20 +305,31 @@ export default function GeneratePaperPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 max-h-[50vh] overflow-y-auto p-4 border rounded-lg">
-                {questions.map((q, i) => (
-                    <div key={i}>
-                        <p className="font-semibold">{i+1}. {q.question}</p>
-                        <ul className="list-disc list-inside pl-4 mt-1">
-                            {q.answers.map((ans, j) => <li key={j}>{ans}</li>)}
-                        </ul>
-                    </div>
+             <Accordion type="single" collapsible className="w-full">
+                {quizVariants.map((variantData, index) => (
+                   <AccordionItem value={`item-${index}`} key={index}>
+                     <AccordionTrigger>Version {variantData.variant}</AccordionTrigger>
+                     <AccordionContent>
+                        <div className="space-y-4 max-h-[50vh] overflow-y-auto p-4 border rounded-lg">
+                            {variantData.questions.map((q, i) => (
+                                <div key={i}>
+                                    <p className="font-semibold">{i+1}. {q.question}</p>
+                                    {q.type === 'multiple-choice' && (
+                                        <ul className="list-disc list-inside pl-4 mt-1 text-sm">
+                                            {q.answers?.map((ans, j) => <li key={j}>{ans}</li>)}
+                                        </ul>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                     </AccordionContent>
+                   </AccordionItem>
                 ))}
-            </div>
+            </Accordion>
           </CardContent>
           <CardFooter className="flex-col sm:flex-row gap-4">
-            <Button onClick={downloadPdf} size="lg"><Download className="mr-2 h-4 w-4" /> Download PDF</Button>
-            <Button onClick={() => setQuestions(null)} variant="outline">Generate Another Paper</Button>
+            <Button onClick={downloadPdf} size="lg"><Download className="mr-2 h-4 w-4" /> Download All as PDF</Button>
+            <Button onClick={() => setQuizVariants(null)} variant="outline"><Replace className="mr-2 h-4 w-4" /> Generate New Paper</Button>
           </CardFooter>
         </Card>
       </div>
@@ -498,13 +422,54 @@ export default function GeneratePaperPage() {
                   )}
                 />
                <FormField
+                  control={form.control}
+                  name="questionTypes"
+                  render={() => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Question Types</FormLabel>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        {questionTypeOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="questionTypes"
+                            render={({ field }) => (
+                                <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                  <FormControl>
+                                    <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer flex-1">
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+               <FormField
                 control={form.control}
                 name="numberOfQuestions"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                    <FormLabel>Questions per Variant: <span className="text-primary font-bold">{field.value}</span></FormLabel>
                     <FormControl>
                       <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="numberOfVariants"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Number of Variants: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                    <FormControl>
+                      <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={5} min={1} step={1} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -513,11 +478,11 @@ export default function GeneratePaperPage() {
                   control={form.control}
                   name="includeAnswerKey"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50 md:col-span-2">
                       <div className="space-y-0.5">
                         <FormLabel>Include Answer Key</FormLabel>
                         <CardDescription className="text-xs">
-                          Append an answer key on the last page.
+                          Append an answer key for each variant.
                         </CardDescription>
                       </div>
                       <FormControl>
@@ -539,7 +504,7 @@ export default function GeneratePaperPage() {
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
                       <FormLabel>Layout Style</FormLabel>
-                      <CardDescription className="text-xs mb-2">"Two Column" is recommended to save paper on prints.</CardDescription>
+                      <CardDescription className="text-xs mb-2">Note: The two-column layout is currently disabled. All papers will be generated in a single column.</CardDescription>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -557,11 +522,11 @@ export default function GeneratePaperPage() {
                              </FormItem>
                              <FormItem>
                                <FormControl>
-                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" />
+                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled />
                                </FormControl>
-                               <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                               <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-not-allowed capitalize opacity-50">
                                   <Columns2 className="h-6 w-6 mb-2"/>
-                                  Two Column
+                                  Two Column (Soon)
                                </Label>
                              </FormItem>
                         </RadioGroup>
@@ -569,8 +534,6 @@ export default function GeneratePaperPage() {
                     </FormItem>
                   )}
                 />
-
-
                <FormField
                 control={form.control}
                 name="className"
@@ -649,5 +612,3 @@ export default function GeneratePaperPage() {
     </div>
   );
 }
-
-    

@@ -24,7 +24,7 @@ const GenerateCustomQuizInputSchema = z.object({
     .min(1)
     .max(55)
     .describe('The number of questions in the quiz.'),
-  questionTypes: z.array(z.string()).describe('The types of questions to include (e.g., Multiple Choice, Fill in the Blank).'),
+  questionTypes: z.array(z.enum(["Multiple Choice", "Descriptive"])).describe('The types of questions to include (e.g., Multiple Choice, Descriptive).'),
   questionStyles: z.array(z.string()).describe('The style of questions (e.g. Conceptual, Numerical, etc).'),
   timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
   userAge: z.number().optional().nullable().describe("The age of the user taking the quiz."),
@@ -35,9 +35,10 @@ export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSche
 const GenerateCustomQuizOutputSchema = z.object({
   quiz: z.array(
     z.object({
+      type: z.enum(['multiple-choice', 'descriptive']).describe('The type of the question.'),
       question: z.string(),
-      answers: z.array(z.string()),
-      correctAnswer: z.string(),
+      answers: z.array(z.string()).optional().describe('Answer choices for multiple-choice questions.'),
+      correctAnswer: z.string().optional().describe('The correct answer for multiple-choice questions.'),
     })
   ).describe('The generated quiz questions and answers.'),
 });
@@ -64,7 +65,7 @@ const prompt = ai.definePrompt({
 4.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
 5.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 6.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
-7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. The 'correctAnswer' field MUST EXACTLY MATCH one of the strings in the 'answers' array for each question.
+7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. 
 
 ---
 
@@ -81,7 +82,15 @@ const prompt = ai.definePrompt({
      *   **Master:** This is for experts. Questions must require a deep, integrated understanding of the topic, similar to postgraduate or professional certification exams. They should demand evaluation, critical analysis of complex scenarios, and potentially resolving conflicting information. The user must concentrate deeply and apply comprehensive knowledge to solve these.
 
 **3. QUESTION FORMATS: {{{questionTypes}}}**
-   - Generate questions ONLY in the specified formats. For "Multiple Choice", provide exactly 4 distinct options in the 'answers' array. The 'correctAnswer' field must be one of those strings.
+   - Generate questions ONLY in the specified formats.
+   - For "Multiple Choice" questions:
+     *   Set the 'type' field to "multiple-choice".
+     *   Provide exactly 4 distinct options in the 'answers' array.
+     *   The 'correctAnswer' field must be one of those strings.
+   - For "Descriptive" questions (short or long answer/essay):
+     *   Set the 'type' field to "descriptive".
+     *   Formulate a question that requires a written explanation or description (e.g., "Describe the process of...", "Compare and contrast...").
+     *   The 'answers' and 'correctAnswer' fields for descriptive questions should be omitted or left as empty arrays/null.
 
 **4. QUESTION STYLES: {{{questionStyles}}}**
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
