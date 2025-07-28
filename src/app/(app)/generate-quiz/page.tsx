@@ -37,6 +37,17 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
 import { db } from "@/lib/firebase";
+import { 
+    getQuizState, 
+    saveQuizState, 
+    deleteQuizState, 
+    getBookmarks, 
+    saveBookmark, 
+    deleteBookmark, 
+    saveQuizResult,
+    BookmarkedQuestion
+} from "@/lib/indexed-db";
+
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -61,12 +72,6 @@ interface ExplanationState {
     isSimpleLoading: boolean;
     simpleExplanation: string | null;
   };
-}
-
-type BookmarkedQuestion = {
-    question: string;
-    correctAnswer: string;
-    topic: string;
 }
 
 const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
@@ -136,45 +141,38 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }, [initialQuiz, initialFormValues])
 
   useEffect(() => {
-    // Don't persist MDCAT quizzes
-    if(initialQuiz) return;
-
-    const savedState = sessionStorage.getItem("quizState");
-    if (savedState) {
-        const { quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions } = JSON.parse(savedState);
-        if(quiz) {
-            setQuiz(quiz);
-            setCurrentQuestion(currentQuestion);
-            setUserAnswers(userAnswers);
-            setTimeLeft(timeLeft);
-            setBookmarkedQuestions(bookmarkedQuestions || []);
-            setFormValues(formValues);
+    async function loadSavedState() {
+        if (user && !initialQuiz) { // Don't load saved state for special quizzes like MDCAT
+            const savedState = await getQuizState(user.uid);
+            if (savedState) {
+                setQuiz(savedState.quiz);
+                setCurrentQuestion(savedState.currentQuestion);
+                setUserAnswers(savedState.userAnswers);
+                setTimeLeft(savedState.timeLeft);
+                setFormValues(savedState.formValues);
+            }
+            const bookmarks = await getBookmarks(user.uid);
+            setBookmarkedQuestions(bookmarks);
         }
     }
-     const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
-    if (storedBookmarks) {
-      setBookmarkedQuestions(JSON.parse(storedBookmarks));
-    }
-  }, [initialQuiz]);
+    loadSavedState();
+  }, [user, initialQuiz]);
+
 
   useEffect(() => {
-     // Don't persist MDCAT quizzes
-    if(initialQuiz) return;
-
-    if (quiz && !showResults) {
-      const quizState = {
-        quiz,
-        currentQuestion,
-        userAnswers,
-        timeLeft,
-        formValues,
-        bookmarkedQuestions,
-      };
-      sessionStorage.setItem("quizState", JSON.stringify(quizState));
-    } else if(showResults) {
-        sessionStorage.removeItem("quizState");
+    async function persistState() {
+        if (user && quiz && !showResults && !initialQuiz) {
+            await saveQuizState(user.uid, {
+                quiz,
+                currentQuestion,
+                userAnswers,
+                timeLeft,
+                formValues,
+            });
+        }
     }
-  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, bookmarkedQuestions, showResults, initialQuiz]);
+    persistState();
+  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -274,22 +272,24 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     }
   };
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     setShowResults(true);
-    if(quiz && formValues) {
+    if(quiz && formValues && user) {
         const { score, percentage } = calculateScore();
         const newResult = {
+            id: `${user.uid}-${Date.now()}`,
+            userId: user.uid,
             topic: formValues.topic,
             score,
             total: quiz.length,
             percentage,
             date: new Date().toISOString(),
         }
-        const existingResults = JSON.parse(sessionStorage.getItem("quizResults") || "[]");
-        sessionStorage.setItem("quizResults", JSON.stringify([newResult, ...existingResults]));
+        await saveQuizResult(newResult);
+        await deleteQuizState(user.uid);
     }
     window.scrollTo(0, 0);
-  }, [quiz, userAnswers, formValues]);
+  }, [quiz, userAnswers, formValues, user]);
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0 };
@@ -435,27 +435,34 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     doc.save('quiz_result_card.pdf');
   };
   
-  const toggleBookmark = (question: string, correctAnswer: string) => {
-    if(!formValues) return;
-    const topic = formValues.topic;
-    const newBookmark: BookmarkedQuestion = { question, correctAnswer, topic };
-    let updatedBookmarks;
-
-    if (bookmarkedQuestions.some(bm => bm.question === question)) {
-      updatedBookmarks = bookmarkedQuestions.filter(bm => bm.question !== question);
-    } else {
-      updatedBookmarks = [...bookmarkedQuestions, newBookmark];
-    }
+  const toggleBookmark = async (question: string, correctAnswer: string) => {
+    if(!formValues || !user) return;
     
-    setBookmarkedQuestions(updatedBookmarks);
-    sessionStorage.setItem("bookmarkedQuestions", JSON.stringify(updatedBookmarks));
+    const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
+    
+    if (isCurrentlyBookmarked) {
+        await deleteBookmark(user.uid, question);
+        setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
+    } else {
+        const newBookmark: BookmarkedQuestion = { 
+            userId: user.uid,
+            question, 
+            correctAnswer, 
+            topic: formValues.topic 
+        };
+        await saveBookmark(newBookmark);
+        setBookmarkedQuestions(prev => [...prev, newBookmark]);
+    }
   };
 
-  const resetQuiz = () => {
+  const resetQuiz = async () => {
     if(initialQuiz) {
         // For MDCAT quizzes, just go back to the MDCAT home
         window.location.href = '/mdcat';
         return;
+    }
+    if (user) {
+        await deleteQuizState(user.uid);
     }
     setQuiz(null);
     setCurrentQuestion(0);
@@ -463,7 +470,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     setShowResults(false);
     setExplanations({});
     setFormValues(null);
-    sessionStorage.removeItem("quizState");
     window.scrollTo(0, 0);
   };
   

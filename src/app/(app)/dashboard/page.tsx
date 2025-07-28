@@ -27,20 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/page-header";
-
-type BookmarkedQuestion = {
-  question: string;
-  correctAnswer: string;
-  topic: string;
-};
-
-type QuizResult = {
-  topic: string;
-  score: number;
-  total: number;
-  percentage: number;
-  date: string;
-};
+import { getBookmarks, getQuizResults, deleteBookmark, BookmarkedQuestion, QuizResult } from "@/lib/indexed-db";
 
 const chartConfig = {
   score: {
@@ -60,24 +47,27 @@ export default function DashboardPage() {
   const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
-    const storedBookmarks = sessionStorage.getItem("bookmarkedQuestions");
-    if (storedBookmarks) {
-      setBookmarkedQuestions(JSON.parse(storedBookmarks));
-    }
-    const storedActivity = sessionStorage.getItem("quizResults");
-    if (storedActivity) {
-      const parsedActivity = JSON.parse(storedActivity);
-      setRecentActivity(parsedActivity);
-      if(parsedActivity.length > 0) {
-        setLastQuizTopic(parsedActivity[0].topic);
+    async function loadData() {
+      if (user) {
+        const bookmarks = await getBookmarks(user.uid);
+        setBookmarkedQuestions(bookmarks);
+
+        const activity = await getQuizResults(user.uid);
+        setRecentActivity(activity);
+        if (activity.length > 0) {
+          setLastQuizTopic(activity[0].topic);
+        }
       }
     }
-  }, []);
+    loadData();
+  }, [user]);
   
-  const clearBookmark = (questionToRemove: string) => {
-    const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
-    setBookmarkedQuestions(updatedBookmarks);
-    sessionStorage.setItem("bookmarkedQuestions", JSON.stringify(updatedBookmarks));
+  const clearBookmark = async (questionToRemove: string) => {
+    if(user) {
+        await deleteBookmark(user.uid, questionToRemove);
+        const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
+        setBookmarkedQuestions(updatedBookmarks);
+    }
   }
 
   const startReview = () => {
