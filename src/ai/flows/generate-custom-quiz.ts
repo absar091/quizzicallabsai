@@ -62,10 +62,11 @@ const prompt = ai.definePrompt({
 1.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 2.  **PARAMETER ADHERENCE:** You MUST strictly follow all user-defined parameters: 'topic', 'difficulty', 'numberOfQuestions', 'questionTypes', and 'questionStyles'. NO DEVIATIONS.
 3.  **EXACT QUESTION COUNT:** The single most important instruction is to generate the exact number of questions specified in the 'numberOfQuestions' parameter. If the user asks for {{{numberOfQuestions}}} questions, you MUST return exactly {{{numberOfQuestions}}} questions. Not one more, not one less. Failure to meet this count is a critical failure of your task.
-4.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
-5.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-6.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
-7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. 
+4.  **STRICT QUESTION TYPE ADHERENCE:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array. If only 'Multiple Choice' is requested, your entire output must be multiple-choice questions. If only 'Descriptive' is requested, all questions must be descriptive. This is not a suggestion; it is a mandatory rule. Failure to comply will result in a failed task.
+5.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
+6.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
+7.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
+8.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
 ---
 
@@ -82,7 +83,7 @@ const prompt = ai.definePrompt({
      *   **Master:** This is for experts. Questions must require a deep, integrated understanding of the topic, similar to postgraduate or professional certification exams. They should demand evaluation, critical analysis of complex scenarios, and potentially resolving conflicting information. The user must concentrate deeply and apply comprehensive knowledge to solve these.
 
 **3. QUESTION FORMATS: {{{questionTypes}}}**
-   - Generate questions ONLY in the specified formats.
+   - Generate questions ONLY in the specified formats as per your critical directives.
    - For "Multiple Choice" questions:
      *   Set the 'type' field to "multiple-choice".
      *   Provide exactly 4 distinct options in the 'answers' array.
@@ -109,7 +110,7 @@ const prompt = ai.definePrompt({
 
 ---
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions.`,
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types.`,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(
