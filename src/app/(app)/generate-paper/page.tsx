@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace, AlertTriangle } from "lucide-react";
+import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace, AlertTriangle, Minus, Plus } from "lucide-react";
 import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
 
 
 type Quiz = GenerateCustomQuizOutput["quiz"];
@@ -50,6 +51,7 @@ const formSchema = z.object({
   }),
   age: z.coerce.number().min(5, "Age must be at least 5.").max(100).optional(),
   includeAnswerKey: z.boolean().default(true),
+  includeAnswerLines: z.boolean().default(true),
   testDate: z.string().optional(),
   timeLimit: z.coerce.number().min(1).optional(),
   totalMarks: z.coerce.number().min(1).optional(),
@@ -82,6 +84,7 @@ export default function GeneratePaperPage() {
       difficulty: "medium",
       questionTypes: ["Multiple Choice"],
       includeAnswerKey: true,
+      includeAnswerLines: true,
       age: undefined,
       testDate: "",
       timeLimit: undefined,
@@ -137,10 +140,6 @@ export default function GeneratePaperPage() {
     quizVariants.forEach((variantData, variantIndex) => {
         if(variantIndex > 0) {
             doc.addPage();
-        } else {
-            // For the very first page, we need to ensure it's not the initial blank one if we plan to delete it.
-            // A safer approach is to just start drawing and add pages as needed.
-            // This avoids deleting page 1 while it's the only page.
         }
         
         const { variant, questions } = variantData;
@@ -204,7 +203,7 @@ export default function GeneratePaperPage() {
                     const answerLines = doc.splitTextToSize(`A. ${ans}`, contentWidth - 10);
                     neededHeight += (answerLines.length * 4.5) + 2;
                 });
-            } else if (q.type === 'descriptive') {
+            } else if (q.type === 'descriptive' && formValues.includeAnswerLines) {
                 neededHeight += 25; // Space for written answer
             }
 
@@ -227,7 +226,7 @@ export default function GeneratePaperPage() {
                     doc.text(answerLines, margin + 10, y);
                     y += answerLines.length * 4.5 + 2;
                 });
-            } else if (q.type === 'descriptive') {
+            } else if (q.type === 'descriptive' && formValues.includeAnswerLines) {
                 y += 20;
                 doc.setLineWidth(0.2);
                 for(let j=0; j<3; j++) {
@@ -485,19 +484,21 @@ export default function GeneratePaperPage() {
                   </FormItem>
                 )}
               />
+
+              <div className="md:col-span-2 space-y-4">
                <FormField
                   control={form.control}
                   name="includeAnswerKey"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50 md:col-span-2">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50">
                       <div className="space-y-0.5">
                         <FormLabel>Include Answer Key</FormLabel>
                         <CardDescription className="text-xs">
-                          Append an answer key for each variant.
+                          Append a separate answer key page for multiple-choice questions.
                         </CardDescription>
                       </div>
                       <FormControl>
-                        <Checkbox
+                        <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -505,6 +506,27 @@ export default function GeneratePaperPage() {
                     </FormItem>
                   )}
                 />
+                 <FormField
+                  control={form.control}
+                  name="includeAnswerLines"
+                  render={({ field }) => (
+                    <FormItem className={cn("flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50", { 'hidden': !form.getValues('questionTypes').includes('Descriptive') })}>
+                      <div className="space-y-0.5">
+                        <FormLabel>Include Answer Lines</FormLabel>
+                        <CardDescription className="text-xs">
+                          Add blank lines for descriptive/short answer questions.
+                        </CardDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
               
               <div className="md:col-span-2">
                  <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-4">Formatting Details</h3>
