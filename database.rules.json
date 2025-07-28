@@ -1,7 +1,16 @@
 
 {
   "rules": {
-    "quizCounts": {
+    "quizResults": {
+      ".read": "auth != null",
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["date"]
+      }
+    },
+    "bookmarks": {
+       ".read": "auth != null",
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid"
