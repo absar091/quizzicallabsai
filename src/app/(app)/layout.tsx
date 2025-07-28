@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { MainSidebar } from "@/components/main-sidebar";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -30,16 +29,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-       <div className="flex flex-1">
-        <MainSidebar isMobile={false} />
-        <div className="flex flex-col flex-1">
-          <AppHeader />
-          <main className="flex-1 p-4 md:p-6 lg:p-8">
-            {children}
-          </main>
-          <Footer />
-        </div>
-      </div>
+        <AppHeader />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 container">
+          {children}
+        </main>
+        <Footer />
     </div>
   );
 }
