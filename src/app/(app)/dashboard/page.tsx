@@ -11,7 +11,7 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes } from "lucide-react";
+import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Loader2 } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -27,7 +27,9 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/page-header";
-import { getBookmarks, getQuizResults, deleteBookmark, BookmarkedQuestion, QuizResult } from "@/lib/indexed-db";
+import { get, ref, remove } from "firebase/database";
+import { db } from "@/lib/firebase";
+import { getBookmarks, getQuizResults, deleteBookmark, saveBookmark, saveQuizResult, BookmarkedQuestion, QuizResult } from "@/lib/indexed-db";
 
 const chartConfig = {
   score: {
@@ -38,6 +40,7 @@ const chartConfig = {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
   const [lastQuizTopic, setLastQuizTopic] = useState<string | null>(null);
@@ -49,14 +52,34 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadData() {
       if (user) {
-        const bookmarks = await getBookmarks(user.uid);
-        setBookmarkedQuestions(bookmarks);
+        setLoading(true);
+        // Fetch from Firebase as the source of truth
+        const bookmarksRef = ref(db, `bookmarks/${user.uid}`);
+        const activityRef = ref(db, `quizResults/${user.uid}`);
 
-        const activity = await getQuizResults(user.uid);
-        setRecentActivity(activity);
-        if (activity.length > 0) {
-          setLastQuizTopic(activity[0].topic);
+        const [bookmarksSnapshot, activitySnapshot] = await Promise.all([
+            get(bookmarksRef),
+            get(activityRef)
+        ]);
+
+        const bookmarks = bookmarksSnapshot.exists() ? Object.values(bookmarksSnapshot.val()) as BookmarkedQuestion[] : [];
+        const activityData = activitySnapshot.exists() ? Object.values(activitySnapshot.val()) as QuizResult[] : [];
+
+        // Sort activity by date, descending
+        activityData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
+        setBookmarkedQuestions(bookmarks);
+        setRecentActivity(activityData);
+
+        if (activityData.length > 0) {
+          setLastQuizTopic(activityData[0].topic);
         }
+
+        // Sync to IndexedDB for offline access
+        for (const bookmark of bookmarks) { await saveBookmark(bookmark); }
+        for (const result of activityData) { await saveQuizResult(result); }
+        
+        setLoading(false);
       }
     }
     loadData();
@@ -64,6 +87,9 @@ export default function DashboardPage() {
   
   const clearBookmark = async (questionToRemove: string) => {
     if(user) {
+        // Remove from Firebase and then from local state/IndexedDB
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${btoa(questionToRemove)}`);
+        await remove(bookmarkRef);
         await deleteBookmark(user.uid, questionToRemove);
         const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
         setBookmarkedQuestions(updatedBookmarks);
@@ -112,6 +138,14 @@ export default function DashboardPage() {
   const { averageScores, scoreTrend } = processChartData();
   const dailyGoalProgress = Math.min((recentActivity.length / 5) * 100, 100); // Example: 5 quizzes a day goal
 
+  if (loading) {
+    return (
+      <div className="flex h-[80vh] w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader 
@@ -140,7 +174,7 @@ export default function DashboardPage() {
                  </CardHeader>
                  <CardContent>
                      <Button asChild variant="outline" disabled={!lastQuizTopic} size="sm">
-                        <Link href="/generate-quiz">Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        <Link href={`/mdcat/test?topic=${encodeURIComponent(lastQuizTopic || '')}`}>Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
                     </Button>
                  </CardContent>
               </Card>

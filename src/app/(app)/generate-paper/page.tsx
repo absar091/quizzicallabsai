@@ -29,7 +29,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Alert } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 
 type Quiz = GenerateCustomQuizOutput["quiz"];
@@ -135,7 +135,13 @@ export default function GeneratePaperPage() {
     const doc = new jsPDF();
     
     quizVariants.forEach((variantData, variantIndex) => {
-        if(variantIndex > 0) doc.addPage();
+        if(variantIndex > 0) {
+            doc.addPage();
+        } else {
+            // For the very first page, we need to ensure it's not the initial blank one if we plan to delete it.
+            // A safer approach is to just start drawing and add pages as needed.
+            // This avoids deleting page 1 while it's the only page.
+        }
         
         const { variant, questions } = variantData;
         
@@ -144,7 +150,7 @@ export default function GeneratePaperPage() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const contentWidth = pageWidth - margin * 2;
         const pageHeight = doc.internal.pageSize.getHeight();
-        let currentPage = 1;
+        let currentPage = doc.internal.getNumberOfPages();
 
         const addHeader = () => {
             doc.setFont('helvetica', 'bold');

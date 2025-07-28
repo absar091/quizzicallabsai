@@ -276,15 +276,19 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     setShowResults(true);
     if(quiz && formValues && user) {
         const { score, percentage } = calculateScore();
+        const resultId = `${user.uid}-${Date.now()}`;
         const newResult = {
-            id: `${user.uid}-${Date.now()}`,
+            id: resultId,
             userId: user.uid,
             topic: formValues.topic,
             score,
             total: quiz.length,
             percentage,
             date: new Date().toISOString(),
-        }
+        };
+        // Save to Firebase first, then to local IndexedDB
+        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
+        await set(resultRef, newResult);
         await saveQuizResult(newResult);
         await deleteQuizState(user.uid);
     }
@@ -312,7 +316,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       const result = await generateExplanationsForIncorrectAnswers({
         question: question.question,
         studentAnswer: userAnswers[questionIndex] || "",
-        correctAnswer: question.correctAnswer,
+        correctAnswer: question.correctAnswer || "N/A",
         topic: formValues.topic,
       });
       setExplanations((prev) => ({
@@ -344,7 +348,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     try {
         const result = await generateSimpleExplanation({
             question: question.question,
-            correctAnswer: question.correctAnswer,
+            correctAnswer: question.correctAnswer || "N/A",
             topic: formValues.topic,
         });
         setExplanations((prev) => ({
@@ -394,20 +398,23 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         doc.text(questionText, margin, y);
         y += (questionText.length * 5) + 5;
 
-        q.answers.forEach((a) => {
-            const answerText = doc.splitTextToSize(`- ${a}`, maxWidth - 5);
-            checkPageBreak(answerText.length * 4 + 2);
-            doc.text(answerText, margin + 5, y);
-            y += (answerText.length * 4) + 2;
-        });
+        if (q.answers) {
+            q.answers.forEach((a) => {
+                const answerText = doc.splitTextToSize(`- ${a}`, maxWidth - 5);
+                checkPageBreak(answerText.length * 4 + 2);
+                doc.text(answerText, margin + 5, y);
+                y += (answerText.length * 4) + 2;
+            });
+        }
 
-        const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5);
-        checkPageBreak(correctAnswerText.length * 5 + 10);
-        doc.setFont('helvetica', 'bold');
-        doc.text(correctAnswerText, margin + 5, y);
-        doc.setFont('helvetica', 'normal');
-
-        y += (correctAnswerText.length * 5) + 10;
+        if (q.correctAnswer) {
+            const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5);
+            checkPageBreak(correctAnswerText.length * 5 + 10);
+            doc.setFont('helvetica', 'bold');
+            doc.text(correctAnswerText, margin + 5, y);
+            doc.setFont('helvetica', 'normal');
+            y += (correctAnswerText.length * 5) + 10;
+        }
     });
 
     doc.save('quiz_questions.pdf');
@@ -439,8 +446,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     if(!formValues || !user) return;
     
     const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
+    const bookmarkId = btoa(question); // Use base64 encoded question as a safe key
     
     if (isCurrentlyBookmarked) {
+        // Remove from Firebase and local state
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        await set(bookmarkRef, null);
         await deleteBookmark(user.uid, question);
         setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
     } else {
@@ -450,6 +461,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
             correctAnswer, 
             topic: formValues.topic 
         };
+        // Save to Firebase and local state
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        await set(bookmarkRef, newBookmark);
         await saveBookmark(newBookmark);
         setBookmarkedQuestions(prev => [...prev, newBookmark]);
     }
@@ -526,10 +540,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
               </div>
               <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
                   <p>Question {currentQuestion + 1} of {quiz.length}</p>
-                  <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer)}>
-                    <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
-                    Bookmark
-                  </Button>
+                  {currentQ.correctAnswer && (
+                    <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer || "")}>
+                      <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
+                      Bookmark
+                    </Button>
+                  )}
                 </div>
           </div>
 
@@ -558,7 +574,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                   onValueChange={handleAnswer}
                                   className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                               >
-                                  {currentQ.answers.map((answer, index) => {
+                                  {(currentQ.answers || []).map((answer, index) => {
                                   const letter = String.fromCharCode(65 + index);
                                   return (
                                       <FormItem key={index}>
@@ -597,7 +613,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   
   if (showResults && quiz) {
     const { score, percentage } = calculateScore();
-    const incorrectAnswers = quiz.map((q, i) => ({ ...q, userAnswer: userAnswers[i] })).filter((q, i) => q.correctAnswer !== userAnswers[i]);
+    const incorrectAnswers = quiz.map((q, i) => ({ ...q, userAnswer: userAnswers[i] })).filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
 
     return (
        <div className="max-w-4xl mx-auto">
