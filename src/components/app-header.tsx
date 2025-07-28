@@ -39,6 +39,9 @@ const appNavItems = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/generate-quiz", label: "Custom Quiz" },
     { href: "/generate-questions", label: "Practice" },
+    { href: "/generate-from-document", label: "From Document" },
+    { href: "/generate-study-guide", label: "Study Guide" },
+    { href: "/generate-paper", label: "Paper Generator" },
     { href: "/mdcat", label: "MDCAT Prep" },
 ]
 
@@ -77,7 +80,7 @@ export function AppHeader() {
         
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
             {user && (
-                 <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+                 <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
                      {appNavItems.map((item) => (
                         <Link
                         key={item.href}
