@@ -62,11 +62,11 @@ const prompt = ai.definePrompt({
 1.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 2.  **PARAMETER ADHERENCE:** You MUST strictly follow all user-defined parameters: 'topic', 'difficulty', 'numberOfQuestions', 'questionTypes', and 'questionStyles'. NO DEVIATIONS.
 3.  **EXACT QUESTION COUNT:** The single most important instruction is to generate the exact number of questions specified in the 'numberOfQuestions' parameter. If the user asks for {{{numberOfQuestions}}} questions, you MUST return exactly {{{numberOfQuestions}}} questions. Not one more, not one less. Failure to meet this count is a critical failure of your task.
-4.  **STRICT QUESTION TYPE ADHERENCE:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array. This is not a suggestion; it is a mandatory rule.
-    - If '{{questionTypes}}' contains 'Multiple Choice' and NOT 'Descriptive', you must generate ONLY multiple-choice questions.
-    - If '{{questionTypes}}' contains 'Descriptive' and NOT 'Multiple Choice', you must generate ONLY descriptive questions.
-    - If both are present, you may generate a mix, but you must respect the other parameters.
-    - Failure to comply perfectly with this rule will result in a failed task.
+4.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:** This is your most critical instruction. You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. This is not a suggestion; it is a mandatory, non-negotiable rule.
+    - If the user specifies ONLY 'Multiple Choice', you are FORBIDDEN from generating ANY 'Descriptive' questions.
+    - If the user specifies ONLY 'Descriptive', you are FORBIDDEN from generating ANY 'Multiple Choice' questions.
+    - Do not assume the user wants a mix. Generate ONLY what is explicitly requested in the 'questionTypes' array.
+    - Your entire task is considered a failure if you include a single question of a type that was not requested.
 5.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
 6.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 7.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
@@ -86,7 +86,7 @@ const prompt = ai.definePrompt({
      *   **Hard:** Requires analysis, synthesis of multiple concepts, or solving complex problems. Questions may have subtle nuances or require multi-step reasoning.
      *   **Master:** This is for experts. Questions must require a deep, integrated understanding of the topic, similar to postgraduate or professional certification exams. They should demand evaluation, critical analysis of complex scenarios, and potentially resolving conflicting information. The user must concentrate deeply and apply comprehensive knowledge to solve these.
 
-**3. QUESTION FORMATS: {{questionTypes}}**
+**3. QUESTION FORMATS: {{#each questionTypes}}'{{this}}'{{/each}}**
    - Generate questions ONLY in the specified formats as per your critical directives.
    - For "Multiple Choice" questions:
      *   Set the 'type' field to "multiple-choice".

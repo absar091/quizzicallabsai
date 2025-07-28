@@ -30,7 +30,7 @@ const formSchema = z.object({
   className: z.string().min(1, { message: "Class is required." }),
   age: z.coerce.number().min(5, "You must be at least 5 years old.").max(100, "Please enter a valid age."),
   agree: z.boolean().refine(val => val, {
-    message: "You must accept the privacy policy to continue."
+    message: "You must accept the terms to continue."
   })
 });
 
@@ -171,11 +171,18 @@ export default function SignupPage() {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                         <FormLabel>
-                        I agree to the{" "}
+                         I agree to the{" "}
+                         <Link href="/terms-of-use" className="text-primary hover:underline" target="_blank">
+                            Terms of Use
+                        </Link>
+                        ,{" "}
                          <Link href="/privacy-policy" className="text-primary hover:underline" target="_blank">
                             Privacy Policy
                         </Link>
-                        .
+                        , and{" "}
+                         <Link href="/disclaimer" className="text-primary hover:underline" target="_blank">
+                            Disclaimer
+                        </Link>.
                         </FormLabel>
                         <FormMessage />
                     </div>

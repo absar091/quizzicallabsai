@@ -57,7 +57,7 @@ export function Footer() {
                             </div>
                             <span className="text-lg font-bold">Quizzicallabs AI</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">A Product by QuizzicalLabs™</p>
+                        <p className="text-sm text-muted-foreground mb-4">A product by <span className="font-bold">Absar Ahmad Rao</span></p>
                         <p className="text-sm font-semibold mb-2">Contribute or give feedback:</p>
                         <a href="mailto:Ahmadraoabsar@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
                            <Mail className="h-4 w-4" /> Ahmadraoabsar@gmail.com
@@ -120,5 +120,3 @@ export function Footer() {
         </footer>
     )
 }
-
-    
