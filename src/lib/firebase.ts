@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -13,9 +14,9 @@ const firebaseConfig = {
   authDomain: "quizzicallab-ai.firebaseapp.com",
   databaseURL: "https://quizzicallab-ai-default-rtdb.firebaseio.com",
   projectId: "quizzicallab-ai",
-  storageBucket: "quizzicallab-ai.appspot.com",
+  storageBucket: "quizzicallab-ai.firebasestorage.app",
   messagingSenderId: "208281807503",
-  appId: "1:208281807503:web:6185af3a3b1c80ee7f1efa"
+  appId: "1:208281807503:web:8130ddca90c6068a7f1efa"
 };
 
 // Initialize Firebase
