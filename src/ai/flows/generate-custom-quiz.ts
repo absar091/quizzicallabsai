@@ -15,7 +15,7 @@ import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateCustomQuizInputSchema = z.object({
-  topic: z.string().describe('The topic of the quiz.'),
+  topic: z.string().describe('The topic of the quiz. This can be very specific, including chapter, subtopic, and learning objectives.'),
   difficulty: z
     .enum(['easy', 'medium', 'hard', 'master'])
     .describe('The difficulty level of the quiz.'),
@@ -72,7 +72,7 @@ const prompt = ai.definePrompt({
 **DETAILED PARAMETER INSTRUCTIONS:**
 
 **1. TOPIC: '{{{topic}}}'**
-   - Generate questions ONLY related to this specific topic. Do not stray into broader, related subjects unless they are integral to understanding the core topic.
+   - Generate questions ONLY related to this specific topic. The topic might be broad (e.g., "Biology") or very specific (e.g., "Biology - Cell Structure & Function - Cytoplasmic Organelles: Outline the structure and function of the Mitochondria"). You must focus on the most specific part of the topic provided. Do not stray into broader, related subjects unless they are integral to understanding the core topic.
 
 **2. DIFFICULTY LEVEL: '{{{difficulty}}}'**
    - You MUST generate ALL questions at this precise difficulty level. Do NOT mix difficulties.
@@ -97,7 +97,7 @@ const prompt = ai.definePrompt({
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.**
-     *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level.
+     *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT).
 
 **5. TARGET AUDIENCE:**
    - Tailor the complexity and wording for the user's context. If no details are provided, assume a general university undergraduate level.
@@ -123,3 +123,5 @@ const generateCustomQuizFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

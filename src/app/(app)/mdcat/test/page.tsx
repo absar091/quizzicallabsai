@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 function MdcatTestFlow() {
     const searchParams = useSearchParams();
@@ -19,8 +20,8 @@ function MdcatTestFlow() {
     const [error, setError] = useState<string | null>(null);
 
     const subject = searchParams.get('subject');
-    const chapter = searchParams.get('chapter');
     const topic = searchParams.get('topic');
+    const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
     const questionStyles = searchParams.get('questionStyles') || 'Past Paper Style';
 
@@ -36,10 +37,10 @@ function MdcatTestFlow() {
                 const result = await generateCustomQuiz({
                     topic: topic,
                     difficulty: difficulty as any,
-                    numberOfQuestions: 50,
+                    numberOfQuestions: Number(numQuestions) || 20,
                     questionTypes: ["Multiple Choice"],
                     questionStyles: questionStyles.split(','),
-                    timeLimit: 50,
+                    timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "MDCAT Student",
                 });
@@ -61,13 +62,13 @@ function MdcatTestFlow() {
         };
 
         generateTest();
-    }, [topic, difficulty, questionStyles, toast]);
+    }, [topic, difficulty, questionStyles, toast, numQuestions]);
 
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh]">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-xl text-muted-foreground">Preparing your MDCAT test for "{topic}"...</p>
+                <p className="text-xl text-muted-foreground text-center">Preparing your MDCAT test for "{topic}"...</p>
                 <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
             </div>
         )
@@ -93,7 +94,7 @@ function MdcatTestFlow() {
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles.split(','),
-                 timeLimit: 50,
+                 timeLimit: Number(numQuestions) || 20,
             }}
          />
     }
@@ -104,26 +105,24 @@ function MdcatTestFlow() {
 function MdcatTestPage() {
     const searchParams = useSearchParams();
     const subject = searchParams.get('subject');
-    const chapter = searchParams.get('chapter');
+    const topic = searchParams.get('topic');
 
-    if (subject && chapter) {
+    if (subject && topic) {
         return <MdcatTestFlow />;
     }
 
     return (
         <div className="max-w-2xl mx-auto">
-             <PageHeader title="MDCAT Test Setup" description="Configure your chapter test." />
+             <PageHeader title="MDCAT Test Setup" description="Invalid test parameters." />
              <Card>
                 <CardHeader>
-                    <CardTitle>Test Details</CardTitle>
-                    <CardDescription>You are about to start a test. Click below to configure and start your quiz.</CardDescription>
+                    <CardTitle>Configuration Error</CardTitle>
+                    <CardDescription>Could not start the test because the subject or topic was not specified correctly.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p><strong>Subject:</strong> <span className="capitalize">{subject || 'Not selected'}</span></p>
-                    <p><strong>Chapter:</strong> {chapter || 'Not selected'}</p>
-                     <Button asChild className="mt-6 w-full" size="lg" disabled={!subject || !chapter}>
-                        <Link href={`/generate-quiz?topic=${encodeURIComponent(chapter || '')}&difficulty=hard&questionStyles=Past Paper Style`}>
-                           Proceed to Custom Quiz Setup
+                    <Button asChild className="mt-6 w-full" size="lg">
+                        <Link href="/mdcat">
+                           Back to MDCAT Home
                         </Link>
                     </Button>
                 </CardContent>
@@ -145,3 +144,5 @@ export default function MdcatTestSuspenseWrapper() {
         </Suspense>
     )
 }
+
+    
