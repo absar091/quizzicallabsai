@@ -47,6 +47,7 @@ import {
     saveQuizResult,
     BookmarkedQuestion
 } from "@/lib/indexed-db";
+import { Textarea } from "@/components/ui/textarea";
 
 
 const formSchema = z.object({
@@ -569,28 +570,39 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                               {currentQ.question}
                           </p>
                           <div>
-                              <RadioGroup
-                                  value={userAnswers[currentQuestion] || ""}
-                                  onValueChange={handleAnswer}
-                                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                              >
-                                  {(currentQ.answers || []).map((answer, index) => {
-                                  const letter = String.fromCharCode(65 + index);
-                                  return (
-                                      <FormItem key={index}>
-                                          <FormControl>
-                                              <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
-                                          </FormControl>
-                                          <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
-                                              <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground")}>
-                                                  {letter}
-                                              </span>
-                                              <span className="flex-1 text-left text-base">{answer}</span>
-                                          </Label>
-                                      </FormItem>
-                                  )
-                                  })}
-                              </RadioGroup>
+                            {currentQ.type === 'descriptive' ? (
+                                <Textarea
+                                    value={userAnswers[currentQuestion] || ""}
+                                    onChange={(e) => handleAnswer(e.target.value)}
+                                    placeholder="Type your answer here..."
+                                    rows={5}
+                                    className="text-base"
+                                />
+                            ) : (
+                                <RadioGroup
+                                    value={userAnswers[currentQuestion] || ""}
+                                    onValueChange={handleAnswer}
+                                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                                >
+                                    {(currentQ.answers || []).map((answer, index) => {
+                                    const letter = String.fromCharCode(65 + index);
+                                    return (
+                                        <FormItem key={index}>
+                                            <FormControl>
+                                                <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
+                                            </FormControl>
+                                            <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
+                                                <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground")}>
+                                                    {letter}
+                                                </span>
+                                                <span className="flex-1 text-left text-base">{answer}</span>
+                                            </Label>
+                                        </FormItem>
+                                    )
+                                    })}
+                                </RadioGroup>
+                            )}
+
                               <div className="flex justify-between mt-6">
                                   <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
                                       <ArrowLeft className="mr-2 h-4 w-4" />
