@@ -187,12 +187,18 @@ export default function SignupPage() {
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Creating Account..." : "Create Account"}
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
+            <div className="text-center text-sm text-muted-foreground space-x-2">
+              <span>Already have an account?</span>
               <Link href="/login" className="font-medium text-primary hover:underline">
                 Sign in
               </Link>
-            </p>
+            </div>
+             <div className="text-center text-sm text-muted-foreground space-x-2">
+              <span>Having trouble?</span>
+              <Link href="/how-to-use" className="font-medium text-primary hover:underline">
+                Need help?
+              </Link>
+            </div>
           </CardFooter>
         </form>
       </Form>
