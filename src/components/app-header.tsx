@@ -121,6 +121,7 @@ export function AppHeader() {
                 </Button>
 
                 {user ? (
+                   <div className="hidden md:flex">
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -153,6 +154,7 @@ export function AppHeader() {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                     </DropdownMenu>
+                   </div>
                 ) : (
                     <div className="hidden items-center gap-2 md:flex">
                     <Button asChild variant="ghost">
