@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { SheetHeader, SheetTitle } from "./ui/sheet";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -72,18 +72,20 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
     )
   }
   
-  if (!isMobile) return null; // Sidebar is only for mobile now
+  if (!isMobile) return null;
 
   return (
     <>
-       <div className="flex h-16 items-center border-b px-4">
-            <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={onNavigate}>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                    <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <span className="text-lg">Quizzicallabs</span>
-            </Link>
-       </div>
+       <SheetHeader className="border-b p-4">
+            <SheetTitle className="flex items-center gap-2 font-semibold">
+                 <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={onNavigate}>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                        <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                    </div>
+                    <span className="text-lg">Quizzicallabs</span>
+                 </Link>
+            </SheetTitle>
+       </SheetHeader>
        <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium">
           <h3 className="px-3 py-2 text-xs font-semibold text-muted-foreground/70">Main</h3>
