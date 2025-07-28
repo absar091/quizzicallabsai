@@ -131,41 +131,41 @@ export default function GeneratePaperPage() {
   const downloadPdf = () => {
     if (!quizVariants || !formValues) return;
     const doc = new jsPDF();
-    
-    // Delete the default blank page
-    doc.deletePage(1);
+    doc.deletePage(1); // Delete the default blank page
 
-    quizVariants.forEach((variantData, variantIndex) => {
+    quizVariants.forEach((variantData) => {
+        doc.addPage();
         const { variant, questions } = variantData;
         
-        let y = 15; // Initial Y position
+        let y = 15;
         const margin = 15;
         const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
         const contentWidth = pageWidth - margin * 2;
-        
-        const addHeader = (pageNum: number) => {
+        const pageHeight = doc.internal.pageSize.getHeight();
+        let currentPage = 1;
+
+        const addHeader = () => {
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(16);
             doc.text(formValues.schoolName.toUpperCase(), pageWidth / 2, y, { align: 'center' });
-            y += 7;
-            
+            y += 8;
+
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(12);
             let subjectLine = `Class: ${formValues.className} – Subject: ${formValues.subject}`;
-            if(quizVariants.length > 1) {
-                subjectLine += ` (Version: ${variant})`
+            if (quizVariants.length > 1) {
+                subjectLine += ` (Version: ${variant})`;
             }
             doc.text(subjectLine, pageWidth / 2, y, { align: 'center' });
-            y += 7;
+            y += 8;
 
             doc.setFontSize(10);
             let dateLine = formValues.testDate ? `Date: ${new Date(formValues.testDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` : '';
             let marksLine = formValues.totalMarks ? `Total Marks: ${formValues.totalMarks}` : '';
             doc.text(dateLine, margin, y + 5);
             doc.text(marksLine, margin, y + 10);
-            
-            let teacherLine = formValues.teacherName ? `Teacher: ${formValues.teacherName}` : '';
+
+            let teacherLine = formValues.teacherName ? `Teacher: Mr. ${formValues.teacherName}` : '';
             let timeLine = formValues.timeLimit ? `Time Allowed: ${formValues.timeLimit} minutes` : '';
             doc.text(teacherLine, pageWidth - margin, y + 5, { align: 'right' });
             doc.text(timeLine, pageWidth - margin, y + 10, { align: 'right' });
@@ -173,86 +173,42 @@ export default function GeneratePaperPage() {
             y += 15;
             doc.setLineWidth(0.5);
             doc.line(margin, y, pageWidth - margin, y);
-            y += 5; // Space after header line
+            y += 10;
         };
-        
-        const addFooter = (pageNum: number, totalPages: number) => {
-            doc.setFontSize(8);
-            doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth / 2, pageHeight - 10, {align: 'center'});
+
+        const addFooter = (pageNum: number) => {
             doc.setLineWidth(0.2);
             doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+            doc.setFontSize(8);
+            doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
         };
         
-        const getNumPagesForVariant = () => {
-             const tempDoc = new jsPDF();
-             let tempY = 15;
-             let pageCount = 1;
-             
-             addHeader(1); // Simulate header
-             tempY = y;
-             y = 15; // reset y for next simulation
-             
-             questions.forEach((q, i) => {
-                const questionNumberText = `${i + 1}. `;
-                const questionLines = tempDoc.splitTextToSize(questionNumberText + q.question, contentWidth);
-                let questionHeight = (questionLines.length * 5) + 5;
-
-                if (q.type === 'multiple-choice' && q.answers) {
-                    q.answers.forEach((ans) => {
-                        const answerLines = tempDoc.splitTextToSize(`A. ${ans}`, contentWidth - 10);
-                        questionHeight += (answerLines.length * 4.5) + 2;
-                    });
-                } else if (q.type === 'descriptive') {
-                    questionHeight += 25; // Space for written answer
-                }
-
-                if (tempY + questionHeight > pageHeight - 25) { // Check against content area
-                    pageCount++;
-                    tempY = 45; // Reset Y for new page
-                }
-                tempY += questionHeight;
-             });
-
-            if (formValues.includeAnswerKey) {
-                pageCount++;
-            }
-             
-             return pageCount;
-        }
-
-        const totalPagesForVariant = getNumPagesForVariant();
-        let currentPageNum = 1;
-
-        doc.addPage();
-        addHeader(currentPageNum);
+        addHeader();
 
         questions.forEach((q, i) => {
-            const questionNumberText = `${i + 1}. `;
+            const questionText = `${i + 1}. ${q.question}`;
             doc.setFont('helvetica', 'bold');
-            const questionLines = doc.splitTextToSize(q.question, contentWidth - 5);
-            let totalHeight = (questionLines.length * 5) + 5;
+            const questionLines = doc.splitTextToSize(questionText, contentWidth);
+            let neededHeight = (questionLines.length * 5) + 5;
 
-             if (q.type === 'multiple-choice' && q.answers) {
-                q.answers.forEach(ans => {
-                    const answerLetter = String.fromCharCode(65 + ansIndex);
+            if (q.type === 'multiple-choice' && q.answers) {
+                q.answers.forEach((ans) => {
                     const answerLines = doc.splitTextToSize(`A. ${ans}`, contentWidth - 10);
-                    totalHeight += answerLines.length * 4.5 + 2;
+                    neededHeight += (answerLines.length * 4.5) + 2;
                 });
             } else if (q.type === 'descriptive') {
-                totalHeight += 25; // Space for written answer
+                neededHeight += 25; // Space for written answer
             }
-            
-            if (y + totalHeight > pageHeight - 25) {
-                addFooter(currentPageNum, totalPagesForVariant);
-                currentPageNum++;
-                doc.addPage();
-                y = 15; // Reset Y for new page
-                addHeader(currentPageNum);
-            }
-            
-            doc.text(questionNumberText, margin, y);
-            doc.text(questionLines, margin, y, { maxWidth: contentWidth, baseline: 'top' });
 
+            if (y + neededHeight > pageHeight - 25) {
+                addFooter(currentPage);
+                doc.addPage();
+                y = 15;
+                addHeader();
+                currentPage++;
+            }
+
+            doc.text(questionLines, margin, y, { maxWidth: contentWidth, baseline: 'top' });
             y += questionLines.length * 5 + 2;
             doc.setFont('helvetica', 'normal');
 
@@ -264,65 +220,59 @@ export default function GeneratePaperPage() {
                     y += answerLines.length * 4.5 + 2;
                 });
             } else if (q.type === 'descriptive') {
-                y += 20; // Space for written answer
+                y += 20;
                 doc.setLineWidth(0.2);
-                doc.line(margin + 5, y, contentWidth + margin - 5, y);
+                for(let j=0; j<3; j++) {
+                     doc.line(margin + 5, y, contentWidth + margin - 5, y);
+                     y += 7;
+                }
             }
             y += 8;
         });
 
-        addFooter(currentPageNum, totalPagesForVariant);
+        addFooter(currentPage);
 
-        // Answer Key for this variant
         if (formValues.includeAnswerKey) {
-            const mcqs = questions.filter(q => q.type === 'multiple-choice');
+            const mcqs = questions.filter(q => q.type === 'multiple-choice' && q.correctAnswer);
             if (mcqs.length > 0) {
-                 currentPageNum++;
-                 doc.addPage();
-                 y = 15;
-                 addHeader(currentPageNum);
-                 
-                 doc.setFontSize(14);
-                 doc.setFont('helvetica', 'bold');
-                 doc.text("Answer Key", pageWidth / 2, y, { align: 'center' });
-                 y += 15;
+                doc.addPage();
+                currentPage++;
+                y = 15;
+                addHeader();
 
-                 doc.setFontSize(10);
-                 doc.setFont('helvetica', 'normal');
-                 
-                 const answerColumnWidth = 35;
-                 const columns = 4;
-                 const rowsPerColumn = Math.ceil(mcqs.length / columns);
-                 
-                 mcqs.forEach((q, i) => {
-                     const col = Math.floor(i / rowsPerColumn);
-                     const row = i % rowsPerColumn;
-                     const originalIndex = questions.findIndex(origQ => origQ.question === q.question);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text("Answer Key", pageWidth / 2, y, { align: 'center' });
+                y += 15;
 
-                     const xPos = margin + 20 + (col * answerColumnWidth);
-                     const yPosKey = y + (row * 8);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
 
-                     if (yPosKey > pageHeight - 25) {
-                        addFooter(currentPageNum, totalPagesForVariant);
-                        currentPageNum++;
-                        doc.addPage();
-                        y = 15;
-                        addHeader(currentPageNum);
-                        // Recalculate position on new page
-                        y = y + (row * 8);
-                     }
+                const numColumns = 4;
+                const colWidth = contentWidth / numColumns;
+                const rowsPerColumn = Math.ceil(mcqs.length / numColumns);
+                
+                mcqs.forEach((q, i) => {
+                    const col = Math.floor(i / rowsPerColumn);
+                    const row = i % rowsPerColumn;
 
-                     const correctAnswerLetter = String.fromCharCode(65 + (q.answers?.findIndex(ans => ans === q.correctAnswer) ?? 0));
-                     const keyText = `${originalIndex + 1}. ${correctAnswerLetter}`;
-                     doc.text(keyText, xPos, yPosKey);
-                 });
-                 addFooter(currentPageNum, totalPagesForVariant);
+                    const originalIndex = questions.findIndex(origQ => origQ.question === q.question);
+                    const correctAnswerLetter = String.fromCharCode(65 + (q.answers?.findIndex(ans => ans === q.correctAnswer) ?? 0));
+                    const keyText = `${originalIndex + 1}. ${correctAnswerLetter}`;
+                    
+                    const xPos = margin + (col * colWidth);
+                    const yPos = y + (row * 8);
+
+                    doc.text(keyText, xPos, yPos);
+                });
+                addFooter(currentPage);
             }
         }
     });
 
     doc.save(`${formValues.subject}_paper_${quizVariants?.length > 1 ? `${quizVariants.length}_variants` : ''}.pdf`);
   };
+
 
   if (isGenerating) {
     return (
@@ -659,5 +609,3 @@ export default function GeneratePaperPage() {
     </div>
   );
 }
-
-    
