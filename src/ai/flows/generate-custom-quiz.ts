@@ -109,4 +109,17 @@ const prompt = ai.definePrompt({
 
 ---
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions.
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions.`,
+});
+
+const generateCustomQuizFlow = ai.defineFlow(
+  {
+    name: 'generateCustomQuizFlow',
+    inputSchema: GenerateCustomQuizInputSchema,
+    outputSchema: GenerateCustomQuizOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
