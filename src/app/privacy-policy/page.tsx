@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
-            Quizzicallabs™ ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application. By using our service, you agree to the collection and use of information in accordance with this policy.
+            QuizzicalLabs™ ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application, Quizzicallabs AI. By using our service, you agree to the collection and use of information in accordance with this policy.
           </p>
 
           <div className="space-y-2">
@@ -73,3 +73,5 @@ export default function PrivacyPolicyPage() {
     </div>
   );
 }
+
+    

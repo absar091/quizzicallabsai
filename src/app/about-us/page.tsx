@@ -26,7 +26,7 @@ export default function AboutUsPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground leading-relaxed">
                 <p>
-                    I am Absar Ahmad Rao, a passionate student with a vision to bridge the gap between quality education and accessible digital tools. While pursuing my journey in the medical field, I’ve combined my academic insight with a strong interest in technology to develop practical solutions for students.
+                    I am Absar Ahmad Rao, a passionate student with a vision to bridge the gap between quality education and accessible digital tools. While pursuing my journey in the medical field, I’ve combined my academic insight with a strong interest in technology to develop practical solutions for students under my parent company, QuizzicalLabs™.
                 </p>
             </CardContent>
         </Card>
@@ -40,7 +40,7 @@ export default function AboutUsPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground leading-relaxed space-y-4">
                <p>
-                    Quizzicallabs AI was born from a simple idea: learning should be limitless, personalized, and engaging. As a student, I experienced firsthand the challenge of finding high-quality, specific study materials on demand. Standard resources are often too broad or don't match the curriculum's pace.
+                    Quizzicallabs AI is a product of QuizzicalLabs™, born from a simple idea: learning should be limitless, personalized, and engaging. As a student, I experienced firsthand the challenge of finding high-quality, specific study materials on demand. Standard resources are often too broad or don't match the curriculum's pace.
                 </p>
                 <p>
                     This platform is my answer to that challenge. It leverages the power of cutting-edge artificial intelligence to serve as a tireless study partner, available 24/7. Whether you need to generate a custom quiz on a niche topic, create a comprehensive study guide from scratch, or even produce professional-grade exam papers for your class, Quizzicallabs AI is designed to do it in seconds.
@@ -54,3 +54,5 @@ export default function AboutUsPage() {
     </div>
   );
 }
+
+    

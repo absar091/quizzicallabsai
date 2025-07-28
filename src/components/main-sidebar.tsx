@@ -134,10 +134,12 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <BrainCircuit className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg">Quizzicallabs™</span>
+          <span className="text-lg">Quizzicallabs AI</span>
         </Link>
       </div>
       <SidebarContent onNavigate={onNavigate} />
     </div>
   );
 }
+
+    

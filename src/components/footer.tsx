@@ -55,9 +55,9 @@ export function Footer() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                             </div>
-                            <span className="text-lg font-bold">Quizzicallabs</span>
+                            <span className="text-lg font-bold">Quizzicallabs AI</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">A Project By Absar Ahmad Rao</p>
+                        <p className="text-sm text-muted-foreground mb-4">A Product by QuizzicalLabs™</p>
                         <p className="text-sm font-semibold mb-2">Contribute or give feedback:</p>
                         <a href="mailto:Ahmadraoabsar@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
                            <Mail className="h-4 w-4" /> Ahmadraoabsar@gmail.com
@@ -96,7 +96,7 @@ export function Footer() {
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>Share with Friends!</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Enjoying Quizzicallabs? Help us grow by sharing this app with your friends and classmates.
+                                        Enjoying Quizzicallabs AI? Help us grow by sharing this app with your friends and classmates.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <div className="flex items-center space-x-2">
@@ -114,9 +114,11 @@ export function Footer() {
                     </div>
                 </div>
                  <div className="mt-12 border-t pt-8 text-center space-y-4">
-                     <p className="text-sm text-muted-foreground">&copy; {currentYear} Quizzicallabs. All Rights Reserved.</p>
+                     <p className="text-sm text-muted-foreground">&copy; {currentYear} QuizzicalLabs™. All Rights Reserved.</p>
                 </div>
             </div>
         </footer>
     )
 }
+
+    
