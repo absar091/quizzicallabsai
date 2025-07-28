@@ -56,7 +56,7 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { logout } = useAuth();
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
-    const isActive = pathname.startsWith(href);
+    const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
     return (
       <Link 
           href={href} 
@@ -69,11 +69,6 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
         {label}
       </Link>
     )
-  }
-
-  const handleLogout = () => {
-    if (onNavigate) onNavigate();
-    logout();
   }
   
   return (
@@ -89,33 +84,6 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
           <h3 className="px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground/70">Exam Prep</h3>
           {examPrep.map(item => <NavLink key={item.href} {...item} />)}
         </nav>
-      </div>
-      <div className="mt-auto p-4 border-t">
-         <nav className="grid gap-1">
-           <NavLink href="/profile" label="Profile" icon={User} />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                 <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-primary p-0">
-                    <span className={cn( "flex items-center gap-3 rounded-lg px-3 py-2 transition-all w-full" )}>
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </span>
-                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    You can always log back in. Your progress will be saved.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-         </nav>
       </div>
     </>
   )

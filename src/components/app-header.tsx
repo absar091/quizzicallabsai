@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrainCircuit, Menu, HelpCircle, Sun, Moon } from "lucide-react";
+import { BrainCircuit, Menu, HelpCircle, Sun, Moon, User, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 
@@ -94,7 +94,40 @@ export function AppHeader() {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          {!user && (
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src="https://images.unsplash.com/photo-1678931547963-ab9017fc35c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxOHx8YnJhaW4lMjBhbmltaWV8ZW58MHx8fHwxNzUzNjE1NjAwfDA&ixlib=rb-4.1.0&q=80&w=1080" alt={user?.displayName ?? "User"} data-ai-hint="user avatar" />
+                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => logout()}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button asChild variant="ghost">
                 <Link href="/login">Log In</Link>
@@ -109,5 +142,3 @@ export function AppHeader() {
     </header>
   );
 }
-
-    
