@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import NotificationHandler from "@/components/notification-handler";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+        <NotificationHandler />
         <AppHeader />
         <main className="flex-1 p-4 md:p-6 lg:p-8 container">
           {children}
