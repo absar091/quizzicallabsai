@@ -4,13 +4,26 @@
 import * as admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 
-const serviceAccount = require('../../serviceAccountKey.json');
+// Fallback to serviceAccountKey.json for local development if env vars are not set
+try {
+    if (!admin.apps.length) {
+        const serviceAccount = process.env.FIREBASE_PRIVATE_KEY
+            ? {
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            }
+            : require('../../serviceAccountKey.json');
 
-if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+    }
+} catch (error) {
+    console.error("Firebase Admin initialization failed:", error);
+    // Prevent further execution if initialization fails
 }
+
 
 const db = getFirestore();
 
