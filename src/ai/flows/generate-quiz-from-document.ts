@@ -47,7 +47,7 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({
-        questions: GenerateQuizFromDocumentOutputSchema.shape.quiz
+        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
     })
   },
   prompt: `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document.
@@ -74,6 +74,6 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return { quiz: output!.questions };
+    return { quiz: output!.quiz };
   }
 );

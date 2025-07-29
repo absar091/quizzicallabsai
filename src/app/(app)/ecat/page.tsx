@@ -15,8 +15,8 @@ const subjects = [
     { name: 'Physics', description: "30 MCQs from FSC Part 1 & 2.", href: '/ecat/physics' },
     { name: 'Mathematics', description: "30 MCQs from FSC Math Part 1 & 2.", href: '/ecat/mathematics' },
     { name: 'English', description: "10 MCQs covering grammar and vocabulary.", href: '/ecat/english' },
-    { name: 'Chemistry', description: "Optional section with 10 MCQs.", href: '/ecat/chemistry' },
-    { name: 'Computer Science', description: "Optional section with 10 MCQs.", href: '/ecat/computer-science' },
+    { name: 'Chemistry', description: "Optional section with 30 MCQs.", href: '/ecat/chemistry' },
+    { name: 'Computer Science', description: "Optional section with 30 MCQs.", href: '/ecat/computer-science' },
 ]
 
 export default function EcatPage() {
@@ -44,7 +44,7 @@ export default function EcatPage() {
         <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-primary text-primary-foreground">
             <CardHeader>
                 <CardTitle>Full-Length Mock Test</CardTitle>
-                <CardDescription className="text-primary-foreground/80">Simulate the real ECAT experience (80 MCQs) with our full-length mock test.</CardDescription>
+                <CardDescription className="text-primary-foreground/80">Simulate the real ECAT experience (100 MCQs) with our full-length mock test.</CardDescription>
             </CardHeader>
             <CardContent>
                  <Button asChild variant="secondary">

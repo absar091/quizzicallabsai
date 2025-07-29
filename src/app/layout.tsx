@@ -17,18 +17,18 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   metadataBase: new URL('https://quizzicallabs.ai'),
   title: {
-    default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
-    template: "%s | Quizzicallabsᴬᴵ",
+    default: "Quizzicallabs AI - Your Ultimate AI-Powered Study Partner",
+    template: "%s | Quizzicallabs AI",
   },
-  description: "Quizzicallabsᴬᴵ is your ultimate AI-powered study partner. Generate custom quizzes on any topic (up to 55 questions), create practice questions with AI explanations, build quizzes from your own documents, and get comprehensive study guides. Features include a secure authentication system, cross-device support, specialized MDCAT chapter-wise tests, professional exam paper generation, progress tracking with graphs, bookmarking, and PDF exports. Master any subject, instantly.",
+  description: "Generate custom quizzes, practice questions, and AI study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, track performance with analytics, and export materials as PDFs. The ultimate study tool for students and educators.",
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
-    title: "Quizzicallabsᴬᴵ - The Ultimate AI Study Platform",
-    description: "Generate tailored quizzes, practice questions from documents, track your progress with analytics, and get AI-powered study guides. Perfect for students and educators.",
+    title: "Quizzicallabs AI - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
+    description: "Generate tailored quizzes, practice questions from documents, track your progress, and get AI-powered study guides. Specialized prep for MDCAT, ECAT, and NTS exams. Perfect for students and educators.",
     url: "https://quizzicallabs.ai",
-    siteName: "Quizzicallabsᴬᴵ",
+    siteName: "Quizzicallabs AI",
     images: [
       {
         url: "/og-image.png",
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Quizzicallabsᴬᴵ - AI-Powered Learning Platform",
-    description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT.",
+    title: "Quizzicallabs AI - AI-Powered Learning for MDCAT, ECAT & NTS",
+    description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT, ECAT, and NTS.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor", "quiz from pdf", "test generator", "Absar Ahmad Rao", "QuizzicalLabs"],
+  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "ecat prep", "nts prep", "mock test", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor", "quiz from pdf", "test generator", "Absar Ahmad Rao", "QuizzicalLabs"],
 };
 
 export const viewport: Viewport = {

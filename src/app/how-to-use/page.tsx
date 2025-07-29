@@ -70,10 +70,16 @@ export default function HowToUsePage() {
                 <strong>Study Guide:</strong> Perfect for tackling new topics. Enter a subject, and our AI will generate a comprehensive guide including a summary, key concepts with definitions, simple analogies for complex ideas, and a quick self-quiz.
               </li>
                <li>
-                <strong>Generate Paper:</strong> A specialized tool for educators. Create professional, print-ready exam papers with custom headers (school name, teacher, marks), two-column layouts to save paper, and an automatically generated answer key.
+                <strong>Generate Paper:</strong> A specialized tool for educators. Create professional, print-ready exam papers with custom headers (school name, teacher, marks), multiple variants to prevent cheating, and an automatically generated answer key.
               </li>
                <li>
                 <strong>MDCAT Prep:</strong> For students preparing for medical entry exams. This section provides high-difficulty, past-paper style tests organized by subject and chapter, designed to simulate the real exam environment.
+              </li>
+               <li>
+                <strong>ECAT Prep:</strong> A dedicated section for engineering college admission tests. Practice subject-wise tests based on the official syllabus and take full-length mock exams.
+              </li>
+               <li>
+                <strong>NTS Prep:</strong> Prepare for various National Testing Service categories with syllabus-based practice tests and comprehensive mock exams that cover all sections.
               </li>
             </ul>
           </div>

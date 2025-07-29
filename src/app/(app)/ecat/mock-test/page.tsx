@@ -17,7 +17,7 @@ type Quiz = GenerateCustomQuizOutput['quiz'];
 const MOCK_TEST_CONFIG = [
   { subject: 'Physics', numQuestions: 30, time: 30 },
   { subject: 'Mathematics', numQuestions: 30, time: 30 },
-  { subject: 'Chemistry', numQuestions: 30, time: 30 }, // This will be replaced by the optional subject
+  { subject: 'Chemistry', numQuestions: 30, time: 30 }, // This is a placeholder
   { subject: 'English', numQuestions: 10, time: 10 },
 ];
 
