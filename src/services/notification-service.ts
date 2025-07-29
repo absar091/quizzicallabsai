@@ -4,30 +4,39 @@
 import * as admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 
-// Fallback to serviceAccountKey.json for local development if env vars are not set
-try {
-    if (!admin.apps.length) {
-        const serviceAccount = process.env.FIREBASE_PRIVATE_KEY
-            ? {
+// Initialize Firebase Admin SDK only if the necessary credentials are provided
+// This prevents build errors when environment variables or serviceAccountKey.json are not populated.
+if (!admin.apps.length) {
+    const hasEnvVars = process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY;
+
+    try {
+        if (hasEnvVars) {
+            const serviceAccount = {
                 projectId: process.env.FIREBASE_PROJECT_ID,
                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
                 privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-            }
-            : require('../../serviceAccountKey.json');
-
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
+            };
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } else {
+             console.warn("Firebase Admin credentials are not fully available. Skipping Admin SDK initialization.");
+        }
+    } catch (error) {
+        console.error("Firebase Admin initialization failed:", error);
     }
-} catch (error) {
-    console.error("Firebase Admin initialization failed:", error);
-    // Prevent further execution if initialization fails
 }
 
 
-const db = getFirestore();
+const db = admin.apps.length ? getFirestore() : null;
 
 export async function sendDailyReminderNotifications() {
+    if (!db) {
+        const message = "Firebase Admin is not initialized. Skipping sending notifications.";
+        console.log(message);
+        return { successCount: 0, failureCount: 0, error: message };
+    }
+
     console.log("Running daily reminder job...");
 
     const tokensSnapshot = await db.collection('fcmTokens').get();
