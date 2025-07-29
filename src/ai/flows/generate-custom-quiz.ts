@@ -51,12 +51,7 @@ export async function generateCustomQuiz(
   return generateCustomQuizFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateCustomQuizPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateCustomQuizInputSchema},
-  output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: `You are a world-class AI educator and subject matter expert. Your primary function is to create exceptionally high-quality, accurate, and engaging quizzes that strictly adhere to the user's specified parameters. Your reputation is built on precision, intellectual rigor, and reliability.
+const promptText = `You are a world-class AI educator and subject matter expert. Your primary function is to create exceptionally high-quality, accurate, and engaging quizzes that strictly adhere to the user's specified parameters. Your reputation is built on precision, intellectual rigor, and reliability.
 
 **CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
 
@@ -116,7 +111,22 @@ const prompt = ai.definePrompt({
 
 ---
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.`,
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.`;
+
+const flashPrompt = ai.definePrompt({
+  name: 'generateCustomQuizPromptFlash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateCustomQuizInputSchema},
+  output: {schema: GenerateCustomQuizOutputSchema},
+  prompt: promptText,
+});
+
+const proPrompt = ai.definePrompt({
+    name: 'generateCustomQuizPromptPro',
+    model: googleAI.model('gemini-1.5-pro'),
+    input: {schema: GenerateCustomQuizInputSchema},
+    output: {schema: GenerateCustomQuizOutputSchema},
+    prompt: promptText,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(
@@ -126,7 +136,18 @@ const generateCustomQuizFlow = ai.defineFlow(
     outputSchema: GenerateCustomQuizOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await flashPrompt(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded'))) {
+            // Fallback to gemini-1.5-pro if flash model is overloaded
+            console.log('Gemini 1.5 Flash overloaded, falling back to Gemini 1.5 Pro.');
+            const {output} = await proPrompt(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );
