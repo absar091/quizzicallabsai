@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { BrainCircuit, Menu, HelpCircle, Sun, Moon, User, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -75,7 +76,7 @@ export function AppHeader() {
                           <span className="text-lg">Quizzicallabs</span>
                       </Link>
                     </SheetTitle>
-                    <SheetDescription className="sr-only">Mobile navigation menu</SheetDescription>
+                    <SheetDescription className="sr-only">Mobile navigation menu. Provides access to all app sections like dashboard, quiz generators, and exam preparation modules.</SheetDescription>
                   </SheetHeader>
                   <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
                 </SheetContent>
@@ -83,9 +84,13 @@ export function AppHeader() {
             </div>
           )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <motion.div
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
+              whileTap={{ scale: 0.9, rotate: -15 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
               <BrainCircuit className="h-5 w-5 text-primary-foreground" />
-            </div>
+            </motion.div>
             <span className="text-lg font-bold sm:inline-block">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
             <Badge variant="secondary">Beta</Badge>
           </Link>
