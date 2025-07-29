@@ -6,14 +6,14 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: "About Us",
-    description: "Learn about the mission of Quizzicallabs AI and its creator, Absar Ahmad Rao.",
+    description: "Learn about the mission of Quizzicallabsᴬᴵ and its creator, Absar Ahmad Rao.",
 };
 
 export default function AboutUsPage() {
   return (
     <div className="container py-8 max-w-4xl mx-auto">
       <PageHeader
-        title="About Quizzicallabs AI"
+        title="About Quizzicallabsᴬᴵ"
         description="Our mission is to make personalized education accessible to everyone."
       />
       <div className="space-y-8">
@@ -40,10 +40,10 @@ export default function AboutUsPage() {
             </CardHeader>
             <CardContent className="text-muted-foreground leading-relaxed space-y-4">
                <p>
-                    Quizzicallabs AI is a product of QuizzicalLabs™, born from a simple idea: learning should be limitless, personalized, and engaging. As a student, I experienced firsthand the challenge of finding high-quality, specific study materials on demand. Standard resources are often too broad or don't match the curriculum's pace.
+                    Quizzicallabsᴬᴵ is a product of QuizzicalLabs™, born from a simple idea: learning should be limitless, personalized, and engaging. As a student, I experienced firsthand the challenge of finding high-quality, specific study materials on demand. Standard resources are often too broad or don't match the curriculum's pace.
                 </p>
                 <p>
-                    This platform is my answer to that challenge. It leverages the power of cutting-edge artificial intelligence to serve as a tireless study partner, available 24/7. Whether you need to generate a custom quiz on a niche topic, create a comprehensive study guide from scratch, or even produce professional-grade exam papers for your class, Quizzicallabs AI is designed to do it in seconds.
+                    This platform is my answer to that challenge. It leverages the power of cutting-edge artificial intelligence to serve as a tireless study partner, available 24/7. Whether you need to generate a custom quiz on a niche topic, create a comprehensive study guide from scratch, or even produce professional-grade exam papers for your class, Quizzicallabsᴬᴵ is designed to do it in seconds.
                 </p>
                 <p>
                     Our goal is to empower both students and educators by providing tools that save time, enhance understanding, and make learning more effective. We are continuously working to improve the platform and add new features to support your academic journey.
@@ -54,5 +54,3 @@ export default function AboutUsPage() {
     </div>
   );
 }
-
-    

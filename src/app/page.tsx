@@ -62,7 +62,7 @@ export default function Home() {
                 Master Any Subject, <span className="text-primary">Instantly.</span>
               </h1>
               <p className="max-w-3xl text-muted-foreground md:text-xl">
-                Welcome to Quizzicallabs, the ultimate AI-powered study partner. Generate personalized quizzes, get detailed study guides, and track your progress to conquer any exam.
+                Welcome to Quizzicallabsᴬᴵ, the ultimate AI-powered study partner. Generate personalized quizzes, get detailed study guides, and track your progress to conquer any exam.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button size="lg" asChild>
@@ -77,7 +77,7 @@ export default function Home() {
 
         <section id="features" className="container mx-auto py-16 md:py-24">
             <div className="flex flex-col items-center text-center mb-12">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Why Choose Quizzicallabs?</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Why Choose Quizzicallabsᴬᴵ?</h2>
                 <p className="max-w-2xl text-muted-foreground mt-4">
                     Our platform is designed to make learning more efficient and effective. Here’s how we help you succeed.
                 </p>

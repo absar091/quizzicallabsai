@@ -15,23 +15,23 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://quizzicallabs.com'), // Replace with your actual domain
+  metadataBase: new URL('https://quizzicallabs.ai'),
   title: {
-    default: "Quizzicallabs AI - Your AI-Powered Learning Partner",
-    template: "%s | Quizzicallabs AI",
+    default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
+    template: "%s | Quizzicallabsᴬᴵ",
   },
-  description: "Generate custom quizzes, practice questions, and study guides with the power of AI. Master any subject, instantly.",
+  description: "Quizzicallabsᴬᴵ is your ultimate AI-powered study partner. Generate custom quizzes on any topic (up to 55 questions), create practice questions with AI explanations, build quizzes from your own documents, and get comprehensive study guides. Features include a secure authentication system, cross-device support, specialized MDCAT chapter-wise tests, professional exam paper generation, progress tracking with graphs, bookmarking, and PDF exports. Master any subject, instantly.",
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
-    title: "Quizzicallabs AI",
-    description: "The ultimate AI-powered platform for quiz generation and personalized learning.",
-    url: "https://quizzicallabs.com", // Replace with your actual domain
-    siteName: "Quizzicallabs AI",
+    title: "Quizzicallabsᴬᴵ - The Ultimate AI Study Platform",
+    description: "Generate tailored quizzes, practice questions from documents, track your progress with analytics, and get AI-powered study guides. Perfect for students and educators.",
+    url: "https://quizzicallabs.ai",
+    siteName: "Quizzicallabsᴬᴵ",
     images: [
       {
-        url: "/og-image.png", // Replace with the path to your Open Graph image
+        url: "/og-image.png",
         width: 1200,
         height: 630,
       },
@@ -41,9 +41,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Quizzicallabs AI - AI-Powered Learning Platform",
-    description: "Create custom quizzes, practice questions, and study guides in seconds.",
-    images: ["/og-image.png"], // Replace with the path to your Twitter image
+    title: "Quizzicallabsᴬᴵ - AI-Powered Learning Platform",
+    description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor"],
+  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor", "quiz from pdf", "test generator", "Absar Ahmad Rao", "QuizzicalLabs"],
 };
 
 export const viewport: Viewport = {

@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
             <BrainCircuit className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-primary">Quizzicallabs AI</h1>
+          <h1 className="text-3xl font-bold text-primary">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></h1>
           <p className="text-muted-foreground">Your AI-powered learning partner.</p>
         </div>
         {children}
