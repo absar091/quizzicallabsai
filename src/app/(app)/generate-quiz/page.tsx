@@ -253,10 +253,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         clearInterval(interval);
         setIsGenerating(false);
         let errorMessage = "An unexpected response was received from the server.";
-        if (error?.message?.includes("429")) {
-            errorMessage = "The AI model is currently overloaded or you have hit a rate limit. Please try again after some time.";
-        } else if (error?.message?.includes("503") || error?.message?.includes("overloaded")) {
-            errorMessage = "The AI model is currently overloaded. Please try again in a few moments.";
+        if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
+          errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+        } else if (error?.message?.includes("429")) {
+            errorMessage = "You have hit a rate limit. Please try again after some time.";
         } else if (error.message && !error.message.includes('Unexpected')) {
             errorMessage = error.message;
         }
@@ -1049,3 +1049,5 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
