@@ -60,6 +60,7 @@ const formSchema = z.object({
     message: "You have to select at least one question style.",
   }),
   timeLimit: z.number().min(1).max(120),
+  specificInstructions: z.string().optional(),
 });
 
 type QuizFormValues = z.infer<typeof formSchema>;
@@ -128,6 +129,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       questionTypes: ["Multiple Choice"],
       questionStyles: ["Knowledge-based", "Conceptual"],
       timeLimit: 10,
+      specificInstructions: "",
     },
   });
 
@@ -794,7 +796,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
 
     const nextStep = async () => {
         const validationMap = {
-          1: ["topic"],
+          1: ["topic", "specificInstructions"],
           2: ["difficulty", "numberOfQuestions", "timeLimit"],
           3: ["questionTypes", "questionStyles"]
         } as const;
@@ -812,7 +814,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const prevStep = () => {
         if (step > 1) {
             setDirection(-1);
-            setStep(s => s - 1);
+            setStep(s => s + 1);
         }
     };
 
@@ -825,19 +827,37 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
           case 1:
             return (
               <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
-                <FormField
-                  control={control}
-                  name="topic"
-                  render={({ field }) => (
-                    <FormItem className="w-full flex flex-col items-center">
-                      <FormLabel className="text-lg text-center block mb-4">What topic do you want a quiz on?</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
-                      </FormControl>
-                      <FormMessage className="text-center"/>
-                    </FormItem>
-                  )}
-                />
+                <div className="w-full flex flex-col items-center space-y-6">
+                    <FormField
+                      control={control}
+                      name="topic"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex flex-col items-center">
+                          <FormLabel className="text-lg text-center block mb-2">What topic do you want a quiz on?</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
+                          </FormControl>
+                          <FormMessage className="text-center"/>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name="specificInstructions"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex flex-col items-center">
+                          <FormLabel className="text-lg text-center block mb-2">Specific Instructions (Optional)</FormLabel>
+                          <FormControl>
+                             <Textarea placeholder="e.g., Focus on the moons of Jupiter. Include questions comparing mitosis and meiosis." {...field} className="text-base text-center max-w-lg" />
+                          </FormControl>
+                           <FormDescription className="text-center max-w-lg">
+                                Provide sub-topics, concepts to include, or any other details to guide the AI.
+                           </FormDescription>
+                          <FormMessage className="text-center"/>
+                        </FormItem>
+                      )}
+                    />
+                </div>
               </motion.div>
             );
           case 2:
@@ -976,6 +996,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                             <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
                             <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
                                 <p><strong>Topic:</strong> {values.topic}</p>
+                                {values.specificInstructions && <p><strong>Instructions:</strong> {values.specificInstructions}</p>}
                                 <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
                                 <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
                                 <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>

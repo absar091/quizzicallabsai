@@ -15,6 +15,8 @@ import {z} from 'genkit';
 
 const GenerateStudyGuideInputSchema = z.object({
   topic: z.string().describe('The topic for which to generate the study guide.'),
+  learningDifficulties: z.string().optional().describe("The specific areas or concepts within the topic the user struggles with."),
+  learningStyle: z.string().optional().describe("The user's preferred way of learning (e.g., 'visual with diagrams', 'simple analogies', 'step-by-step instructions')."),
 });
 export type GenerateStudyGuideInput = z.infer<typeof GenerateStudyGuideInputSchema>;
 
@@ -56,7 +58,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
 
-  The study guide MUST be structured to help a student quickly grasp the most critical information and must be factually correct.
+  The study guide MUST be personalized based on the user's learning preferences and difficulties.
 
   **Critical Instructions:**
   1.  **ACCURACY IS KEY:** All definitions, explanations, and facts must be 100% accurate and verified. Do not include speculative or incorrect information.
@@ -67,9 +69,12 @@ const prompt = ai.definePrompt({
       *   **Analogies:** Create 2-3 simple, effective, real-world analogies to explain the most complex or abstract parts of the topic. The analogy must be easy to understand and directly relevant.
       *   **Quiz Yourself:** Generate 3-4 high-quality questions that effectively test the understanding of the key concepts. Provide the correct and concise answer for each question.
   3.  **CLARITY:** Use language that is easy to understand, avoiding jargon where possible or explaining it clearly when necessary.
-  4.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
+  4.  **PERSONALIZATION (MOST IMPORTANT):**
+      {{#if learningDifficulties}}*   **User's Difficulties:** '{{{learningDifficulties}}}'. Pay special attention to these areas. Provide extra detail, simpler explanations, or targeted examples for these specific concepts in the "Key Concepts" section.{{/if}}
+      {{#if learningStyle}}*   **User's Learning Style:** '{{{learningStyle}}}'. Adapt the entire study guide to this style. For example, if the user is a 'visual' learner, describe diagrams or use visual metaphors. If they prefer 'analogies', make sure the analogies are prominent and clear.{{/if}}
+  5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
 
-  Generate the study guide now.`,
+  Generate the personalized study guide now.`,
 });
 
 const generateStudyGuideFlow = ai.defineFlow(

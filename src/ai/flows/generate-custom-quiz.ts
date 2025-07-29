@@ -26,9 +26,10 @@ const GenerateCustomQuizInputSchema = z.object({
     .describe('The number of questions in the quiz.'),
   questionTypes: z.array(z.enum(["Multiple Choice", "Descriptive"])).describe('The types of questions to include (e.g., Multiple Choice, Descriptive).'),
   questionStyles: z.array(z.string()).describe('The style of questions (e.g. Conceptual, Numerical, etc).'),
-  timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
+  timeLimit: z.number().min(1).max(120),
   userAge: z.number().optional().nullable().describe("The age of the user taking the quiz."),
   userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz (e.g., '10th Grade', 'MDCAT Student', 'ECAT Student'). This is critical for syllabus adherence."),
+  specificInstructions: z.string().optional().describe('Any specific instructions from the user, like sub-topics to focus on, concepts to include, or other detailed requests.'),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -69,8 +70,7 @@ const prompt = ai.definePrompt({
     - Your entire task is considered a failure if you include a single question of a type that was not requested.
 5.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
 6.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-7.  **CLEAR & PRECISE LANGUAGE:** Use clear, unambiguous language. The complexity of the vocabulary and sentence structure must align with the specified difficulty level.
-8.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
 ---
 
@@ -104,10 +104,11 @@ const prompt = ai.definePrompt({
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.**
      *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
 
-**5. TARGET AUDIENCE (MOST IMPORTANT FOR SYLLABUS):**
+**5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
    {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic. Do not include questions on topics outside that syllabus. For other classes, adjust the level appropriately.{{/if}}
    {{#if userAge}}*   **Age:** {{userAge}} years old. Use this to gauge the appropriate language complexity.{{/if}}
+   {{#if specificInstructions}}*   **User's Specific Instructions:** '{{{specificInstructions}}}'. You MUST follow these instructions carefully. This could include focusing on certain sub-topics, avoiding others, or framing questions in a particular way. This is a top priority.{{/if}}
    - If no specific class is provided, assume a general university undergraduate level.
 
 **6. NUMBER OF QUESTIONS: {{{numberOfQuestions}}}**

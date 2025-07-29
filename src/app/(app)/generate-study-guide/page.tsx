@@ -23,9 +23,12 @@ import { useToast } from "@/hooks/use-toast";
 import { generateStudyGuide, GenerateStudyGuideOutput } from "@/ai/flows/generate-study-guide";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
+  learningDifficulties: z.string().optional(),
+  learningStyle: z.string().optional(),
 });
 
 const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
@@ -60,6 +63,8 @@ export default function GenerateStudyGuidePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: "",
+      learningDifficulties: "",
+      learningStyle: "",
     },
   });
 
@@ -190,52 +195,82 @@ export default function GenerateStudyGuidePage() {
     <div>
       <PageHeader
         title="AI Study Guide Generator"
-        description="Enter any topic to get a comprehensive, AI-generated study guide."
+        description="Enter any topic to get a comprehensive, AI-generated study guide tailored to you."
       />
 
       <div className="max-w-2xl mx-auto">
           <Card>
-            <CardHeader>
-              <CardTitle>Enter Your Topic</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-4">
-                  <FormField
-                    control={form.control}
-                    name="topic"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Input placeholder="e.g., The French Revolution, Quantum Mechanics..." {...field} className="h-12" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" size="lg" className="h-12" disabled={isGenerating}>
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Generate Guide
-                      </>
-                    )}
-                  </Button>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardHeader>
+                      <CardTitle>Create Your Personalized Study Guide</CardTitle>
+                      <CardDescription>Tell the AI about your learning needs for a better guide.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="topic"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Topic</FormLabel>
+                                <FormControl>
+                                <Input placeholder="e.g., The French Revolution, Quantum Mechanics..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="learningDifficulties"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>What are you struggling with?</FormLabel>
+                                <FormControl>
+                                <Textarea placeholder="e.g., I don't understand the difference between bosons and fermions." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="learningStyle"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>How do you like to learn?</FormLabel>
+                                <FormControl>
+                                <Textarea placeholder="e.g., Explain it with simple real-world analogies, or give me visual descriptions." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" size="lg" className="w-full" disabled={isGenerating}>
+                            {isGenerating ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Generating...
+                            </>
+                            ) : (
+                            <>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                Generate Guide
+                            </>
+                            )}
+                        </Button>
+                    </CardFooter>
                 </form>
-              </Form>
-            </CardContent>
+            </Form>
           </Card>
       </div>
 
        {isGenerating && (
           <div className="flex flex-col items-center justify-center text-center mt-12">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground">Our AI is building your study guide...</p>
+            <p className="text-xl text-muted-foreground">Our AI is building your personalized study guide...</p>
           </div>
         )}
 

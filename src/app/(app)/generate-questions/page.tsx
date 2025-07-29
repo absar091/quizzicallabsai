@@ -26,6 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
@@ -33,6 +34,7 @@ const formSchema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"]),
   numberOfQuestions: z.number().min(1).max(55),
   questionType: z.enum(["multiple choice", "true/false", "short answer"]),
+  learningStyle: z.string().optional(),
 });
 
 type Question = GeneratePracticeQuestionsOutput['questions'][0];
@@ -51,6 +53,7 @@ export default function GenerateQuestionsPage() {
       difficulty: "medium",
       numberOfQuestions: 5,
       questionType: "multiple choice",
+      learningStyle: "",
     },
   });
 
@@ -231,6 +234,19 @@ export default function GenerateQuestionsPage() {
                              We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
                            </AlertDescription>
                         </Alert>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="learningStyle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Learning Style (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., visual, analogies, simple examples" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -158,7 +158,12 @@ export default function DashboardPage() {
   }
   
   const { averageScores, scoreTrend } = processChartData();
-  const dailyGoalProgress = Math.min((recentActivity.length / 5) * 100, 100); // Example: 5 quizzes a day goal
+  
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const quizzesToday = recentActivity.filter(activity => new Date(activity.date) >= todayStart);
+  const dailyGoalProgress = Math.min((quizzesToday.length / 5) * 100, 100);
 
   if (loading) {
     return (
@@ -186,7 +191,7 @@ export default function DashboardPage() {
                  </CardHeader>
                  <CardContent>
                     <Progress value={dailyGoalProgress} />
-                    <p className="text-sm text-muted-foreground mt-2">{recentActivity.length} of 5 completed</p>
+                    <p className="text-sm text-muted-foreground mt-2">{quizzesToday.length} of 5 completed</p>
                  </CardContent>
               </Card>
                <Card>

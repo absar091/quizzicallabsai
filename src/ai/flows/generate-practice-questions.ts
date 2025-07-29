@@ -19,6 +19,7 @@ const GeneratePracticeQuestionsInputSchema = z.object({
   difficulty: z.enum(['easy', 'medium', 'hard']).optional().describe('The difficulty level of the questions.'),
   numberOfQuestions: z.number().int().min(1).max(55).optional().describe('The desired number of questions to generate (1-55).'),
   questionType: z.enum(['multiple choice', 'true/false', 'short answer']).optional().describe('The question type to generate.'),
+  learningStyle: z.string().optional().describe('The user\'s preferred learning style (e.g., "visual", "auditory", "kinesthetic", "reading/writing"). This should influence the style of explanation.'),
 });
 export type GeneratePracticeQuestionsInput = z.infer<typeof GeneratePracticeQuestionsInputSchema>;
 
@@ -43,7 +44,7 @@ const prompt = ai.definePrompt({
   model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GeneratePracticeQuestionsInputSchema},
   output: {schema: GeneratePracticeQuestionsOutputSchema},
-  prompt: `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content.
+  prompt: `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content, personalized to the user's learning style.
 
 Follow these strict rules to ensure accuracy, quality, and user satisfaction:
 
@@ -54,17 +55,12 @@ Follow these strict rules to ensure accuracy, quality, and user satisfaction:
 4.  **CLARITY AND PRECISION:** Use clear, concise, and unambiguous language. Avoid tricky or ambiguous wording that could confuse the user.
 5.  **VARIETY:** Vary the question structure and wording to keep the user engaged and test concepts from different angles.
 
-🎯 QUESTION STRUCTURE:
+🎯 QUESTION STRUCTURE & PERSONALIZATION:
 For each question, you MUST provide:
 *   'question': The question text.
 *   'answer': The single, unequivocally correct answer.
-*   'explanation': A concise, one-line explanation for why the answer is correct.
+*   'explanation': A concise explanation for why the answer is correct. This explanation MUST be tailored to the user's learning style.
 *   'options': For "multiple choice" questions, provide exactly 4 plausible options, one of which MUST be the correct answer.
-
-🔢 DIFFICULTY LEVELS:
-*   **Easy:** Basic recall of definitions and facts.
-*   **Medium:** Requires some reasoning, application, or interpretation.
-*   **Hard:** Involves analysis, synthesis of ideas, or multi-step problem-solving.
 
 ❗ CRITICAL TASK INSTRUCTIONS:
 Generate practice questions based on the following parameters. You must adhere to these precisely.
@@ -74,6 +70,7 @@ Generate practice questions based on the following parameters. You must adhere t
 *   **Difficulty:** {{#if difficulty}}{{{difficulty}}}{{else}}A balanced mix (40% easy, 40% medium, 20% hard){{/if}}
 *   **Number of Questions:** {{#if numberOfQuestions}}{{{numberOfQuestions}}}{{else}}5{{/if}}
 *   **Question Type:** {{#if questionType}}{{{questionType}}}{{else}}multiple choice{{/if}}
+*   **Learning Style:** {{#if learningStyle}}'{{{learningStyle}}}'. Tailor your explanations accordingly. For example, for a 'visual' learner, use descriptive imagery. For a 'reading/writing' learner, be text-based and structured.{{else}}a general style{{/if}}.
 
 Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting.
 `,
