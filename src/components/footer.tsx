@@ -3,11 +3,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BrainCircuit, Mail, Phone, Heart, Share2, AlertTriangle, Copy, Check, HelpCircle } from 'lucide-react';
+import { BrainCircuit, Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github } from 'lucide-react';
 import { Button } from './ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from './ui/input';
+
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M11.623 5.423a4.23 4.23 0 0 1 4.23 4.23v0a4.23 4.23 0 0 1-4.23 4.23H7.393a4.23 4.23 0 0 1-4.23-4.23v0a4.23 4.23 0 0 1 4.23-4.23h4.23Z"/>
+        <path d="M15.853 9.653a4.23 4.23 0 0 1-4.23-4.23v0"/>
+        <path d="M12.493 18.347a4.23 4.23 0 0 1-4.23-4.23h0"/>
+    </svg>
+)
 
 export function Footer() {
     const { toast } = useToast();
@@ -58,13 +66,21 @@ export function Footer() {
                             <span className="text-lg font-bold">Quizzicallabs AI</span>
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">A product by <span className="font-bold">Absar Ahmad Rao</span></p>
-                        <p className="text-sm font-semibold mb-2">Contribute or give feedback:</p>
-                        <a href="mailto:Ahmadraoabsar@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
-                           <Mail className="h-4 w-4" /> Ahmadraoabsar@gmail.com
-                        </a>
-                         <a href="tel:+923297642797" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mt-2">
-                           <Phone className="h-4 w-4" /> +92 329 7642797
-                        </a>
+                        <p className="text-sm font-semibold mb-2">Connect or give feedback:</p>
+                        <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
+                            <a href="mailto:Ahmadraoabsar@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" title="Email">
+                               <Mail className="h-5 w-5" /> 
+                            </a>
+                             <a href="https://wa.me/923297642797" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" title="WhatsApp">
+                               <Phone className="h-5 w-5" />
+                            </a>
+                            <a href="https://www.tiktok.com/@absarahmadrao?_t=ZN-8yQ5Of16dXy&_r=1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" title="TikTok">
+                               <TikTokIcon className="h-5 w-5"/>
+                            </a>
+                            <a href="https://github.com/absar091" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" title="GitHub">
+                               <Github className="h-5 w-5"/>
+                            </a>
+                        </div>
                     </div>
                     <div>
                         <h3 className="font-semibold mb-4">Navigation</h3>

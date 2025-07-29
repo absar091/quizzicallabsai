@@ -56,7 +56,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform"],
+  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor"],
 };
 
 export const viewport: Viewport = {
