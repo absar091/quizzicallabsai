@@ -103,9 +103,13 @@ export default function GenerateFromDocumentPage() {
   };
 
   const calculateScore = useCallback(() => {
-    return quiz?.reduce((score, question, index) => {
+    if (!quiz) return { score: 0, total: 0, percentage: 0 };
+    const score = quiz.reduce((score, question, index) => {
       return score + (question.correctAnswerIndex === userAnswers[index] ? 1 : 0);
-    }, 0) ?? 0;
+    }, 0);
+    const total = quiz.length;
+    const percentage = total > 0 ? (score / total) * 100 : 0;
+    return { score, total, percentage };
   }, [quiz, userAnswers]);
 
 
@@ -118,9 +122,7 @@ export default function GenerateFromDocumentPage() {
   }
 
   if (showResults && quiz) {
-     const score = calculateScore();
-     const total = quiz.length;
-     const percentage = (score / total) * 100;
+     const { score, total, percentage } = calculateScore();
       return (
        <div className="max-w-4xl mx-auto">
         <PageHeader title="Quiz Results" description={`You scored ${score} out of ${total}.`} />
