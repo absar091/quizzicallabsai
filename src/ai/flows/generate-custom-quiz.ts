@@ -97,7 +97,7 @@ const prompt = ai.definePrompt({
      *   Formulate a question that requires a written explanation or description (e.g., "Describe the process of...", "Compare and contrast...").
      *   The 'answers' and 'correctAnswer' fields for descriptive questions should be omitted or left as empty arrays/null.
 
-**4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{@key}}{{#unless @last}}, {{/unless}}{{/each}}'{{/if}}**
+**4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}'{{/if}}**
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
