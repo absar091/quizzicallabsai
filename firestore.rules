@@ -3,10 +3,12 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Allow users to read and write their own FCM token
     match /fcmTokens/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    // Add other rules for your collections here
+
+    // Default deny all other collections
     match /{document=**} {
       allow read, write: if false;
     }
