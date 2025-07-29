@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace, AlertTriangle, Minus, Plus } from "lucide-react";
-import jsPDF from 'jspdf';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -133,8 +132,9 @@ export default function GeneratePaperPage() {
     }
   }
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!quizVariants || !formValues) return;
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     
     quizVariants.forEach((variantData, variantIndex) => {

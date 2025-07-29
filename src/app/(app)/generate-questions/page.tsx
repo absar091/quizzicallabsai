@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Eye, BookOpen, Download, AlertTriangle } from "lucide-react";
-import jsPDF from "jspdf";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -78,8 +77,9 @@ export default function GenerateQuestionsPage() {
     setVisibleAnswers(prev => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!questions) return;
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const topic = form.getValues('topic');
     let y = 20;

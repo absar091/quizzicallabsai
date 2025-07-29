@@ -6,8 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download } from "lucide-react";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +28,7 @@ const formSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
 });
 
-const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
+const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
     
     // Header
@@ -44,7 +42,7 @@ const addPdfHeaderAndFooter = (doc: jsPDF, pageNumber: number) => {
     doc.saveGraphicsState();
     doc.setFontSize(60);
     doc.setTextColor(220, 220, 220); // Light grey
-    doc.setGState(new doc.GState({opacity: 0.5}));
+    doc.setGState(new (doc as any).GState({opacity: 0.5}));
     doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
     doc.restoreGraphicsState();
 
@@ -83,8 +81,9 @@ export default function GenerateStudyGuidePage() {
     }
   }
   
-  const downloadStudyGuide = () => {
+  const downloadStudyGuide = async () => {
     if (!studyGuide) return;
+    const { default: jsPDF } = await import('jspdf');
     
     const doc = new jsPDF();
     const topic = form.getValues('topic');
