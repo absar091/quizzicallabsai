@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
-  topic: z.string().min(1, "Topic is required."),
+  topic: z.string().min(1, "Topic(s) or chapter(s) are required."),
   difficulty: z.enum(["easy", "medium", "hard"]),
   numberOfQuestions: z.number().min(1).max(55),
   questionType: z.enum(["multiple choice", "true/false", "short answer"]),
@@ -51,7 +51,7 @@ export default function GenerateQuestionsPage() {
       subject: "",
       topic: "",
       difficulty: "medium",
-      numberOfQuestions: 5,
+      numberOfQuestions: 10,
       questionType: "multiple choice",
       learningStyle: "",
     },
@@ -88,8 +88,12 @@ export default function GenerateQuestionsPage() {
     let y = 20;
 
     doc.setFontSize(18);
-    doc.text(`Practice Questions: ${topic}`, 15, y);
+    doc.text(`Practice Questions: ${form.getValues('subject')}`, 15, y);
+    y += 10;
+    doc.setFontSize(12);
+    doc.text(`Topic(s): ${topic}`, 15, y);
     y += 15;
+
 
     questions.forEach((q, index) => {
         if (y > 270) {
@@ -125,7 +129,7 @@ export default function GenerateQuestionsPage() {
         y += (explanationText.length * 5) + 10;
     });
 
-    doc.save(`${topic}_practice_questions.pdf`);
+    doc.save(`${form.getValues('subject')}_practice_questions.pdf`);
   };
 
   return (
@@ -161,10 +165,11 @@ export default function GenerateQuestionsPage() {
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Topic</FormLabel>
+                        <FormLabel>Topic(s) / Chapter(s)</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., Photosynthesis" {...field} />
+                          <Textarea placeholder="e.g., Photosynthesis, Cell Respiration" {...field} />
                         </FormControl>
+                        <FormDescription className="text-xs">You can enter multiple topics or chapters, separated by commas.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -231,7 +236,7 @@ export default function GenerateQuestionsPage() {
                         <Alert className="mt-2 text-xs p-2">
                            <AlertTriangle className="h-4 w-4"/>
                            <AlertDescription>
-                             We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
+                             The AI-generated count may sometimes vary slightly from your selection.
                            </AlertDescription>
                         </Alert>
                         <FormMessage />

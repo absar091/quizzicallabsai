@@ -17,8 +17,8 @@ type Quiz = GenerateCustomQuizOutput['quiz'];
 const MOCK_TEST_CONFIG = [
   { subject: 'Physics', numQuestions: 30, time: 30 },
   { subject: 'Mathematics', numQuestions: 30, time: 30 },
+  { subject: 'Chemistry', numQuestions: 30, time: 30 },
   { subject: 'English', numQuestions: 10, time: 10 },
-  { subject: 'Chemistry', numQuestions: 10, time: 10 },
 ];
 
 const TOTAL_QUESTIONS = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.numQuestions, 0);
@@ -33,8 +33,14 @@ export default function EcatMockTestPage() {
   const [allUserAnswers, setAllUserAnswers] = useState<(string | null)[]>([]);
   const [allQuestions, setAllQuestions] = useState<Quiz>([]);
   const [error, setError] = useState<string | null>(null);
+  const [optionalSubject, setOptionalSubject] = useState<'Chemistry' | 'Computer Science' | null>(null);
+
 
   const generateSectionQuiz = async (sectionIndex: number) => {
+    if (!optionalSubject) {
+      setError("Please select an optional subject first.");
+      return;
+    }
     if (sectionIndex >= MOCK_TEST_CONFIG.length) {
       setTestState('finished');
       return;
@@ -42,7 +48,11 @@ export default function EcatMockTestPage() {
 
     setTestState('generating');
     setGeneratedQuiz(null);
-    const section = MOCK_TEST_CONFIG[sectionIndex];
+    let section = MOCK_TEST_CONFIG[sectionIndex];
+    // Use the selected optional subject
+    if (section.subject === 'Chemistry') {
+        section = {...section, subject: optionalSubject };
+    }
     
     const quizParams: GenerateCustomQuizInput = {
       topic: `ECAT Mock Test - ${section.subject}`,
@@ -53,6 +63,7 @@ export default function EcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'ECAT Student',
+      specificInstructions: `Generate questions strictly based on the ECAT syllabus for ${section.subject}.`
     };
 
     try {
@@ -112,18 +123,37 @@ export default function EcatMockTestPage() {
                 This mock test will be generated and taken **section by section** to ensure a smooth experience.
               </AlertDescription>
             </Alert>
-            <div className="mt-6 space-y-3">
+            <div className="mt-6 space-y-4">
                 <p>The test will proceed in the following order:</p>
                 <ul className="list-decimal list-inside text-muted-foreground">
-                    {MOCK_TEST_CONFIG.map(section => (
-                        <li key={section.subject}>{section.subject}: {section.numQuestions} MCQs</li>
-                    ))}
+                    <li>Physics: 30 MCQs</li>
+                    <li>Mathematics: 30 MCQs</li>
+                    <li>Chemistry OR Computer Science: 30 MCQs</li>
+                    <li>English: 10 MCQs</li>
                 </ul>
+                <div className="space-y-2">
+                    <p className="font-semibold">Select your optional subject:</p>
+                    <div className="flex gap-4">
+                        <Button
+                            variant={optionalSubject === 'Chemistry' ? 'default' : 'outline'}
+                            onClick={() => setOptionalSubject('Chemistry')}
+                        >
+                            Chemistry
+                        </Button>
+                        <Button
+                            variant={optionalSubject === 'Computer Science' ? 'default' : 'outline'}
+                            onClick={() => setOptionalSubject('Computer Science')}
+                        >
+                            Computer Science
+                        </Button>
+                    </div>
+                     {error && <p className="text-sm text-destructive">{error}</p>}
+                </div>
                  <p className="font-semibold">Your total time for all sections is {TOTAL_TIME} minutes.</p>
             </div>
           </CardContent>
           <CardFooter>
-            <Button size="lg" onClick={() => generateSectionQuiz(0)}>
+            <Button size="lg" onClick={() => generateSectionQuiz(0)} disabled={!optionalSubject}>
               Start Mock Test
             </Button>
           </CardFooter>
@@ -134,10 +164,11 @@ export default function EcatMockTestPage() {
 
   if (testState === 'generating') {
     const section = MOCK_TEST_CONFIG[currentSectionIndex];
+    const subjectName = section.subject === 'Chemistry' ? optionalSubject : section.subject;
     return (
         <div className="flex flex-col items-center justify-center h-[60vh]">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground text-center">Generating {section.subject} Section ({section.numQuestions} MCQs)...</p>
+            <p className="text-xl text-muted-foreground text-center">Generating {subjectName} Section ({section.numQuestions} MCQs)...</p>
             <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
         </div>
     )
@@ -145,19 +176,21 @@ export default function EcatMockTestPage() {
   
   if (testState === 'taking' && generatedQuiz) {
     const section = MOCK_TEST_CONFIG[currentSectionIndex];
+    const subjectName = section.subject === 'Chemistry' ? optionalSubject : section.subject;
     const sectionFormValues = {
-        topic: `ECAT Mock Test - ${section.subject}`,
+        topic: `ECAT Mock Test - ${subjectName}`,
         difficulty: 'hard' as const,
         numberOfQuestions: section.numQuestions,
         questionTypes: ['Multiple Choice'],
         questionStyles: ['Past Paper Style'],
         timeLimit: section.time,
+        specificInstructions: ''
     };
 
     return (
         <>
         <div className="mb-4">
-             <h2 className="text-xl font-bold text-center">Section: {section.subject}</h2>
+             <h2 className="text-xl font-bold text-center">Section: {subjectName}</h2>
              <Progress value={((currentSectionIndex) / MOCK_TEST_CONFIG.length) * 100} className="mt-2" />
         </div>
         <GenerateQuizPage
@@ -177,6 +210,7 @@ export default function EcatMockTestPage() {
         questionTypes: ['Multiple Choice'],
         questionStyles: ['Past Paper Style'],
         timeLimit: TOTAL_TIME,
+        specificInstructions: ''
     };
     
     // We need to pass the user's answers to the results page.
