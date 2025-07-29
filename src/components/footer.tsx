@@ -65,7 +65,7 @@ export function Footer() {
                             </div>
                             <span className="text-lg font-bold">Quizzicallabsᴬᴵ</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">A product by <strong>Absar Ahmad Rao</strong></p>
+                        <p className="text-sm text-muted-foreground mb-4">A product by <strong>QuizzicalLabs™</strong></p>
                         <p className="text-sm font-semibold mb-2">Connect or give feedback:</p>
                         <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
                             <a href="mailto:Ahmadraoabsar@gmail.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary" title="Email">
@@ -130,7 +130,7 @@ export function Footer() {
                     </div>
                 </div>
                  <div className="mt-12 border-t pt-8 text-center space-y-4">
-                     <p className="text-sm text-muted-foreground">&copy; {currentYear} QuizzicalLabs™. All Rights Reserved.</p>
+                     <p className="text-sm text-muted-foreground">&copy; {currentYear} QuizzicalLabs™. All Rights Reserved. Created by <strong>Absar Ahmad Rao</strong>.</p>
                 </div>
             </div>
         </footer>
