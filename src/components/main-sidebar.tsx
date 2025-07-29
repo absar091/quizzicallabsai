@@ -46,6 +46,7 @@ const generationTools = [
 const examPrep = [
     { href: "/mdcat", label: "MDCAT Prep", icon: GraduationCap },
     { href: "/ecat", label: "ECAT Prep", icon: GraduationCap },
+    { href: "/nts", label: "NTS Prep", icon: GraduationCap },
 ]
 
 type MainSidebarProps = {

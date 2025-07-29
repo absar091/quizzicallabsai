@@ -7,3 +7,4 @@ import '@/ai/flows/generate-quiz-from-document.ts';
 import '@/ai/flows/generate-explanations-for-incorrect-answers.ts';
 import '@/ai/flows/generate-study-guide.ts';
 import '@/ai/flows/generate-simple-explanation.ts';
+import '@/ai/flows/generate-nts-quiz.ts';

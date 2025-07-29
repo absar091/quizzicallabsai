@@ -17,7 +17,7 @@ type Quiz = GenerateCustomQuizOutput['quiz'];
 const MOCK_TEST_CONFIG = [
   { subject: 'Physics', numQuestions: 30, time: 30 },
   { subject: 'Mathematics', numQuestions: 30, time: 30 },
-  { subject: 'Chemistry', numQuestions: 30, time: 30 },
+  { subject: 'Chemistry', numQuestions: 30, time: 30 }, // This will be replaced by the optional subject
   { subject: 'English', numQuestions: 10, time: 10 },
 ];
 
@@ -39,20 +39,27 @@ export default function EcatMockTestPage() {
   const generateSectionQuiz = async (sectionIndex: number) => {
     if (!optionalSubject) {
       setError("Please select an optional subject first.");
+      setTestState('idle'); // Go back to selection
       return;
     }
-    if (sectionIndex >= MOCK_TEST_CONFIG.length) {
+    
+    // Dynamically create the config based on the selected subject
+    const dynamicMockTestConfig = [
+        MOCK_TEST_CONFIG[0], // Physics
+        MOCK_TEST_CONFIG[1], // Mathematics
+        { subject: optionalSubject, numQuestions: 30, time: 30 }, // Optional Subject
+        MOCK_TEST_CONFIG[3], // English
+    ];
+
+    if (sectionIndex >= dynamicMockTestConfig.length) {
       setTestState('finished');
       return;
     }
 
     setTestState('generating');
+    setError(null);
     setGeneratedQuiz(null);
-    let section = MOCK_TEST_CONFIG[sectionIndex];
-    // Use the selected optional subject
-    if (section.subject === 'Chemistry') {
-        section = {...section, subject: optionalSubject };
-    }
+    const section = dynamicMockTestConfig[sectionIndex];
     
     const quizParams: GenerateCustomQuizInput = {
       topic: `ECAT Mock Test - ${section.subject}`,
@@ -63,16 +70,19 @@ export default function EcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'ECAT Student',
-      specificInstructions: `Generate questions strictly based on the ECAT syllabus for ${section.subject}.`
+      specificInstructions: `Generate questions strictly based on the ECAT syllabus for ${section.subject}. Focus on a mix of conceptual and numerical problems typical for UET entrance exams.`
     };
 
     try {
       const result = await generateCustomQuiz(quizParams);
+      if (!result.quiz || result.quiz.length === 0) {
+        throw new Error("The AI returned an empty quiz. Please try again.");
+      }
       setGeneratedQuiz(result.quiz);
       setTestState('taking');
     } catch (err: any) {
       setError(`Failed to generate the ${section.subject} section. The AI model may be overloaded. Please try again later.`);
-      setTestState('idle');
+      setTestState('idle'); // Revert to allow re-selection
     }
   };
 
@@ -83,7 +93,12 @@ export default function EcatMockTestPage() {
     }
     const nextSectionIndex = currentSectionIndex + 1;
     setCurrentSectionIndex(nextSectionIndex);
-    if (nextSectionIndex < MOCK_TEST_CONFIG.length) {
+
+    const dynamicMockTestConfig = optionalSubject ? [
+        MOCK_TEST_CONFIG[0], MOCK_TEST_CONFIG[1], { subject: optionalSubject, numQuestions: 30, time: 30 }, MOCK_TEST_CONFIG[3]
+    ] : MOCK_TEST_CONFIG;
+    
+    if (nextSectionIndex < dynamicMockTestConfig.length) {
         generateSectionQuiz(nextSectionIndex);
     } else {
         setTestState('finished');
@@ -147,7 +162,7 @@ export default function EcatMockTestPage() {
                             Computer Science
                         </Button>
                     </div>
-                     {error && <p className="text-sm text-destructive">{error}</p>}
+                     {error && <p className="text-sm text-destructive mt-2">{error}</p>}
                 </div>
                  <p className="font-semibold">Your total time for all sections is {TOTAL_TIME} minutes.</p>
             </div>
@@ -163,22 +178,28 @@ export default function EcatMockTestPage() {
   }
 
   if (testState === 'generating') {
-    const section = MOCK_TEST_CONFIG[currentSectionIndex];
-    const subjectName = section.subject === 'Chemistry' ? optionalSubject : section.subject;
+    const dynamicMockTestConfig = optionalSubject ? [
+        MOCK_TEST_CONFIG[0], MOCK_TEST_CONFIG[1], { subject: optionalSubject, numQuestions: 30, time: 30 }, MOCK_TEST_CONFIG[3]
+    ] : MOCK_TEST_CONFIG;
+    const section = dynamicMockTestConfig[currentSectionIndex];
+    
     return (
         <div className="flex flex-col items-center justify-center h-[60vh]">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground text-center">Generating {subjectName} Section ({section.numQuestions} MCQs)...</p>
+            <p className="text-xl text-muted-foreground text-center">Generating {section.subject} Section ({section.numQuestions} MCQs)...</p>
             <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
         </div>
     )
   }
   
   if (testState === 'taking' && generatedQuiz) {
-    const section = MOCK_TEST_CONFIG[currentSectionIndex];
-    const subjectName = section.subject === 'Chemistry' ? optionalSubject : section.subject;
+    const dynamicMockTestConfig = optionalSubject ? [
+        MOCK_TEST_CONFIG[0], MOCK_TEST_CONFIG[1], { subject: optionalSubject, numQuestions: 30, time: 30 }, MOCK_TEST_CONFIG[3]
+    ] : MOCK_TEST_CONFIG;
+    const section = dynamicMockTestConfig[currentSectionIndex];
+    
     const sectionFormValues = {
-        topic: `ECAT Mock Test - ${subjectName}`,
+        topic: `ECAT Mock Test - ${section.subject}`,
         difficulty: 'hard' as const,
         numberOfQuestions: section.numQuestions,
         questionTypes: ['Multiple Choice'],
@@ -190,8 +211,8 @@ export default function EcatMockTestPage() {
     return (
         <>
         <div className="mb-4">
-             <h2 className="text-xl font-bold text-center">Section: {subjectName}</h2>
-             <Progress value={((currentSectionIndex) / MOCK_TEST_CONFIG.length) * 100} className="mt-2" />
+             <h2 className="text-xl font-bold text-center">Section: {section.subject}</h2>
+             <Progress value={((currentSectionIndex) / dynamicMockTestConfig.length) * 100} className="mt-2" />
         </div>
         <GenerateQuizPage
             key={currentSectionIndex} // Force re-mount for each section
@@ -214,7 +235,6 @@ export default function EcatMockTestPage() {
     };
     
     // We need to pass the user's answers to the results page.
-    // This is a bit of a hack, but it reuses the results UI from GenerateQuizPage
     (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
     
     return (
