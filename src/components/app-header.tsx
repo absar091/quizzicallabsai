@@ -43,6 +43,7 @@ const appNavItems = [
     { href: "/generate-study-guide", label: "Study Guide" },
     { href: "/generate-paper", label: "Paper Generator" },
     { href: "/mdcat", label: "MDCAT Prep" },
+    { href: "/ecat", label: "ECAT Prep" },
 ]
 
 export function AppHeader() {
