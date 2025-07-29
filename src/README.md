@@ -1,11 +1,11 @@
 
-# Quizzicallabsᴬᴵ
+# Quizzicallabs AI
 
-Welcome to **Quizzicallabsᴬᴵ**, your ultimate AI-powered study partner designed to revolutionize the way students and educators approach learning and assessment. This platform is a flagship product of **QuizzicalLabs™**, created by **Absar Ahmad Rao**. It provides a suite of powerful tools to generate personalized learning materials in seconds.
+Welcome to **Quizzicallabs AI**, your ultimate AI-powered study partner designed to revolutionize the way students and educators approach learning and assessment. Built with cutting-edge technology, this platform provides a suite of powerful tools to generate personalized learning materials in seconds.
 
 ## ✨ Features
 
-Quizzicallabsᴬᴵ is packed with features to cater to a wide range of educational needs:
+Quizzicallabs AI is packed with features to cater to a wide range of educational needs:
 
 -   **Custom Quiz Generator**: Create highly tailored quizzes on any topic in the world. Specify difficulty levels (Easy, Medium, Hard, Master), question counts (up to 55), and question formats (Multiple Choice, Descriptive) for targeted study sessions.
 -   **Practice Questions**: Quickly generate a set of practice questions on any topic, complete with correct answers and detailed AI-generated explanations to help you master the concepts.
@@ -22,7 +22,7 @@ Quizzicallabsᴬᴵ is packed with features to cater to a wide range of educatio
 
 ## 🔒 Authentication and Security
 
-User security and data privacy are top priorities for Quizzicallabsᴬᴵ.
+User security and data privacy are top priorities for Quizzicallabs AI.
 
 -   **Firebase Authentication**: We use a robust, secure authentication system powered by Firebase. All passwords are encrypted, and user sessions are managed with industry-standard security protocols for a safe, cross-device experience.
 -   **Email Verification**: To ensure the validity of user accounts and prevent spam, all new users must verify their email address before they can log in.
@@ -37,7 +37,7 @@ This application is built with a modern, robust, and scalable technology stack:
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [ShadCN UI](https://ui.shadcn.com/)
 -   **AI Integration**: [Genkit](https://firebase.google.com/docs/genkit) (powered by Google's Gemini models)
 -   **Backend & Database**: [Firebase](https://firebase.google.com/) (Authentication, Realtime Database, Firestore)
--   **Deployment**: [Firebase App Hosting](https://firebase.google.com/docs/app-hosting)
+-   **Deployment**: [Vercel](https://vercel.com/) / [Firebase App Hosting](https://firebase.google.com/docs/app-hosting)
 
 ## Getting Started
 
@@ -53,10 +53,19 @@ To get started with developing or running this project locally, you'll need to h
     npm install
     ```
 3.  **Set up environment variables**:
-    Create a `.env` file in the root of the project and add your Firebase and Genkit API keys:
+    Create a `.env.local` file in the root of the project and add your Firebase and Genkit API keys:
     ```
-    NEXT_PUBLIC_FCM_VAPID_KEY=...
+    # Firebase Public Keys
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+    # ... other public keys
+
+    # Genkit/Google AI Key
     GEMINI_API_KEY=...
+
+    # Cron Secret for scheduled tasks
+    CRON_SECRET=...
     ```
 4.  **Run the development server**:
     ```bash
