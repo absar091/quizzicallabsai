@@ -7,7 +7,7 @@ import { generateCustomQuiz, GenerateCustomQuizOutput, GenerateCustomQuizInput }
 import GenerateQuizPage from '@/app/(app)/generate-quiz/page';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
@@ -151,6 +151,7 @@ export default function MdcatMockTestPage() {
         questionTypes: ['Multiple Choice'],
         questionStyles: ['Past Paper Style'],
         timeLimit: section.time,
+        specificInstructions: ''
     };
 
     return (
@@ -176,6 +177,7 @@ export default function MdcatMockTestPage() {
         questionTypes: ['Multiple Choice'],
         questionStyles: ['Past Paper Style'],
         timeLimit: 180,
+        specificInstructions: ''
     };
     
     // We need to call the results view directly
