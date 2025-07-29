@@ -44,7 +44,11 @@ function EcatTestFlow() {
                     timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "ECAT Student",
+                    specificInstructions: `Generate an ECAT-level test for the topic: ${topic}`
                 });
+                 if (!result.quiz || result.quiz.length === 0) {
+                    throw new Error("The AI returned an empty quiz. Please try again.");
+                }
                 setQuiz(result.quiz);
             } catch (err: any) {
                 let errorMessage = "An unexpected error occurred while generating the test.";
@@ -96,6 +100,7 @@ function EcatTestFlow() {
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles.split(','),
                  timeLimit: Number(numQuestions) || 20,
+                 specificInstructions: ""
             }}
          />
     }
@@ -125,21 +130,13 @@ function EcatTestPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
-             <PageHeader title="ECAT Test Setup" description="Invalid test parameters." />
-             <Card>
-                <CardHeader>
-                    <CardTitle>Configuration Error</CardTitle>
-                    <CardDescription>Could not start the test because the subject or topic was not specified correctly.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild className="mt-6 w-full" size="lg">
-                        <Link href="/ecat">
-                           Back to ECAT Home
-                        </Link>
-                    </Button>
-                </CardContent>
-             </Card>
+        <div className="max-w-2xl mx-auto text-center">
+             <PageHeader title="ECAT Test Setup Error" description="Could not start the test because the subject or topic was not specified correctly." />
+             <Button asChild>
+                 <Link href="/ecat">
+                    Back to ECAT Home
+                 </Link>
+             </Button>
         </div>
     )
 }

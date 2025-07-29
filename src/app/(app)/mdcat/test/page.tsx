@@ -45,7 +45,11 @@ function MdcatTestFlow() {
                     timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "MDCAT Student",
+                    specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}`
                 });
+                if (!result.quiz || result.quiz.length === 0) {
+                    throw new Error("The AI returned an empty quiz. Please try again.");
+                }
                 setQuiz(result.quiz);
             } catch (err: any) {
                 let errorMessage = "An unexpected error occurred while generating the test.";
@@ -97,6 +101,7 @@ function MdcatTestFlow() {
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles.split(','),
                  timeLimit: Number(numQuestions) || 20,
+                 specificInstructions: ""
             }}
          />
     }
@@ -126,21 +131,13 @@ function MdcatTestPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
-             <PageHeader title="MDCAT Test Setup" description="Invalid test parameters." />
-             <Card>
-                <CardHeader>
-                    <CardTitle>Configuration Error</CardTitle>
-                    <CardDescription>Could not start the test because the subject or topic was not specified correctly.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild className="mt-6 w-full" size="lg">
-                        <Link href="/mdcat">
-                           Back to MDCAT Home
-                        </Link>
-                    </Button>
-                </CardContent>
-             </Card>
+        <div className="max-w-2xl mx-auto text-center">
+             <PageHeader title="MDCAT Test Setup Error" description="Could not start the test because the subject or topic was not specified correctly." />
+             <Button asChild>
+                 <Link href="/mdcat">
+                    Back to MDCAT Home
+                 </Link>
+             </Button>
         </div>
     )
 }
