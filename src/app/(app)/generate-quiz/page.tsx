@@ -111,8 +111,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const [generationProgress, setGenerationProgress] = useState(0);
   const [quiz, setQuiz] = useState<Quiz | null>(initialQuiz || null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
-  const [showResults, setShowResults] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>(initialQuiz ? new Array(initialQuiz.length).fill(null) : []);
+  const [showResults, setShowResults] = useState(initialQuiz ? false : !initialFormValues);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
@@ -137,6 +137,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         setUserAnswers(new Array(initialQuiz.length).fill(null));
         setTimeLeft(initialFormValues.timeLimit * 60);
         setFormValues(initialFormValues);
+        // This is a special case for when we are showing a pre-generated quiz like a mock test section
+        // or showing the final results of a mock test.
+        if (window.location.pathname.includes('mock-test')) {
+            // Check if we are showing results or taking the test
+             const isShowingResults = initialQuiz.length > 81; // A full mock test has more than 81 questions
+             if(isShowingResults) {
+                 setShowResults(true);
+                 // We need to receive the user answers for the results page
+                 const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
+                 if (mockTestAnswers) {
+                     setUserAnswers(mockTestAnswers);
+                 }
+             } else {
+                 setShowResults(false);
+             }
+        }
     }
   }, [initialQuiz, initialFormValues])
 
@@ -226,6 +242,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
+        setShowResults(false); // Ensure we are in quiz-taking mode
         window.scrollTo(0, 0);
       }, 500)
 
@@ -273,6 +290,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   };
 
   const handleSubmit = useCallback(async () => {
+    // For mock tests, use the override function if it exists
+    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
+        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
+        return;
+    }
+
     setShowResults(true);
     if(quiz && formValues && user) {
         const { score, percentage } = calculateScore();
@@ -473,8 +496,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
   const resetQuiz = async () => {
     if(initialQuiz) {
-        // For MDCAT quizzes, just go back to the MDCAT home
-        window.location.href = '/mdcat';
+        // For MDCAT/ECAT quizzes, go back to the respective home
+        if (window.location.pathname.includes('mdcat')) {
+           window.location.href = '/mdcat';
+        } else if (window.location.pathname.includes('ecat')) {
+            window.location.href = '/ecat';
+        }
         return;
     }
     if (user) {
@@ -483,9 +510,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     setQuiz(null);
     setCurrentQuestion(0);
     setUserAnswers([]);
-    setShowResults(false);
+    setShowResults(true); // Go back to the form
     setExplanations({});
     setFormValues(null);
+    formMethods.reset();
     window.scrollTo(0, 0);
   };
   
@@ -719,7 +747,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                     )}
                 </CardContent>
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
-                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'MDCAT Home' : 'Take Again'}</Button>
+                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'MDCAT/ECAT Home' : 'Take Another Quiz'}</Button>
                     <Button variant="outline" asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>

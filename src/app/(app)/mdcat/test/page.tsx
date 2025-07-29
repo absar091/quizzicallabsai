@@ -11,6 +11,8 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+
 
 function MdcatTestFlow() {
     const searchParams = useSearchParams();
@@ -104,8 +106,20 @@ function MdcatTestFlow() {
 
 function MdcatTestPage() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const subject = searchParams.get('subject');
     const topic = searchParams.get('topic');
+
+    // Handle mock test logic here
+    if (searchParams.has('mock-test')) {
+        router.replace('/mdcat/mock-test');
+        return (
+             <div className="flex flex-col items-center justify-center h-[60vh]">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-xl text-muted-foreground">Redirecting to Mock Test...</p>
+            </div>
+        );
+    }
 
     if (subject && topic) {
         return <MdcatTestFlow />;
@@ -144,5 +158,3 @@ export default function MdcatTestSuspenseWrapper() {
         </Suspense>
     )
 }
-
-    

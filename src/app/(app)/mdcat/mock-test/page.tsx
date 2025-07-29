@@ -1,0 +1,192 @@
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { generateCustomQuiz, GenerateCustomQuizOutput, GenerateCustomQuizInput } from '@/ai/flows/generate-custom-quiz';
+import GenerateQuizPage from '@/app/(app)/generate-quiz/page';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { PageHeader } from '@/components/page-header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+
+type Quiz = GenerateCustomQuizOutput['quiz'];
+
+const MOCK_TEST_CONFIG = [
+  { subject: 'Biology', numQuestions: 81, time: 81 },
+  { subject: 'Chemistry', numQuestions: 45, time: 45 },
+  { subject: 'Physics', numQuestions: 36, time: 36 },
+  { subject: 'English', numQuestions: 9, time: 9 },
+  { subject: 'Logical Reasoning', numQuestions: 9, time: 9 },
+];
+
+const TOTAL_QUESTIONS = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.numQuestions, 0);
+
+export default function MdcatMockTestPage() {
+  const { user } = useAuth();
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [testState, setTestState] = useState<'idle' | 'generating' | 'taking' | 'finished'>('idle');
+  const [generatedQuiz, setGeneratedQuiz] = useState<Quiz | null>(null);
+  const [allUserAnswers, setAllUserAnswers] = useState<(string | null)[]>([]);
+  const [allQuestions, setAllQuestions] = useState<Quiz>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateSectionQuiz = async (sectionIndex: number) => {
+    if (sectionIndex >= MOCK_TEST_CONFIG.length) {
+      setTestState('finished');
+      return;
+    }
+
+    setTestState('generating');
+    setGeneratedQuiz(null);
+    const section = MOCK_TEST_CONFIG[sectionIndex];
+    
+    const quizParams: GenerateCustomQuizInput = {
+      topic: `MDCAT Mock Test - ${section.subject}`,
+      difficulty: 'master',
+      numberOfQuestions: section.numQuestions,
+      questionTypes: ['Multiple Choice'],
+      questionStyles: ['Past Paper Style', 'Conceptual'],
+      timeLimit: section.time,
+      userAge: null,
+      userClass: 'MDCAT Student',
+    };
+
+    try {
+      const result = await generateCustomQuiz(quizParams);
+      setGeneratedQuiz(result.quiz);
+      setTestState('taking');
+    } catch (err: any) {
+      setError(`Failed to generate the ${section.subject} section. The AI model may be overloaded. Please try again later.`);
+      setTestState('idle');
+    }
+  };
+
+  const handleSectionComplete = (sectionAnswers: (string | null)[]) => {
+    if (generatedQuiz) {
+        setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
+        setAllQuestions(prev => [...prev, ...generatedQuiz]);
+    }
+    const nextSectionIndex = currentSectionIndex + 1;
+    setCurrentSectionIndex(nextSectionIndex);
+    if (nextSectionIndex < MOCK_TEST_CONFIG.length) {
+        generateSectionQuiz(nextSectionIndex);
+    } else {
+        setTestState('finished');
+    }
+  };
+  
+  // Custom hook to override the default submit behavior of GenerateQuizPage
+  const useMockTestQuizSubmit = (callback: (answers: (string | null)[]) => void) => {
+    useEffect(() => {
+        // This replaces the default implementation with our callback
+        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
+        return () => {
+            delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
+        };
+    }, [callback]);
+  };
+  
+  useMockTestQuizSubmit(handleSectionComplete);
+
+
+  if (testState === 'idle') {
+    return (
+      <div>
+        <PageHeader
+          title="MDCAT Full-Length Mock Test"
+          description={`Simulate the real exam with ${TOTAL_QUESTIONS} MCQs.`}
+        />
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Test Instructions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Important!</AlertTitle>
+              <AlertDescription>
+                Generating all {TOTAL_QUESTIONS} questions at once can be slow. This mock test will be generated and taken **section by section** to ensure a smooth experience.
+              </AlertDescription>
+            </Alert>
+            <div className="mt-6 space-y-3">
+                <p>The test will proceed in the following order:</p>
+                <ul className="list-decimal list-inside text-muted-foreground">
+                    {MOCK_TEST_CONFIG.map(section => (
+                        <li key={section.subject}>{section.subject}: {section.numQuestions} MCQs</li>
+                    ))}
+                </ul>
+                 <p className="font-semibold">Your total time for all sections is 3 hours.</p>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button size="lg" onClick={() => generateSectionQuiz(0)}>
+              Start Mock Test
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  if (testState === 'generating') {
+    const section = MOCK_TEST_CONFIG[currentSectionIndex];
+    return (
+        <div className="flex flex-col items-center justify-center h-[60vh]">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-xl text-muted-foreground text-center">Generating {section.subject} Section ({section.numQuestions} MCQs)...</p>
+            <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+        </div>
+    )
+  }
+  
+  if (testState === 'taking' && generatedQuiz) {
+    const section = MOCK_TEST_CONFIG[currentSectionIndex];
+    const sectionFormValues = {
+        topic: `MDCAT Mock Test - ${section.subject}`,
+        difficulty: 'master' as const,
+        numberOfQuestions: section.numQuestions,
+        questionTypes: ['Multiple Choice'],
+        questionStyles: ['Past Paper Style'],
+        timeLimit: section.time,
+    };
+
+    return (
+        <>
+        <div className="mb-4">
+             <h2 className="text-xl font-bold text-center">Section: {section.subject}</h2>
+             <Progress value={((currentSectionIndex) / MOCK_TEST_CONFIG.length) * 100} className="mt-2" />
+        </div>
+        <GenerateQuizPage
+            key={currentSectionIndex} // Force re-mount for each section
+            initialQuiz={generatedQuiz}
+            initialFormValues={sectionFormValues}
+        />
+        </>
+    );
+  }
+
+  if (testState === 'finished') {
+     const finalQuizFormValues = {
+        topic: `MDCAT Full Mock Test Result`,
+        difficulty: 'master' as const,
+        numberOfQuestions: TOTAL_QUESTIONS,
+        questionTypes: ['Multiple Choice'],
+        questionStyles: ['Past Paper Style'],
+        timeLimit: 180,
+    };
+    
+    // We need to call the results view directly
+    // This is a bit of a hack, but it reuses the results UI from GenerateQuizPage
+    return (
+         <GenerateQuizPage 
+            initialQuiz={allQuestions} 
+            initialFormValues={finalQuizFormValues}
+         />
+    );
+  }
+
+  return null;
+}
