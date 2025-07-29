@@ -61,7 +61,7 @@ export default function LoginPage() {
     } catch (error: any) {
        let errorMessage = "An unknown error occurred.";
         if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-            errorMessage = "Invalid email or password. Please try again.";
+            errorMessage = "Invalid email or password. Please check your credentials and try again.";
         } else {
             errorMessage = error.message;
         }

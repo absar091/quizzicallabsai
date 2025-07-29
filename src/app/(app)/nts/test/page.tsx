@@ -38,6 +38,9 @@ function NtsTestFlow() {
                     topic: `${subject} - ${chapter}`,
                     numberOfQuestions: numQuestions,
                 });
+                 if (!result.quiz || result.quiz.length === 0) {
+                    throw new Error("The AI returned an empty quiz. Please try again.");
+                }
                 // The AI flow needs to be adapted for the GenerateQuizPage format
                 const formattedQuiz = result.quiz.map(q => ({
                     ...q,
@@ -114,21 +117,13 @@ function NtsTestPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
-             <PageHeader title="NTS Test Setup" description="Invalid test parameters." />
-             <Card>
-                <CardHeader>
-                    <CardTitle>Configuration Error</CardTitle>
-                    <CardDescription>Could not start the test because the category, subject or chapter was not specified correctly.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild className="mt-6 w-full" size="lg">
-                        <Link href="/nts">
-                           Back to NTS Home
-                        </Link>
-                    </Button>
-                </CardContent>
-             </Card>
+        <div className="max-w-2xl mx-auto text-center">
+             <PageHeader title="NTS Test Setup Error" description="Could not start the test because the category, subject or chapter was not specified correctly." />
+             <Button asChild>
+                 <Link href="/nts">
+                    Back to NTS Home
+                 </Link>
+             </Button>
         </div>
     )
 }

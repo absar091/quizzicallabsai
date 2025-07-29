@@ -52,10 +52,14 @@ export default function MdcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'MDCAT Student',
+      specificInstructions: `Generate questions strictly based on the MDCAT syllabus for ${section.subject}. Focus on a mix of conceptual and numerical problems typical for MDCAT entrance exams.`
     };
 
     try {
       const result = await generateCustomQuiz(quizParams);
+      if (!result.quiz || result.quiz.length === 0) {
+        throw new Error("The AI returned an empty quiz. Please try again.");
+      }
       setGeneratedQuiz(result.quiz);
       setTestState('taking');
     } catch (err: any) {
@@ -119,6 +123,7 @@ export default function MdcatMockTestPage() {
                     ))}
                 </ul>
                  <p className="font-semibold">Your total time for all sections is 3 hours.</p>
+                 {error && <p className="text-sm text-destructive mt-2">{error}</p>}
             </div>
           </CardContent>
           <CardFooter>
@@ -180,8 +185,9 @@ export default function MdcatMockTestPage() {
         specificInstructions: ''
     };
     
-    // We need to call the results view directly
-    // This is a bit of a hack, but it reuses the results UI from GenerateQuizPage
+    // We need to pass the user's answers to the results page.
+    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    
     return (
          <GenerateQuizPage 
             initialQuiz={allQuestions} 
