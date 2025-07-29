@@ -1,5 +1,5 @@
 
-# 
+# Quizzicallabs AI
 
 Welcome to **Quizzicallabs AI**, your ultimate AI-powered study partner designed to revolutionize the way students and educators approach learning and assessment. Built with cutting-edge technology, this platform provides a suite of powerful tools to generate personalized learning materials in seconds.
 
