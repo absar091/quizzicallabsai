@@ -93,6 +93,8 @@ export default function GeneratePaperPage() {
     },
   });
 
+  const watchQuestionTypes = form.watch('questionTypes');
+
   async function onSubmit(values: PaperFormValues) {
     setIsGenerating(true);
     setQuizVariants(null);
@@ -111,8 +113,10 @@ export default function GeneratePaperPage() {
                 numberOfQuestions: values.numberOfQuestions,
                 questionTypes: values.questionTypes as ("Multiple Choice" | "Descriptive")[],
                 questionStyles: ["Knowledge-based", "Conceptual", "Past Paper Style"],
+                timeLimit: values.timeLimit || values.numberOfQuestions,
                 userAge: values.age || null,
                 userClass: values.className,
+                specificInstructions: ""
             });
 
             variants.push({
@@ -510,7 +514,7 @@ export default function GeneratePaperPage() {
                   control={form.control}
                   name="includeAnswerLines"
                   render={({ field }) => (
-                    <FormItem className={cn("flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50", { 'hidden': !form.getValues('questionTypes').includes('Descriptive') })}>
+                    <FormItem className={cn("flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50", { 'hidden': !watchQuestionTypes.includes('Descriptive') })}>
                       <div className="space-y-0.5">
                         <FormLabel>Include Answer Lines</FormLabel>
                         <CardDescription className="text-xs">
@@ -535,13 +539,20 @@ export default function GeneratePaperPage() {
                   control={form.control}
                   name="layoutStyle"
                   render={({ field }) => (
-                    <FormItem className={cn("md:col-span-2", { 'hidden': !form.getValues('questionTypes').includes('Multiple Choice') })}>
+                    <FormItem className="md:col-span-2">
                       <FormLabel>Layout Style</FormLabel>
-                      <CardDescription className="text-xs mb-2">Note: The two-column layout is currently disabled for descriptive questions. All papers with descriptive questions will be generated in a single column.</CardDescription>
+                      {watchQuestionTypes.includes('Descriptive') && (
+                        <Alert variant="destructive" className="text-xs p-2 mt-1">
+                          <AlertTriangle className="h-4 w-4" />
+                          <AlertDescription>
+                            Two-column layout is disabled when "Descriptive" questions are selected to ensure proper formatting. The paper will be generated in a single column.
+                          </AlertDescription>
+                        </Alert>
+                      )}
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={watchQuestionTypes.includes('Descriptive') ? 'single-column' : field.value}
                           className="grid grid-cols-2 gap-4 pt-2"
                         >
                            <FormItem>
@@ -555,7 +566,7 @@ export default function GeneratePaperPage() {
                              </FormItem>
                              <FormItem>
                                <FormControl>
-                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled={form.getValues('questionTypes').includes('Descriptive')} />
+                                  <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled={watchQuestionTypes.includes('Descriptive')} />
                                </FormControl>
                                <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize disabled:cursor-not-allowed disabled:opacity-50">
                                   <Columns2 className="h-6 w-6 mb-2"/>

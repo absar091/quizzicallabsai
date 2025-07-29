@@ -13,6 +13,9 @@ Quizzicallabsᴬᴵ is packed with features to cater to a wide range of educatio
 -   **AI Study Guide Generator**: Need to get up to speed on a new topic? Our AI can generate a comprehensive study guide that includes a high-level summary, key concepts with definitions, simple analogies for complex ideas, and a quick self-quiz to check your knowledge.
 -   **Exam Paper Generator**: A powerful tool for educators. Create professional, print-ready exam papers with custom headers (school name, teacher, marks), multiple variants to prevent cheating, and an automatically generated answer key.
 -   **MDCAT Preparation Module**: A specialized section for students preparing for the Medical & Dental College Admission Test. This module provides high-difficulty, past-paper style tests organized by subject and chapter, simulating the real exam environment.
+-   **ECAT Preparation Module**: A dedicated section for students preparing for the Engineering College Admission Test, with subject-wise tests based on the official syllabus.
+-   **NTS Preparation Module**: A comprehensive tool for various National Testing Service (NTS) categories (e.g., NAT-IE, NAT-IM, NAT-ICS), offering syllabus-based practice.
+-   **Mock Tests**: Full-length mock tests for MDCAT, ECAT, and NTS that simulate the real exam experience by generating questions section-by-section according to the official paper patterns.
 -   **Performance Tracking**: Monitor your progress with a personalized dashboard. View graphs of your recent scores, track your mastery level by topic, and identify your strengths and weaknesses.
 -   **Bookmarks & Review**: Bookmark challenging questions during a quiz to revisit them later. The dashboard includes a dedicated review session to help you focus on areas that need improvement.
 -   **PDF Export**: Download generated quizzes, practice questions, and study guides as formatted PDFs for offline study or printing.
