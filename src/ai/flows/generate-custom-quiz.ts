@@ -28,7 +28,7 @@ const GenerateCustomQuizInputSchema = z.object({
   questionStyles: z.array(z.string()).describe('The style of questions (e.g. Conceptual, Numerical, etc).'),
   timeLimit: z.number().optional().describe('The time limit for the quiz in minutes.'),
   userAge: z.number().optional().nullable().describe("The age of the user taking the quiz."),
-  userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz."),
+  userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz (e.g., '10th Grade', 'MDCAT Student', 'ECAT Student'). This is critical for syllabus adherence."),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -97,24 +97,25 @@ const prompt = ai.definePrompt({
      *   Formulate a question that requires a written explanation or description (e.g., "Describe the process of...", "Compare and contrast...").
      *   The 'answers' and 'correctAnswer' fields for descriptive questions should be omitted or left as empty arrays/null.
 
-**4. QUESTION STYLES: {{{questionStyles}}}**
+**4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{@key}}{{#unless @last}}, {{/unless}}{{/each}}'{{/if}}**
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.**
-     *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT).
+     *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
 
-**5. TARGET AUDIENCE:**
-   - Tailor the complexity and wording for the user's context. If no details are provided, assume a general university undergraduate level.
-    {{#if userAge}}*   **Age:** {{userAge}} years old{{/if}}
-    {{#if userClass}}*   **Class/Grade:** '{{userClass}}'{{/if}}
+**5. TARGET AUDIENCE (MOST IMPORTANT FOR SYLLABUS):**
+   - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
+   {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic. Do not include questions on topics outside that syllabus. For other classes, adjust the level appropriately.{{/if}}
+   {{#if userAge}}*   **Age:** {{userAge}} years old. Use this to gauge the appropriate language complexity.{{/if}}
+   - If no specific class is provided, assume a general university undergraduate level.
 
 **6. NUMBER OF QUESTIONS: {{{numberOfQuestions}}}**
    - I repeat, you must generate exactly this number of questions. This is not a suggestion. It is a strict requirement.
 
 ---
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types.`,
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.`,
 });
 
 const generateCustomQuizFlow = ai.defineFlow(

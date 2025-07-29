@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 function EcatTestFlow() {
     const searchParams = useSearchParams();
@@ -104,23 +105,23 @@ function EcatTestFlow() {
 
 function EcatTestPage() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const subject = searchParams.get('subject');
     const topic = searchParams.get('topic');
 
-    if (subject && topic) {
-        return <EcatTestFlow />;
-    }
-
     // Handle mock test logic here in the future
     if (searchParams.has('mock-test')) {
+        router.replace('/ecat/mock-test');
          return (
-            <div className="text-center">
-                <PageHeader title="ECAT Mock Test" description="This feature is coming soon!"/>
-                <Button asChild>
-                    <Link href="/ecat">Back to ECAT Prep</Link>
-                </Button>
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-xl text-muted-foreground">Redirecting to Mock Test...</p>
             </div>
         );
+    }
+    
+    if (subject && topic) {
+        return <EcatTestFlow />;
     }
 
     return (
