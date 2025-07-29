@@ -22,6 +22,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -65,6 +66,17 @@ export function AppHeader() {
                   <Button variant="ghost" size="icon"><Menu/></Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[250px] p-0 flex flex-col">
+                  <SheetHeader className="border-b p-4">
+                    <SheetTitle>
+                      <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={() => setMobileMenuOpen(false)}>
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                          </div>
+                          <span className="text-lg">Quizzicallabs</span>
+                      </Link>
+                    </SheetTitle>
+                    <SheetDescription className="sr-only">Mobile navigation menu</SheetDescription>
+                  </SheetHeader>
                   <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
                 </SheetContent>
               </Sheet>
