@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateStudyGuide, GenerateStudyGuideOutput } from "@/ai/flows/generate-study-guide";
@@ -343,3 +343,5 @@ export default function GenerateStudyGuidePage() {
     </div>
   );
 }
+
+    
