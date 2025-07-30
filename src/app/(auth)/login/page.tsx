@@ -46,7 +46,7 @@ export default function LoginPage() {
       if (!userCredential.user.emailVerified) {
         toast({
           title: "Email Not Verified",
-          description: "Please check your email and verify your account before logging in.",
+          description: "Please check your email inbox (and spam folder) to verify your account before logging in.",
           variant: "destructive",
         });
         await auth.signOut(); // Log out the user if email is not verified
