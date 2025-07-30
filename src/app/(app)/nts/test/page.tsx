@@ -41,13 +41,7 @@ function NtsTestFlow() {
                  if (!result.quiz || result.quiz.length === 0) {
                     throw new Error("The AI returned an empty quiz. Please try again.");
                 }
-                // The AI flow needs to be adapted for the GenerateQuizPage format
-                const formattedQuiz = result.quiz.map(q => ({
-                    ...q,
-                    questionStyles: [],
-                    timeLimit: numQuestions, // 25 minutes for 25 questions
-                }));
-                setQuiz(formattedQuiz);
+                setQuiz(result.quiz);
             } catch (err: any) {
                 let errorMessage = "An unexpected error occurred while generating the test.";
                  if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
