@@ -113,17 +113,17 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.`;
 
-const flashPrompt = ai.definePrompt({
-  name: 'generateCustomQuizPromptFlash',
+const prompt15Flash = ai.definePrompt({
+  name: 'generateCustomQuizPrompt15Flash',
   model: googleAI.model('gemini-1.5-flash'),
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
   prompt: promptText,
 });
 
-const proPrompt = ai.definePrompt({
-    name: 'generateCustomQuizPromptPro',
-    model: googleAI.model('gemini-1.5-pro'),
+const prompt20Flash = ai.definePrompt({
+    name: 'generateCustomQuizPrompt20Flash',
+    model: googleAI.model('gemini-2.0-flash'),
     input: {schema: GenerateCustomQuizInputSchema},
     output: {schema: GenerateCustomQuizOutputSchema},
     prompt: promptText,
@@ -137,13 +137,13 @@ const generateCustomQuizFlow = ai.defineFlow(
   },
   async input => {
     try {
-        const {output} = await flashPrompt(input);
+        const {output} = await prompt15Flash(input);
         return output!;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-1.5-pro if flash model is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
-            const {output} = await proPrompt(input);
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
             return output!;
         }
         // Re-throw other errors
