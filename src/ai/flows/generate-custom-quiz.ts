@@ -140,9 +140,9 @@ const generateCustomQuizFlow = ai.defineFlow(
         const {output} = await flashPrompt(input);
         return output!;
     } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded'))) {
-            // Fallback to gemini-1.5-pro if flash model is overloaded
-            console.log('Gemini 1.5 Flash overloaded, falling back to Gemini 1.5 Pro.');
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-1.5-pro if flash model is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
             const {output} = await proPrompt(input);
             return output!;
         }
