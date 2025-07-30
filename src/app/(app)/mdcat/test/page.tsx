@@ -28,16 +28,18 @@ function MdcatTestFlow() {
     const questionStyles = searchParams.get('questionStyles') || 'Past Paper Style';
 
     useEffect(() => {
-        if (!topic) {
+        if (!topic || !subject) {
             setError("No topic specified for the test.");
             setIsLoading(false);
             return;
         }
+        
+        const fullTopicForAI = `MDCAT ${subject} - ${topic}`;
 
         const generateTest = async () => {
             try {
                 const result = await generateCustomQuiz({
-                    topic: topic,
+                    topic: fullTopicForAI,
                     difficulty: difficulty as any,
                     numberOfQuestions: Number(numQuestions) || 20,
                     questionTypes: ["Multiple Choice"],
@@ -45,7 +47,7 @@ function MdcatTestFlow() {
                     timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "MDCAT Student",
-                    specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}`
+                    specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
                 });
                 if (!result.quiz || result.quiz.length === 0) {
                     throw new Error("The AI returned an empty quiz. Please try again.");
@@ -68,7 +70,7 @@ function MdcatTestFlow() {
         };
 
         generateTest();
-    }, [topic, difficulty, questionStyles, toast, numQuestions]);
+    }, [topic, subject, difficulty, questionStyles, toast, numQuestions]);
 
     if (isLoading) {
         return (
