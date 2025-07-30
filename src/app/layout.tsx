@@ -1,6 +1,6 @@
 
 import type { Metadata, Viewport } from "next";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
@@ -8,9 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 
-const roboto = Roboto({ 
+const inter = Inter({ 
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
   variable: '--font-sans',
 });
 
@@ -72,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn("min-h-screen bg-background font-sans antialiased", roboto.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
