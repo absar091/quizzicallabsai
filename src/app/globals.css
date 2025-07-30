@@ -7,54 +7,45 @@
   :root {
     --background: 210 40% 98%;
     --foreground: 224 71.4% 4.1%;
-
     --card: 210 40% 98%;
     --card-foreground: 224 71.4% 4.1%;
- 
     --popover: 210 40% 98%;
     --popover-foreground: 224 71.4% 4.1%;
- 
-    --primary: 173 93% 28%;
+    --primary: 173 80% 30%;
     --primary-foreground: 173 40% 98%;
- 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
- 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
     --accent: 35 100% 50%;
     --accent-foreground: 24 9.8% 10%;
- 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 173 93% 28%;
- 
-    --radius: 0.5rem;
+    --ring: 173 80% 30%;
+    --radius: 0.75rem;
 
     /* Custom Teal Light Theme */
-    --background: 180 25% 96%; /* #E0F8F8 - very light teal */
-    --foreground: 180 25% 10%;
+    --background: 180 35% 97%; /* #f2fafa - very light teal/off-white */
+    --foreground: 180 25% 15%;
     --card: 180 25% 100%;
     --card-foreground: 180 25% 10%;
     --popover: 180 25% 100%;
     --popover-foreground: 180 25% 10%;
-    --primary: 175 94% 23%; /* #008080 - Deep Teal */
+    --primary: 173 85% 28%; /* #0d9488 - Deep Teal */
     --primary-foreground: 180 25% 98%;
-    --secondary: 180 25% 90%;
-    --secondary-foreground: 180 25% 10%;
-    --muted: 180 25% 90%;
-    --muted-foreground: 180 15% 40%;
-    --accent: 38 92% 50%; /* #FFA500 - Vibrant Orange */
-    --accent-foreground: 24 9.8% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 175 40% 90%;
+    --secondary-foreground: 175 25% 10%;
+    --muted: 175 40% 94%;
+    --muted-foreground: 180 15% 45%;
+    --accent: 198 89% 48%; /* #0ea5e9 - Sky Blue */
+    --accent-foreground: 198 100% 98%;
+    --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 180 20% 88%;
-    --input: 180 20% 88%;
-    --ring: 175 94% 23%;
+    --border: 180 20% 90%;
+    --input: 180 20% 92%;
+    --ring: 198 89% 48%;
 
     --chart-1: 175 76% 41%;
     --chart-2: 38 88% 59%;
@@ -62,25 +53,25 @@
  
   .dark {
     /* Custom Teal Dark Theme */
-    --background: 180 15% 5%;
+    --background: 180 15% 8%;
     --foreground: 180 10% 95%;
-    --card: 180 15% 8%;
+    --card: 180 15% 12%;
     --card-foreground: 180 10% 95%;
-    --popover: 180 15% 8%;
+    --popover: 180 15% 10%;
     --popover-foreground: 180 10% 95%;
-    --primary: 175 80% 60%; /* Brighter teal for dark mode */
+    --primary: 173 80% 60%; /* Brighter teal for dark mode */
     --primary-foreground: 180 25% 5%;
-    --secondary: 180 15% 12%;
+    --secondary: 180 15% 18%;
     --secondary-foreground: 180 10% 95%;
-    --muted: 180 15% 12%;
+    --muted: 180 15% 18%;
     --muted-foreground: 180 10% 65%;
-    --accent: 38 100% 60%; /* Brighter orange for dark mode */
+    --accent: 198 80% 60%; /* Brighter Sky Blue */
     --accent-foreground: 24 9.8% 10%;
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 180 15% 15%;
-    --input: 180 15% 15%;
-    --ring: 175 80% 60%;
+    --border: 180 15% 20%;
+    --input: 180 15% 22%;
+    --ring: 198 80% 60%;
 
     --chart-1: 175 70% 55%;
     --chart-2: 38 80% 65%;
@@ -96,5 +87,3 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
-
-    

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { BrainCircuit, Menu, HelpCircle, Sun, Moon, User, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,21 +33,36 @@ import { Badge } from "./ui/badge";
 
 const publicNavItems = [
   { href: "#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/how-to-use", label: "Guides" },
 ];
 
 const appNavItems = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/generate-quiz", label: "Custom Quiz" },
     { href: "/generate-questions", label: "Practice" },
-    { href: "/generate-from-document", label: "From Document" },
-    { href: "/generate-study-guide", label: "Study Guide" },
-    { href: "/generate-paper", label: "Paper Generator" },
-    { href: "/mdcat", label: "MDCAT Prep" },
-    { href: "/ecat", label: "ECAT Prep" },
-    { href: "/nts", label: "NTS Prep" },
+    { href: "/mdcat", label: "MDCAT" },
+    { href: "/ecat", label: "ECAT" },
+    { href: "/nts", label: "NTS" },
 ]
+
+function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
+    const isActive = currentPath.startsWith(href);
+    return (
+        <Link
+            href={href}
+            className="relative px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        >
+            {label}
+            {isActive && (
+                <motion.div
+                    layoutId="active-nav-link"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                />
+            )}
+        </Link>
+    );
+}
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -59,14 +74,14 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="flex items-center gap-2 md:gap-6">
+        <div className="flex items-center gap-2 md:gap-4">
           {user && (
              <div className="md:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon"><Menu/></Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[250px] p-0 flex flex-col">
+                <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
                   <SheetHeader className="border-b p-4">
                     <SheetTitle>
                       <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={() => setMobileMenuOpen(false)}>
@@ -76,7 +91,6 @@ export function AppHeader() {
                           <span className="text-lg">Quizzicallabs</span>
                       </Link>
                     </SheetTitle>
-                    <SheetDescription className="sr-only">Mobile navigation menu. Provides access to all app sections like dashboard, quiz generators, and exam preparation modules.</SheetDescription>
                   </SheetHeader>
                   <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
                 </SheetContent>
@@ -86,42 +100,34 @@ export function AppHeader() {
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <motion.div
               className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
+              whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               <BrainCircuit className="h-5 w-5 text-primary-foreground" />
             </motion.div>
             <span className="text-lg font-bold sm:inline-block">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
-            <Badge variant="secondary">Beta</Badge>
           </Link>
-          
         </div>
         
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
-            {user && (
-                 <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
-                     {appNavItems.map((item) => (
-                        <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                            "transition-colors hover:text-foreground/80 text-foreground/60",
-                             pathname.startsWith(item.href) && "text-foreground"
-                        )}
-                        >
-                        {item.label}
-                        </Link>
-                    ))}
-                </nav>
-            )}
+            <AnimatePresence>
+                {user && (
+                     <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
+                         {appNavItems.map((item) => (
+                            <NavLink key={item.href} href={item.href} label={item.label} currentPath={pathname} />
+                        ))}
+                    </nav>
+                )}
+            </AnimatePresence>
 
             {isHomePage && (
-              <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+              <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
                  {publicNavItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="transition-colors hover:text-foreground/80 text-foreground/60"
+                      className="transition-colors hover:text-primary text-muted-foreground"
                     >
                       {item.label}
                     </Link>
@@ -129,13 +135,7 @@ export function AppHeader() {
               </nav>
             )}
 
-            <div className="flex items-center gap-2">
-                <Button asChild variant="ghost" size="icon">
-                <Link href="/how-to-use">
-                    <HelpCircle className="h-5 w-5" />
-                    <span className="sr-only">How to use</span>
-                </Link>
-                </Button>
+            <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
                     <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -146,8 +146,8 @@ export function AppHeader() {
                    <div className="hidden md:flex">
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-9 w-9">
+                        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                        <Avatar className="h-10 w-10">
                             <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         </Button>
