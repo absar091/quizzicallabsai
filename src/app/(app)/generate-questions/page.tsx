@@ -108,8 +108,8 @@ export default function GenerateQuestionsPage() {
         doc.text(questionText, 15, y);
         y += (questionText.length * 5) + 5;
 
-        doc.setFont('helvetica', 'normal');
         if (q.options) {
+            doc.setFont('helvetica', 'normal');
             q.options.forEach((opt, i) => {
                 const optionText = doc.splitTextToSize(`(${String.fromCharCode(97 + i)}) ${opt}`, 170);
                 doc.text(optionText, 20, y);
@@ -358,5 +358,3 @@ export default function GenerateQuestionsPage() {
     </>
   );
 }
-
-    
