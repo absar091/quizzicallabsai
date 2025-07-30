@@ -93,7 +93,7 @@ export function Footer() {
                          <p className="text-sm text-muted-foreground mb-4">Enjoying the app? Share it with friends or give us feedback!</p>
                          <div className="flex flex-wrap gap-3 items-center">
                             <Button onClick={handleNativeShare} variant="outline"><Share2 className="mr-2 h-4 w-4"/> Share</Button>
-                            <Button asChild><a href="https://wa.me/923297642797" target="_blank" rel="noopener noreferrer"><Heart className="mr-2 h-4 w-4"/> Feedback</a></Button>
+                            <Button asChild><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><Heart className="mr-2 h-4 w-4"/> Feedback</a></Button>
                          </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export function Footer() {
                         <a href="mailto:Ahmadraoabsar@gmail.com" className="text-muted-foreground hover:text-primary" title="Email">
                             <Mail className="h-5 w-5" /> 
                         </a>
-                        <a href="https://wa.me/923297642797" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" title="WhatsApp">
+                        <a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" title="WhatsApp">
                             <Phone className="h-5 w-5" />
                         </a>
                         <a href="https://www.tiktok.com/@absarahmadrao?_t=ZN-8yQ5Of16dXy&_r=1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary" title="TikTok">
