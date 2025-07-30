@@ -5,17 +5,17 @@
 
 @layer base {
   :root {
-    --background: 168 25% 97%;
+    --background: 210 40% 98%;
     --foreground: 224 71.4% 4.1%;
 
-    --card: 168 25% 97%;
+    --card: 210 40% 98%;
     --card-foreground: 224 71.4% 4.1%;
  
-    --popover: 168 25% 97%;
+    --popover: 210 40% 98%;
     --popover-foreground: 224 71.4% 4.1%;
  
-    --primary: 175 84% 33%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 173 93% 28%;
+    --primary-foreground: 173 40% 98%;
  
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -23,53 +23,67 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
  
-    --accent: 212 92% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 35 100% 50%;
+    --accent-foreground: 24 9.8% 10%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 175 84% 33%;
+    --ring: 173 93% 28%;
  
     --radius: 0.5rem;
 
+    /* Custom Teal Light Theme */
+    --background: 180 25% 96%; /* #E0F8F8 - very light teal */
+    --foreground: 180 25% 10%;
+    --card: 180 25% 100%;
+    --card-foreground: 180 25% 10%;
+    --popover: 180 25% 100%;
+    --popover-foreground: 180 25% 10%;
+    --primary: 175 94% 23%; /* #008080 - Deep Teal */
+    --primary-foreground: 180 25% 98%;
+    --secondary: 180 25% 90%;
+    --secondary-foreground: 180 25% 10%;
+    --muted: 180 25% 90%;
+    --muted-foreground: 180 15% 40%;
+    --accent: 38 92% 50%; /* #FFA500 - Vibrant Orange */
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 180 20% 88%;
+    --input: 180 20% 88%;
+    --ring: 175 94% 23%;
+
     --chart-1: 175 76% 41%;
-    --chart-2: 212 88% 59%;
+    --chart-2: 38 88% 59%;
   }
  
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 40% 98%;
- 
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 175 75% 48%;
-    --primary-foreground: 224 71.4% 4.1%;
- 
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 215 28% 17%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 212 92% 60%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 175 75% 48%;
+    /* Custom Teal Dark Theme */
+    --background: 180 15% 5%;
+    --foreground: 180 10% 95%;
+    --card: 180 15% 8%;
+    --card-foreground: 180 10% 95%;
+    --popover: 180 15% 8%;
+    --popover-foreground: 180 10% 95%;
+    --primary: 175 80% 60%; /* Brighter teal for dark mode */
+    --primary-foreground: 180 25% 5%;
+    --secondary: 180 15% 12%;
+    --secondary-foreground: 180 10% 95%;
+    --muted: 180 15% 12%;
+    --muted-foreground: 180 10% 65%;
+    --accent: 38 100% 60%; /* Brighter orange for dark mode */
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 180 15% 15%;
+    --input: 180 15% 15%;
+    --ring: 175 80% 60%;
 
-    --chart-1: 175 70% 45%;
-    --chart-2: 212 80% 65%;
+    --chart-1: 175 70% 55%;
+    --chart-2: 38 80% 65%;
   }
 }
  
@@ -82,3 +96,5 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+    
