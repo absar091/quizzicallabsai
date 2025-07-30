@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -206,7 +207,7 @@ export default function GenerateQuestionsPage() {
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a question type" />
-                            </SelectTrigger>
+                            </Trigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="multiple choice">Multiple Choice</SelectItem>
