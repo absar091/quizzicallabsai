@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -570,8 +571,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
     return (
       <FormProvider {...formMethods}>
-        <div className="flex flex-col items-center p-4 md:py-12 overflow-x-hidden">
-          <div className="relative w-full max-w-2xl h-full flex items-center justify-center">
+        <div className="flex flex-col items-center py-4 md:py-12 overflow-x-hidden">
+          <div className="w-full max-w-2xl min-h-[550px] flex items-center justify-center">
               <AnimatePresence initial={false} custom={direction}>
                   <motion.div
                       key={currentQuestion}
@@ -584,7 +585,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                           x: { type: "spring", stiffness: 300, damping: 30 },
                           opacity: { duration: 0.2 },
                       }}
-                      className="absolute w-full"
+                      className="w-full"
                   >
                       <Card className="w-full flex flex-col shadow-2xl overflow-hidden">
                           <CardHeader className="p-6 space-y-4">
@@ -608,10 +609,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                           </CardHeader>
 
                           <CardContent className="p-6 flex-grow flex flex-col justify-center gap-6">
-                            <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed">
+                            <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
                                 {currentQ.question}
                             </p>
-                            <div>
+                            <div className="w-full max-w-md mx-auto">
                               {currentQ.type === 'descriptive' ? (
                                   <Textarea
                                       value={userAnswers[currentQuestion] || ""}
@@ -1062,3 +1063,5 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
