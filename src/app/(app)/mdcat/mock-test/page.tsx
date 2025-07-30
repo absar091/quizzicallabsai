@@ -11,15 +11,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
+import { mdcatSyllabus } from '@/lib/mdcat-syllabus';
 
 type Quiz = GenerateCustomQuizOutput['quiz'];
 
 const MOCK_TEST_CONFIG = [
-  { subject: 'Biology', numQuestions: 81, time: 81 },
-  { subject: 'Chemistry', numQuestions: 45, time: 45 },
-  { subject: 'Physics', numQuestions: 36, time: 36 },
-  { subject: 'English', numQuestions: 9, time: 9 },
-  { subject: 'Logical Reasoning', numQuestions: 9, time: 9 },
+  { subject: 'Biology', numQuestions: 81, time: 81, slug: 'biology' },
+  { subject: 'Chemistry', numQuestions: 45, time: 45, slug: 'chemistry' },
+  { subject: 'Physics', numQuestions: 36, time: 36, slug: 'physics' },
+  { subject: 'English', numQuestions: 9, time: 9, slug: 'english' },
+  { subject: 'Logical Reasoning', numQuestions: 9, time: 9, slug: 'logical-reasoning' },
 ];
 
 const TOTAL_QUESTIONS = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.numQuestions, 0);
@@ -43,8 +44,14 @@ export default function MdcatMockTestPage() {
     setGeneratedQuiz(null);
     const section = MOCK_TEST_CONFIG[sectionIndex];
     
+    // Generate a detailed topic from the syllabus to guide the AI
+    const subjectData = mdcatSyllabus[section.slug];
+    const detailedTopic = subjectData
+      ? `MDCAT ${section.subject} covering these chapters: ${subjectData.chapters.map(c => c.name).join(', ')}`
+      : `MDCAT Mock Test - ${section.subject}`;
+
     const quizParams: GenerateCustomQuizInput = {
-      topic: `MDCAT Mock Test - ${section.subject}`,
+      topic: detailedTopic,
       difficulty: 'master',
       numberOfQuestions: section.numQuestions,
       questionTypes: ['Multiple Choice'],
@@ -52,7 +59,7 @@ export default function MdcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'MDCAT Student',
-      specificInstructions: `Generate questions strictly based on the MDCAT syllabus for ${section.subject}. Focus on a mix of conceptual and numerical problems typical for MDCAT entrance exams.`
+      specificInstructions: `Generate questions strictly based on the official MDCAT syllabus for ${section.subject}. Ensure a good mix of questions from all chapters.`
     };
 
     try {

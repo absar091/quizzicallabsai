@@ -61,7 +61,11 @@ export default function NtsMockTestPage() {
 
     if (section.name === 'Subject Portion') {
       const categoryData = ntsSyllabus[selectedCategory];
-      topicForAI = categoryData.subjects.map(s => s.name).join(', ');
+      const subjectTopics = categoryData.subjects.map(s => {
+          const chapterNames = s.chapters.map(c => c.name).join(', ');
+          return `${s.name} (Chapters: ${chapterNames})`;
+      }).join('; ');
+      topicForAI = `NTS Subject Portion for ${categoryData.name} covering: ${subjectTopics}`;
     }
 
     try {
