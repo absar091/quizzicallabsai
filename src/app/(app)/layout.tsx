@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { BrainCircuit } from "lucide-react";
 import NotificationHandler from "@/components/notification-handler";
+import { SplashScreen } from "@/components/splash-screen";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -20,25 +22,28 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background flex-col gap-4">
-        <BrainCircuit className="h-12 w-12 text-primary animate-pulse" />
-        <p className="text-muted-foreground">Loading your experience...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen flex-col">
-        <NotificationHandler />
-        <AppHeader />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 container">
-          {children}
-        </main>
-        <Footer />
-    </div>
+    <AnimatePresence mode="wait">
+      {loading || !user ? (
+        <motion.div key="splash">
+          <SplashScreen />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="app"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex min-h-screen flex-col"
+        >
+          <NotificationHandler />
+          <AppHeader />
+          <main className="flex-1 p-4 md:p-6 lg:p-8 container">
+            {children}
+          </main>
+          <Footer />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
-
-    
