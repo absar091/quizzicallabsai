@@ -29,28 +29,26 @@ export default function EcatPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.map(subject => (
-            <Card key={subject.name} className="flex flex-col">
+            <Card key={subject.name} className="flex flex-col group hover:border-primary/50 transition-all duration-300">
                 <CardHeader>
                     <CardTitle>{subject.name}</CardTitle>
                     <CardDescription>{subject.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="mt-auto">
                     <Button asChild>
-                        <Link href={subject.href}>Start Practice <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                        <Link href={subject.href}>Start Practice <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
                     </Button>
                 </CardContent>
             </Card>
         ))}
-        <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-primary text-primary-foreground">
-            <CardHeader>
-                <CardTitle>Full-Length Mock Test</CardTitle>
-                <CardDescription className="text-primary-foreground/80">Simulate the real ECAT experience (100 MCQs) with our full-length mock test.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <Button asChild variant="secondary">
-                    <Link href="/ecat/mock-test">Start Mock Test <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                 </Button>
-            </CardContent>
+        <Card className="col-span-1 md:col-span-2 lg:col-span-3 bg-primary text-primary-foreground flex flex-col md:flex-row items-center justify-between p-6">
+            <div className="mb-4 md:mb-0">
+                <CardTitle className="text-2xl">Full-Length Mock Test</CardTitle>
+                <CardDescription className="text-primary-foreground/80 mt-2">Simulate the real ECAT experience (100 MCQs) with our full-length mock test.</CardDescription>
+            </div>
+            <Button asChild variant="secondary" size="lg">
+                <Link href="/ecat/mock-test">Start Mock Test <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
         </Card>
       </div>
     </div>
