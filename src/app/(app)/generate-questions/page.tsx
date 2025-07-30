@@ -123,14 +123,13 @@ export default function GenerateQuestionsPage() {
         doc.text(answerText, 15, y);
         y += (answerText.length * 5);
         
-        doc.setFont('helvetica', 'normal');
         doc.setFont('helvetica', 'italic');
         const explanationText = doc.splitTextToSize(`Explanation: ${q.explanation}`, 180);
         doc.text(explanationText, 15, y);
         y += (explanationText.length * 5) + 10;
     });
 
-    doc.save(`${form.getValues('subject')}_practice_questions.pdf`);
+    doc.save(`${form.getValues('subject').replace(/\s+/g, '_')}_practice_questions.pdf`);
   };
 
   return (
@@ -359,3 +358,5 @@ export default function GenerateQuestionsPage() {
     </>
   );
 }
+
+    
