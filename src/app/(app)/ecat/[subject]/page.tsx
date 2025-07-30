@@ -6,18 +6,17 @@ import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText } from "lucid
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { ecatSyllabus } from "@/lib/ecat-syllabus";
-import { use } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 
 type SubjectPageProps = {
-  params: Promise<{
+  params: {
     subject: string;
-  }>;
+  };
 };
 
 export default function EcatSubjectPage({ params }: SubjectPageProps) {
-  const { subject: subjectKey } = use(params);
+  const { subject: subjectKey } = params;
   const subject = ecatSyllabus[subjectKey];
 
   if (!subject) {
