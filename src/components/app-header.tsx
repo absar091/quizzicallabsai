@@ -43,6 +43,8 @@ const appNavItems = [
     { href: "/mdcat", label: "MDCAT" },
     { href: "/ecat", label: "ECAT" },
     { href: "/nts", label: "NTS" },
+    { href: "/generate-study-guide", label: "Study Guide" },
+    { href: "/generate-paper", label: "Generate Paper" },
 ]
 
 function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
@@ -141,7 +143,12 @@ export function AppHeader() {
                     <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
-
+                 <Link href="/how-to-use" className="hidden md:inline-flex">
+                    <Button variant="ghost" size="icon">
+                        <HelpCircle className="h-5 w-5" />
+                        <span className="sr-only">Help and Guides</span>
+                    </Button>
+                </Link>
                 {user ? (
                    <div className="hidden md:flex">
                     <DropdownMenu>
