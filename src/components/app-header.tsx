@@ -46,7 +46,7 @@ const appNavItems = [
 ]
 
 function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
-    const isActive = currentPath.startsWith(href);
+    const isActive = currentPath === href || (href !== '/' && href !== '/dashboard' && pathname.startsWith(href));
     return (
         <Link
             href={href}
@@ -166,6 +166,12 @@ export function AppHeader() {
                         <Link href="/profile">
                             <User className="mr-2 h-4 w-4" />
                             <span>Profile</span>
+                        </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                        <Link href="/how-to-use">
+                            <HelpCircle className="mr-2 h-4 w-4" />
+                            <span>How to Use</span>
                         </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />

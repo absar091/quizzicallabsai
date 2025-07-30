@@ -14,6 +14,7 @@ import {
   BotMessageSquare,
   BookOpen,
   ClipboardSignature,
+  HelpCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,11 @@ const examPrep = [
     { href: "/mdcat", label: "MDCAT Prep", icon: GraduationCap },
     { href: "/ecat", label: "ECAT Prep", icon: GraduationCap },
     { href: "/nts", label: "NTS Prep", icon: GraduationCap },
+]
+
+const supportLinks = [
+    { href: "/how-to-use", label: "How to Use", icon: HelpCircle },
+    { href: "/profile", label: "Profile", icon: User },
 ]
 
 type MainSidebarProps = {
@@ -91,9 +97,8 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
       </div>
       <div className="mt-auto p-4 border-t">
         <nav className="flex flex-col gap-1">
-          <Link href="/profile" onClick={onNavigate} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-sm", pathname === "/profile" && "bg-muted text-primary")}>
-            <User className="h-4 w-4" /> Profile
-          </Link>
+          {supportLinks.map(item => <NavLink key={item.href} {...item} />)}
+          
           <AlertDialog>
               <AlertDialogTrigger asChild>
                   <Button variant="ghost" className="justify-start px-3 py-2 text-muted-foreground text-sm font-normal">
