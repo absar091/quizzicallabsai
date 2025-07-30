@@ -33,15 +33,25 @@ function NtsTestFlow() {
 
         const generateTest = async () => {
             try {
+                // Construct a more detailed topic for the AI
+                const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
+                
                 const result = await generateNtsQuiz({
                     category: category,
-                    topic: `${subject} - ${chapter}`,
+                    topic: topicForAI,
                     numberOfQuestions: numQuestions,
                 });
                  if (!result.quiz || result.quiz.length === 0) {
                     throw new Error("The AI returned an empty quiz. Please try again.");
                 }
-                setQuiz(result.quiz);
+                
+                const formattedQuiz = result.quiz.map(q => ({
+                    ...q,
+                    timeLimit: numQuestions,
+                    questionStyles: [],
+                }));
+
+                setQuiz(formattedQuiz);
             } catch (err: any) {
                 let errorMessage = "An unexpected error occurred while generating the test.";
                  if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
