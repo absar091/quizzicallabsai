@@ -3,6 +3,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from 'next/dynamic';
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, ClipboardSignature, FileText } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +11,12 @@ import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { motion } from "framer-motion";
+
+const motion = {
+  div: dynamic(() => import('framer-motion').then(mod => mod.motion.div)),
+  h1: dynamic(() => import('framer-motion').then(mod => mod.motion.h1)),
+  p: dynamic(() => import('framer-motion').then(mod => mod.motion.p)),
+};
 
 const features = [
   {
