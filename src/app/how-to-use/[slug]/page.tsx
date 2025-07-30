@@ -191,7 +191,7 @@ const guideData: Record<string, GuideContent> = {
                     <AlertDescription>
                        The best way to contact us is via WhatsApp for the quickest response.
                        <div className="mt-4 space-y-2 font-semibold">
-                            <p>WhatsApp Support: <a href="https://wa.me/923297642797" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+92 329 7642797</a></p>
+                            <p>WhatsApp Support: <a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+92 326 1536764</a></p>
                             <p>Email: <a href="mailto:Ahmadraoabsar@gmail.com" className="text-primary hover:underline">Ahmadraoabsar@gmail.com</a></p>
                        </div>
                     </AlertDescription>
