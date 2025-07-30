@@ -39,12 +39,7 @@ export async function generateNtsQuiz(
   return generateNtsQuizFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateNtsQuizPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateNtsQuizInputSchema},
-  output: {schema: GenerateNtsQuizOutputSchema},
-  prompt: `You are an expert AI for creating NTS (National Testing Service) and NAT (National Aptitude Test) questions for Pakistani students. You MUST generate high-quality, multiple-choice questions that are relevant to the specified category and topic.
+const promptText = `You are an expert AI for creating NTS (National Testing Service) and NAT (National Aptitude Test) questions for Pakistani students. You MUST generate high-quality, multiple-choice questions that are relevant to the specified category and topic.
 
 **CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
 
@@ -84,8 +79,24 @@ const prompt = ai.definePrompt({
     *   The questions must be based on the Pakistani FSc/ICS curriculum for that subject.
     *   The difficulty should be appropriate for a university admission test.
 
-Generate the quiz now. Your output must be a valid JSON object with exactly {{{numberOfQuestions}}} questions.`,
+Generate the quiz now. Your output must be a valid JSON object with exactly {{{numberOfQuestions}}} questions.`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateNtsQuizPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateNtsQuizInputSchema},
+  output: {schema: GenerateNtsQuizOutputSchema},
+  prompt: promptText,
 });
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateNtsQuizPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateNtsQuizInputSchema},
+  output: {schema: GenerateNtsQuizOutputSchema},
+  prompt: promptText,
+});
+
 
 const generateNtsQuizFlow = ai.defineFlow(
   {
@@ -94,7 +105,18 @@ const generateNtsQuizFlow = ai.defineFlow(
     outputSchema: GenerateNtsQuizOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );

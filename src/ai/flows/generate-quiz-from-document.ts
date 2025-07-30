@@ -41,16 +41,7 @@ export async function generateQuizFromDocument(
   return generateQuizFromDocumentFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateQuizFromDocumentPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateQuizFromDocumentInputSchema},
-  output: {
-    schema: z.object({
-        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
-    })
-  },
-  prompt: `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document.
+const promptText = `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document.
 
   **Critical Instructions - Follow these rules without exception:**
   1.  **STRICTLY ADHERE TO THE DOCUMENT:** You MUST generate exactly {{{quizLength}}} questions and answers using ONLY the information found in the following document: {{media url=documentDataUri}}.
@@ -63,7 +54,30 @@ const prompt = ai.definePrompt({
       *   "answers": An array of exactly 4 possible answers.
       *   "correctAnswerIndex": The index (0-3) of the single correct answer in the "answers" array. This must be an integer.
 
-  Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{quizLength}}} questions.`,
+  Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{quizLength}}} questions.`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateQuizFromDocumentPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateQuizFromDocumentInputSchema},
+  output: {
+    schema: z.object({
+        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
+    })
+  },
+  prompt: promptText,
+});
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateQuizFromDocumentPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateQuizFromDocumentInputSchema},
+  output: {
+    schema: z.object({
+        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
+    })
+  },
+  prompt: promptText,
 });
 
 const generateQuizFromDocumentFlow = ai.defineFlow(
@@ -73,7 +87,18 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
     outputSchema: GenerateQuizFromDocumentOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return { quiz: output!.quiz };
+    try {
+        const {output} = await prompt15Flash(input);
+        return { quiz: output!.quiz };
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return { quiz: output!.quiz };
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );

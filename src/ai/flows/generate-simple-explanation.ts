@@ -31,12 +31,7 @@ export async function generateSimpleExplanation(
   return generateSimpleExplanationFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateSimpleExplanationPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateSimpleExplanationInputSchema},
-  output: {schema: GenerateSimpleExplanationOutputSchema},
-  prompt: `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
+const promptText = `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
 
   Explain the following concept like I'm 5 years old. Use simple words, short sentences, and a real-world analogy if possible.
 
@@ -44,8 +39,25 @@ const prompt = ai.definePrompt({
   The question was: "{{question}}"
   The correct answer is: "{{correctAnswer}}"
 
-  Focus on explaining why the correct answer is right in the simplest terms possible.`,
+  Focus on explaining why the correct answer is right in the simplest terms possible.`;
+
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateSimpleExplanationPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateSimpleExplanationInputSchema},
+  output: {schema: GenerateSimpleExplanationOutputSchema},
+  prompt: promptText,
 });
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateSimpleExplanationPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateSimpleExplanationInputSchema},
+  output: {schema: GenerateSimpleExplanationOutputSchema},
+  prompt: promptText,
+});
+
 
 const generateSimpleExplanationFlow = ai.defineFlow(
   {
@@ -54,7 +66,18 @@ const generateSimpleExplanationFlow = ai.defineFlow(
     outputSchema: GenerateSimpleExplanationOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );

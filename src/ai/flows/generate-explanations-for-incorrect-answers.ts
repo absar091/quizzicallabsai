@@ -32,12 +32,7 @@ export async function generateExplanationsForIncorrectAnswers(
   return generateExplanationsFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateExplanationsPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateExplanationsInputSchema},
-  output: {schema: GenerateExplanationsOutputSchema},
-  prompt: `You are an AI assistant that provides clear and concise explanations for quiz questions.
+const promptText = `You are an AI assistant that provides clear and concise explanations for quiz questions.
 
   Here is the question:
   {{question}}
@@ -50,7 +45,22 @@ const prompt = ai.definePrompt({
 
   Topic: {{topic}}
 
-  Provide a detailed explanation of why the correct answer is correct, and where the student went wrong in their thinking.  Focus on the specific topic at hand.`,
+  Provide a detailed explanation of why the correct answer is correct, and where the student went wrong in their thinking.  Focus on the specific topic at hand.`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateExplanationsPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateExplanationsInputSchema},
+  output: {schema: GenerateExplanationsOutputSchema},
+  prompt: promptText,
+});
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateExplanationsPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateExplanationsInputSchema},
+  output: {schema: GenerateExplanationsOutputSchema},
+  prompt: promptText,
 });
 
 const generateExplanationsFlow = ai.defineFlow(
@@ -60,7 +70,18 @@ const generateExplanationsFlow = ai.defineFlow(
     outputSchema: GenerateExplanationsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );

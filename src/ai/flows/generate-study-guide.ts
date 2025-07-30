@@ -51,12 +51,7 @@ export async function generateStudyGuide(
   return generateStudyGuideFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateStudyGuidePrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateStudyGuideInputSchema},
-  output: {schema: GenerateStudyGuideOutputSchema},
-  prompt: `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
+const promptText = `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
 
   The study guide MUST be personalized based on the user's learning preferences and difficulties.
 
@@ -74,7 +69,22 @@ const prompt = ai.definePrompt({
       {{#if learningStyle}}*   **User's Learning Style:** '{{{learningStyle}}}'. Adapt the entire study guide to this style. For example, if the user is a 'visual' learner, describe diagrams or use visual metaphors. If they prefer 'analogies', make sure the analogies are prominent and clear.{{/if}}
   5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
 
-  Generate the personalized study guide now.`,
+  Generate the personalized study guide now.`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateStudyGuidePrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateStudyGuideInputSchema},
+  output: {schema: GenerateStudyGuideOutputSchema},
+  prompt: promptText,
+});
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateStudyGuidePrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateStudyGuideInputSchema},
+  output: {schema: GenerateStudyGuideOutputSchema},
+  prompt: promptText,
 });
 
 const generateStudyGuideFlow = ai.defineFlow(
@@ -84,7 +94,18 @@ const generateStudyGuideFlow = ai.defineFlow(
     outputSchema: GenerateStudyGuideOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );
