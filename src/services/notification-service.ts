@@ -3,29 +3,47 @@
 
 import * as admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
+import { serviceAccountKey } from './serviceAccountKey-temp';
 
-// Initialize Firebase Admin SDK only if the necessary credentials are provided
-// This prevents build errors when environment variables or serviceAccountKey.json are not populated.
-if (!admin.apps.length) {
-    const hasEnvVars = process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY;
+// This function safely initializes the Firebase Admin SDK.
+function initializeFirebaseAdmin() {
+  // Prevent re-initialization
+  if (admin.apps.length > 0) {
+    return;
+  }
 
+  // Use environment variables in production, which is the standard for Vercel/Firebase App Hosting
+  if (process.env.NODE_ENV === 'production' && process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
     try {
-        if (hasEnvVars) {
-            const serviceAccount = {
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-            };
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
-            });
-        } else {
-             console.warn("Firebase Admin credentials are not fully available. Skipping Admin SDK initialization.");
-        }
-    } catch (error) {
-        console.error("Firebase Admin initialization failed:", error);
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+      console.log('Firebase Admin SDK initialized using environment variable.');
+      return;
+    } catch (e) {
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:', e);
     }
+  }
+
+  // Fallback for local development using the temporary service account key file
+  // This check ensures we don't try to use placeholder credentials and crash.
+  if (serviceAccountKey.project_id && serviceAccountKey.project_id !== 'your-project-id') {
+     try {
+       admin.initializeApp({
+         credential: admin.credential.cert(serviceAccountKey as admin.ServiceAccount),
+       });
+       console.log('Firebase Admin SDK initialized using local service account file.');
+     } catch (e) {
+        console.error('Error initializing Firebase Admin with local key file:', e);
+     }
+  } else {
+    console.warn('Firebase Admin SDK not initialized. Push notifications will not work. Please provide service account credentials.');
+  }
 }
+
+// Initialize the SDK
+initializeFirebaseAdmin();
 
 
 const db = admin.apps.length ? getFirestore() : null;
