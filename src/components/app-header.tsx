@@ -81,14 +81,14 @@ export function AppHeader() {
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon"><Menu/></Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
+                <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
                   <SheetHeader className="border-b p-4">
                     <SheetTitle>
                       <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
+                              <BrainCircuit className="h-6 w-6 text-primary-foreground" />
                           </div>
-                          <span className="text-lg">Quizzicallabs</span>
+                          <span className="text-xl">Quizzicallabs</span>
                       </Link>
                     </SheetTitle>
                   </SheetHeader>
