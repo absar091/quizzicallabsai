@@ -70,10 +70,10 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
           href={href} 
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-            isActive && "bg-muted text-primary"
+            "flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:text-primary",
+            isActive && "bg-primary/10 text-primary font-semibold"
       )}>
-        <Icon className="h-4 w-4" />
+        <Icon className="h-5 w-5" />
         {label}
       </Link>
     )
@@ -84,26 +84,26 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
   return (
     <>
        <div className="flex-1 overflow-auto py-2">
-        <nav className="grid items-start px-4 text-sm font-medium">
-          <h3 className="px-3 py-2 text-xs font-semibold text-muted-foreground/70">Main</h3>
+        <nav className="grid items-start px-4 text-base font-medium">
+          <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground/70 tracking-wider">Main</h3>
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
           
-          <h3 className="px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground/70">Generation Tools</h3>
+          <h3 className="px-4 py-2 mt-4 text-sm font-semibold text-muted-foreground/70 tracking-wider">Generation Tools</h3>
           {generationTools.map(item => <NavLink key={item.href} {...item} />)}
 
-          <h3 className="px-3 py-2 mt-4 text-xs font-semibold text-muted-foreground/70">Exam Prep</h3>
+          <h3 className="px-4 py-2 mt-4 text-sm font-semibold text-muted-foreground/70 tracking-wider">Exam Prep</h3>
           {examPrep.map(item => <NavLink key={item.href} {...item} />)}
         </nav>
       </div>
       <div className="mt-auto p-4 border-t">
-        <nav className="flex flex-col gap-1">
+        <nav className="grid items-start px-4 text-base font-medium">
           {supportLinks.map(item => <NavLink key={item.href} {...item} />)}
           
           <AlertDialog>
               <AlertDialogTrigger asChild>
-                  <Button variant="ghost" className="justify-start px-3 py-2 text-muted-foreground text-sm font-normal">
-                      <LogOut className="h-4 w-4 mr-3" /> Logout
-                  </Button>
+                  <button className="flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:text-primary text-left">
+                      <LogOut className="h-5 w-5" /> Logout
+                  </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                   <AlertDialogHeader>
