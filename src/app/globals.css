@@ -52,28 +52,28 @@
   }
  
   .dark {
-    /* Custom Teal Dark Theme */
-    --background: 180 15% 8%;
-    --foreground: 180 10% 95%;
-    --card: 180 15% 12%;
-    --card-foreground: 180 10% 95%;
-    --popover: 180 15% 10%;
-    --popover-foreground: 180 10% 95%;
-    --primary: 173 80% 60%; /* Brighter teal for dark mode */
-    --primary-foreground: 180 25% 5%;
-    --secondary: 180 15% 18%;
-    --secondary-foreground: 180 10% 95%;
-    --muted: 180 15% 18%;
-    --muted-foreground: 180 10% 65%;
-    --accent: 198 80% 60%; /* Brighter Sky Blue */
-    --accent-foreground: 24 9.8% 10%;
+    /* Custom Dark Theme from screenshot */
+    --background: 220 20% 12%; /* A very dark blue, almost black */
+    --foreground: 210 40% 98%;
+    --card: 220 20% 16%; /* Slightly lighter than background */
+    --card-foreground: 210 40% 98%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 173 80% 50%; /* #2dd4bf - A vibrant teal */
+    --primary-foreground: 220 25% 10%;
+    --secondary: 220 15% 22%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 220 15% 25%; /* Muted controls, like the timer background */
+    --muted-foreground: 210 20% 65%;
+    --accent: 173 80% 50%;
+    --accent-foreground: 220 25% 10%;
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 180 15% 20%;
-    --input: 180 15% 22%;
-    --ring: 198 80% 60%;
+    --border: 220 15% 28%; /* Borders for the answer options */
+    --input: 220 15% 22%;
+    --ring: 173 80% 50%;
 
-    --chart-1: 175 70% 55%;
+    --chart-1: 173 70% 55%;
     --chart-2: 38 80% 65%;
   }
 }
