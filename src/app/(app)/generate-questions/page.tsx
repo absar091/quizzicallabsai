@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -129,7 +128,7 @@ export default function GenerateQuestionsPage() {
         y += (explanationText.length * 5) + 10;
     });
 
-    doc.save(`${form.getValues('subject').replace(/\s+/g, '_')}_practice_questions.pdf`);
+    doc.save(`${form.getValues('subject').replace(/s+/g, '_')}_practice_questions.pdf`);
   };
 
   return (
@@ -206,7 +205,7 @@ export default function GenerateQuestionsPage() {
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a question type" />
-                            </Trigger>
+                            </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="multiple choice">Multiple Choice</SelectItem>
