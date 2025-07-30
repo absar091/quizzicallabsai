@@ -7,17 +7,16 @@ import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { use } from "react";
 import { Separator } from "@/components/ui/separator";
 
 type SubjectPageProps = {
-  params: Promise<{
+  params: {
     subject: string;
-  }>;
+  };
 };
 
 export default function MdcatSubjectPage({ params }: SubjectPageProps) {
-  const { subject: subjectKey } = use(params);
+  const { subject: subjectKey } = params;
   const subject = mdcatSyllabus[subjectKey];
 
   if (!subject) {

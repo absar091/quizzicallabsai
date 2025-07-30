@@ -6,18 +6,17 @@ import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText } from "lucid
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { ntsSyllabus } from "@/lib/nts-syllabus";
-import { use } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 
 type CategoryPageProps = {
-  params: Promise<{
+  params: {
     category: string;
-  }>;
+  };
 };
 
 export default function NtsCategoryPage({ params }: CategoryPageProps) {
-  const { category: categoryKey } = use(params);
+  const { category: categoryKey } = params;
   const category = ntsSyllabus[categoryKey];
 
   if (!category) {
