@@ -119,7 +119,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const [explanations, setExplanations] = useState<ExplanationState>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
-  const [direction, setDirection] = useState(0);
   const [formValues, setFormValues] = useState<QuizFormValues | null>(initialFormValues || null);
   
   const formMethods = useForm<QuizFormValues>({
@@ -278,7 +277,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   };
   
   const handleNext = () => {
-    setDirection(1);
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -287,7 +285,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   };
 
   const handleBack = () => {
-    setDirection(-1);
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
     }
@@ -548,20 +545,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }
   
   const cardVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 },
   };
 
   if (quiz && !showResults) {
@@ -571,20 +557,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
     return (
       <FormProvider {...formMethods}>
-        <div className="flex flex-col items-center py-4 md:py-12 overflow-x-hidden">
+        <div className="flex flex-col items-center py-4 md:py-12 overflow-hidden">
           <div className="w-full max-w-2xl min-h-[550px] flex items-center justify-center">
-              <AnimatePresence initial={false} custom={direction}>
+              <AnimatePresence mode="wait">
                   <motion.div
                       key={currentQuestion}
-                      custom={direction}
                       variants={cardVariants}
-                      initial="enter"
-                      animate="center"
+                      initial="hidden"
+                      animate="visible"
                       exit="exit"
-                      transition={{
-                          x: { type: "spring", stiffness: 300, damping: 30 },
-                          opacity: { duration: 0.2 },
-                      }}
+                      transition={{ duration: 0.3 }}
                       className="w-full"
                   >
                       <Card className="w-full flex flex-col shadow-2xl overflow-hidden">
