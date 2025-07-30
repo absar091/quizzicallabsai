@@ -10,10 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
-        body: ['var(--font-sans)', 'Inter', 'sans-serif'],
-        headline: ['var(--font-sans)', 'Inter', 'sans-serif'],
-        code: ['monospace'],
+        sans: ['var(--font-sans)', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -98,3 +95,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    

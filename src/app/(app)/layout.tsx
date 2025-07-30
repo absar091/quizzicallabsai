@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 import NotificationHandler from "@/components/notification-handler";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -22,8 +22,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex h-screen w-full items-center justify-center bg-background flex-col gap-4">
+        <BrainCircuit className="h-12 w-12 text-primary animate-pulse" />
+        <p className="text-muted-foreground">Loading your experience...</p>
       </div>
     );
   }
@@ -39,3 +40,5 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+    

@@ -526,8 +526,17 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   if (isGenerating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h2 className="text-2xl font-semibold mb-2">Generating Your Quiz...</h2>
+        <div className="relative">
+            <BrainCircuit className="h-20 w-20 text-primary" />
+            <motion.div
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+            </motion.div>
+        </div>
+        <h2 className="text-2xl font-semibold mb-2 mt-6">Generating Your Quiz...</h2>
         <p className="text-muted-foreground max-w-sm mb-6">Please wait while our AI crafts the perfect quiz for you.</p>
         <div className="w-full max-w-sm">
            <Progress value={generationProgress} />
@@ -614,7 +623,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                 <RadioGroup
                                     value={userAnswers[currentQuestion] || ""}
                                     onValueChange={handleAnswer}
-                                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                                    className="grid grid-cols-1 gap-4"
                                 >
                                     {(currentQ.answers || []).map((answer, index) => {
                                     const letter = String.fromCharCode(65 + index);
@@ -1049,5 +1058,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
 
     
