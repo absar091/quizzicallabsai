@@ -39,12 +39,7 @@ export async function generatePracticeQuestions(input: GeneratePracticeQuestions
   return generatePracticeQuestionsFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generatePracticeQuestionsPrompt',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GeneratePracticeQuestionsInputSchema},
-  output: {schema: GeneratePracticeQuestionsOutputSchema},
-  prompt: `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content, personalized to the user's learning style.
+const promptText = `You are a professional AI question generator designed to create high-quality, subject-accurate questions across multiple topics. Your goal is to build user trust by providing accurate and well-structured content, personalized to the user's learning style.
 
 Follow these strict rules to ensure accuracy, quality, and user satisfaction:
 
@@ -73,7 +68,22 @@ Generate practice questions based on the following parameters. You must adhere t
 *   **Learning Style:** {{#if learningStyle}}'{{{learningStyle}}}'. Tailor your explanations accordingly. For example, for a 'visual' learner, use descriptive imagery. For a 'reading/writing' learner, be text-based and structured.{{else}}a general style{{/if}}.
 
 Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting.
-`,
+`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generatePracticeQuestionsPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GeneratePracticeQuestionsInputSchema},
+  output: {schema: GeneratePracticeQuestionsOutputSchema},
+  prompt: promptText,
+});
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generatePracticeQuestionsPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GeneratePracticeQuestionsInputSchema},
+  output: {schema: GeneratePracticeQuestionsOutputSchema},
+  prompt: promptText,
 });
 
 const generatePracticeQuestionsFlow = ai.defineFlow(
@@ -83,7 +93,18 @@ const generatePracticeQuestionsFlow = ai.defineFlow(
     outputSchema: GeneratePracticeQuestionsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );
