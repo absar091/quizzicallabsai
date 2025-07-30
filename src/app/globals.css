@@ -38,7 +38,7 @@
     --secondary: 175 40% 90%;
     --secondary-foreground: 175 25% 10%;
     --muted: 175 40% 94%;
-    --muted-foreground: 180 15% 45%;
+    --muted-foreground: 180 15% 40%;
     --accent: 198 89% 48%; /* #0ea5e9 - Sky Blue */
     --accent-foreground: 198 100% 98%;
     --destructive: 0 72.2% 50.6%;
@@ -64,7 +64,7 @@
     --secondary: 220 15% 22%;
     --secondary-foreground: 210 40% 98%;
     --muted: 220 15% 25%; /* Muted controls, like the timer background */
-    --muted-foreground: 210 20% 65%;
+    --muted-foreground: 210 20% 75%;
     --accent: 173 80% 50%;
     --accent-foreground: 220 25% 10%;
     --destructive: 0 62.8% 50.6%;
