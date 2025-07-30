@@ -46,7 +46,7 @@ const appNavItems = [
 ]
 
 function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
-    const isActive = currentPath === href || (href !== '/' && href !== '/dashboard' && pathname.startsWith(href));
+    const isActive = currentPath === href || (href !== '/' && href !== '/dashboard' && currentPath.startsWith(href));
     return (
         <Link
             href={href}
