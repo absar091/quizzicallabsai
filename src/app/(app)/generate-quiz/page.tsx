@@ -245,6 +245,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       setGenerationProgress(100);
       
       setTimeout(() => {
+        if (!result.quiz || result.quiz.length === 0) {
+           throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
+        }
         setQuiz(result.quiz);
         setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
@@ -887,9 +890,9 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                       name="topic"
                       render={({ field }) => (
                         <FormItem className="w-full flex flex-col items-center">
-                          <FormLabel className="text-lg text-center block mb-2">What topic do you want a quiz on?</FormLabel>
+                          <FormLabel className="text-2xl font-semibold text-center block mb-2">What topic do you want a quiz on?</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-base py-6 text-center max-w-lg" />
+                            <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-lg py-6 text-center max-w-lg" />
                           </FormControl>
                           <FormMessage className="text-center"/>
                         </FormItem>
@@ -900,9 +903,9 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                       name="specificInstructions"
                       render={({ field }) => (
                         <FormItem className="w-full flex flex-col items-center">
-                          <FormLabel className="text-lg text-center block mb-2">Specific Instructions (Optional)</FormLabel>
+                          <FormLabel className="text-2xl font-semibold text-center block mb-2">Specific Instructions <span className="text-muted-foreground text-lg">(Optional)</span></FormLabel>
                           <FormControl>
-                             <Textarea placeholder="e.g., Focus on the moons of Jupiter. Include questions comparing mitosis and meiosis." {...field} className="text-base text-center max-w-lg" />
+                             <Textarea placeholder="e.g., Focus on the moons of Jupiter. Include questions comparing mitosis and meiosis." {...field} className="text-lg text-center max-w-lg" />
                           </FormControl>
                            <FormDescription className="text-center max-w-lg">
                                 Provide sub-topics, concepts to include, or any other details to guide the AI.
@@ -922,7 +925,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                   name="difficulty"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Difficulty</FormLabel>
+                      <FormLabel className="text-xl font-semibold">Difficulty</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -934,7 +937,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                                 <FormControl>
                                    <RadioGroupItem value={level} id={level} className="sr-only peer" />
                                 </FormControl>
-                                <Label htmlFor={level} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                                <Label htmlFor={level} className="flex h-full flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
                                   {level}
                                 </Label>
                               </FormItem>
@@ -950,14 +953,14 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                   name="numberOfQuestions"
                   render={({ field }) => (
                      <FormItem>
-                      <FormLabel className="text-lg">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                      <FormLabel className="text-xl font-semibold">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
                        <FormControl>
                           <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                       </FormControl>
                        <Alert className="mt-2 text-xs p-2">
                          <AlertTriangle className="h-4 w-4"/>
                          <AlertDescription>
-                           We recommend selecting ~5 more questions than required, as the AI-generated count may sometimes vary slightly.
+                           The AI-generated count may sometimes vary slightly from your selection.
                          </AlertDescription>
                        </Alert>
                     </FormItem>
@@ -968,7 +971,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                   name="timeLimit"
                   render={({ field }) => (
                      <FormItem>
-                      <FormLabel className="text-lg">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                      <FormLabel className="text-xl font-semibold">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
                        <FormControl>
                           <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
                       </FormControl>
@@ -985,7 +988,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                       name="questionTypes"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-lg">Question Formats</FormLabel>
+                          <FormLabel className="text-xl font-semibold">Question Formats</FormLabel>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                             {questionTypeOptions.map((item) => (
                               <FormField
@@ -1015,7 +1018,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                       name="questionStyles"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-lg">Question Styles</FormLabel>
+                          <FormLabel className="text-xl font-semibold">Question Styles</FormLabel>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                             {questionStyleOptions.map((item) => (
                               <FormField
@@ -1047,8 +1050,8 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                 return (
                     <motion.div key="step4" {...animationProps} className="w-full">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
-                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
+                            <h3 className="text-2xl font-semibold text-center">Review your quiz details:</h3>
+                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-base">
                                 <p><strong>Topic:</strong> {values.topic}</p>
                                 {values.specificInstructions && <p><strong>Instructions:</strong> {values.specificInstructions}</p>}
                                 <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
