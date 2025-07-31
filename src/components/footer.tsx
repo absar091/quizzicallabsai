@@ -24,12 +24,13 @@ export function Footer() {
     const [appUrl, setAppUrl] = useState('');
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setAppUrl(window.location.origin);
-        }
+        // This code now runs only on the client, after the component has mounted.
+        // This prevents the hydration mismatch error.
+        setAppUrl(window.location.origin);
     }, []);
 
     const handleCopy = () => {
+        if (!appUrl) return;
         navigator.clipboard.writeText(appUrl);
         setIsCopied(true);
         toast({ title: 'Link Copied!', description: 'You can now share it with your friends.' });
@@ -37,6 +38,7 @@ export function Footer() {
     };
 
     const handleNativeShare = async () => {
+        if (!appUrl) return;
         if (navigator.share) {
             try {
                 await navigator.share({
