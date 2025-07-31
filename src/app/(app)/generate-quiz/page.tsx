@@ -327,7 +327,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }, [quiz, userAnswers, formValues, user]);
 
   const calculateScore = useCallback(() => {
-    if (!quiz) return { score: 0, percentage: 0 };
+    if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
     const score = quiz.reduce((acc, question, index) => {
       const userAnswer = userAnswers[index];
       const correctAnswer = question.correctAnswer;
@@ -473,7 +473,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     doc.text(`Topic: ${formValues.topic}`, 20, 70);
 
     doc.setFontSize(16);
-    doc.text(`Score: ${score}/${quiz?.length}`, 20, 90);
+    doc.text(`Score: ${score}/${calculateScore().totalScorable}`, 20, 90);
     doc.text(`Percentage: ${percentage.toFixed(0)}%`, 20, 100);
     doc.text(`Status: ${percentage >= 50 ? 'Pass' : 'Fail'}`, 20, 110);
 
@@ -864,7 +864,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const prevStep = () => {
         if (step > 1) {
             setDirection(-1);
-            setStep(s => s - 1); // This should be s - 1
+            setStep(s => s - 1);
         }
     };
 
