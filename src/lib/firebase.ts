@@ -1,7 +1,8 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -25,14 +26,14 @@ export const db = getDatabase(app);
 export const firestore = getFirestore(app);
 
 // Initialize Analytics and get a reference to the service, only if supported
-const analytics = (async () => {
-    if (typeof window !== 'undefined') {
-        const supported = await isSupported();
+let analytics: Analytics | null = null;
+if (typeof window !== 'undefined') {
+    isSupported().then((supported) => {
         if (supported) {
-            return getAnalytics(app);
+            analytics = getAnalytics(app);
         }
-    }
-    return null;
-})();
+    });
+}
+
 
 export { app, analytics };
