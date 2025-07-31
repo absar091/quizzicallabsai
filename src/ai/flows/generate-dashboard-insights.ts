@@ -1,0 +1,128 @@
+
+'use server';
+
+/**
+ * @fileOverview Generates AI-powered insights and suggestions based on a user's quiz history.
+ *
+ * - generateDashboardInsights - Analyzes performance data and provides personalized feedback.
+ * - GenerateDashboardInsightsInput - The input type for the function.
+ * - GenerateDashboardInsightsOutput - The return type for the function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {z} from 'genkit';
+
+// Define the structure for a single quiz result to be passed in
+const QuizResultSchema = z.object({
+  topic: z.string(),
+  percentage: z.number(),
+  date: z.string().describe("ISO 8601 date string"),
+});
+
+// Define the input schema for the flow
+const GenerateDashboardInsightsInputSchema = z.object({
+  userName: z.string().describe("The user's first name."),
+  quizHistory: z.array(QuizResultSchema).describe("An array of the user's recent quiz results."),
+});
+export type GenerateDashboardInsightsInput = z.infer<typeof GenerateDashboardInsightsInputSchema>;
+
+
+// Define the output schema for the AI's response
+const GenerateDashboardInsightsOutputSchema = z.object({
+  greeting: z.string().describe("A short, personalized, and encouraging greeting for the user. Should be 1 sentence max."),
+  observation: z.string().describe("A key observation about the user's performance. E.g., 'You're excelling at Physics!' or 'Your scores in Chemistry are improving.' Should be 1 sentence max."),
+  suggestion: z.string().describe("A specific, actionable suggestion for what the user could do next. E.g., 'Why not challenge yourself with a hard quiz?' or 'A quick refresher on Biology might be helpful.' Should be 1 sentence max."),
+  suggestedAction: z.object({
+      buttonText: z.string().describe("The text for a call-to-action button, e.g., 'Retry Incorrect Questions' or 'Practice Chemistry'."),
+      link: z.string().describe("The relative URL for the button's action, e.g., '/generate-quiz?topic=Chemistry'."),
+  }).optional().describe("An optional structured action the user can take directly."),
+});
+export type GenerateDashboardInsightsOutput = z.infer<typeof GenerateDashboardInsightsOutputSchema>;
+
+export async function generateDashboardInsights(
+  input: GenerateDashboardInsightsInput
+): Promise<GenerateDashboardInsightsOutput> {
+  // If there's no history, return a default welcome message
+  if (input.quizHistory.length === 0) {
+    return {
+      greeting: `Welcome, ${input.userName}!`,
+      observation: "You're just getting started on your learning journey.",
+      suggestion: "Take your first quiz to see your personalized insights here.",
+      suggestedAction: {
+        buttonText: "Start a New Quiz",
+        link: "/generate-quiz"
+      }
+    };
+  }
+  return generateDashboardInsightsFlow(input);
+}
+
+
+const promptText = `You are an AI-powered academic coach named 'Quizzical'. Your goal is to provide encouraging, insightful, and actionable feedback to a student based on their recent quiz performance. Be friendly, positive, and concise.
+
+**STUDENT DATA:**
+- Name: {{{userName}}}
+- Recent Quiz History:
+{{#each quizHistory}}
+  - Topic: {{this.topic}}, Score: {{this.percentage}}%, Date: {{this.date}}
+{{/each}}
+
+**YOUR TASK:**
+Analyze the student's quiz history and generate a response in the specified JSON format.
+
+1.  **Greeting:** Create a short, positive greeting. Use the user's name.
+2.  **Observation:** Identify the most important trend or pattern.
+    - Is there a topic they are very good at (consistently > 80%)? Congratulate them!
+    - Is there a topic they are struggling with (consistently < 50%)? Point it out gently.
+    - Are their scores generally improving? Acknowledge their hard work.
+    - Have they taken many quizzes on one topic? Note their focus.
+    - If history is mixed, just give a general encouragement.
+3.  **Suggestion:** Based on your observation, provide a clear, single-sentence suggestion for their next step.
+    - If they are strong in a topic, suggest they try a harder difficulty.
+    - If they are weak in a topic, suggest they practice it or review a study guide.
+    - If they haven't taken a quiz in a while, encourage them to start a new one.
+4.  **Suggested Action (Optional but highly recommended):**
+    - Create a practical call-to-action button.
+    - The 'buttonText' should be short and action-oriented (e.g., "Practice Biology", "Try Hard Mode").
+    - The 'link' should be a functional URL for the app. For a topic-specific quiz, use the format: '/generate-quiz?topic=TOPIC_NAME'. For a general quiz, use '/generate-quiz'. For a study guide, use '/generate-study-guide?topic=TOPIC_NAME'.
+
+**Example Scenarios:**
+
+*   **Scenario 1: Strong in Physics**
+    *   Greeting: "Awesome work, {{{userName}}}!"
+    *   Observation: "You're consistently acing your Physics quizzes."
+    *   Suggestion: "Ready to take on a 'master' level challenge?"
+    *   Action: { buttonText: "Master Physics Quiz", link: "/generate-quiz?topic=Physics&difficulty=master" }
+
+*   **Scenario 2: Struggling with Chemistry**
+    *   Greeting: "Keep up the great effort, {{{userName}}}!"
+    *   Observation: "It looks like Chemistry is a bit of a challenge right now."
+    *   Suggestion: "A focused practice session could make a big difference."
+    *   Action: { buttonText: "Practice Chemistry", link: "/generate-quiz?topic=Chemistry" }
+
+Now, generate the output for the provided student data.`;
+
+const generateDashboardInsightsFlow = ai.defineFlow(
+  {
+    name: 'generateDashboardInsightsFlow',
+    inputSchema: GenerateDashboardInsightsInputSchema,
+    outputSchema: GenerateDashboardInsightsOutputSchema,
+  },
+  async (input) => {
+    // To keep the prompt from getting too long, only send the last 10 quiz results
+    const recentHistory = {
+      ...input,
+      quizHistory: input.quizHistory.slice(0, 10),
+    };
+    
+    const {output} = await ai.generate({
+        model: googleAI.model("gemini-1.5-flash"),
+        prompt: promptText,
+        input: recentHistory,
+        output: { schema: GenerateDashboardInsightsOutputSchema },
+    });
+    
+    return output!;
+  }
+);
