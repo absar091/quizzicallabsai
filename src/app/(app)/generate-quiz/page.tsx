@@ -326,10 +326,19 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0 };
     const score = quiz.reduce((acc, question, index) => {
-      return acc + (question.correctAnswer === userAnswers[index] ? 1 : 0);
+      const userAnswer = userAnswers[index];
+      const correctAnswer = question.correctAnswer;
+      // For descriptive questions, correctAnswer might be undefined, so they are not scored.
+      if (question.type === 'descriptive' || correctAnswer === undefined) {
+        return acc;
+      }
+      return acc + (correctAnswer === userAnswer ? 1 : 0);
     }, 0);
-    const percentage = (score / quiz.length) * 100;
-    return { score, percentage };
+  
+    const scorableQuestions = quiz.filter(q => q.type !== 'descriptive' && q.correctAnswer !== undefined).length;
+    const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
+    
+    return { score, percentage, totalScorable: scorableQuestions };
   }, [quiz, userAnswers]);
 
   const getExplanation = async (questionIndex: number) => {
@@ -680,12 +689,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }
   
   if (showResults && quiz) {
-    const { score, percentage } = calculateScore();
+    const { score, percentage, totalScorable } = calculateScore();
     const incorrectAnswers = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
 
     return (
        <div className="max-w-4xl mx-auto">
-            <PageHeader title="Quiz Results" description={`You scored ${score} out of ${quiz.length}.`} />
+            <PageHeader title="Quiz Results" description={`You scored ${score} out of ${totalScorable}.`} />
             <Card>
                 <CardHeader>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -699,7 +708,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                 <CardContent className="pt-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
                         <Card className="pt-6 bg-muted/50">
-                            <CardTitle className="text-4xl font-bold">{score}/{quiz.length}</CardTitle>
+                            <CardTitle className="text-4xl font-bold">{score}/{totalScorable}</CardTitle>
                             <CardDescription>Score</CardDescription>
                         </Card>
                          <Card className="pt-6 bg-muted/50">
@@ -718,6 +727,23 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                             {quiz.map((q, index) => {
                                 const isCorrect = q.correctAnswer === userAnswers[index];
                                 const explanationState = explanations[index];
+                                
+                                // Skip descriptive questions in results if they don't have a correct answer
+                                if (q.type === 'descriptive' && !q.correctAnswer) {
+                                    return (
+                                        <Card key={index} className="bg-muted/30">
+                                            <CardContent className="p-4 sm:p-6">
+                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
+                                                 <div className="text-sm mt-2 space-y-1">
+                                                     <p className="flex items-start gap-2 text-muted-foreground">
+                                                         <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
+                                                         <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
+                                                     </p>
+                                                 </div>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                }
                                 
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
@@ -846,7 +872,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const prevStep = () => {
         if (step > 1) {
             setDirection(-1);
-            setStep(s => s + 1);
+            setStep(s => s - 1); // This should be s - 1
         }
     };
 
@@ -855,10 +881,17 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     });
 
     const renderStepContent = () => {
+        const animationProps = {
+            initial: { opacity: 0, x: direction > 0 ? 50 : -50 },
+            animate: { opacity: 1, x: 0 },
+            exit: { opacity: 0, x: direction > 0 ? -50 : 50 },
+            transition: { duration: 0.3 }
+        };
+
         switch (step) {
           case 1:
             return (
-              <motion.div key="step1" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+              <motion.div key="step1" {...animationProps} className="w-full">
                 <div className="w-full flex flex-col items-center space-y-6">
                     <FormField
                       control={control}
@@ -894,7 +927,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
             );
           case 2:
             return (
-              <motion.div key="step2" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+              <motion.div key="step2" {...animationProps} className="space-y-6 w-full">
                 <FormField
                   control={control}
                   name="difficulty"
@@ -957,7 +990,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
             );
           case 3:
               return (
-                 <motion.div key="step3" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="space-y-6 w-full">
+                 <motion.div key="step3" {...animationProps} className="space-y-6 w-full">
                      <FormField
                       control={control}
                       name="questionTypes"
@@ -1023,7 +1056,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
             case 4: {
                 const values = getValues();
                 return (
-                    <motion.div key="step4" initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }} transition={{ duration: 0.3 }} className="w-full">
+                    <motion.div key="step4" {...animationProps} className="w-full">
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-center">Review your quiz details:</h3>
                             <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-sm">
