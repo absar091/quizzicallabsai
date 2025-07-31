@@ -5,13 +5,14 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { generateCustomQuiz, GenerateCustomQuizOutput, GenerateCustomQuizInput } from '@/ai/flows/generate-custom-quiz';
 import GenerateQuizPage from '@/app/(app)/generate-quiz/page';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, Sparkles, BrainCircuit } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { mdcatSyllabus } from '@/lib/mdcat-syllabus';
+import { motion } from 'framer-motion';
 
 type Quiz = GenerateCustomQuizOutput['quiz'];
 
@@ -146,10 +147,19 @@ export default function MdcatMockTestPage() {
   if (testState === 'generating') {
     const section = MOCK_TEST_CONFIG[currentSectionIndex];
     return (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground text-center">Generating {section.subject} Section ({section.numQuestions} MCQs)...</p>
-            <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+        <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+            <div className="relative">
+                <BrainCircuit className="h-20 w-20 text-primary" />
+                <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                    <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+                </motion.div>
+            </div>
+            <h2 className="text-2xl font-semibold mb-2 mt-6">Generating {section.subject} Section...</h2>
+            <p className="text-muted-foreground max-w-sm mb-6">({section.numQuestions} MCQs) This may take a moment.</p>
         </div>
     )
   }

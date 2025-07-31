@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { generateNtsQuiz } from '@/ai/flows/generate-nts-quiz';
 import GenerateQuizPage, { Quiz } from '@/app/(app)/generate-quiz/page';
-import { Loader2, AlertTriangle, BookUser } from 'lucide-react';
+import { Loader2, AlertTriangle, BookUser, BrainCircuit, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from '@/components/ui/label';
+import { motion } from 'framer-motion';
 
 const MOCK_TEST_SECTIONS = [
   { name: 'Analytical Reasoning', numQuestions: 15 },
@@ -174,10 +175,19 @@ export default function NtsMockTestPage() {
   if (testState === 'generating') {
     const section = MOCK_TEST_SECTIONS[currentSectionIndex];
     return (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground text-center">Generating {section.name} Section ({section.numQuestions} MCQs)...</p>
-            <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+        <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+            <div className="relative">
+                <BrainCircuit className="h-20 w-20 text-primary" />
+                <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                    <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+                </motion.div>
+            </div>
+            <h2 className="text-2xl font-semibold mb-2 mt-6">Generating {section.name} Section...</h2>
+            <p className="text-muted-foreground max-w-sm mb-6">({section.numQuestions} MCQs) This may take a moment.</p>
         </div>
     )
   }

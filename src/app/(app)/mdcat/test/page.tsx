@@ -5,14 +5,14 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
-import { Loader2 } from "lucide-react";
+import { Loader2, BrainCircuit, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-
+import { motion } from "framer-motion";
 
 function MdcatTestFlow() {
     const searchParams = useSearchParams();
@@ -74,10 +74,19 @@ function MdcatTestFlow() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center h-[60vh]">
-                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-xl text-muted-foreground text-center">Preparing your MDCAT test for "{topic}"...</p>
-                <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+            <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+                <div className="relative">
+                    <BrainCircuit className="h-20 w-20 text-primary" />
+                    <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    >
+                        <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+                    </motion.div>
+                </div>
+                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your MDCAT test for "{topic}"...</h2>
+                <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
             </div>
         )
     }
@@ -148,9 +157,11 @@ function MdcatTestPage() {
 export default function MdcatTestSuspenseWrapper() {
     return (
         <Suspense fallback={
-            <div className="flex flex-col items-center justify-center h-[60vh]">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="text-xl text-muted-foreground">Loading test parameters...</p>
+            <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+                <div className="relative">
+                    <BrainCircuit className="h-20 w-20 text-primary" />
+                </div>
+                <h2 className="text-2xl font-semibold mb-2 mt-6">Loading Test...</h2>
             </div>
         }>
             <MdcatTestPage />

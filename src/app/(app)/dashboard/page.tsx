@@ -11,7 +11,7 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Loader2 } from "lucide-react";
+import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Loader2, Sparkles, BrainCircuit } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -30,6 +30,7 @@ import { PageHeader } from "@/components/page-header";
 import { get, ref, remove } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { getBookmarks, getQuizResults, deleteBookmark, saveBookmark, saveQuizResult, BookmarkedQuestion, QuizResult } from "@/lib/indexed-db";
+import { motion } from "framer-motion";
 
 const chartConfig = {
   score: {
@@ -135,8 +136,19 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex h-[80vh] w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+        <div className="relative">
+            <BrainCircuit className="h-20 w-20 text-primary" />
+            <motion.div
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+            </motion.div>
+        </div>
+        <h2 className="text-2xl font-semibold mb-2 mt-6">Loading Dashboard...</h2>
+        <p className="text-muted-foreground max-w-sm mb-6">Fetching your latest progress and stats.</p>
       </div>
     );
   }

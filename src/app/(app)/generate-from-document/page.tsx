@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, UploadCloud, ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, UploadCloud, ArrowLeft, CheckCircle, XCircle, BrainCircuit, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ import { generateQuizFromDocument, GenerateQuizFromDocumentOutput } from "@/ai/f
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Slider } from "@/components/ui/slider";
+import { motion } from "framer-motion";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [
@@ -173,10 +174,19 @@ export default function GenerateFromDocumentPage() {
 
   if (isGenerating) {
      return (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-xl text-muted-foreground">Generating quiz from your document...</p>
-            <p className="text-sm text-muted-foreground mt-2">This may take a moment.</p>
+        <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+            <div className="relative">
+                <BrainCircuit className="h-20 w-20 text-primary" />
+                <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                    <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+                </motion.div>
+            </div>
+            <h2 className="text-2xl font-semibold mb-2 mt-6">Generating quiz from document...</h2>
+            <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
         </div>
     )
   }
