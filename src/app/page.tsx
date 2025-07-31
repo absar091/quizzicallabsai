@@ -5,13 +5,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 const FeatureCard1 = () => (
@@ -82,21 +83,29 @@ const FeatureCard2 = () => (
   </div>
 );
 
-
-const features = [
+const allFeatures = [
   {
     icon: BotMessageSquare,
-    title: "The most intuitive quiz maker",
-    description: "Create tailored quizzes based on topic, difficulty, and question type in seconds.",
-    card: <FeatureCard1 />
+    title: "Custom Quiz Generator",
+    description: "Create highly tailored quizzes on any topic, difficulty, and format in seconds.",
   },
   {
     icon: GraduationCap,
-    title: "Excel in your entry tests",
-    description: "Practice with specialized tests and full-length mock exams for MDCAT, ECAT, and NTS.",
-    card: <FeatureCard2 />
+    title: "Entry Test Prep",
+    description: "Practice with specialized modules for MDCAT, ECAT, and NTS, including mock exams.",
+  },
+  {
+    icon: FileText,
+    title: "AI Study Guides",
+    description: "Generate comprehensive study guides with key concepts, analogies, and self-quizzes.",
+  },
+    {
+    icon: BookOpen,
+    title: "Practice Questions",
+    description: "Instantly generate questions on any topic, complete with answers and AI explanations.",
   },
 ];
+
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -147,26 +156,88 @@ export default function Home() {
                 <Button size="lg" asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                   <Link href="/signup">Get Started - it's free</Link>
                 </Button>
+                 <Button size="lg" asChild variant="outline">
+                  <Link href="/how-to-use">View the Guides</Link>
+                </Button>
               </motion.div>
             </div>
         </section>
 
-        <section id="features" className="bg-muted/50 py-16 md:py-24">
-            <div className="container mx-auto space-y-24">
-                {features.map((feature, index) => (
-                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div className={cn("text-center md:text-left", index % 2 !== 0 && "md:order-2")}>
-                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">{feature.title}</h2>
-                             <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">{feature.description}</p>
+        <section id="features" className="py-16 md:py-24">
+            <div className="container mx-auto text-center">
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything you need to succeed</h2>
+                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">From quick practice sessions to full-length mock exams, our tools are designed to support every step of your learning journey.</p>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                    {allFeatures.map((feature, index) => (
+                        <Card key={index} className="text-left">
+                            <CardHeader>
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
+                                    <feature.icon className="h-6 w-6 text-primary"/>
+                                </div>
+                                <CardTitle>{feature.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">{feature.description}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
+                 </div>
+            </div>
+        </section>
+        
+        <section className="bg-muted/50 py-16 md:py-24">
+            <div className="container mx-auto">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div className="text-center md:text-left">
+                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">The most intuitive quiz maker</h2>
+                             <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">Create tailored quizzes based on topic, difficulty, and question type in seconds.</p>
                              <Button asChild variant="link" className="mt-4 px-0">
-                                <Link href="/how-to-use">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                                <Link href="/how-to-use/custom-quiz">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
                              </Button>
                         </div>
                         <div>
-                           {feature.card}
+                           <FeatureCard1 />
                         </div>
                     </div>
-                ))}
+            </div>
+        </section>
+
+        <section className="py-16 md:py-24">
+             <div className="container mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div className="text-center md:text-left md:order-2">
+                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Excel in your entry tests</h2>
+                        <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">Practice with specialized tests and full-length mock exams for MDCAT, ECAT, and NTS.</p>
+                        <Button asChild variant="link" className="mt-4 px-0">
+                            <Link href="/how-to-use/entry-test-prep">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        </Button>
+                    </div>
+                    <div className="md:order-1">
+                        <FeatureCard2 />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section className="bg-muted/50 py-16 md:py-24">
+            <div className="container mx-auto max-w-4xl text-center">
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-6">A Note from the Creator</h2>
+                 <Card className="bg-background">
+                    <CardContent className="pt-8">
+                        <div className="flex flex-col md:flex-row items-center gap-6">
+                            <Avatar className="h-24 w-24">
+                                <AvatarFallback className="text-4xl">AR</AvatarFallback>
+                            </Avatar>
+                            <div className="text-left">
+                                <p className="text-muted-foreground leading-relaxed">
+                                    "As a student myself, I built Quizzicallabs AI to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey."
+                                </p>
+                                <p className="font-semibold mt-4">Absar Ahmad Rao</p>
+                                <p className="text-sm text-muted-foreground">Creator of Quizzicallabs AI</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                 </Card>
             </div>
         </section>
       </main>
