@@ -101,7 +101,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 
 **5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
-   {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic. Do not include questions on topics outside that syllabus. For other classes, adjust the level appropriately.{{/if}}
+   {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic. Do not include questions on topics outside that syllabus.{{/if}}
    {{#if userAge}}*   **Age:** {{userAge}} years old. Use this to gauge the appropriate language complexity.{{/if}}
    {{#if specificInstructions}}*   **User's Specific Instructions:** '{{{specificInstructions}}}'. You MUST follow these instructions carefully. This could include focusing on certain sub-topics, avoiding others, or framing questions in a particular way. This is a top priority.{{/if}}
    - If no specific class is provided, assume a general university undergraduate level.
