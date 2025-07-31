@@ -62,7 +62,7 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
-                The remarkably fun <br/> <span className="text-primary">quiz maker</span>
+                Your Ultimate <br/> <span className="text-primary">AI Study Partner</span>
               </motion.h1>
               <motion.p 
                  initial={{ opacity: 0, y: 20 }}
@@ -70,7 +70,7 @@ export default function Home() {
                  transition={{ duration: 0.5, delay: 0.2 }}
                  className="max-w-xl text-muted-foreground md:text-xl"
               >
-                Welcome to Quizzicallabs AI. Create quizzes, surveys, and forms that people enjoy answering.
+                Generate custom quizzes, practice questions, and AI study guides to master any subject and ace your exams.
               </motion.p>
               <motion.div 
                  initial={{ opacity: 0, y: 20 }}
