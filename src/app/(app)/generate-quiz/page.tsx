@@ -995,17 +995,24 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                                 key={item.id}
                                 control={control}
                                 name="questionTypes"
-                                render={({ field }) => (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                        <item.icon className="h-5 w-5" />
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                )}
+                                render={({ field }) => {
+                                    const fieldId = `question-type-${item.id.replace(/\s+/g, '-')}`;
+                                    return (
+                                        <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                            <FormControl>
+                                                <Checkbox 
+                                                    id={fieldId}
+                                                    checked={field.value?.includes(item.id)} 
+                                                    onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} 
+                                                />
+                                            </FormControl>
+                                            <Label htmlFor={fieldId} className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                                <item.icon className="h-5 w-5" />
+                                                {item.label}
+                                            </Label>
+                                        </div>
+                                    )
+                                }}
                               />
                             ))}
                           </div>
@@ -1025,17 +1032,24 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                                 key={item.id}
                                 control={control}
                                 name="questionStyles"
-                                render={({ field }) => (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                        <item.icon className="h-5 w-5" />
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                )}
+                                render={({ field }) => {
+                                    const fieldId = `question-style-${item.id.replace(/\s+/g, '-')}`;
+                                    return (
+                                        <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                            <FormControl>
+                                                <Checkbox
+                                                    id={fieldId}
+                                                    checked={field.value?.includes(item.id)} 
+                                                    onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} 
+                                                />
+                                            </FormControl>
+                                            <Label htmlFor={fieldId} className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                                <item.icon className="h-5 w-5" />
+                                                {item.label}
+                                            </Label>
+                                        </div>
+                                    )
+                                }}
                               />
                             ))}
                           </div>
@@ -1105,5 +1119,3 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
-
-    
