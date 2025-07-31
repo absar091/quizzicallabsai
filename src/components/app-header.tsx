@@ -100,12 +100,12 @@ export function AppHeader() {
           )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <motion.div
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-background"
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
               whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <BrainCircuit className="h-8 w-8 text-foreground" />
+              <BrainCircuit className="h-8 w-8 text-primary" />
             </motion.div>
           </Link>
         </div>
