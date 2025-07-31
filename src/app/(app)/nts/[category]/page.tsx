@@ -35,11 +35,16 @@ export default function NtsCategoryPage({ params }: CategoryPageProps) {
       />
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {category.subjects.map((subject) => (
+        {category.subjects.map((subject) => {
+          const Icon = subject.icon;
+          return (
             <Card key={subject.id}>
-                <CardHeader>
+                <CardHeader className="flex-row items-center gap-4">
+                  {Icon && <Icon className="h-8 w-8 text-primary shrink-0" />}
+                  <div>
                     <CardTitle>{subject.name}</CardTitle>
                     <CardDescription>Select a chapter to start a practice test.</CardDescription>
+                  </div>
                 </CardHeader>
                 <CardContent>
                      <Accordion type="single" collapsible className="w-full">
@@ -63,7 +68,8 @@ export default function NtsCategoryPage({ params }: CategoryPageProps) {
                     </Accordion>
                 </CardContent>
             </Card>
-        ))}
+          )
+        })}
       </div>
     </div>
   );

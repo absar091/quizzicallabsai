@@ -1,4 +1,16 @@
 
+import type { ComponentType, SVGProps } from 'react';
+import { PhysicsIcon } from '@/components/icons/physics-icon';
+import { ChemistryIcon } from '@/components/icons/chemistry-icon';
+import { MathIcon } from '@/components/icons/math-icon';
+import { BiologyIcon } from '@/components/icons/biology-icon';
+import { ComputerScienceIcon } from '@/components/icons/computer-science-icon';
+import { AccountingIcon } from '@/components/icons/accounting-icon';
+import { EconomicsIcon } from '@/components/icons/economics-icon';
+import { IslamicStudiesIcon } from '@/components/icons/islamic-studies-icon';
+import { PakistanStudiesIcon } from '@/components/icons/pakistan-studies-icon';
+import { GeneralKnowledgeIcon } from '@/components/icons/general-knowledge-icon';
+
 export type Chapter = {
     id: string;
     name: string;
@@ -7,6 +19,7 @@ export type Chapter = {
 export type Subject = {
   id: string;
   name: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   chapters: Chapter[];
 };
 
@@ -23,7 +36,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
         name: "NAT-IE (Pre-Engineering)",
         description: "For students with an FSc Pre-Engineering background.",
         subjects: [
-            { id: "phy", name: "Physics", chapters: [
+            { id: "phy", name: "Physics", icon: PhysicsIcon, chapters: [
                 { id: "phy-1", name: "Measurements" },
                 { id: "phy-2", name: "Vectors and Equilibrium" },
                 { id: "phy-3", name: "Motion and Force" },
@@ -42,7 +55,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "phy-16", name: "Atomic Spectra" },
                 { id: "phy-17", name: "Nuclear Physics" },
             ]},
-            { id: "chem", name: "Chemistry", chapters: [
+            { id: "chem", name: "Chemistry", icon: ChemistryIcon, chapters: [
                 { id: "chem-1", name: "Fundamental Concepts" },
                 { id: "chem-2", name: "Atomic Structure" },
                 { id: "chem-3", name: "Chemical Bonding" },
@@ -61,7 +74,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "chem-16", name: "Macromolecules" },
                 { id: "chem-17", name: "Environmental Chemistry" },
             ]},
-            { id: "math", name: "Mathematics", chapters: [
+            { id: "math", name: "Mathematics", icon: MathIcon, chapters: [
                 { id: "math-1", name: "Number Systems" },
                 { id: "math-2", name: "Sets, Functions, and Groups" },
                 { id: "math-3", name: "Matrices and Determinants" },
@@ -83,7 +96,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
         name: "NAT-IM (Pre-Medical)",
         description: "For students with an FSc Pre-Medical background.",
         subjects: [
-            { id: "phy", name: "Physics", chapters: [
+            { id: "phy", name: "Physics", icon: PhysicsIcon, chapters: [
                  { id: "phy-1", name: "Measurements" },
                  { id: "phy-2", name: "Vectors and Equilibrium" },
                  { id: "phy-3", name: "Motion and Force" },
@@ -96,7 +109,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                  { id: "phy-13", name: "Electromagnetism" },
                  { id: "phy-14", name: "Electronics" },
             ]},
-            { id: "chem", name: "Chemistry", chapters: [
+            { id: "chem", name: "Chemistry", icon: ChemistryIcon, chapters: [
                 { id: "chem-1", name: "Fundamental Concepts" },
                 { id: "chem-2", name: "Atomic Structure" },
                 { id: "chem-3", name: "Chemical Bonding" },
@@ -106,7 +119,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "chem-13", name: "Organic Chemistry" },
                 { id: "chem-14", name: "Hydrocarbons" },
             ]},
-            { id: "bio", name: "Biology", chapters: [
+            { id: "bio", name: "Biology", icon: BiologyIcon, chapters: [
                 { id: "bio-1", name: "Introduction to Biology" },
                 { id: "bio-2", name: "Biological Molecules" },
                 { id: "bio-3", name: "Enzymes" },
@@ -137,7 +150,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
         name: "NAT-ICS (Computer Science)",
         description: "For students with an ICS background.",
         subjects: [
-            { id: "phy", name: "Physics", chapters: [
+            { id: "phy", name: "Physics", icon: PhysicsIcon, chapters: [
                  { id: "phy-1", name: "Measurements" },
                  { id: "phy-2", name: "Vectors and Equilibrium" },
                  { id: "phy-3", name: "Motion and Force" },
@@ -146,7 +159,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                  { id: "phy-13", name: "Electromagnetism" },
                  { id: "phy-14", name: "Electronics" },
             ]},
-            { id: "math", name: "Mathematics", chapters: [
+            { id: "math", name: "Mathematics", icon: MathIcon, chapters: [
                 { id: "math-1", name: "Number Systems" },
                 { id: "math-2", name: "Sets, Functions, and Groups" },
                 { id: "math-3", name: "Matrices and Determinants" },
@@ -154,7 +167,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "math-10", name: "Differentiation" },
                 { id: "math-11", name: "Integration" },
             ]},
-            { id: "cs", name: "Computer Science", chapters: [
+            { id: "cs", name: "Computer Science", icon: ComputerScienceIcon, chapters: [
                 { id: "cs-1", name: "Introduction to Computer" },
                 { id: "cs-2", name: "Computer Components" },
                 { id: "cs-3", name: "Data Representation" },
@@ -175,7 +188,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
         name: "NAT-ICOM (Commerce)",
         description: "For students with an I.Com background.",
         subjects: [
-            { id: "acc", name: "Accounting", chapters: [
+            { id: "acc", name: "Accounting", icon: AccountingIcon, chapters: [
                 { id: "acc-1", name: "Introduction to Accounting" },
                 { id: "acc-2", name: "Accounting Equation" },
                 { id: "acc-3", name: "Journal & Ledger" },
@@ -185,7 +198,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "acc-7", name: "Depreciation" },
                 { id: "acc-9", name: "Partnership Accounts" },
             ]},
-            { id: "bmath", name: "Business Math / Statistics", chapters: [
+            { id: "bmath", name: "Business Math / Statistics", icon: MathIcon, chapters: [
                 { id: "bmath-1", name: "Percentages" },
                 { id: "bmath-2", name: "Profit and Loss" },
                 { id: "bmath-3", name: "Ratios and Proportions" },
@@ -194,7 +207,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "bmath-6", name: "Matrices" },
                 { id: "bmath-7", name: "Averages and Graphs" },
             ]},
-            { id: "eco", name: "Economics", chapters: [
+            { id: "eco", name: "Economics", icon: EconomicsIcon, chapters: [
                 { id: "eco-1", name: "Introduction to Economics" },
                 { id: "eco-2", name: "Demand and Supply" },
                 { id: "eco-3", name: "Utility and Elasticity" },
@@ -210,7 +223,7 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
         name: "NAT-IA (Arts/Humanities)",
         description: "For students with an FA/Arts background.",
         subjects: [
-            { id: "is", name: "Islamic Studies", chapters: [
+            { id: "is", name: "Islamic Studies", icon: IslamicStudiesIcon, chapters: [
                 { id: "is-1", name: "Pillars of Islam" },
                 { id: "is-2", name: "Life of the Prophet (SAW)" },
                 { id: "is-3", name: "Beliefs in Islam" },
@@ -218,14 +231,14 @@ export const ntsSyllabus: Record<string, NtsCategory> = {
                 { id: "is-5", name: "Quranic Teachings" },
                 { id: "is-6", name: "Hadiths and Sunnah" },
             ]},
-            { id: "ps", name: "Pakistan Studies", chapters: [
+            { id: "ps", name: "Pakistan Studies", icon: PakistanStudiesIcon, chapters: [
                 { id: "ps-1", name: "Ideology of Pakistan" },
                 { id: "ps-2", name: "History of Pakistan Movement" },
                 { id: "ps-3", name: "Constitution of Pakistan" },
                 { id: "ps-4", name: "Geography of Pakistan" },
                 { id: "ps-5", name: "Economic Development" },
             ]},
-            { id: "gk", name: "General Knowledge", chapters: [
+            { id: "gk", name: "General Knowledge", icon: GeneralKnowledgeIcon, chapters: [
                 { id: "gk-1", name: "World Geography" },
                 { id: "gk-2", name: "Basic Current Affairs" },
                 { id: "gk-3", name: "International Organizations" },

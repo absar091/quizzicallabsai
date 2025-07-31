@@ -7,14 +7,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
 
-const subjects = [
-    { name: 'Biology', description: "Comprehensive tests covering all biology topics.", href: '/mdcat/biology' },
-    { name: 'Chemistry', description: "Test your knowledge in organic and inorganic chemistry.", href: '/mdcat/chemistry' },
-    { name: 'Physics', description: "Practice problems from mechanics to modern physics.", href: '/mdcat/physics' },
-    { name: 'English', description: "Improve your grammar, vocabulary, and comprehension skills.", href: '/mdcat/english' },
-    { name: 'Logical Reasoning', description: "Sharpen your critical thinking and problem-solving abilities.", href: '/mdcat/logical-reasoning' },
-];
+const subjects = Object.values(mdcatSyllabus);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -53,21 +48,27 @@ export default function MdcatPage() {
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
        >
-        {subjects.map(subject => (
+        {subjects.map(subject => {
+          const Icon = subject.icon;
+          return (
             <motion.div key={subject.name} variants={itemVariants} whileHover="hover" whileTap="tap">
                 <Card className="flex flex-col group h-full transition-all duration-300">
-                    <CardHeader>
-                        <CardTitle>{subject.name}</CardTitle>
-                        <CardDescription>{subject.description}</CardDescription>
+                    <CardHeader className="flex-row items-center gap-4">
+                        {Icon && <Icon className="h-8 w-8 text-primary shrink-0" />}
+                        <div>
+                            <CardTitle>{subject.name}</CardTitle>
+                            <CardDescription className="mt-1">{subject.description}</CardDescription>
+                        </div>
                     </CardHeader>
                     <CardContent className="mt-auto">
                         <Button asChild>
-                            <Link href={subject.href}>Start Test <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
+                            <Link href={`/mdcat/${subject.slug}`}>Start Test <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
                         </Button>
                     </CardContent>
                 </Card>
             </motion.div>
-        ))}
+          )
+        })}
         <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 lg:col-span-3">
             <Card className="bg-primary text-primary-foreground flex flex-col md:flex-row items-center justify-between p-6">
                 <div className="mb-4 md:mb-0">
