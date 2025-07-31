@@ -7,7 +7,6 @@ import { Footer } from "@/components/footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { BrainCircuit } from "lucide-react";
 import NotificationHandler from "@/components/notification-handler";
 import { SplashScreen } from "@/components/splash-screen";
 import { AnimatePresence, motion } from "framer-motion";

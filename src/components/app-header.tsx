@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrainCircuit, Menu, HelpCircle, Sun, Moon, User, LogOut } from "lucide-react";
+import { Menu, HelpCircle, Sun, Moon, User, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sheet";
 import { MainSidebar } from "./main-sidebar";
 import { Badge } from "./ui/badge";
+import { Logo } from "./logo";
 
 const publicNavItems = [
   { href: "#features", label: "Features" },
@@ -88,7 +89,7 @@ export function AppHeader() {
                     <SheetTitle>
                       <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={() => setMobileMenuOpen(false)}>
                           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                              <BrainCircuit className="h-6 w-6 text-primary-foreground" />
+                              <Logo className="h-6 w-6 text-primary-foreground" />
                           </div>
                           <span className="text-xl">Quizzicallabs</span>
                       </Link>
@@ -106,7 +107,7 @@ export function AppHeader() {
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+              <Logo className="h-5 w-5 text-primary-foreground" />
             </motion.div>
             <span className="text-lg font-bold sm:inline-block">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
           </Link>

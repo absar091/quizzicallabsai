@@ -49,6 +49,7 @@ import {
     BookmarkedQuestion
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
+import { Logo } from '@/components/logo';
 
 
 const formSchema = z.object({
@@ -79,8 +80,7 @@ interface ExplanationState {
 
 const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
-    const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-circuit"><path d="M12 5a3 3 0 1 0-5.993.129"></path><path d="M12 5a3 3 0 1 0 5.993.129"></path><path d="M15 12a3 3 0 1 0-5.993.129"></path><path d="M15 12a3 3 0 1 0 5.993.129"></path><path d="M9 12a3 3 0 1 0-5.993.129"></path><path d="M9 12a3 3 0 1 0 5.993.129"></path><path d="M6.007 8.87C6 9 6 9 6 9.13v0c0 .04.007.08.007.12"></path><path d="m6.007 15.13-.002-.005c-.005-.035-.005-.07-.005-.1v0c0-.04.005-.08.005-.12"></path><path d="M18.007 8.87C18 9 18 9 18 9.13v0c0 .04.007.08.007.12"></path><path d="m18.007 15.13-.002-.005c-.005-.035-.005-.07-.005-.1v0c0-.04.005-.08.005-.12"></path><path d="M21 12h-3"></path><path d="M6 12H3"></path><path d="M12 18v3"></path><path d="M12 6V3"></path><path d="M9 12a3 3 0 0 0 5.993-.129"></path></svg>`;
-
+    
     // Header
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
@@ -92,7 +92,7 @@ const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
     doc.saveGraphicsState();
     doc.setFontSize(60);
     doc.setTextColor(220, 220, 220); // Light grey
-    doc.setGState(new doc.GState({opacity: 0.5}));
+    doc.setGState(new (doc as any).GState({opacity: 0.5}));
     doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
     doc.restoreGraphicsState();
 
@@ -525,7 +525,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     return (
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
         <div className="relative">
-            <BrainCircuit className="h-20 w-20 text-primary" />
+            <Logo className="h-20 w-20 text-primary" />
             <motion.div
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{ rotate: 360 }}
