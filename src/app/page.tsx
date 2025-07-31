@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import Image from "next/image";
 
 const motion = {
   div: dynamic(() => import('framer-motion').then(mod => mod.motion.div)),
@@ -21,23 +22,17 @@ const motion = {
 const features = [
   {
     icon: BotMessageSquare,
-    title: "Custom Quiz Generation",
+    title: "The most intuitive quiz maker",
     description: "Create tailored quizzes based on topic, difficulty, and question type in seconds.",
+    image: "https://placehold.co/500x700.png",
+    dataAiHint: "quiz mobile",
   },
   {
     icon: GraduationCap,
-    title: "Exam Prep (MDCAT/ECAT/NTS)",
+    title: "Make the most of every quiz taker",
     description: "Practice with specialized tests and full-length mock exams for major entry tests.",
-  },
-  {
-    icon: FileText,
-    title: "Quiz from Document",
-    description: "Upload your study materials (PDF, DOCX) and let our AI create a quiz for you.",
-  },
-  {
-    icon: ClipboardSignature,
-    title: "Exam Paper Generator",
-    description: "A powerful tool for educators to create and format professional exam papers.",
+    image: "https://placehold.co/500x700.png",
+    dataAiHint: "student learning",
   },
 ];
 
@@ -69,17 +64,17 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+                className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
-                Master Any Subject, <span className="text-primary">Instantly.</span>
+                The remarkably fun <br/> <span className="text-primary">quiz maker</span>
               </motion.h1>
               <motion.p 
                  initial={{ opacity: 0, y: 20 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ duration: 0.5, delay: 0.2 }}
-                 className="max-w-3xl text-muted-foreground md:text-xl"
+                 className="max-w-xl text-muted-foreground md:text-xl"
               >
-                Welcome to Quizzicallabs AI, the ultimate AI study partner. Generate personalized quizzes, prepare for MDCAT, ECAT & NTS with mock tests, and turn any document into a quiz.
+                Welcome to Quizzicallabs AI. Create quizzes, surveys, and forms that people enjoy answering.
               </motion.p>
               <motion.div 
                  initial={{ opacity: 0, y: 20 }}
@@ -87,39 +82,29 @@ export default function Home() {
                  transition={{ duration: 0.5, delay: 0.4 }}
                  className="flex flex-col gap-4 sm:flex-row"
               >
-                <Button size="lg" asChild>
-                  <Link href="/signup">Get Started for Free <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                </Button>
-                 <Button size="lg" variant="outline" asChild>
-                  <Link href="#features">Learn More</Link>
+                <Button size="lg" asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Link href="/signup">Get Started - it's free</Link>
                 </Button>
               </motion.div>
             </div>
         </section>
 
         <section id="features" className="bg-muted/50 py-16 md:py-24">
-            <div className="container mx-auto">
-                <div className="flex flex-col items-center text-center mb-12">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Why Choose Quizzicallabs AI?</h2>
-                    <p className="max-w-2xl text-muted-foreground mt-4">
-                        Our platform is designed to make learning more efficient and effective. Here’s how we help you succeed.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    {features.map((feature, index) => (
-                        <Card key={index} className="text-center transition-all hover:shadow-xl hover:-translate-y-2 transform-gpu">
-                            <CardHeader>
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-4">
-                                    <feature.icon className="h-8 w-8 text-primary" />
-                                </div>
-                                <CardTitle>{feature.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground text-sm">{feature.description}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+            <div className="container mx-auto space-y-24">
+                {features.map((feature, index) => (
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div className={cn("text-center md:text-left", index % 2 !== 0 && "md:order-2")}>
+                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">{feature.title}</h2>
+                             <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">{feature.description}</p>
+                             <Button asChild variant="link" className="mt-4 px-0">
+                                <Link href="/how-to-use">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                             </Button>
+                        </div>
+                        <div className="relative h-[500px] w-full">
+                           <Image src={feature.image} alt={feature.title} layout="fill" objectFit="contain" className="rounded-xl" data-ai-hint={feature.dataAiHint} />
+                        </div>
+                    </div>
+                ))}
             </div>
         </section>
       </main>
