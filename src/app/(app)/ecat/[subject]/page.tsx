@@ -41,6 +41,8 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
     }
   }
 
+  const Icon = subject.icon;
+
   return (
     <div>
       <PageHeader
@@ -50,6 +52,14 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
 
       <div className="max-w-4xl mx-auto">
         <Card>
+            <CardHeader className="flex flex-row items-center gap-4 border-b">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                    {Icon && <Icon className="h-6 w-6 text-primary" />}
+                </div>
+                <div>
+                     <CardTitle>{subject.name}</CardTitle>
+                </div>
+            </CardHeader>
             <CardContent className="p-6">
                 <div className="space-y-4">
                   {subject.topics.map((topic, index) => (

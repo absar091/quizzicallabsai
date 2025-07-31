@@ -7,14 +7,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { ecatSyllabus } from "@/lib/ecat-syllabus";
 
-const subjects = [
-    { name: 'Physics', description: "30 MCQs from FSC Part 1 & 2.", href: '/ecat/physics' },
-    { name: 'Mathematics', description: "30 MCQs from FSC Math Part 1 & 2.", href: '/ecat/mathematics' },
-    { name: 'English', description: "10 MCQs covering grammar and vocabulary.", href: '/ecat/english' },
-    { name: 'Chemistry', description: "Optional section with 30 MCQs.", href: '/ecat/chemistry' },
-    { name: 'Computer Science', description: "Optional section with 30 MCQs.", href: '/ecat/computer-science' },
-];
+const subjects = Object.values(ecatSyllabus);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -53,21 +48,27 @@ export default function EcatPage() {
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {subjects.map(subject => (
-            <motion.div key={subject.name} variants={itemVariants} whileHover="hover" whileTap="tap">
-                <Card className="flex flex-col group h-full transition-all duration-300">
-                    <CardHeader>
-                        <CardTitle>{subject.name}</CardTitle>
-                        <CardDescription>{subject.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="mt-auto">
-                        <Button asChild>
-                            <Link href={subject.href}>Start Practice <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        ))}
+        {subjects.map(subject => {
+            const Icon = subject.icon;
+            return (
+                 <motion.div key={subject.name} variants={itemVariants} whileHover="hover" whileTap="tap">
+                    <Card className="flex flex-col group h-full transition-all duration-300">
+                        <CardHeader className="flex-row items-center gap-4">
+                            {Icon && <Icon className="h-8 w-8 text-primary shrink-0" />}
+                            <div>
+                                <CardTitle>{subject.name}</CardTitle>
+                                <CardDescription className="mt-1">{subject.description}</CardDescription>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="mt-auto">
+                            <Button asChild>
+                                <Link href={`/ecat/${subject.slug}`}>Start Practice <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )
+        })}
         <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 lg:col-span-3">
              <Card className="bg-primary text-primary-foreground flex flex-col md:flex-row items-center justify-between p-6">
                 <div className="mb-4 md:mb-0">

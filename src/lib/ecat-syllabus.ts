@@ -1,4 +1,11 @@
 
+import type { ComponentType, SVGProps } from 'react';
+import { PhysicsIcon } from '@/components/icons/physics-icon';
+import { MathIcon } from '@/components/icons/math-icon';
+import { EnglishIcon } from '@/components/icons/english-icon';
+import { ChemistryIcon } from '@/components/icons/chemistry-icon';
+import { ComputerScienceIcon } from '@/components/icons/computer-science-icon';
+
 export type Topic = {
   id: string;
   name: string;
@@ -7,6 +14,8 @@ export type Topic = {
 export type Subject = {
   name: string;
   slug: string;
+  description: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   topics: Topic[];
 };
 
@@ -14,6 +23,8 @@ export const ecatSyllabus: Record<string, Subject> = {
   physics: {
     name: "Physics",
     slug: "physics",
+    description: "30 MCQs from FSC Part 1 & 2.",
+    icon: PhysicsIcon,
     topics: [
       { id: "phy-1", name: "Motion and Force (Laws of Motion)" },
       { id: "phy-2", name: "Work and Energy" },
@@ -33,6 +44,8 @@ export const ecatSyllabus: Record<string, Subject> = {
   mathematics: {
     name: "Mathematics",
     slug: "mathematics",
+    description: "30 MCQs from FSC Math Part 1 & 2.",
+    icon: MathIcon,
     topics: [
       { id: "math-1", name: "Functions and Limits" },
       { id: "math-2", name: "Differentiation and Integration" },
@@ -50,6 +63,8 @@ export const ecatSyllabus: Record<string, Subject> = {
   english: {
     name: "English",
     slug: "english",
+    description: "10 MCQs covering grammar and vocabulary.",
+    icon: EnglishIcon,
     topics: [
       { id: "eng-1", name: "Grammar (Tenses, Articles, Prepositions)" },
       { id: "eng-2", name: "Vocabulary (Synonyms, Antonyms, Meanings)" },
@@ -61,6 +76,8 @@ export const ecatSyllabus: Record<string, Subject> = {
   chemistry: {
     name: "Chemistry",
     slug: "chemistry",
+    description: "Optional section with 30 MCQs.",
+    icon: ChemistryIcon,
     topics: [
       { id: "chem-1", name: "Atomic Structure" },
       { id: "chem-2", name: "Chemical Bonding" },
@@ -77,6 +94,8 @@ export const ecatSyllabus: Record<string, Subject> = {
   "computer-science": {
     name: "Computer Science",
     slug: "computer-science",
+    description: "Optional section with 30 MCQs.",
+    icon: ComputerScienceIcon,
     topics: [
       { id: "cs-1", name: "Basics of Computer" },
       { id: "cs-2", name: "Data types, Operators" },

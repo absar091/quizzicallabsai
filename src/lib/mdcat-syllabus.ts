@@ -1,4 +1,11 @@
 
+import type { ComponentType, SVGProps } from 'react';
+import { BiologyIcon } from '@/components/icons/biology-icon';
+import { ChemistryIcon } from '@/components/icons/chemistry-icon';
+import { PhysicsIcon } from '@/components/icons/physics-icon';
+import { EnglishIcon } from '@/components/icons/english-icon';
+import { LogicalReasoningIcon } from '@/components/icons/logical-reasoning-icon';
+
 export type LearningObjective = {
   id: string;
   text: string;
@@ -19,6 +26,8 @@ export type Chapter = {
 export type Subject = {
   name: string;
   slug: string;
+  description: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   chapters: Chapter[];
 };
 
@@ -26,6 +35,8 @@ export const mdcatSyllabus: Record<string, Subject> = {
   biology: {
     name: "Biology",
     slug: "biology",
+    description: "Comprehensive tests covering all biology topics.",
+    icon: BiologyIcon,
     chapters: [
       { id: "bio-1", name: "Acellular Life", subtopics: [
           { id: "bio-1-1", name: "Viruses", learningObjectives: [
@@ -223,6 +234,8 @@ export const mdcatSyllabus: Record<string, Subject> = {
   chemistry: {
     name: "Chemistry",
     slug: "chemistry",
+    description: "Test your knowledge in organic and inorganic chemistry.",
+    icon: ChemistryIcon,
     chapters: [
         { id: "chem-1", name: "Introduction to Fundamental Concepts of Chemistry", subtopics: [
             { id: "chem-1-1", name: "Moles and Avogadro's Numbers", learningObjectives: [
@@ -583,6 +596,8 @@ export const mdcatSyllabus: Record<string, Subject> = {
   physics: {
     name: "Physics",
     slug: "physics",
+    description: "Practice problems from mechanics to modern physics.",
+    icon: PhysicsIcon,
     chapters: [
         { id: "phy-1", name: "Vectors and Equilibrium", subtopics: [
             { id: "phy-1-1", name: "Addition of Vectors (Rectangular Components)", learningObjectives: [
@@ -753,6 +768,8 @@ export const mdcatSyllabus: Record<string, Subject> = {
   english: {
     name: "English",
     slug: "english",
+    description: "Improve your grammar, vocabulary, and comprehension skills.",
+    icon: EnglishIcon,
     chapters: [
         { id: "eng-1", name: "Reading and Thinking Skills", subtopics: [
             { id: "eng-1-1", name: "Reading and Thinking Skills", learningObjectives: [
@@ -792,6 +809,8 @@ export const mdcatSyllabus: Record<string, Subject> = {
   "logical-reasoning": {
     name: "Logical Reasoning",
     slug: "logical-reasoning",
+    description: "Sharpen your critical thinking and problem-solving abilities.",
+    icon: LogicalReasoningIcon,
     chapters: [
         { id: "lr-1", name: "Critical Thinking", subtopics: [
             { id: "lr-1-1", name: "Critical Thinking", learningObjectives: [
