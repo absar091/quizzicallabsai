@@ -5,14 +5,82 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, ClipboardSignature, FileText } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+
+
+const FeatureCard1 = () => (
+  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+    <div className="space-y-4">
+      <CardHeader className="p-0">
+        <CardTitle className="text-xl">Custom Quiz Setup</CardTitle>
+        <CardDescription>What topic do you want to learn?</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="e.g., The Solar System"
+            className="w-full p-3 rounded-lg border bg-background"
+            readOnly
+          />
+          <div className="flex justify-between gap-2">
+            <Button variant="outline" className="w-full">Easy</Button>
+            <Button variant="default" className="w-full">Medium</Button>
+            <Button variant="outline" className="w-full">Hard</Button>
+          </div>
+          <div className="flex items-center space-x-2">
+             <CheckCircle className="h-5 w-5 text-primary" />
+             <span className="text-sm">Multiple Choice</span>
+          </div>
+           <div className="flex items-center space-x-2 text-muted-foreground">
+             <CheckCircle className="h-5 w-5 " />
+             <span className="text-sm">Descriptive</span>
+          </div>
+        </div>
+      </CardContent>
+    </div>
+    <Button size="lg" className="w-full bg-accent text-accent-foreground">
+      <Sparkles className="mr-2 h-4 w-4" /> Generate Quiz
+    </Button>
+  </div>
+);
+
+const FeatureCard2 = () => (
+  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+     <div className="space-y-4">
+      <CardHeader className="p-0">
+        <CardTitle className="text-xl">MDCAT: Biology</CardTitle>
+        <CardDescription>Chapter: Biological Molecules</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="space-y-3">
+          <p className="font-semibold text-base">1. Which of these is a polysaccharide?</p>
+          <div className="space-y-2">
+            <div className="p-3 rounded-lg border bg-background">Glucose</div>
+            <div className="p-3 rounded-lg border bg-primary/10 border-primary">Cellulose</div>
+            <div className="p-3 rounded-lg border bg-background">Fructose</div>
+            <div className="p-3 rounded-lg border bg-background">Lactose</div>
+          </div>
+        </div>
+      </CardContent>
+    </div>
+     <div className="space-y-2">
+      <Button variant="outline" size="lg" className="w-full">
+        <BookOpen className="mr-2 h-4 w-4"/>
+        View Syllabus
+      </Button>
+      <Button size="lg" className="w-full">
+        Start Test <ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    </div>
+  </div>
+);
 
 
 const features = [
@@ -20,15 +88,13 @@ const features = [
     icon: BotMessageSquare,
     title: "The most intuitive quiz maker",
     description: "Create tailored quizzes based on topic, difficulty, and question type in seconds.",
-    image: "https://placehold.co/500x700.png",
-    dataAiHint: "quiz mobile",
+    card: <FeatureCard1 />
   },
   {
     icon: GraduationCap,
-    title: "Make the most of every quiz taker",
-    description: "Practice with specialized tests and full-length mock exams for major entry tests.",
-    image: "https://placehold.co/500x700.png",
-    dataAiHint: "student learning",
+    title: "Excel in your entry tests",
+    description: "Practice with specialized tests and full-length mock exams for MDCAT, ECAT, and NTS.",
+    card: <FeatureCard2 />
   },
 ];
 
@@ -96,8 +162,8 @@ export default function Home() {
                                 <Link href="/how-to-use">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
                              </Button>
                         </div>
-                        <div className="relative h-[500px] w-full">
-                           <Image src={feature.image} alt={feature.title} layout="fill" objectFit="contain" className="rounded-xl" data-ai-hint={feature.dataAiHint} />
+                        <div>
+                           {feature.card}
                         </div>
                     </div>
                 ))}
