@@ -41,14 +41,10 @@ const chartConfig = {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
+  const [bookmarkedQuestionsCount, setBookmarkedQuestionsCount] = useState(0);
   const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
   const [lastQuizTopic, setLastQuizTopic] = useState<string | null>(null);
   
-  const [reviewing, setReviewing] = useState(false);
-  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
-
   useEffect(() => {
     async function loadData() {
       if (!user) return;
@@ -61,7 +57,7 @@ export default function DashboardPage() {
         getQuizResults(user.uid)
       ]);
       
-      setBookmarkedQuestions(localBookmarks);
+      setBookmarkedQuestionsCount(localBookmarks.length);
       setRecentActivity(localActivity);
       
       if (localActivity.length > 0) {
@@ -78,10 +74,10 @@ export default function DashboardPage() {
           get(activityRef)
       ]);
 
-      const firebaseBookmarks: BookmarkedQuestion[] = [];
+      let firebaseBookmarksCount = 0;
       if (bookmarksSnapshot.exists()) {
-          const val = bookmarksSnapshot.val();
-          Object.keys(val).forEach(key => firebaseBookmarks.push(val[key]));
+          firebaseBookmarksCount = Object.keys(bookmarksSnapshot.val()).length;
+          // Sync bookmarks if needed, but not strictly required for just the count
       }
       
       const firebaseActivityData: QuizResult[] = activitySnapshot.exists() ? Object.values(activitySnapshot.val()) as QuizResult[] : [];
@@ -90,9 +86,8 @@ export default function DashboardPage() {
       firebaseActivityData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
       // --- Step 3: Update state and IndexedDB if Firebase has newer data ---
-      if (firebaseBookmarks.length > localBookmarks.length) {
-          setBookmarkedQuestions(firebaseBookmarks);
-          for (const bookmark of firebaseBookmarks) { await saveBookmark(bookmark); }
+      if (firebaseBookmarksCount > localBookmarks.length) {
+          setBookmarkedQuestionsCount(firebaseBookmarksCount);
       }
       if (firebaseActivityData.length > localActivity.length) {
           setRecentActivity(firebaseActivityData);
@@ -105,34 +100,7 @@ export default function DashboardPage() {
 
     loadData();
   }, [user]);
-  
-  const clearBookmark = async (questionToRemove: string) => {
-    if(user) {
-        // Use btoa for a safe key
-        const bookmarkId = btoa(questionToRemove);
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-        await remove(bookmarkRef);
-        await deleteBookmark(user.uid, questionToRemove);
-        const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
-        setBookmarkedQuestions(updatedBookmarks);
-    }
-  }
 
-  const startReview = () => {
-    setReviewing(true);
-    setCurrentReviewIndex(0);
-    setShowAnswer(false);
-  }
-
-  const nextReviewQuestion = () => {
-    if(currentReviewIndex < bookmarkedQuestions.length - 1) {
-      setCurrentReviewIndex(currentReviewIndex + 1);
-      setShowAnswer(false);
-    } else {
-      setReviewing(false);
-    }
-  }
-  
   const processChartData = () => {
     const topicScores: {[key: string]: {totalScore: number, count: number}} = {};
     recentActivity.forEach(activity => {
@@ -268,76 +236,37 @@ export default function DashboardPage() {
         </div>
 
         <div className="lg:col-span-1 space-y-8">
-           <div>
-             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
-              <BookMarked className="h-6 w-6" /> Bookmarked Questions
-            </h2>
-            <Card>
-              {reviewing && bookmarkedQuestions.length > 0 ? (
-                 <CardContent className="pt-6">
-                   <div className="p-4 bg-muted rounded-lg">
-                     <p className="font-semibold text-lg">{bookmarkedQuestions[currentReviewIndex].question}</p>
-                     <p className="text-xs text-muted-foreground mt-1">Topic: {bookmarkedQuestions[currentReviewIndex].topic}</p>
-                     
-                     <div className="mt-4">
-                        {showAnswer ? (
-                           <div>
-                            <p className="text-sm text-primary mt-2 font-semibold">Correct Answer: {bookmarkedQuestions[currentReviewIndex].correctAnswer}</p>
-                            <Button onClick={() => setShowAnswer(false)} variant="outline" size="sm" className="mt-2"><EyeOff className="mr-2 h-4 w-4" /> Hide Answer</Button>
-                           </div>
-                        ) : (
-                           <Button onClick={() => setShowAnswer(true)} variant="outline" size="sm"><Eye className="mr-2 h-4 w-4" /> Show Answer</Button>
-                        )}
-                     </div>
-                   </div>
-                 </CardContent>
-              ) : (
-                <CardContent className="pt-6">
-                   {bookmarkedQuestions.length > 0 ? (
-                     <ScrollArea className="h-[200px] pr-4">
-                       <ul className="space-y-4">
-                          {bookmarkedQuestions.map((q, index) => (
-                            <li key={index} className="p-4 bg-muted rounded-lg">
-                              <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                  <p className="font-semibold pr-4">{q.question}</p>
-                                  <p className="text-sm text-primary mt-2">Correct Answer: {q.correctAnswer}</p>
-                                  <p className="text-xs text-muted-foreground mt-1">Topic: {q.topic}</p>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => clearBookmark(q.question)}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </li>
-                          ))}
-                       </ul>
-                     </ScrollArea>
-                  ) : (
-                    <div className="text-center py-8">
-                       <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+           <Card>
+            <CardHeader className="flex-row items-center justify-between">
+                <div>
+                   <CardTitle className="flex items-center gap-2">
+                      <BookMarked /> Bookmarked
+                   </CardTitle>
+                   <CardDescription>
+                       Review questions you saved.
+                   </CardDescription>
+                </div>
+                 <h2 className="text-3xl font-bold text-primary">{bookmarkedQuestionsCount}</h2>
+            </CardHeader>
+            <CardContent>
+                {bookmarkedQuestionsCount > 0 ? (
+                    <p className="text-sm text-muted-foreground">You have {bookmarkedQuestionsCount} questions saved for review. Keep it up!</p>
+                ) : (
+                    <div className="text-center py-4">
+                       <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
                        <p className="text-muted-foreground">You haven't bookmarked any questions yet.</p>
-                        <p className="text-xs text-muted-foreground mt-1">Bookmark questions during a quiz to review them later.</p>
+                       <p className="text-xs text-muted-foreground mt-1">Bookmark questions during a quiz to review them later.</p>
                     </div>
-                  )}
-                </CardContent>
-              )}
-               <CardFooter className="flex justify-center border-t pt-4">
-                  {reviewing ? (
-                      <div className="flex gap-2">
-                          <Button onClick={nextReviewQuestion}>
-                            {currentReviewIndex < bookmarkedQuestions.length - 1 ? "Next Question" : "Finish Review"}
-                          </Button>
-                          <Button variant="outline" onClick={() => setReviewing(false)}>End Session</Button>
-                      </div>
-                  ) : (
-                      <Button onClick={startReview} disabled={bookmarkedQuestions.length === 0}>
-                          <PlayCircle className="mr-2 h-4 w-4" />
-                          Start Review Session
-                      </Button>
-                  )}
-              </CardFooter>
-            </Card>
-          </div>
+                )}
+            </CardContent>
+            <CardFooter className="border-t pt-4">
+                <Button asChild className="w-full">
+                    <Link href="/bookmarks">
+                       <PlayCircle className="mr-2 h-4 w-4" /> Go to Bookmarks
+                    </Link>
+                </Button>
+            </CardFooter>
+          </Card>
 
            <div>
             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><Activity className="h-6 w-6"/> Recent Activity</h2>

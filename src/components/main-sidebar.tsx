@@ -14,6 +14,7 @@ import {
   BookOpen,
   ClipboardSignature,
   HelpCircle,
+  BookMarked,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ import { Logo } from './logo';
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/bookmarks", label: "Bookmarks", icon: BookMarked },
 ];
 
 const generationTools = [
