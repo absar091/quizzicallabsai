@@ -3,11 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BrainCircuit, Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github } from 'lucide-react';
+import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
+import { Logo } from './logo';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -59,7 +60,7 @@ export function Footer() {
                     <div className="md:col-span-4">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+                                <Logo className="h-5 w-5 text-primary-foreground" />
                             </div>
                             <span className="text-xl font-bold">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
                         </div>
