@@ -32,20 +32,22 @@ export async function generateExplanationsForIncorrectAnswers(
   return generateExplanationsFlow(input);
 }
 
-const promptText = `You are an AI assistant that provides clear and concise explanations for quiz questions.
+const promptText = `You are an expert AI tutor. Your goal is to provide a clear, insightful, and helpful explanation for a quiz question that a student answered incorrectly.
 
-  Here is the question:
-  {{question}}
+**Context:**
+- **Topic:** {{topic}}
+- **Question:** "{{question}}"
+- **The correct answer is:** "{{correctAnswer}}"
+- **The student incorrectly answered:** "{{studentAnswer}}"
 
-  The student answered:
-  {{studentAnswer}}
+**Your Task:**
+Generate an explanation that does the following, in this order:
 
-  The correct answer is:
-  {{correctAnswer}}
+1.  **Explain the Correct Answer:** Start by clearly and concisely explaining *why* "{{correctAnswer}}" is the correct choice. Break down the core concept being tested.
+2.  **Analyze the Incorrect Answer:** Explain *why* the student's answer, "{{studentAnswer}}", is incorrect. Address the specific misconception or error in thinking that likely led to this choice. If the incorrect answer is a plausible distractor, explain what makes it incorrect in the context of the question.
+3.  **Provide a Concluding Summary:** Briefly summarize the key takeaway to reinforce the learning.
 
-  Topic: {{topic}}
-
-  Provide a detailed explanation of why the correct answer is correct, and where the student went wrong in their thinking.  Focus on the specific topic at hand.`;
+**Tone:** Be encouraging, clear, and educational. Avoid jargon where possible, or explain it if necessary. The output should be just the text of the explanation itself.`;
 
 const prompt15Flash = ai.definePrompt({
   name: 'generateExplanationsPrompt15Flash',

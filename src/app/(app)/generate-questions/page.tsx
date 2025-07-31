@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Eye, BookOpen, Download, AlertTriangle } from "lucide-react";
+import { Loader2, Eye, BookOpen, Download, AlertTriangle, BrainCircuit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,35 @@ const formSchema = z.object({
 });
 
 type Question = GeneratePracticeQuestionsOutput['questions'][0];
+
+const addPdfHeaderAndFooter = (doc: any) => {
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        
+        // Header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text("Quizzicallabs AI", 20, 15);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        // Watermark
+        doc.saveGraphicsState();
+        doc.setFontSize(60);
+        doc.setTextColor(220, 220, 220); // Light grey
+        doc.setGState(new (doc as any).GState({opacity: 0.5}));
+        doc.text("Quizzicallabs AI", pageWidth / 2, 150, { angle: 45, align: 'center' });
+        doc.restoreGraphicsState();
+
+        // Footer
+        doc.setFontSize(8);
+        doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+    }
+}
+
 
 export default function GenerateQuestionsPage() {
   const { toast } = useToast();
@@ -86,48 +115,60 @@ export default function GenerateQuestionsPage() {
     const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const topic = form.getValues('topic');
-    let y = 20;
+    let y = 30;
+    const margin = 20;
+    const maxWidth = doc.internal.pageSize.getWidth() - (margin * 2);
+    const pageHeight = 270;
+
+    const checkPageBreak = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight) {
+            doc.addPage();
+            y = 30;
+        }
+    };
 
     doc.setFontSize(18);
-    doc.text(`Practice Questions: ${form.getValues('subject')}`, 15, y);
+    doc.text(`Practice Questions: ${form.getValues('subject')}`, margin, y);
     y += 10;
     doc.setFontSize(12);
-    doc.text(`Topic(s): ${topic}`, 15, y);
+    doc.text(`Topic(s): ${topic}`, margin, y);
     y += 15;
 
 
     questions.forEach((q, index) => {
-        if (y > 270) {
-            doc.addPage();
-            y = 20;
-        }
+        checkPageBreak(50); // Estimate height for a question block
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        const questionText = doc.splitTextToSize(`${index + 1}. ${q.question}`, 180);
-        doc.text(questionText, 15, y);
+        const questionText = doc.splitTextToSize(`${index + 1}. ${q.question}`, maxWidth);
+        doc.text(questionText, margin, y);
         y += (questionText.length * 5) + 5;
 
         doc.setFont('helvetica', 'normal');
         if (q.options) {
             q.options.forEach((opt, i) => {
-                const optionText = doc.splitTextToSize(`(${String.fromCharCode(97 + i)}) ${opt}`, 170);
-                doc.text(optionText, 20, y);
+                checkPageBreak(5);
+                const optionText = doc.splitTextToSize(`(${String.fromCharCode(97 + i)}) ${opt}`, maxWidth - 5);
+                doc.text(optionText, margin + 5, y);
                 y += (optionText.length * 4) + 2;
             });
         }
         
         y += 3;
         doc.setFont('helvetica', 'bold');
-        const answerText = doc.splitTextToSize(`Answer: ${q.answer}`, 180);
-        doc.text(answerText, 15, y);
+        checkPageBreak(5);
+        const answerText = doc.splitTextToSize(`Answer: ${q.answer}`, maxWidth);
+        doc.text(answerText, margin, y);
         y += (answerText.length * 5);
         
         doc.setFont('helvetica', 'italic');
-        const explanationText = doc.splitTextToSize(`Explanation: ${q.explanation}`, 180);
-        doc.text(explanationText, 15, y);
+        checkPageBreak(10);
+        const explanationText = doc.splitTextToSize(`Explanation: ${q.explanation}`, maxWidth);
+        doc.text(explanationText, margin, y);
         y += (explanationText.length * 5) + 10;
     });
+    
+    addPdfHeaderAndFooter(doc);
 
     doc.save(`${form.getValues('subject').replace(/s+/g, '_')}_practice_questions.pdf`);
   };
