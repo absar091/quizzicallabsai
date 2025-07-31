@@ -49,8 +49,6 @@ import {
     BookmarkedQuestion
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
-import { Logo } from '@/components/logo';
-
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -525,7 +523,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     return (
       <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
         <div className="relative">
-            <Logo className="h-20 w-20 text-primary" />
+            <BrainCircuit className="h-20 w-20 text-primary" />
             <motion.div
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{ rotate: 360 }}

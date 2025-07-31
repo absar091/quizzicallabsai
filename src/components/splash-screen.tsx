@@ -2,7 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Logo } from "./logo";
+import { BrainCircuit } from "lucide-react";
 
 export function SplashScreen() {
   return (
@@ -12,7 +12,7 @@ export function SplashScreen() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
         >
-            <Logo className="h-16 w-16 text-primary" />
+            <BrainCircuit className="h-16 w-16 text-primary" />
         </motion.div>
         <motion.p
              initial={{ opacity: 0 }}
