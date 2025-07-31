@@ -29,7 +29,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { MainSidebar } from "./main-sidebar";
-import { Badge } from "./ui/badge";
 
 const publicNavItems = [
   { href: "#features", label: "Features" },
@@ -101,14 +100,13 @@ export function AppHeader() {
           )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <motion.div
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-background"
               whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <BrainCircuit className="h-5 w-5 text-primary-foreground" />
+              <BrainCircuit className="h-8 w-8 text-foreground" />
             </motion.div>
-            <span className="text-lg font-bold sm:inline-block">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
           </Link>
         </div>
         
@@ -194,8 +192,8 @@ export function AppHeader() {
                     <Button asChild variant="ghost">
                         <Link href="/login">Log In</Link>
                     </Button>
-                    <Button asChild>
-                        <Link href="/signup">Sign Up</Link>
+                    <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Link href="/signup">Create your quiz - it's free</Link>
                     </Button>
                     </div>
                 )}

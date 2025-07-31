@@ -5,76 +5,56 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 210 40% 98%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 210 40% 98%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 173 80% 30%;
-    --primary-foreground: 173 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 35 100% 50%;
-    --accent-foreground: 24 9.8% 10%;
+    /* Custom Brown/Gold Theme Inspired by Typeform */
+    --background: 20 50% 98%; /* Very light, warm off-white */
+    --foreground: 20 20% 15%; /* Dark, warm gray/black for text */
+    --card: 20 50% 100%;
+    --card-foreground: 20 20% 10%;
+    --popover: 20 50% 100%;
+    --popover-foreground: 20 20% 10%;
+    --primary: 35 70% 45%; /* Brownish-gold accent */
+    --primary-foreground: 20 50% 99%;
+    --secondary: 20 20% 94%;
+    --secondary-foreground: 20 20% 10%;
+    --muted: 20 20% 96%;
+    --muted-foreground: 20 15% 45%;
+    --accent: 20 20% 20%; /* Dark accent for buttons */
+    --accent-foreground: 20 50% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 173 80% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 20 20% 90%;
+    --input: 20 20% 92%;
+    --ring: 35 70% 45%;
     --radius: 0.75rem;
 
-    /* Custom Teal Light Theme */
-    --background: 180 35% 97%; /* #f2fafa - very light teal/off-white */
-    --foreground: 180 25% 15%;
-    --card: 180 25% 100%;
-    --card-foreground: 180 25% 10%;
-    --popover: 180 25% 100%;
-    --popover-foreground: 180 25% 10%;
-    --primary: 173 85% 28%; /* #0d9488 - Deep Teal */
-    --primary-foreground: 180 25% 98%;
-    --secondary: 175 40% 90%;
-    --secondary-foreground: 175 25% 10%;
-    --muted: 175 40% 94%;
-    --muted-foreground: 180 15% 40%;
-    --accent: 198 89% 48%; /* #0ea5e9 - Sky Blue */
-    --accent-foreground: 198 100% 98%;
-    --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 180 20% 90%;
-    --input: 180 20% 92%;
-    --ring: 198 89% 48%;
-
-    --chart-1: 175 76% 41%;
-    --chart-2: 38 88% 59%;
+    --chart-1: 35 70% 50%;
+    --chart-2: 20 70% 55%;
   }
  
   .dark {
-    /* Custom Dark Theme from screenshot */
-    --background: 220 20% 12%; /* A very dark blue, almost black */
-    --foreground: 210 40% 98%;
-    --card: 220 20% 16%; /* Slightly lighter than background */
-    --card-foreground: 210 40% 98%;
-    --popover: 220 20% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 173 80% 50%; /* #2dd4bf - A vibrant teal */
-    --primary-foreground: 220 25% 10%;
-    --secondary: 220 15% 22%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 15% 25%; /* Muted controls, like the timer background */
-    --muted-foreground: 210 20% 75%;
-    --accent: 173 80% 50%;
-    --accent-foreground: 220 25% 10%;
+    /* Dark version of the Brown/Gold Theme */
+    --background: 20 20% 8%;
+    --foreground: 20 30% 95%;
+    --card: 20 20% 12%;
+    --card-foreground: 20 30% 95%;
+    --popover: 20 20% 10%;
+    --popover-foreground: 20 30% 95%;
+    --primary: 35 70% 50%; /* Lighter gold for dark mode */
+    --primary-foreground: 20 20% 10%;
+    --secondary: 20 15% 18%;
+    --secondary-foreground: 20 30% 95%;
+    --muted: 20 15% 20%;
+    --muted-foreground: 20 20% 65%;
+    --accent: 20 40% 97%; /* Light accent for buttons */
+    --accent-foreground: 20 20% 10%;
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 15% 28%; /* Borders for the answer options */
-    --input: 220 15% 22%;
-    --ring: 173 80% 50%;
-
-    --chart-1: 173 70% 55%;
-    --chart-2: 38 80% 65%;
+    --border: 20 15% 22%;
+    --input: 20 15% 18%;
+    --ring: 35 70% 50%;
+    
+    --chart-1: 35 70% 55%;
+    --chart-2: 20 70% 60%;
   }
 }
  
