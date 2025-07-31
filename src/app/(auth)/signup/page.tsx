@@ -202,7 +202,7 @@ export default function SignupPage() {
             </div>
              <div className="text-center text-sm text-muted-foreground space-x-2">
               <span>Having trouble?</span>
-              <Link href="/how-to-use" className="font-medium text-primary hover:underline">
+              <Link href="/how-to-use/account-verification" className="font-medium text-primary hover:underline">
                 Need help?
               </Link>
             </div>
