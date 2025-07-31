@@ -9,6 +9,7 @@ import '@/ai/flows/generate-explanations-for-incorrect-answers.ts';
 import '@/ai/flows/generate-study-guide.ts';
 import '@/ai/flows/generate-simple-explanation.ts';
 import '@/ai/flows/generate-nts-quiz.ts';
+import '@/ai/flows/generate-dashboard-insights.ts';
 
 import * as cron from 'node-cron';
 import { sendDailyReminderNotifications } from '@/services/notification-service';

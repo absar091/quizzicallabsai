@@ -11,7 +11,7 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookMarked, Lightbulb, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Sparkles, BrainCircuit } from "lucide-react";
+import { BookMarked, Lightbulb, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Sparkles, BrainCircuit, MessageSquareQuote } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -31,6 +31,8 @@ import { get, ref } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { getBookmarks, getQuizResults, saveQuizResult, QuizResult } from "@/lib/indexed-db";
 import { motion } from "framer-motion";
+import { generateDashboardInsights, GenerateDashboardInsightsOutput } from "@/ai/flows/generate-dashboard-insights";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
   score: {
@@ -64,6 +66,77 @@ const itemVariants = {
 const cardHover = {
     hover: { scale: 1.03, transition: { duration: 0.2 } },
     tap: { scale: 0.98 }
+}
+
+function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResult[], userName: string }) {
+  const [insights, setInsights] = useState<GenerateDashboardInsightsOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    async function fetchInsights() {
+      setIsLoading(true);
+      try {
+        const result = await generateDashboardInsights({
+          userName: userName,
+          quizHistory: recentActivity,
+        });
+        setInsights(result);
+      } catch (error) {
+        console.error("Failed to fetch AI insights:", error);
+        // Set a default state on error
+        setInsights({
+          greeting: `Welcome, ${userName}!`,
+          observation: "Ready to start learning?",
+          suggestion: "Pick a quiz to get started.",
+          suggestedAction: {
+            buttonText: "New Quiz",
+            link: "/generate-quiz",
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchInsights();
+  }, [recentActivity, userName]);
+
+  if (isLoading) {
+    return (
+      <Card className="bg-gradient-to-br from-primary/10 to-background">
+        <CardHeader>
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-10 w-48" />
+        </CardContent>
+      </Card>
+    )
+  }
+  
+  if (!insights) return null;
+
+  return (
+    <Card className="bg-gradient-to-br from-primary/10 via-background to-background">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MessageSquareQuote /> Your AI Coach
+        </CardTitle>
+        <CardDescription>
+          {insights.greeting} {insights.observation} {insights.suggestion}
+        </CardDescription>
+      </CardHeader>
+      {insights.suggestedAction && (
+        <CardContent>
+          <Button asChild>
+            <Link href={insights.suggestedAction.link}>
+              {insights.suggestedAction.buttonText} <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      )}
+    </Card>
+  )
 }
 
 
@@ -192,6 +265,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <div className="lg:col-span-2 space-y-8">
+           <motion.div variants={itemVariants}>
+                <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
+           </motion.div>
+
            <motion.div 
              variants={containerVariants}
              className="grid grid-cols-1 md:grid-cols-3 gap-6"
