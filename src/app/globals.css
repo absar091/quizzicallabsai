@@ -67,3 +67,15 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@layer components {
+  .btn {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .btn:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+  .btn:active {
+    @apply shadow-sm translate-y-0;
+  }
+}

@@ -529,7 +529,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
   const retryIncorrect = () => {
     if (!quiz || !formValues) return;
-    const incorrectQuestions = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i]);
+    const incorrectQuestions = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
     if (incorrectQuestions.length === 0) {
         toast({
             title: "No incorrect answers!",
@@ -582,9 +582,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }
   
   const cardVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-    exit: { opacity: 0 },
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -20 },
   };
 
   if (quiz && !showResults) {
@@ -728,23 +728,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                 const isCorrect = q.correctAnswer === userAnswers[index];
                                 const explanationState = explanations[index];
                                 
-                                // Skip descriptive questions in results if they don't have a correct answer
-                                if (q.type === 'descriptive' && !q.correctAnswer) {
-                                    return (
-                                        <Card key={index} className="bg-muted/30">
-                                            <CardContent className="p-4 sm:p-6">
-                                                 <p className="font-semibold">{index + 1}. {q.question}</p>
-                                                 <div className="text-sm mt-2 space-y-1">
-                                                     <p className="flex items-start gap-2 text-muted-foreground">
-                                                         <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
-                                                         <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
-                                                     </p>
-                                                 </div>
-                                            </CardContent>
-                                        </Card>
-                                    );
-                                }
-                                
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
@@ -754,15 +737,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
                                                     <span>Your answer: {userAnswers[index] || "Skipped"}</span>
                                                  </p>
-                                                 {!isCorrect && (
+                                                 {!isCorrect && q.correctAnswer && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                                         <span>Correct answer: {q.correctAnswer}</span>
                                                      </p>
                                                  )}
+                                                 {q.type === 'descriptive' && !q.correctAnswer && (
+                                                    <p className="flex items-start gap-2 text-muted-foreground">
+                                                         <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
+                                                         <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
+                                                    </p>
+                                                 )}
                                             </div>
                                             
-                                            {q.type !== 'descriptive' && !isCorrect && (
+                                            {!isCorrect && q.type !== 'descriptive' && (
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
                                                         <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
