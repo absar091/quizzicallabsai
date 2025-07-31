@@ -1,9 +1,8 @@
 
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User } from 'lucide-react';
+import { User, BrainCircuit } from 'lucide-react';
 import type { Metadata } from 'next';
-import { Logo } from '@/components/logo';
 
 export const metadata: Metadata = {
     title: "About Us",
@@ -35,7 +34,7 @@ export default function AboutUsPage() {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                    <Logo className="h-6 w-6 text-primary"/>
+                    <BrainCircuit className="h-6 w-6 text-primary"/>
                     About the App
                 </CardTitle>
             </CardHeader>
