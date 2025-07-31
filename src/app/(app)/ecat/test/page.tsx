@@ -25,7 +25,7 @@ function EcatTestFlow() {
     const topic = searchParams.get('topic');
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = searchParams.get('questionStyles') || 'Past Paper Style';
+    const questionStyles = searchParams.get('questionStyles')?.split(',') || ['Past Paper Style'];
 
     useEffect(() => {
         if (!topic) {
@@ -41,7 +41,7 @@ function EcatTestFlow() {
                     difficulty: difficulty as any,
                     numberOfQuestions: Number(numQuestions) || 20,
                     questionTypes: ["Multiple Choice"],
-                    questionStyles: questionStyles.split(','),
+                    questionStyles: questionStyles,
                     timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "ECAT Student",
@@ -108,7 +108,7 @@ function EcatTestFlow() {
                  difficulty: difficulty as any,
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
-                 questionStyles: questionStyles.split(','),
+                 questionStyles: questionStyles,
                  timeLimit: Number(numQuestions) || 20,
                  specificInstructions: ""
             }}
