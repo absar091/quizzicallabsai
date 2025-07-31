@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download } from "lucide-react";
+import { Loader2, Sparkles, BookOpen, Brain, Lightbulb, HelpCircle, Download, BrainCircuit } from "lucide-react";
 
 
 import { Button } from "@/components/ui/button";
@@ -32,27 +32,32 @@ const formSchema = z.object({
   learningStyle: z.string().optional(),
 });
 
-const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
+const addPdfHeaderAndFooter = (doc: any) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
+    const pageWidth = doc.internal.pageSize.getWidth();
     
-    // Header
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text("Quizzicallabs AI", 20, 15);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    
-    // Watermark
-    doc.saveGraphicsState();
-    doc.setFontSize(60);
-    doc.setTextColor(220, 220, 220); // Light grey
-    doc.setGState(new (doc as any).GState({opacity: 0.5}));
-    doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
-    doc.restoreGraphicsState();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        
+        // Header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text("Quizzicallabs AI", 20, 15);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        // Watermark
+        doc.saveGraphicsState();
+        doc.setFontSize(60);
+        doc.setTextColor(220, 220, 220); // Light grey
+        doc.setGState(new (doc as any).GState({opacity: 0.5}));
+        doc.text("Quizzicallabs AI", pageWidth / 2, 150, { angle: 45, align: 'center' });
+        doc.restoreGraphicsState();
 
-    // Footer
-    doc.setFontSize(8);
-    doc.text(`Page ${pageNumber} of ${pageCount}`, 105, 290, { align: 'center' });
+        // Footer
+        doc.setFontSize(8);
+        doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+    }
 }
 
 export default function GenerateStudyGuidePage() {
@@ -102,11 +107,8 @@ export default function GenerateStudyGuidePage() {
         if(y + neededHeight > pageHeight) {
             doc.addPage();
             y = 30;
-            addPdfHeaderAndFooter(doc, (doc as any).internal.getNumberOfPages());
         }
     }
-
-    addPdfHeaderAndFooter(doc, 1);
 
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
@@ -148,24 +150,27 @@ export default function GenerateStudyGuidePage() {
     });
 
     // Analogies
-    checkPageBreak(15);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text("Simple Analogies", margin, y);
-    y += 8;
-    
-    studyGuide.analogies.forEach(analogy => {
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'italic');
-        const analogyLines = doc.splitTextToSize(`"${analogy.analogy}"`, maxWidth);
-        checkPageBreak(analogyLines.length * 5 + 10);
-        doc.text(analogyLines, margin, y);
-        y += analogyLines.length * 5;
+    if (studyGuide.analogies.length > 0) {
+        checkPageBreak(15);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Simple Analogies", margin, y);
+        y += 8;
+        
+        studyGuide.analogies.forEach(analogy => {
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'italic');
+            const analogyLines = doc.splitTextToSize(`"${analogy.analogy}"`, maxWidth);
+            checkPageBreak(analogyLines.length * 5 + 10);
+            doc.text(analogyLines, margin, y);
+            y += analogyLines.length * 5;
 
-        doc.setFont('helvetica', 'normal');
-        doc.text(`(This explains: ${analogy.concept})`, margin, y);
-        y += 10;
-    });
+            doc.setFont('helvetica', 'normal');
+            doc.text(`(This explains: ${analogy.concept})`, margin, y);
+            y += 10;
+        });
+    }
+
 
     // Quiz Yourself
     checkPageBreak(15);
@@ -189,6 +194,7 @@ export default function GenerateStudyGuidePage() {
         y += 10;
     });
 
+    addPdfHeaderAndFooter(doc);
     doc.save(`study_guide_${topic.replace(/\s+/g, '_').toLowerCase()}.pdf`);
   };
 

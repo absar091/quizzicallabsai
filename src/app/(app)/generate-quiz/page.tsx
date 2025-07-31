@@ -76,28 +76,34 @@ interface ExplanationState {
   };
 }
 
-const addPdfHeaderAndFooter = (doc: any, pageNumber: number) => {
+const addPdfHeaderAndFooter = (doc: any) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
+    const pageWidth = doc.internal.pageSize.getWidth();
     
-    // Header
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text("Quizzicallabs AI", 20, 15);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    
-    // Watermark
-    doc.saveGraphicsState();
-    doc.setFontSize(60);
-    doc.setTextColor(220, 220, 220); // Light grey
-    doc.setGState(new (doc as any).GState({opacity: 0.5}));
-    doc.text("Quizzicallabs AI", 105, 150, { angle: 45, align: 'center' });
-    doc.restoreGraphicsState();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        
+        // Header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text("Quizzicallabs AI", 20, 15);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        // Watermark
+        doc.saveGraphicsState();
+        doc.setFontSize(60);
+        doc.setTextColor(220, 220, 220); // Light grey
+        doc.setGState(new (doc as any).GState({opacity: 0.5}));
+        doc.text("Quizzicallabs AI", pageWidth / 2, 150, { angle: 45, align: 'center' });
+        doc.restoreGraphicsState();
 
-    // Footer
-    doc.setFontSize(8);
-    doc.text(`Page ${pageNumber} of ${pageCount}`, 105, 290, { align: 'center' });
+        // Footer
+        doc.setFontSize(8);
+        doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+    }
 }
+
 
 type GenerateQuizPageProps = {
   initialQuiz?: Quiz;
@@ -399,7 +405,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     const margin = 20;
     const maxWidth = doc.internal.pageSize.getWidth() - (margin * 2);
 
-    addPdfHeaderAndFooter(doc, 1);
+    const checkPageBreak = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight) {
+            doc.addPage();
+            y = 30;
+        }
+    };
 
     doc.setFontSize(16);
     doc.text(`Quiz on: ${formValues.topic}`, margin, y);
@@ -408,38 +419,29 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     doc.setFontSize(12);
 
     quiz.forEach((q, i) => {
-        const checkPageBreak = (neededHeight: number) => {
-            if (y + neededHeight > pageHeight) {
-                doc.addPage();
-                y = 30;
-                addPdfHeaderAndFooter(doc, (doc as any).internal.getNumberOfPages());
-            }
-        };
+        checkPageBreak(30); // Estimate height
 
-        const questionText = doc.splitTextToSize(`${i + 1}. ${q.question}`, maxWidth);
-        checkPageBreak(questionText.length * 5 + 5);
-        doc.text(questionText, margin, y);
-        y += (questionText.length * 5) + 5;
+        doc.text(doc.splitTextToSize(`${i + 1}. ${q.question}`, maxWidth), margin, y);
+        y += (doc.splitTextToSize(`${i + 1}. ${q.question}`, maxWidth).length * 5) + 5;
 
         if (q.answers) {
             q.answers.forEach((a) => {
-                const answerText = doc.splitTextToSize(`- ${a}`, maxWidth - 5);
-                checkPageBreak(answerText.length * 4 + 2);
-                doc.text(answerText, margin + 5, y);
-                y += (answerText.length * 4) + 2;
+                checkPageBreak(5);
+                doc.text(doc.splitTextToSize(`- ${a}`, maxWidth - 5), margin + 5, y);
+                y += (doc.splitTextToSize(`- ${a}`, maxWidth - 5).length * 4) + 2;
             });
         }
 
         if (q.correctAnswer) {
-            const correctAnswerText = doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5);
-            checkPageBreak(correctAnswerText.length * 5 + 10);
+            checkPageBreak(15);
             doc.setFont('helvetica', 'bold');
-            doc.text(correctAnswerText, margin + 5, y);
+            doc.text(doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5), margin + 5, y);
             doc.setFont('helvetica', 'normal');
-            y += (correctAnswerText.length * 5) + 10;
+            y += (doc.splitTextToSize(`Correct Answer: ${q.correctAnswer}`, maxWidth - 5).length * 5) + 10;
         }
     });
 
+    addPdfHeaderAndFooter(doc);
     doc.save('quiz_questions.pdf');
   };
 
@@ -449,7 +451,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     const { score, percentage } = calculateScore();
     const doc = new jsPDF();
     
-    addPdfHeaderAndFooter(doc, 1);
+    addPdfHeaderAndFooter(doc);
 
     doc.setFontSize(22);
     doc.text("Quiz Result Card", 105, 40, { align: 'center' });
@@ -460,7 +462,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
     doc.setFontSize(16);
     doc.text(`Score: ${score}/${quiz?.length}`, 20, 90);
-    doc.text(`Percentage: ${percentage.toFixed(2)}%`, 20, 100);
+    doc.text(`Percentage: ${percentage.toFixed(0)}%`, 20, 100);
     doc.text(`Status: ${percentage >= 50 ? 'Pass' : 'Fail'}`, 20, 110);
 
     doc.save('quiz_result_card.pdf');
@@ -513,6 +515,34 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     setExplanations({});
     setFormValues(null);
     formMethods.reset();
+    window.scrollTo(0, 0);
+  };
+
+  const retryIncorrect = () => {
+    if (!quiz || !formValues) return;
+    const incorrectQuestions = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i]);
+    if (incorrectQuestions.length === 0) {
+        toast({
+            title: "No incorrect answers!",
+            description: "You got everything right. Well done!",
+        });
+        return;
+    }
+    
+    const newFormValues = {
+        ...formValues,
+        topic: `Retry: ${formValues.topic}`,
+        numberOfQuestions: incorrectQuestions.length,
+        timeLimit: Math.max(5, Math.ceil(incorrectQuestions.length * 0.75)), // Adjust time limit
+    };
+
+    setQuiz(incorrectQuestions);
+    setFormValues(newFormValues);
+    setCurrentQuestion(0);
+    setUserAnswers(new Array(incorrectQuestions.length).fill(null));
+    setTimeLeft(newFormValues.timeLimit * 60);
+    setShowResults(false);
+    setExplanations({});
     window.scrollTo(0, 0);
   };
   
@@ -651,7 +681,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   
   if (showResults && quiz) {
     const { score, percentage } = calculateScore();
-    const incorrectAnswers = quiz.map((q, i) => ({ ...q, userAnswer: userAnswers[i] })).filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
+    const incorrectAnswers = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
 
     return (
        <div className="max-w-4xl mx-auto">
@@ -682,29 +712,31 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                         </Card>
                     </div>
 
-                    {incorrectAnswers.length > 0 && (
-                        <div>
-                            <h3 className="text-xl font-bold mb-4">Review Incorrect Answers</h3>
-                            <div className="space-y-4">
-                                {incorrectAnswers.map((q, index) => {
-                                    const originalIndex = quiz.findIndex(originalQ => originalQ.question === q.question);
-                                    const explanationState = explanations[originalIndex];
-                                    
-                                    return (
-                                        <Card key={index} className="bg-muted/30">
-                                            <CardContent className="p-4 sm:p-6">
-                                                <p className="font-semibold">{index + 1}. {q.question}</p>
-                                                <div className="text-sm mt-2 space-y-1">
-                                                     <p className="text-destructive flex items-start gap-2">
-                                                        <XCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Your answer: {q.userAnswer || "Skipped"}</span>
-                                                     </p>
+                    <div>
+                        <h3 className="text-xl font-bold mb-4">Review Your Answers</h3>
+                        <div className="space-y-4">
+                            {quiz.map((q, index) => {
+                                const isCorrect = q.correctAnswer === userAnswers[index];
+                                const explanationState = explanations[index];
+                                
+                                return (
+                                    <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
+                                        <CardContent className="p-4 sm:p-6">
+                                            <p className="font-semibold">{index + 1}. {q.question}</p>
+                                            <div className="text-sm mt-2 space-y-1">
+                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
+                                                    {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
+                                                    <span>Your answer: {userAnswers[index] || "Skipped"}</span>
+                                                 </p>
+                                                 {!isCorrect && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                                         <span>Correct answer: {q.correctAnswer}</span>
                                                      </p>
-                                                </div>
-                                                
+                                                 )}
+                                            </div>
+                                            
+                                            {q.type !== 'descriptive' && !isCorrect && (
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
                                                         <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
@@ -719,32 +751,37 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                                          </Alert>
                                                     )}
                                                 </div>
+                                            )}
 
+                                            {!isCorrect && q.type !== 'descriptive' && (
                                                 <div className="flex flex-wrap gap-2 items-center mt-4">
                                                     {!explanationState?.isLoading && !explanationState?.explanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getExplanation(originalIndex)} className="p-0 h-auto">
+                                                         <Button variant="link" size="sm" onClick={() => getExplanation(index)} className="p-0 h-auto">
                                                             <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
                                                         </Button>
                                                     )}
                                                     {explanationState?.isLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
                                                     
                                                      {!explanationState?.isSimpleLoading && !explanationState?.simpleExplanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(originalIndex)} className="p-0 h-auto text-purple-600 dark:text-purple-400">
+                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(index)} className="p-0 h-auto text-purple-600 dark:text-purple-400">
                                                             <Lightbulb className="mr-2 h-4 w-4"/> Explain Like I'm 5
                                                         </Button>
                                                     )}
                                                     {explanationState?.isSimpleLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Simplifying...</div>}
                                                 </div>
-                                            </CardContent>
-                                        </Card>
-                                    )
-                                })}
-                            </div>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })}
                         </div>
-                    )}
+                    </div>
                 </CardContent>
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
                     <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'MDCAT/ECAT Home' : 'Take Another Quiz'}</Button>
+                    {incorrectAnswers.length > 0 && (
+                        <Button onClick={retryIncorrect} variant="outline"><Redo className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
+                    )}
                     <Button variant="outline" asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>
@@ -1043,5 +1080,3 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
-
-    
