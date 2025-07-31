@@ -22,38 +22,34 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, router]);
 
+  if (loading || !user) {
+    return <SplashScreen />;
+  }
+
   return (
-    <AnimatePresence mode="wait">
-      {loading || !user ? (
-        <motion.div key="splash">
-          <SplashScreen />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="app"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex min-h-screen flex-col"
-        >
-          <NotificationHandler />
-          <AppHeader />
-          <main className="flex-1 p-4 md:p-6 lg:p-8 container">
-             <AnimatePresence mode="wait">
-                <motion.div
-                    key={pathname}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    {children}
-                </motion.div>
-            </AnimatePresence>
-          </main>
-          <Footer />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.div
+        key="app-layout"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="flex min-h-screen flex-col"
+      >
+        <NotificationHandler />
+        <AppHeader />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 container">
+           <AnimatePresence mode="wait">
+              <motion.div
+                  key={pathname}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+              >
+                  {children}
+              </motion.div>
+          </AnimatePresence>
+        </main>
+        <Footer />
+      </motion.div>
   );
 }
