@@ -32,9 +32,9 @@ import { Textarea } from "@/components/ui/textarea";
 const formSchema = z.object({
   subject: z.string().min(1, "Subject is required."),
   topic: z.string().min(1, "Topic(s) or chapter(s) are required."),
-  difficulty: z.enum(["easy", "medium", "hard"]),
+  difficulty: z.enum(["easy", "medium", "hard"]).optional(),
   numberOfQuestions: z.number().min(1).max(55),
-  questionType: z.enum(["multiple choice", "true/false", "short answer"]),
+  questionType: z.enum(["multiple choice", "true/false", "short answer"]).optional(),
   learningStyle: z.string().optional(),
 });
 
