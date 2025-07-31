@@ -124,7 +124,7 @@ export default function NtsMockTestPage() {
     return (
       <div>
         <PageHeader
-          title="NTS/NAT Full-Length Mock Test"
+          title="NTS / NAT Full-Length Mock Test"
           description={`Simulate the real exam with ${TOTAL_QUESTIONS} MCQs in ${TOTAL_TIME} minutes.`}
         />
         <Card className="max-w-2xl mx-auto">
