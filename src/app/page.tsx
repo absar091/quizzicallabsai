@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, ClipboardSignature, FileText } from "lucide-react";
 import Link from "next/link";
@@ -12,12 +12,8 @@ import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-const motion = {
-  div: dynamic(() => import('framer-motion').then(mod => mod.motion.div)),
-  h1: dynamic(() => import('framer-motion').then(mod => mod.motion.h1)),
-  p: dynamic(() => import('framer-motion').then(mod => mod.motion.p)),
-};
 
 const features = [
   {
