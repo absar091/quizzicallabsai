@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,6 +7,20 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
+import HelpBot from "./help-bot";
+import { useAuth } from "@/hooks/useAuth";
+
+function AppContent({ children }: { children: React.ReactNode }) {
+    const { user } = useAuth();
+    return (
+        <>
+            {children}
+            <Toaster />
+            <CookieConsentBanner />
+            {user && <HelpBot />}
+        </>
+    );
+}
 
 export default function AppProviders({
   children,
@@ -32,11 +47,7 @@ export default function AppProviders({
         {isSplashLoading ? (
           <SplashScreen onAnimationComplete={() => setIsSplashLoading(false)} />
         ) : (
-          <>
-            {children}
-            <Toaster />
-            <CookieConsentBanner />
-          </>
+          <AppContent>{children}</AppContent>
         )}
       </AuthProvider>
     </ThemeProvider>
