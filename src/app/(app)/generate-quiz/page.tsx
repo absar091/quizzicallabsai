@@ -115,26 +115,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-
-  // Use a ref to store initial props to prevent re-initialization on re-renders
-  const initialPropsRef = useRef({ initialQuiz, initialFormValues });
-
-  const [quiz, setQuiz] = useState<Quiz | null>(() => initialPropsRef.current.initialQuiz || null);
+  
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<(string | null)[]>(() => 
-    initialPropsRef.current.initialQuiz ? new Array(initialPropsRef.current.initialQuiz.length).fill(null) : []
-  );
-  const [showResults, setShowResults] = useState(() => !initialPropsRef.current.initialQuiz);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
+  const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
   
-  const [formValues, setFormValues] = useState<QuizFormValues | null>(() => initialPropsRef.current.initialFormValues || null);
-  const [timeLeft, setTimeLeft] = useState(() => (initialPropsRef.current.initialFormValues?.timeLimit || 0) * 60);
+  const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
+  const hasInitialized = useRef(false);
+
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialFormValues || {
+    defaultValues: {
       topic: "",
       difficulty: "medium",
       numberOfQuestions: 10,
@@ -164,7 +160,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
 
   const handleSubmit = useCallback(async () => {
-    // For mock tests, use the override function if it exists
     if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
         (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
         return;
@@ -193,54 +188,70 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
 
   useEffect(() => {
-    const { initialQuiz, initialFormValues } = initialPropsRef.current;
-    if (initialQuiz && initialFormValues) {
+    // This effect handles the one-time initialization from props or IndexedDB
+    const initializeQuiz = async () => {
+      if (hasInitialized.current) return;
+      
+      let loadedFromStorage = false;
+
+      // Try loading from props first (for mock tests)
+      if (initialQuiz && initialFormValues) {
         setQuiz(initialQuiz);
         setUserAnswers(new Array(initialQuiz.length).fill(null));
         setTimeLeft(initialFormValues.timeLimit * 60);
         setFormValues(initialFormValues);
+        loadedFromStorage = true;
         
         if (window.location.pathname.includes('mock-test')) {
              const isShowingResults = initialQuiz.length > 81; 
-             if(isShowingResults) {
+             if(isShowingResults && (window as any).__MOCK_TEST_ANSWERS__) {
+                 setUserAnswers((window as any).__MOCK_TEST_ANSWERS__);
                  setShowResults(true);
-                 const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
-                 if (mockTestAnswers) {
-                     setUserAnswers(mockTestAnswers);
-                 }
              } else {
                  setShowResults(false);
              }
         }
-    }
-  }, []);
+      } else if (user) {
+        // Fallback to loading from IndexedDB (for resumed quizzes)
+        const savedState = await getQuizState(user.uid);
+        if (savedState) {
+            setQuiz(savedState.quiz);
+            setCurrentQuestion(savedState.currentQuestion);
+            setUserAnswers(savedState.userAnswers);
+            setTimeLeft(savedState.timeLeft);
+            setFormValues(savedState.formValues);
+            setShowResults(false);
+            loadedFromStorage = true;
+        }
+      }
+      
+      if (!loadedFromStorage) {
+        setShowResults(true); // Show form if nothing to load
+      }
+      
+      hasInitialized.current = true;
+    };
+
+    initializeQuiz();
+  }, [user, initialQuiz, initialFormValues]);
+
 
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
 
   useEffect(() => {
-    async function loadSavedState() {
-        if (user && !initialPropsRef.current.initialQuiz) { 
-            const savedState = await getQuizState(user.uid);
-            if (savedState) {
-                setQuiz(savedState.quiz);
-                setCurrentQuestion(savedState.currentQuestion);
-                setUserAnswers(savedState.userAnswers);
-                setTimeLeft(savedState.timeLeft);
-                setFormValues(savedState.formValues);
-                setShowResults(false);
-            }
-        }
+    async function loadBookmarks() {
         if (user) {
             const bookmarks = await getBookmarks(user.uid);
             setBookmarkedQuestions(bookmarks);
         }
     }
-    loadSavedState();
+    loadBookmarks();
   }, [user]);
 
   useEffect(() => {
     async function persistState() {
-        if (user && quiz && !showResults && !initialPropsRef.current.initialQuiz) {
+        // Only persist if there's a quiz, not showing results, and it's not a pre-defined mock test
+        if (user && quiz && !showResults && !initialQuiz) {
             await saveQuizState(user.uid, {
                 quiz,
                 currentQuestion,
@@ -251,7 +262,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         }
     }
     persistState();
-  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user]);
+  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
 
 
   useEffect(() => {
@@ -317,7 +328,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
-        setShowResults(false); // Ensure we are in quiz-taking mode
+        setShowResults(false);
         window.scrollTo(0, 0);
       }, 500)
 
@@ -358,7 +369,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion(currentQuestion + 1);
     }
   };
 
@@ -526,8 +537,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   };
 
   const resetQuiz = async () => {
-    if(initialPropsRef.current.initialQuiz) {
-        // For MDCAT/ECAT quizzes, go back to the respective home
+    if(initialQuiz) {
         if (window.location.pathname.includes('mdcat')) {
            window.location.href = '/mdcat';
         } else if (window.location.pathname.includes('ecat')) {
@@ -816,7 +826,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                     </div>
                 </CardContent>
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
-                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialPropsRef.current.initialQuiz ? 'Go to Prep Home' : 'Take Another Quiz'}</Button>
+                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'Go to Prep Home' : 'Take Another Quiz'}</Button>
                     {incorrectAnswers.length > 0 && (
                         <Button onClick={retryIncorrect} variant="outline"><Redo className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
                     )}
@@ -1139,3 +1149,5 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
