@@ -81,22 +81,6 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 
 Generate the quiz now. Your output must be a valid JSON object with exactly {{{numberOfQuestions}}} questions.`;
 
-const prompt15Flash = ai.definePrompt({
-  name: 'generateNtsQuizPrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateNtsQuizInputSchema},
-  output: {schema: GenerateNtsQuizOutputSchema},
-  prompt: promptText,
-});
-
-const prompt20Flash = ai.definePrompt({
-  name: 'generateNtsQuizPrompt20Flash',
-  model: googleAI.model('gemini-2.0-flash'),
-  input: {schema: GenerateNtsQuizInputSchema},
-  output: {schema: GenerateNtsQuizOutputSchema},
-  prompt: promptText,
-});
-
 
 const generateNtsQuizFlow = ai.defineFlow(
   {
@@ -105,18 +89,12 @@ const generateNtsQuizFlow = ai.defineFlow(
     outputSchema: GenerateNtsQuizOutputSchema,
   },
   async input => {
-    try {
-        const {output} = await prompt15Flash(input);
-        return output!;
-    } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return output!;
-        }
-        // Re-throw other errors
-        throw error;
-    }
+    const { output } = await ai.generate({
+        model: googleAI.model('gemini-1.5-flash'),
+        prompt: promptText,
+        input: input,
+        output: { schema: GenerateNtsQuizOutputSchema },
+    });
+    return output!;
   }
 );
