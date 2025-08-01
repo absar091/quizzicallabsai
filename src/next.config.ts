@@ -2,6 +2,7 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  // Trivial change to force cache invalidation
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
