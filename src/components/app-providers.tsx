@@ -1,6 +1,6 @@
-
 "use client";
 
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,6 +12,15 @@ export default function AppProviders({
 }: {
   children: React.ReactNode;
 }) {
+  const [isSplashLoading, setIsSplashLoading] = useState(true);
+
+  useEffect(() => {
+    const splashShown = sessionStorage.getItem('splashShown');
+    if (splashShown) {
+      setIsSplashLoading(false);
+    }
+  }, []);
+
   return (
     <ThemeProvider
       attribute="class"
@@ -20,10 +29,15 @@ export default function AppProviders({
       disableTransitionOnChange
     >
       <AuthProvider>
-        <SplashScreen />
-        {children}
-        <Toaster />
-        <CookieConsentBanner />
+        {isSplashLoading ? (
+          <SplashScreen onAnimationComplete={() => setIsSplashLoading(false)} />
+        ) : (
+          <>
+            {children}
+            <Toaster />
+            <CookieConsentBanner />
+          </>
+        )}
       </AuthProvider>
     </ThemeProvider>
   );

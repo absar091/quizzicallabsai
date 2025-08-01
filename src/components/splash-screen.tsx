@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,7 +17,11 @@ const createSpans = (text: string, baseDelay: number) => {
     });
 };
 
-export function SplashScreen() {
+type SplashScreenProps = {
+    onAnimationComplete: () => void;
+};
+
+export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -29,13 +32,16 @@ export function SplashScreen() {
       const totalAnimationTime = (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 1500;
       
       const timer = setTimeout(() => {
-        setIsVisible(false);
         sessionStorage.setItem('splashShown', 'true');
+        onAnimationComplete();
       }, totalAnimationTime);
 
       return () => clearTimeout(timer);
+    } else {
+      // If already shown, immediately signal completion.
+      onAnimationComplete();
     }
-  }, []);
+  }, [onAnimationComplete]);
 
   return (
     <AnimatePresence>
