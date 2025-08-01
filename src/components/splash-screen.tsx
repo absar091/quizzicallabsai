@@ -1,35 +1,58 @@
 
 "use client";
 
-import { motion } from "framer-motion";
-import { BrainCircuit, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+const primaryText = "Quizzicalabs™";
+const secondaryText = "— By Absar Ahmad Rao";
+const letterStaggerDelay = 0.07;
+
+const createSpans = (text: string, baseDelay: number) => {
+    return text.split('').map((char, index) => {
+        const style = { animationDelay: `${baseDelay + (index * letterStaggerDelay)}s` };
+        if (char === ' ') {
+            return <span key={index} className="letter space" style={style}>&nbsp;</span>;
+        }
+        return <span key={index} className="letter" style={style}>{char}</span>;
+    });
+};
 
 export function SplashScreen() {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    // This timer can be adjusted based on the total animation duration
+    const timer = setTimeout(() => {
+      setShow(false);
+    }, (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 1000); // Wait a bit longer
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const secondaryAnimationStartTime = (primaryText.length) * letterStaggerDelay;
+
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background flex-col gap-4">
-        <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="relative"
-        >
-            <BrainCircuit className="h-20 w-20 text-primary" />
-             <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+    <AnimatePresence>
+        {show && (
+            <motion.div 
+              id="splashScreen"
+              exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeIn" } }}
             >
-                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+                <div className="logo-container">
+                    <div className="name-container">
+                        <div className="text-wrapper">
+                            <div className="name-group primary">
+                                {createSpans(primaryText, 0)}
+                            </div>
+                            <div className="name-group secondary">
+                                {createSpans(secondaryText, secondaryAnimationStartTime)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </motion.div>
-        </motion.div>
-        <motion.p
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ duration: 0.8, delay: 0.5, ease: "easeInOut" }}
-             className="text-muted-foreground"
-        >
-            Loading your experience...
-        </motion.p>
-    </div>
+        )}
+    </AnimatePresence>
   );
 }

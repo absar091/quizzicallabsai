@@ -31,7 +31,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         key="app-layout"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+        transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}
         className="flex min-h-screen flex-col"
       >
         <NotificationHandler />
