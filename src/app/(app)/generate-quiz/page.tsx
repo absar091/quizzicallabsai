@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -116,14 +115,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [quiz, setQuiz] = useState<Quiz | null>(initialQuiz || null);
+
+  // Use a ref to store initial props to prevent re-initialization on re-renders
+  const initialPropsRef = useRef({ initialQuiz, initialFormValues });
+
+  const [quiz, setQuiz] = useState<Quiz | null>(() => initialPropsRef.current.initialQuiz || null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<(string | null)[]>(initialQuiz ? new Array(initialQuiz.length).fill(null) : []);
-  const [showResults, setShowResults] = useState(initialQuiz ? false : !initialFormValues);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>(() => 
+    initialPropsRef.current.initialQuiz ? new Array(initialPropsRef.current.initialQuiz.length).fill(null) : []
+  );
+  const [showResults, setShowResults] = useState(() => !initialPropsRef.current.initialQuiz);
   const [explanations, setExplanations] = useState<ExplanationState>({});
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
-  const [formValues, setFormValues] = useState<QuizFormValues | null>(initialFormValues || null);
+  
+  const [formValues, setFormValues] = useState<QuizFormValues | null>(() => initialPropsRef.current.initialFormValues || null);
+  const [timeLeft, setTimeLeft] = useState(() => (initialPropsRef.current.initialFormValues?.timeLimit || 0) * 60);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
   const formMethods = useForm<QuizFormValues>({
@@ -138,13 +144,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       specificInstructions: "",
     },
   });
-  
+
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
     const score = quiz.reduce((acc, question, index) => {
       const userAnswer = userAnswers[index];
       const correctAnswer = question.correctAnswer;
-      // For descriptive questions, correctAnswer might be undefined, so they are not scored.
       if (question.type === 'descriptive' || correctAnswer === undefined) {
         return acc;
       }
@@ -178,7 +183,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
             percentage,
             date: new Date().toISOString(),
         };
-        // Save to Firebase first, then to local IndexedDB
         const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
         await set(resultRef, newResult);
         await saveQuizResult(newResult);
@@ -189,19 +193,17 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
 
   useEffect(() => {
+    const { initialQuiz, initialFormValues } = initialPropsRef.current;
     if (initialQuiz && initialFormValues) {
         setQuiz(initialQuiz);
         setUserAnswers(new Array(initialQuiz.length).fill(null));
         setTimeLeft(initialFormValues.timeLimit * 60);
         setFormValues(initialFormValues);
-        // This is a special case for when we are showing a pre-generated quiz like a mock test section
-        // or showing the final results of a mock test.
+        
         if (window.location.pathname.includes('mock-test')) {
-            // Check if we are showing results or taking the test
-             const isShowingResults = initialQuiz.length > 81; // A full mock test has more than 81 questions
+             const isShowingResults = initialQuiz.length > 81; 
              if(isShowingResults) {
                  setShowResults(true);
-                 // We need to receive the user answers for the results page
                  const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
                  if (mockTestAnswers) {
                      setUserAnswers(mockTestAnswers);
@@ -211,11 +213,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
              }
         }
     }
-  }, [initialQuiz, initialFormValues])
+  }, []);
+
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
 
   useEffect(() => {
     async function loadSavedState() {
-        if (user && !initialQuiz) { // Don't load saved state for special quizzes like MDCAT
+        if (user && !initialPropsRef.current.initialQuiz) { 
             const savedState = await getQuizState(user.uid);
             if (savedState) {
                 setQuiz(savedState.quiz);
@@ -223,18 +227,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                 setUserAnswers(savedState.userAnswers);
                 setTimeLeft(savedState.timeLeft);
                 setFormValues(savedState.formValues);
+                setShowResults(false);
             }
+        }
+        if (user) {
             const bookmarks = await getBookmarks(user.uid);
             setBookmarkedQuestions(bookmarks);
         }
     }
     loadSavedState();
-  }, [user, initialQuiz]);
-
+  }, [user]);
 
   useEffect(() => {
     async function persistState() {
-        if (user && quiz && !showResults && !initialQuiz) {
+        if (user && quiz && !showResults && !initialPropsRef.current.initialQuiz) {
             await saveQuizState(user.uid, {
                 quiz,
                 currentQuestion,
@@ -245,7 +251,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         }
     }
     persistState();
-  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
+  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user]);
+
 
   useEffect(() => {
     if (timerRef.current) {
@@ -519,12 +526,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   };
 
   const resetQuiz = async () => {
-    if(initialQuiz) {
+    if(initialPropsRef.current.initialQuiz) {
         // For MDCAT/ECAT quizzes, go back to the respective home
         if (window.location.pathname.includes('mdcat')) {
            window.location.href = '/mdcat';
         } else if (window.location.pathname.includes('ecat')) {
             window.location.href = '/ecat';
+        } else if (window.location.pathname.includes('nts')) {
+            window.location.href = '/nts';
         }
         return;
     }
@@ -807,7 +816,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                     </div>
                 </CardContent>
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
-                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'MDCAT/ECAT Home' : 'Take Another Quiz'}</Button>
+                    <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialPropsRef.current.initialQuiz ? 'Go to Prep Home' : 'Take Another Quiz'}</Button>
                     {incorrectAnswers.length > 0 && (
                         <Button onClick={retryIncorrect} variant="outline"><Redo className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
                     )}
