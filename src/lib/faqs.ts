@@ -65,12 +65,37 @@ export const faqs: FAQ[] = [
     question: "Why do emails go to spam?",
     answer: "Emails can go to spam if they contain certain keywords, come from a new sender, or if your email provider's filter is very strict. It's always a good idea to check your spam folder for important emails.",
     related: ["What is the spam folder?", "I didn’t receive my verification email."]
+  },
+  {
+    question: "What does the 'AI is overloaded' error mean?",
+    answer: "This means the AI model is currently handling a high volume of requests. It's a temporary issue. Please wait a few moments and try generating your content again.",
+    related: ["What is the limit of questions per session?", "How to get the best results from the AI?"]
+  },
+  {
+    question: "What is the limit of questions per session?",
+    answer: "The maximum number of questions you can generate in a single session is 55. Please note that the AI may sometimes generate a slightly different number of questions than requested, especially with very complex topics.",
+    related: ["What is the limit of questions per day?", "What does the 'AI is overloaded' error mean?"]
+  },
+  {
+    question: "What is the limit of questions per day?",
+    answer: "Currently, Quizzicallabs AI is completely free to use, and there are no daily limits on the number of questions or guides you can generate. Enjoy!",
+    related: ["What is the limit of questions per session?", "Is the app free?"]
+  },
+  {
+    question: "How to get the best results from the AI?",
+    answer: "Be specific! Instead of just 'Biology', try 'Cellular Respiration in Eukaryotes' or 'MDCAT Physics - Electromagnetism'. The more detailed your topic and instructions, the better and more accurate the AI's response will be.",
+    related: ["What are custom quizzes?", "What is the difference between custom quizzes and entry tests like MDCAT/ECAT?"]
+  },
+  {
+    question: "Is the app free?",
+    answer: "Yes, currently all features of Quizzicallabs AI are free to use. We support the service through on-site advertising.",
+    related: ["What is the limit of questions per day?"]
   }
 ];
 
 export const initialQuestions = [
     "I didn’t receive my verification email. What should I do?",
+    "What does the 'AI is overloaded' error mean?",
     "What is the difference between custom quizzes and entry tests like MDCAT/ECAT?",
-    "What is a study guide?",
-    "How to use the Quiz from Document feature?"
+    "What is the limit of questions per session?",
 ];
