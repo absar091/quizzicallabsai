@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -30,6 +33,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [showVerificationAlert, setShowVerificationAlert] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,17 +44,36 @@ export default function LoginPage() {
     },
   });
 
+  const handleResendVerification = async () => {
+    if (auth.currentUser) {
+        setIsResending(true);
+        try {
+            await sendEmailVerification(auth.currentUser);
+            toast({
+                title: "Verification Email Sent!",
+                description: "A new verification link has been sent to your email address. Please check your inbox and spam folder.",
+            });
+        } catch (error: any) {
+             toast({
+                title: "Error Sending Email",
+                description: "Could not send verification email. Please try again in a few moments.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsResending(false);
+            setShowVerificationAlert(false); // Hide the alert after action
+            await auth.signOut();
+        }
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setShowVerificationAlert(false);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       
       if (!userCredential.user.emailVerified) {
-        toast({
-          title: "Email Not Verified",
-          description: "Please check your email inbox (and spam folder) to verify your account before logging in.",
-          variant: "destructive",
-        });
-        await auth.signOut(); // Log out the user if email is not verified
+        setShowVerificationAlert(true); // Don't sign out immediately, show the alert first
         return;
       }
 
@@ -82,6 +106,24 @@ export default function LoginPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+             {showVerificationAlert && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Email Not Verified</AlertTitle>
+                  <AlertDescription>
+                    You must verify your email address before logging in.
+                    <Button 
+                        variant="link" 
+                        className="p-0 h-auto ml-1 font-bold text-destructive"
+                        onClick={handleResendVerification}
+                        disabled={isResending}
+                    >
+                        {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                        Resend verification email
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
             <FormField
               control={form.control}
               name="email"
