@@ -138,6 +138,25 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       specificInstructions: "",
     },
   });
+  
+  const calculateScore = useCallback(() => {
+    if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
+    const score = quiz.reduce((acc, question, index) => {
+      const userAnswer = userAnswers[index];
+      const correctAnswer = question.correctAnswer;
+      // For descriptive questions, correctAnswer might be undefined, so they are not scored.
+      if (question.type === 'descriptive' || correctAnswer === undefined) {
+        return acc;
+      }
+      return acc + (correctAnswer === userAnswer ? 1 : 0);
+    }, 0);
+  
+    const scorableQuestions = quiz.filter(q => q.type !== 'descriptive' && q.correctAnswer !== undefined).length;
+    const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
+    
+    return { score, percentage, totalScorable: scorableQuestions };
+  }, [quiz, userAnswers]);
+
 
   const handleSubmit = useCallback(async () => {
     // For mock tests, use the override function if it exists
@@ -166,7 +185,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         await deleteQuizState(user.uid);
     }
     window.scrollTo(0, 0);
-  }, [quiz, userAnswers, formValues, user]);
+  }, [quiz, userAnswers, formValues, user, calculateScore]);
 
 
   useEffect(() => {
@@ -251,7 +270,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         clearInterval(timerRef.current);
       }
     };
-  }, [quiz, showResults, handleSubmit]);
+  }, [quiz, showResults, timeLeft, handleSubmit]);
   
   const handleGenerateQuiz = async (values: QuizFormValues) => {
     setIsGenerating(true);
@@ -335,24 +354,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       setCurrentQuestion(currentQuestion - 1);
     }
   };
-
-  const calculateScore = useCallback(() => {
-    if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
-    const score = quiz.reduce((acc, question, index) => {
-      const userAnswer = userAnswers[index];
-      const correctAnswer = question.correctAnswer;
-      // For descriptive questions, correctAnswer might be undefined, so they are not scored.
-      if (question.type === 'descriptive' || correctAnswer === undefined) {
-        return acc;
-      }
-      return acc + (correctAnswer === userAnswer ? 1 : 0);
-    }, 0);
-  
-    const scorableQuestions = quiz.filter(q => q.type !== 'descriptive' && q.correctAnswer !== undefined).length;
-    const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
-    
-    return { score, percentage, totalScorable: scorableQuestions };
-  }, [quiz, userAnswers]);
 
   const getExplanation = async (questionIndex: number) => {
     if (!quiz || !formValues) return;
