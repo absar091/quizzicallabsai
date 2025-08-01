@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit, Quote } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
@@ -219,21 +219,25 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="bg-muted/50 py-16 md:py-24">
-            <div className="container mx-auto max-w-4xl text-center">
-                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-6">A Note from the Creator</h2>
-                 <Card className="bg-background">
-                    <CardContent className="pt-8">
-                        <div className="flex flex-col md:flex-row items-center gap-6">
-                            <Avatar className="h-24 w-24">
-                                <AvatarFallback className="text-4xl">AR</AvatarFallback>
+        <section className="relative bg-muted/30 py-24 sm:py-32">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background"></div>
+            <div className="container mx-auto max-w-4xl text-center relative">
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-12">A Note from the Creator</h2>
+                 <Card className="bg-background/80 backdrop-blur-sm shadow-xl">
+                    <CardContent className="p-8 md:p-12">
+                        <div className="grid md:grid-cols-3 gap-8 items-center">
+                           <div className="flex flex-col items-center md:items-start">
+                             <Avatar className="h-28 w-28 border-4 border-primary/20">
+                                <AvatarFallback className="text-5xl">AR</AvatarFallback>
                             </Avatar>
-                            <div className="text-left">
-                                <p className="text-muted-foreground leading-relaxed">
-                                    "As a student myself, I built Quizzicallabs AI to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey."
+                             <p className="font-bold mt-4 text-xl">Absar Ahmad Rao</p>
+                             <p className="text-sm text-muted-foreground">Creator of Quizzicallabs AI</p>
+                           </div>
+                           <div className="md:col-span-2 relative text-left">
+                                <Quote className="absolute -top-4 -left-4 h-12 w-12 text-primary/10" />
+                                <p className="text-lg text-muted-foreground leading-relaxed z-10">
+                                    As a student myself, I built Quizzicallabs AI to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey.
                                 </p>
-                                <p className="font-semibold mt-4">Absar Ahmad Rao</p>
-                                <p className="text-sm text-muted-foreground">Creator of Quizzicallabs AI</p>
                             </div>
                         </div>
                     </CardContent>
