@@ -6,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle } from "lucide-react";
+import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff } from "lucide-react";
 
 
 import { Button } from "@/components/ui/button";
@@ -873,6 +873,29 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
     const { control, trigger, getValues, handleSubmit } = useFormContext<QuizFormValues>();
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0);
+    const [cooldownTime, setCooldownTime] = useState(0);
+    const cooldownTimerRef = useRef<NodeJS.Timeout>();
+
+    useEffect(() => {
+        return () => {
+            if (cooldownTimerRef.current) {
+                clearInterval(cooldownTimerRef.current);
+            }
+        };
+    }, []);
+
+    const startCooldown = () => {
+        setCooldownTime(60);
+        cooldownTimerRef.current = setInterval(() => {
+            setCooldownTime(prev => {
+                if (prev <= 1) {
+                    clearInterval(cooldownTimerRef.current);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    };
 
     const nextStep = async () => {
         const validationMap = {
@@ -900,6 +923,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
 
     const handleFormSubmit = handleSubmit((values) => {
       onGenerateQuiz(values);
+      startCooldown();
     });
 
     const renderStepContent = () => {
@@ -1139,8 +1163,18 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                         ) : (
-                        <Button type="button" onClick={handleFormSubmit} size="lg">
-                            <Sparkles className="mr-2 h-5 w-5" /> Generate Quiz
+                        <Button type="button" onClick={handleFormSubmit} size="lg" disabled={cooldownTime > 0}>
+                           {cooldownTime > 0 ? (
+                                <>
+                                    <TimerOff className="mr-2 h-5 w-5" />
+                                    Please wait ({cooldownTime}s)
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="mr-2 h-5 w-5" />
+                                    Generate Quiz
+                                </>
+                            )}
                         </Button>
                         )}
                     </CardFooter>
@@ -1149,5 +1183,3 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
-
-    
