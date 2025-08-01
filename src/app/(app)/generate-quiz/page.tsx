@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -124,6 +124,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   const [timeLeft, setTimeLeft] = useState(0);
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
   const [formValues, setFormValues] = useState<QuizFormValues | null>(initialFormValues || null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
@@ -137,6 +138,36 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       specificInstructions: "",
     },
   });
+
+  const handleSubmit = useCallback(async () => {
+    // For mock tests, use the override function if it exists
+    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
+        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
+        return;
+    }
+
+    setShowResults(true);
+    if(quiz && formValues && user) {
+        const { score, percentage } = calculateScore();
+        const resultId = `${user.uid}-${Date.now()}`;
+        const newResult = {
+            id: resultId,
+            userId: user.uid,
+            topic: formValues.topic,
+            score,
+            total: quiz.length,
+            percentage,
+            date: new Date().toISOString(),
+        };
+        // Save to Firebase first, then to local IndexedDB
+        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
+        await set(resultRef, newResult);
+        await saveQuizResult(newResult);
+        await deleteQuizState(user.uid);
+    }
+    window.scrollTo(0, 0);
+  }, [quiz, userAnswers, formValues, user]);
+
 
   useEffect(() => {
     if (initialQuiz && initialFormValues) {
@@ -198,12 +229,15 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
   }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
     if (quiz && !showResults && timeLeft > 0) {
-      timer = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
-            clearInterval(timer);
+            if (timerRef.current) clearInterval(timerRef.current);
             handleSubmit();
             return 0;
           }
@@ -211,8 +245,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         });
       }, 1000);
     }
-    return () => clearInterval(timer);
-  }, [quiz, showResults, timeLeft]);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [quiz, showResults, handleSubmit]);
   
   const handleGenerateQuiz = async (values: QuizFormValues) => {
     setIsGenerating(true);
@@ -296,35 +335,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       setCurrentQuestion(currentQuestion - 1);
     }
   };
-
-  const handleSubmit = useCallback(async () => {
-    // For mock tests, use the override function if it exists
-    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
-        return;
-    }
-
-    setShowResults(true);
-    if(quiz && formValues && user) {
-        const { score, percentage } = calculateScore();
-        const resultId = `${user.uid}-${Date.now()}`;
-        const newResult = {
-            id: resultId,
-            userId: user.uid,
-            topic: formValues.topic,
-            score,
-            total: quiz.length,
-            percentage,
-            date: new Date().toISOString(),
-        };
-        // Save to Firebase first, then to local IndexedDB
-        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
-        await set(resultRef, newResult);
-        await saveQuizResult(newResult);
-        await deleteQuizState(user.uid);
-    }
-    window.scrollTo(0, 0);
-  }, [quiz, userAnswers, formValues, user]);
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
