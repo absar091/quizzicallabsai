@@ -5,14 +5,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from 'framer-motion';
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit, Quote } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit, Quote, FilePlus, Brain, Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 
 const FeatureCard1 = () => (
@@ -28,6 +29,7 @@ const FeatureCard1 = () => (
             type="text"
             placeholder="e.g., The Solar System"
             className="w-full p-3 rounded-lg border bg-background"
+            defaultValue="The Solar System"
             readOnly
           />
           <div className="flex justify-between gap-2">
@@ -83,6 +85,32 @@ const FeatureCard2 = () => (
   </div>
 );
 
+const FeatureCard3 = () => (
+    <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+        <div className="space-y-4">
+            <CardHeader className="p-0">
+                <CardTitle className="text-xl">AI Study Guide</CardTitle>
+                <CardDescription>Topic: Quantum Mechanics</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                    <h3 className="font-bold">Key Concepts</h3>
+                    <p className="text-sm text-muted-foreground"><strong>Superposition:</strong> An object can be in multiple states at once...</p>
+                    <p className="text-sm text-muted-foreground"><strong>Entanglement:</strong> Two particles can be linked, no matter the distance...</p>
+                </div>
+                 <div className="space-y-3 p-4 bg-muted/50 rounded-lg mt-3">
+                    <h3 className="font-bold">Simple Analogy</h3>
+                    <p className="text-sm text-muted-foreground">Think of superposition like a spinning coin. It's both heads and tails until you look.</p>
+                </div>
+            </CardContent>
+        </div>
+        <Button size="lg" className="w-full bg-accent text-accent-foreground">
+            <Download className="mr-2 h-4 w-4" /> Download Guide
+        </Button>
+    </div>
+);
+
+
 const allFeatures = [
   {
     icon: BotMessageSquare,
@@ -137,7 +165,7 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
-                Your Ultimate <br/> <span className="text-primary">AI Study Partner</span>
+                Your Ultimate <br/> <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Study Partner</span>
               </motion.h1>
               <motion.p 
                  initial={{ opacity: 0, y: 20 }}
@@ -186,36 +214,52 @@ export default function Home() {
         </section>
         
         <section className="bg-muted/50 py-16 md:py-24">
-            <div className="container mx-auto">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div className="text-center md:text-left">
-                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">The most intuitive quiz maker</h2>
-                             <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">Create tailored quizzes based on topic, difficulty, and question type in seconds.</p>
-                             <Button asChild variant="link" className="mt-4 px-0">
-                                <Link href="/how-to-use/custom-quiz">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                             </Button>
-                        </div>
-                        <div>
-                           <FeatureCard1 />
-                        </div>
-                    </div>
+            <div className="container mx-auto text-center">
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzicallabs in Action</h2>
+                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Experience the power of AI-driven learning tools that adapt to your needs.</p>
+                <div className="mt-12">
+                     <Carousel
+                        opts={{ align: "start", loop: true, }}
+                        plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
+                        className="w-full"
+                    >
+                        <CarouselContent>
+                            <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex justify-center"><FeatureCard1 /></CarouselItem>
+                            <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex justify-center"><FeatureCard2 /></CarouselItem>
+                            <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex justify-center"><FeatureCard3 /></CarouselItem>
+                        </CarouselContent>
+                    </Carousel>
+                </div>
             </div>
         </section>
 
         <section className="py-16 md:py-24">
-             <div className="container mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div className="text-center md:text-left md:order-2">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Excel in your entry tests</h2>
-                        <p className="max-w-md text-muted-foreground mt-4 mx-auto md:mx-0">Practice with specialized tests and full-length mock exams for MDCAT, ECAT, and NTS.</p>
-                        <Button asChild variant="link" className="mt-4 px-0">
-                            <Link href="/how-to-use/entry-test-prep">Learn More <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                        </Button>
+             <div className="container mx-auto text-center">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
+                <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Master any topic in three simple steps.</p>
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-4xl mx-auto">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
+                            <FilePlus className="h-8 w-8 text-primary"/>
+                        </div>
+                        <h3 className="text-xl font-semibold">1. Generate</h3>
+                        <p className="text-muted-foreground">Instantly create quizzes, practice questions, or study guides from any topic or document.</p>
                     </div>
-                    <div className="md:order-1">
-                        <FeatureCard2 />
+                     <div className="flex flex-col items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
+                            <Brain className="h-8 w-8 text-primary"/>
+                        </div>
+                        <h3 className="text-xl font-semibold">2. Practice</h3>
+                        <p className="text-muted-foreground">Take tailored tests, get instant feedback, and review AI-powered explanations to deepen your understanding.</p>
                     </div>
-                </div>
+                     <div className="flex flex-col items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
+                            <Star className="h-8 w-8 text-primary"/>
+                        </div>
+                        <h3 className="text-xl font-semibold">3. Master</h3>
+                        <p className="text-muted-foreground">Track your progress on the dashboard, identify weak spots, and conquer your exams with confidence.</p>
+                    </div>
+                 </div>
             </div>
         </section>
 

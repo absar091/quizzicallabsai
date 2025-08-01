@@ -16,10 +16,10 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-semibold text-foreground">1. Information We Collect</h2>
             <p>We may collect the following types of information:</p>
             <ul className="list-disc list-inside pl-4 space-y-1">
-                <li><strong>Personal Identification Information:</strong> Name, email address, age, and class/grade information that you provide when you register an account.</li>
-                <li><strong>Usage Data:</strong> Information on how you use the application, such as features used, quizzes taken, scores, and performance analytics. This is collected automatically.</li>
-                <li><strong>Content Data:</strong> Documents you upload for quiz generation. This data is used solely for the purpose of generating the quiz and is not stored long-term.</li>
-                <li><strong>Device and Connection Information:</strong> We collect standard information such as your IP address, browser type, and operating system for security and analytics purposes.</li>
+                <li><strong>Personal Identification Information:</strong> Name, email address, age, and class/grade information that you provide when you register an account. This information is used to personalize your experience and is never shared with third parties.</li>
+                <li><strong>Usage Data:</strong> Information on how you use the application, such as features used, quizzes taken, scores, performance analytics, and bookmarked questions. This is collected automatically to power your dashboard and help you track your progress.</li>
+                <li><strong>Content Data:</strong> Documents you upload for quiz generation. This data is transmitted to our AI provider for the sole purpose of generating the quiz and is not stored or logged on our servers after processing.</li>
+                <li><strong>Device and Connection Information:</strong> We collect standard information such as your IP address, browser type, and operating system for security, debugging, and analytics purposes.</li>
             </ul>
           </div>
 
@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc list-inside pl-4 space-y-1">
               <li>Create and manage your account.</li>
               <li>Provide, operate, and maintain our services.</li>
-              <li>Personalize and improve your experience, for example, by tailoring AI-generated content to your age and class level.</li>
+              <li>Personalize and improve your experience, for example, by tailoring AI-generated content to your age and class level and providing performance insights on your dashboard.</li>
               <li>Monitor and analyze usage and trends to improve the application.</li>
               <li>Communicate with you for customer service, updates, and other informational purposes.</li>
               <li>Prevent fraud and ensure the security of our services.</li>
@@ -39,6 +39,7 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">3. Advertising, Cookies, and AdSense</h2>
             <p>We use Google AdSense to serve ads. Our advertising partners, including Google, may use cookies to serve ads based on your prior visits to our website or other websites. This enables personalized advertising.</p>
+            <p>The types of cookies used by Google include those for frequency capping, aggregated ad reporting, and to combat fraud and abuse.</p>
             <p>You can opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>. You can also opt out of some third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info/choices</a>.</p>
              <p>We also use essential cookies required for site functionality, such as keeping you logged in. By using our application, you consent to the use of these necessary cookies.</p>
           </div>
@@ -51,7 +52,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">5. Children's Privacy</h2>
-            <p>Our service is available to users of all ages, including those under 13. We collect age information at signup to comply with relevant regulations and to tailor content appropriately. We do not knowingly collect more information than is reasonably necessary to provide the service.</p>
+            <p>Our service is available to users of all ages, including those under 13. We collect age information at signup to comply with relevant regulations and to tailor content appropriately. We do not knowingly collect more information than is reasonably necessary to provide the service. Parents or guardians can review or request deletion of their child's personal information by contacting us.</p>
           </div>
             
           <div className="space-y-2">
@@ -73,5 +74,3 @@ export default function PrivacyPolicyPage() {
     </div>
   );
 }
-
-    
