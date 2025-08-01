@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageSquare, X, Bot, User, ChevronsUp, Send, Sparkles } from "lucide-react";
+import { X, Bot, User, ChevronsUp, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { faqs, initialQuestions, FAQ } from "@/lib/faqs";
@@ -21,6 +21,7 @@ type ConversationMessage = {
 export default function HelpBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -35,6 +36,19 @@ export default function HelpBot() {
       ]);
     }
   };
+
+  useEffect(() => {
+    if (isOpen && scrollAreaRef.current) {
+        // Scroll to the bottom when conversation updates
+        const viewport = scrollAreaRef.current.querySelector('div');
+        if(viewport) {
+            setTimeout(() => {
+                viewport.scrollTop = viewport.scrollHeight;
+            }, 100);
+        }
+    }
+  }, [conversation, isOpen]);
+
 
   const handleQuestionSelect = (questionText: string) => {
     const selectedFaq = faqs.find(faq => faq.question === questionText);
@@ -103,27 +117,27 @@ export default function HelpBot() {
                 </Button>
               </CardHeader>
               <CardContent className="flex-1 p-0 overflow-hidden">
-                <ScrollArea className="h-full p-4">
+                <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                    <div className="space-y-4">
                         {conversation.map((msg, index) => (
-                           <div key={index} className={cn("flex flex-col gap-2", msg.sender === 'user' ? 'items-end' : 'items-start')}>
+                           <div key={index} className={cn("flex w-full", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
                              <div className={cn(
                                 "max-w-[85%] p-3 rounded-2xl text-sm", 
                                 msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
                               )}>
                                 {msg.text}
                              </div>
-                             {msg.sender === 'bot' && msg.related && (
-                               <div className="flex flex-col items-start gap-2 w-full">
-                                    {msg.related.map((q, i) => (
-                                        <Button key={i} variant="outline" size="sm" className="h-auto py-1.5 w-full justify-start text-left" onClick={() => handleQuestionSelect(q)}>
-                                           {q}
-                                        </Button>
-                                    ))}
-                               </div>
-                             )}
                            </div>
                         ))}
+                        {conversation.length > 0 && conversation[conversation.length - 1].sender === 'bot' && conversation[conversation.length - 1].related && (
+                            <div className="flex flex-col items-start gap-2 w-full pt-2">
+                                {conversation[conversation.length - 1].related!.map((q, i) => (
+                                    <Button key={i} variant="outline" size="sm" className="h-auto py-1.5 w-full justify-start text-left" onClick={() => handleQuestionSelect(q)}>
+                                        {q}
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
                    </div>
                 </ScrollArea>
               </CardContent>
@@ -146,7 +160,7 @@ export default function HelpBot() {
         className="fixed bottom-4 right-4 z-50"
       >
         <Button size="icon" className="h-14 w-14 rounded-full shadow-lg" onClick={handleOpen}>
-          {isOpen ? <ChevronsUp className="h-6 w-6"/> : <MessageSquare className="h-6 w-6" />}
+          {isOpen ? <ChevronsUp className="h-6 w-6"/> : <Bot className="h-6 w-6" />}
         </Button>
       </motion.div>
     </>
