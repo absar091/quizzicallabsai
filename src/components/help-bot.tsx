@@ -128,7 +128,7 @@ export default function HelpBot() {
                         {conversation.length > 0 && conversation[conversation.length - 1].sender === 'bot' && conversation[conversation.length - 1].related && (
                             <div className="flex flex-col items-start gap-2 w-full pt-2">
                                 {conversation[conversation.length - 1].related!.map((q, i) => (
-                                    <Button key={i} variant="outline" size="sm" className="h-auto py-1.5 w-full justify-start text-left" onClick={() => handleQuestionSelect(q)}>
+                                    <Button key={i} variant="outline" size="sm" className="h-auto whitespace-normal py-1.5 w-full justify-start text-left" onClick={() => handleQuestionSelect(q)}>
                                         {q}
                                     </Button>
                                 ))}
