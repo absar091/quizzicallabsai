@@ -53,27 +53,28 @@ export default function HelpBot() {
   const handleQuestionSelect = (questionText: string) => {
     const selectedFaq = faqs.find(faq => faq.question === questionText);
 
-    const newMessages: ConversationMessage[] = [
-      { type: 'question', sender: 'user', text: questionText },
-    ];
+    const userMessage: ConversationMessage = { type: 'question', sender: 'user', text: questionText };
+    setConversation(prev => [...prev, userMessage]);
 
-    if (selectedFaq) {
-      newMessages.push({
-        type: 'answer',
-        sender: 'bot',
-        text: selectedFaq.answer,
-        related: selectedFaq.related
-      });
-    } else {
-        newMessages.push({
-            type: 'answer',
-            sender: 'bot',
-            text: "I'm sorry, I don't have a pre-defined answer for that. You can try rephrasing or ask another question from the list.",
-            related: initialQuestions,
-        });
-    }
-
-    setConversation(prev => [...prev, ...newMessages]);
+    setTimeout(() => {
+        let botMessage: ConversationMessage;
+        if (selectedFaq) {
+            botMessage = {
+                type: 'answer',
+                sender: 'bot',
+                text: selectedFaq.answer,
+                related: selectedFaq.related
+            };
+        } else {
+            botMessage = {
+                type: 'answer',
+                sender: 'bot',
+                text: "I'm sorry, I don't have a pre-defined answer for that. You can try rephrasing or ask another question from the list.",
+                related: initialQuestions,
+            };
+        }
+        setConversation(prev => [...prev, botMessage]);
+    }, 500); // Small delay to simulate thinking
   };
   
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -81,12 +82,7 @@ export default function HelpBot() {
       const input = (e.target as HTMLFormElement).elements.namedItem('help-input') as HTMLInputElement;
       const question = input.value.trim();
       if(question) {
-          // For now, we just acknowledge. AI connection will go here.
-          setConversation(prev => [
-              ...prev,
-              { type: 'question', sender: 'user', text: question },
-              { type: 'answer', sender: 'bot', text: "Thanks for your question! I'm still in training for open-ended questions. Please select one of the topics below.", related: initialQuestions }
-          ])
+          handleQuestionSelect(question);
           input.value = "";
       }
   }
@@ -122,7 +118,7 @@ export default function HelpBot() {
                         {conversation.map((msg, index) => (
                            <div key={index} className={cn("flex w-full", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
                              <div className={cn(
-                                "max-w-[85%] p-3 rounded-2xl text-sm", 
+                                "max-w-[85%] p-3 rounded-2xl text-sm flex-initial", 
                                 msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
                               )}>
                                 {msg.text}
