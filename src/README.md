@@ -19,6 +19,7 @@ Quizzicallabs AI is packed with features to cater to a wide range of educational
 -   **Performance Tracking**: Monitor your progress with a personalized dashboard. View graphs of your recent scores, track your mastery level by topic, and identify your strengths and weaknesses.
 -   **Bookmarks & Review**: Bookmark challenging questions during a quiz to revisit them later. The dashboard includes a dedicated review session to help you focus on areas that need improvement.
 -   **PDF Export**: Download generated quizzes, practice questions, and study guides as formatted PDFs for offline study or printing.
+-   **AI Help Bot**: Get instant answers to your questions about using the app with our intelligent, on-site help bot.
 
 ## 🔒 Authentication and Security
 
