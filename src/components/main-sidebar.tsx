@@ -128,5 +128,3 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
     </>
   )
 }
-
-    
