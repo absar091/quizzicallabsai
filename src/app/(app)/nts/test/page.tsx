@@ -48,8 +48,7 @@ function NtsTestFlow() {
                 
                 const formattedQuiz = result.quiz.map(q => ({
                     ...q,
-                    timeLimit: numQuestions,
-                    questionStyles: [],
+                    questionStyles: ["Past Paper Style"], // Add default value
                 }));
 
                 setQuiz(formattedQuiz);
@@ -110,7 +109,7 @@ function NtsTestFlow() {
                  difficulty: 'medium' as any, // NTS is generally medium
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
-                 questionStyles: [],
+                 questionStyles: ["Past Paper Style"],
                  timeLimit: numQuestions,
                  specificInstructions: `NTS ${category} test on ${subject} - ${chapter}`
             }}
