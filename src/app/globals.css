@@ -17,7 +17,7 @@
     --secondary: 20 20% 94%;
     --secondary-foreground: 20 20% 10%;
     --muted: 20 20% 96%;
-    --muted-foreground: 20 15% 45%;
+    --muted-foreground: 20 15% 55%;
     --accent: 20 20% 20%; /* Dark accent for buttons */
     --accent-foreground: 20 50% 98%;
     --destructive: 0 84.2% 60.2%;
@@ -44,7 +44,7 @@
     --secondary: 20 15% 18%;
     --secondary-foreground: 20 30% 95%;
     --muted: 20 15% 20%;
-    --muted-foreground: 20 20% 75%;
+    --muted-foreground: 20 20% 65%;
     --accent: 20 40% 97%; /* Light accent for buttons */
     --accent-foreground: 20 20% 10%;
     --destructive: 0 62.8% 50.6%;
@@ -78,4 +78,77 @@
   .btn:active {
     @apply shadow-sm translate-y-0;
   }
+}
+
+/* --- Splash Screen Styles --- */
+#splashScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #121212;
+    transition: opacity 0.8s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.logo-container {
+    position: relative;
+    padding: 6px;
+    clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
+}
+
+.logo-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250%;
+    height: 250%;
+    z-index: 0;
+    background: conic-gradient(#fd004c, #fe9000, #fff020, #3edf4b, #3363ff, #b102b7, #fd004c);
+    animation: rotateGradient 6s linear infinite;
+}
+
+@keyframes rotateGradient {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.name-container {
+    position: relative;
+    background-color: #1a1a1a;
+    padding: 30px 45px;
+    clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
+    z-index: 1;
+}
+
+.text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: 900px;
+}
+
+.name-group { display: flex; }
+
+.letter {
+    display: inline-block;
+    font-weight: 700;
+    color: #f0f0f0;
+    transform-style: preserve-3d;
+    position: relative;
+    animation: fadeInSlideUp 1s both;
+}
+
+.primary .letter { font-size: 5.5vw; }
+.secondary .letter { font-size: 2vw; font-weight: 400; color: #aaa; }
+.letter.space { width: 1vw; }
+
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(60px) translateZ(-150px); }
+    to { opacity: 1; transform: translateY(0) translateZ(0); }
 }
