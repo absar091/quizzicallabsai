@@ -8,8 +8,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import NotificationHandler from "@/components/notification-handler";
-import { SplashScreen } from "@/components/splash-screen";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -23,17 +23,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return <SplashScreen />;
+    return (
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+    );
   }
 
   return (
-    <motion.div
-        key="app-layout"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}
-        className="flex min-h-screen flex-col"
-      >
+    <div className="flex min-h-screen flex-col">
         <NotificationHandler />
         <AppHeader />
         <main className="flex-1 p-4 md:p-6 lg:p-8 container">
@@ -50,6 +48,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </AnimatePresence>
         </main>
         <Footer />
-      </motion.div>
+      </div>
   );
 }

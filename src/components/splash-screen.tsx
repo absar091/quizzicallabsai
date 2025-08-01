@@ -19,22 +19,27 @@ const createSpans = (text: string, baseDelay: number) => {
 };
 
 export function SplashScreen() {
-  const [show, setShow] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // This timer can be adjusted based on the total animation duration
-    const timer = setTimeout(() => {
-      setShow(false);
-    }, (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 1000); // Wait a bit longer
+    const splashShown = sessionStorage.getItem('splashShown');
 
-    return () => clearTimeout(timer);
+    if (!splashShown) {
+      setIsVisible(true);
+      const totalAnimationTime = (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 1500;
+      
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        sessionStorage.setItem('splashShown', 'true');
+      }, totalAnimationTime);
+
+      return () => clearTimeout(timer);
+    }
   }, []);
-
-  const secondaryAnimationStartTime = (primaryText.length) * letterStaggerDelay;
 
   return (
     <AnimatePresence>
-        {show && (
+        {isVisible && (
             <motion.div 
               id="splashScreen"
               exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeIn" } }}
@@ -46,7 +51,7 @@ export function SplashScreen() {
                                 {createSpans(primaryText, 0)}
                             </div>
                             <div className="name-group secondary">
-                                {createSpans(secondaryText, secondaryAnimationStartTime)}
+                                {createSpans(secondaryText, (primaryText.length) * letterStaggerDelay)}
                             </div>
                         </div>
                     </div>
