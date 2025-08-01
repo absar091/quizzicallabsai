@@ -195,21 +195,39 @@ export default function Home() {
             <div className="container mx-auto text-center">
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything you need to succeed</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">From quick practice sessions to full-length mock exams, our tools are designed to support every step of your learning journey.</p>
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                 <motion.div 
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ staggerChildren: 0.1 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
+                  >
                     {allFeatures.map((feature, index) => (
-                        <Card key={index} className="text-left">
-                            <CardHeader>
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                                    <feature.icon className="h-6 w-6 text-primary"/>
-                                </div>
-                                <CardTitle>{feature.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </CardContent>
-                        </Card>
+                        <motion.div 
+                          key={index} 
+                          variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0 }
+                          }}
+                           initial="hidden"
+                           whileInView="visible"
+                           viewport={{ once: true }}
+                           transition={{ duration: 0.5, delay: index * 0.1}}
+                        >
+                            <Card className="text-left h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                                <CardHeader>
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
+                                        <feature.icon className="h-6 w-6 text-primary"/>
+                                    </div>
+                                    <CardTitle>{feature.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-muted-foreground">{feature.description}</p>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     ))}
-                 </div>
+                 </motion.div>
             </div>
         </section>
         
@@ -238,34 +256,58 @@ export default function Home() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Master any topic in three simple steps.</p>
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-4xl mx-auto">
-                    <div className="flex flex-col items-center gap-4">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="flex flex-col items-center gap-4"
+                     >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
                             <FilePlus className="h-8 w-8 text-primary"/>
                         </div>
                         <h3 className="text-xl font-semibold">1. Generate</h3>
                         <p className="text-muted-foreground">Instantly create quizzes, practice questions, or study guides from any topic or document.</p>
-                    </div>
-                     <div className="flex flex-col items-center gap-4">
+                    </motion.div>
+                     <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="flex flex-col items-center gap-4"
+                    >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
                             <Brain className="h-8 w-8 text-primary"/>
                         </div>
                         <h3 className="text-xl font-semibold">2. Practice</h3>
                         <p className="text-muted-foreground">Take tailored tests, get instant feedback, and review AI-powered explanations to deepen your understanding.</p>
-                    </div>
-                     <div className="flex flex-col items-center gap-4">
+                    </motion.div>
+                     <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="flex flex-col items-center gap-4"
+                     >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
                             <Star className="h-8 w-8 text-primary"/>
                         </div>
                         <h3 className="text-xl font-semibold">3. Master</h3>
                         <p className="text-muted-foreground">Track your progress on the dashboard, identify weak spots, and conquer your exams with confidence.</p>
-                    </div>
+                    </motion.div>
                  </div>
             </div>
         </section>
 
         <section className="relative bg-muted/30 py-24 sm:py-32">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background"></div>
-            <div className="container mx-auto max-w-4xl text-center relative">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="container mx-auto max-w-4xl text-center relative"
+            >
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-12">A Note from the Creator</h2>
                  <Card className="bg-background/80 backdrop-blur-sm shadow-xl">
                     <CardContent className="p-8 md:p-12">
@@ -286,7 +328,7 @@ export default function Home() {
                         </div>
                     </CardContent>
                  </Card>
-            </div>
+            </motion.div>
         </section>
       </main>
       <Footer />
