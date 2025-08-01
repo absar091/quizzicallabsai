@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github, BrainCircuit } from 'lucide-react';
+import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github, BrainCircuit, AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from './ui/input';
@@ -92,10 +92,11 @@ export function Footer() {
                     
                     <div className="md:col-span-4">
                          <h3 className="font-semibold mb-4 text-foreground">Get Involved & Stay Connected</h3>
-                         <p className="text-sm text-muted-foreground mb-4">Enjoying the app? Share it with friends or give us feedback!</p>
+                         <p className="text-sm text-muted-foreground mb-4">Enjoying the app? Share it with friends or report an issue.</p>
                          <div className="flex flex-wrap gap-3 items-center">
                             <Button onClick={handleNativeShare} variant="outline"><Share2 className="mr-2 h-4 w-4"/> Share</Button>
                             <Button asChild><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><Heart className="mr-2 h-4 w-4"/> Feedback</a></Button>
+                            <Button asChild variant="destructive"><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><AlertTriangle className="mr-2 h-4 w-4"/> Report</a></Button>
                          </div>
                     </div>
                 </div>
