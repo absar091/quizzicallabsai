@@ -3,8 +3,8 @@
 
 import type { ReactNode } from "react";
 import { createContext, useState, useMemo, useEffect } from "react";
-import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser, indexedDBLocalPersistence, setPersistence } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
+import { auth, app } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
 
@@ -32,14 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        await setPersistence(auth, indexedDBLocalPersistence);
-      } catch (error) {
-        console.error("Failed to set auth persistence:", error);
-      }
+    // Initialize auth with IndexedDB persistence
+    const authInstance = initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
+    });
       
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      const unsubscribe = onAuthStateChanged(authInstance, (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser && firebaseUser.emailVerified) {
           let displayName = firebaseUser.displayName || "User";
           let className = "N/A";
@@ -73,9 +71,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       return () => unsubscribe();
-    };
-
-    initializeAuth();
   }, []);
 
   const logout = async () => {
@@ -108,7 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       deleteAccount
     }),
-    [user, loading, logout, deleteAccount]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
