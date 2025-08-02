@@ -378,7 +378,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -891,7 +891,8 @@ type QuizSetupFormProps = {
 }
 
 function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
-    const { control, trigger, getValues, handleSubmit, watch } = useFormContext<QuizFormValues>();
+    const form = useFormContext<QuizFormValues>();
+    const { control, trigger, getValues, handleSubmit, watch } = form;
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0);
     const [cooldownTime, setCooldownTime] = useState(0);
@@ -1213,6 +1214,8 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
 
     
 
