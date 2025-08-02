@@ -890,11 +890,12 @@ type QuizSetupFormProps = {
 }
 
 function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
-    const { control, trigger, getValues, handleSubmit } = useFormContext<QuizFormValues>();
+    const { control, trigger, getValues, handleSubmit, watch } = useFormContext<QuizFormValues>();
     const [step, setStep] = useState(1);
     const [direction, setDirection] = useState(0);
     const [cooldownTime, setCooldownTime] = useState(0);
     const cooldownTimerRef = useRef<NodeJS.Timeout>();
+    const questionStyles = watch('questionStyles');
 
     useEffect(() => {
         return () => {
@@ -1100,6 +1101,14 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                       render={() => (
                         <FormItem>
                           <FormLabel className="text-xl font-semibold">Question Styles</FormLabel>
+                          {questionStyles?.includes("Comprehension-based MCQs") && (
+                            <Alert variant="default" className="text-xs p-2 bg-primary/10 border-primary/20 text-primary-foreground">
+                                <AlertTriangle className="h-4 w-4 text-primary" />
+                                <AlertDescription className="text-primary/80">
+                                  When using comprehension, the AI will generate a passage first, and all questions will be based on it.
+                                </AlertDescription>
+                            </Alert>
+                          )}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                             {questionStyleOptions.map((item) => (
                               <FormField
@@ -1203,3 +1212,5 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    

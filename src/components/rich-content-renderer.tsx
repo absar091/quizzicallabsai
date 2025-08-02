@@ -51,7 +51,7 @@ export default function RichContentRenderer({ content, smiles, chartData }: Rich
             {smiles && (
                 <div className="flex justify-center p-4 bg-muted rounded-lg">
                     <Image
-                        src={`https://www.simplesmiles.io/chem_structure.png?smiles=${encodeURIComponent(smiles)}&bg=f1f5f9`}
+                        src={`https://www.simplesmiles.io/chem_structure.png?smiles=${encodeURIComponent(smiles)}&bg=transparent`}
                         alt={`Chemical structure for ${smiles}`}
                         width={300}
                         height={200}
@@ -79,3 +79,5 @@ export default function RichContentRenderer({ content, smiles, chartData }: Rich
         </div>
     );
 }
+
+    
