@@ -199,9 +199,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
         // Scenario 1: Mock test results are being displayed
         const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
-        if (initialQuiz && mockTestAnswers) {
+        if (initialQuiz && initialFormValues && mockTestAnswers) {
             setQuiz(initialQuiz);
-            setFormValues(initialFormValues!);
+            setFormValues(initialFormValues);
             setUserAnswers(mockTestAnswers);
             setShowResults(true);
             delete (window as any).__MOCK_TEST_ANSWERS__;
@@ -209,12 +209,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }
 
         // Scenario 2: A pre-generated quiz is starting (e.g., mock test section, chapter test)
-        if (initialQuiz) {
+        if (initialQuiz && initialFormValues) {
             setQuiz(initialQuiz);
             setComprehensionText(initialComprehensionText || null);
             setUserAnswers(new Array(initialQuiz.length).fill(null));
-            setTimeLeft(initialFormValues!.timeLimit * 60);
-            setFormValues(initialFormValues!);
+            setTimeLeft(initialFormValues.timeLimit * 60);
+            setFormValues(initialFormValues);
             setShowResults(false);
             return;
         }
@@ -236,7 +236,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         
         // Scenario 4: No quiz state, show the form
         setQuiz(null);
-        setShowResults(false); // Changed from true to false to show the form by default
+        setShowResults(false);
     };
 
     initializeQuiz();
@@ -314,7 +314,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }, 500);
 
     setQuiz(null);
-    setComprehensionText(null); // Explicitly reset comprehension text
+    setComprehensionText(null);
     setCurrentQuestion(0);
     setUserAnswers([]);
     setShowResults(false);
@@ -338,13 +338,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
-        setShowResults(false);
-        window.scrollTo(0, 0);
+        setFormValues(values);
       }, 500)
 
     } catch (error: any) {
         clearInterval(interval);
         setIsGenerating(false);
+        setFormValues(null);
         let errorMessage = "An unexpected response was received from the server.";
         if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
           errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
