@@ -23,9 +23,9 @@ import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 
 const MOCK_TEST_SECTIONS = [
-  { name: 'Analytical Reasoning', numQuestions: 15 },
-  { name: 'Quantitative Reasoning', numQuestions: 20 },
   { name: 'Verbal Reasoning', numQuestions: 20 },
+  { name: 'Quantitative Reasoning', numQuestions: 35 },
+  { name: 'Analytical Reasoning', numQuestions: 20 },
   { name: 'Subject Portion', numQuestions: 25 },
 ];
 
@@ -82,6 +82,10 @@ export default function NtsMockTestPage() {
       
       const formattedQuiz = result.quiz.map(q => ({
         ...q,
+        type: 'multiple-choice' as const,
+        question: q.question,
+        answers: q.answers,
+        correctAnswer: q.correctAnswer,
         timeLimit: TOTAL_TIME,
         questionStyles: [],
       }));
