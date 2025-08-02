@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -235,7 +236,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         
         // Scenario 4: No quiz state, show the form
         setQuiz(null);
-        setShowResults(true);
+        setShowResults(false); // Changed from true to false to show the form by default
     };
 
     initializeQuiz();
@@ -313,6 +314,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }, 500);
 
     setQuiz(null);
+    setComprehensionText(null); // Explicitly reset comprehension text
     setCurrentQuestion(0);
     setUserAnswers([]);
     setShowResults(false);
@@ -561,7 +563,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setQuiz(null);
     setCurrentQuestion(0);
     setUserAnswers([]);
-    setShowResults(true); // Go back to the form
+    setShowResults(false); 
     setExplanations({});
     setFormValues(null);
     formMethods.reset();
