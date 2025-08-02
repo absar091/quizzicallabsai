@@ -3,8 +3,8 @@
 
 import type { ReactNode } from "react";
 import { createContext, useState, useMemo, useEffect } from "react";
-import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
-import { auth, app } from "@/lib/firebase";
+import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
 
@@ -32,12 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Initialize auth with IndexedDB persistence
-    const authInstance = initializeAuth(app, {
-      persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
-    });
-      
-      const unsubscribe = onAuthStateChanged(authInstance, (firebaseUser: FirebaseUser | null) => {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser && firebaseUser.emailVerified) {
           let displayName = firebaseUser.displayName || "User";
           let className = "N/A";

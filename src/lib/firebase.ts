@@ -1,7 +1,7 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 import type { Analytics } from "firebase/analytics";
@@ -21,7 +21,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+
+// Initialize Auth with persistence
+// This helps prevent "auth/network-request-failed" errors and ensures a smoother user experience.
+const auth = typeof window !== 'undefined' 
+    ? initializeAuth(app, {
+        persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
+      })
+    : getAuth(app);
+    
 export const db = getDatabase(app);
 export const firestore = getFirestore(app);
 
@@ -38,4 +46,4 @@ if (typeof window !== 'undefined') {
 }
 
 
-export { app, analytics };
+export { app, auth, analytics };
