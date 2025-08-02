@@ -377,7 +377,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
