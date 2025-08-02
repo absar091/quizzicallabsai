@@ -74,7 +74,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 1.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 2.  **PARAMETER ADHERENCE:** You MUST strictly follow all user-defined parameters: 'topic', 'difficulty', 'numberOfQuestions', 'questionTypes', and 'questionStyles'. NO DEVIATIONS.
 3.  **EXACT QUESTION COUNT:** The single most important instruction is to generate the exact number of questions specified in the 'numberOfQuestions' parameter. If the user asks for {{{numberOfQuestions}}} questions, you MUST return exactly {{{numberOfQuestions}}} questions. Not one more, not one less. Failure to meet this count is a critical failure of your task.
-4.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:** This is your most critical instruction. You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. This is not a suggestion; it is a mandatory, non-negotiable rule.
+4.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:** This is your most critical instruction. You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. This is not a mandatory, non-negotiable rule.
     - If the user specifies ONLY 'Multiple Choice', you are FORBIDDEN from generating ANY 'Descriptive' questions.
     - If the user specifies ONLY 'Descriptive', you are FORBIDDEN from generating ANY 'Multiple Choice' questions.
     - Do not assume the user wants a mix. Generate ONLY what is explicitly requested in the 'questionTypes' array.
@@ -120,7 +120,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.** Ensure all math is rendered in LaTeX.
      *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
-     *   **Comprehension-based MCQs:** **CRITICAL RULE!** You are FORBIDDEN from generating comprehension-based questions UNLESS you also provide a relevant reading passage (a few paragraphs long) in the 'comprehensionText' field of the output. If this style is selected, you MUST generate the 'comprehensionText' and then ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage.
+     *   **Comprehension-based MCQs: CRITICAL RULE! You are FORBIDDEN from generating comprehension-based questions UNLESS you also provide a relevant reading passage (a few paragraphs long) in the 'comprehensionText' field of the output. If this style is selected, you MUST generate the 'comprehensionText', and then ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage. Failure to provide the 'comprehensionText' field when this style is selected is a critical failure.**
 
 **5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
@@ -176,5 +176,3 @@ const generateCustomQuizFlow = ai.defineFlow(
     }
   }
 );
-
-    

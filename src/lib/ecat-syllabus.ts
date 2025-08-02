@@ -9,6 +9,8 @@ import { ComputerScienceIcon } from '@/components/icons/computer-science-icon';
 export type Topic = {
   id: string;
   name: string;
+  questionStyle?: string;
+  specificInstructions?: string;
 };
 
 export type Subject = {
@@ -68,7 +70,12 @@ export const ecatSyllabus: Record<string, Subject> = {
     topics: [
       { id: "eng-1", name: "Grammar (Tenses, Articles, Prepositions)" },
       { id: "eng-2", name: "Vocabulary (Synonyms, Antonyms, Meanings)" },
-      { id: "eng-3", name: "Comprehension-based MCQs" },
+      { 
+        id: "eng-3", 
+        name: "Comprehension Passage",
+        questionStyle: "Comprehension-based MCQs",
+        specificInstructions: "Generate a reading passage and then create multiple-choice questions based ONLY on that passage."
+      },
       { id: "eng-4", name: "Sentence Correction" },
       { id: "eng-5", name: "Sentence Completion" },
     ],
