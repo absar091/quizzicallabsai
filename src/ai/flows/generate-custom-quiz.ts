@@ -34,6 +34,7 @@ const GenerateCustomQuizInputSchema = z.object({
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
 const GenerateCustomQuizOutputSchema = z.object({
+  comprehensionText: z.string().optional().describe("A reading passage for comprehension-based questions. This should ONLY be generated if the question style is 'Comprehension-based MCQs'."),
   quiz: z.array(
     z.object({
       type: z.enum(['multiple-choice', 'descriptive']).describe('The type of the question.'),
@@ -63,9 +64,10 @@ const promptText = `You are a world-class AI educator and subject matter expert.
     - If the user specifies ONLY 'Descriptive', you are FORBIDDEN from generating ANY 'Multiple Choice' questions.
     - Do not assume the user wants a mix. Generate ONLY what is explicitly requested in the 'questionTypes' array.
     - Your entire task is considered a failure if you include a single question of a type that was not requested.
-5.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
-6.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-7.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+5.  **LATEX FOR FORMULAS:** For any mathematical equations, chemical formulas, or scientific notation, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, $H_2O$. This is non-negotiable for accuracy in science and math questions.
+6.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
+7.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
+8.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
 ---
 
@@ -96,8 +98,9 @@ const promptText = `You are a world-class AI educator and subject matter expert.
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
-     *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.**
+     *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.** Ensure all math is rendered in LaTeX.
      *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
+     *   **Comprehension-based MCQs:** **IMPORTANT!** If this style is selected, you MUST first generate a relevant reading passage (a few paragraphs long) and place it in the 'comprehensionText' field of the output. Then, ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage.
 
 **5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
