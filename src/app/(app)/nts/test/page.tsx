@@ -46,9 +46,12 @@ function NtsTestFlow() {
                     throw new Error("The AI returned an empty quiz. Please try again.");
                 }
                 
+                // The output of generateNtsQuiz is slightly different, so we format it for GenerateQuizPage
                 const formattedQuiz = result.quiz.map(q => ({
-                    ...q,
-                    questionStyles: ["Past Paper Style"], // Add default value
+                    question: q.question,
+                    answers: q.answers,
+                    correctAnswer: q.correctAnswer,
+                    type: 'multiple-choice' as const, // Explicitly set type
                 }));
 
                 setQuiz(formattedQuiz);
@@ -155,3 +158,5 @@ export default function NtsTestSuspenseWrapper() {
         </Suspense>
     )
 }
+
+    
