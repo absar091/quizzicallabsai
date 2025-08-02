@@ -18,6 +18,7 @@ function EcatTestFlow() {
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
+    const [comprehensionText, setComprehensionText] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +27,7 @@ function EcatTestFlow() {
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
     const questionStyles = searchParams.get('questionStyles')?.split(',') || ['Past Paper Style'];
+    const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
 
     useEffect(() => {
         if (!topic) {
@@ -45,12 +47,13 @@ function EcatTestFlow() {
                     timeLimit: Number(numQuestions) || 20,
                     userAge: null,
                     userClass: "ECAT Student",
-                    specificInstructions: `Generate an ECAT-level test for the topic: ${topic}`
+                    specificInstructions: specificInstructions
                 });
                  if (!result.quiz || result.quiz.length === 0) {
                     throw new Error("The AI returned an empty quiz. Please try again.");
                 }
                 setQuiz(result.quiz);
+                setComprehensionText(result.comprehensionText || null);
             } catch (err: any) {
                 let errorMessage = "An unexpected error occurred while generating the test.";
                  if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
@@ -68,7 +71,7 @@ function EcatTestFlow() {
         };
 
         generateTest();
-    }, [topic, subject, difficulty, questionStyles, toast, numQuestions]);
+    }, [topic, subject, difficulty, questionStyles, toast, numQuestions, specificInstructions]);
 
     if (isLoading) {
         return (
@@ -103,6 +106,7 @@ function EcatTestFlow() {
     if (quiz) {
         return <GenerateQuizPage 
             initialQuiz={quiz} 
+            initialComprehensionText={comprehensionText || undefined}
             initialFormValues={{
                  topic: topic || "ECAT Test",
                  difficulty: difficulty as any,
@@ -110,7 +114,7 @@ function EcatTestFlow() {
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles,
                  timeLimit: Number(numQuestions) || 20,
-                 specificInstructions: ""
+                 specificInstructions: specificInstructions
             }}
          />
     }

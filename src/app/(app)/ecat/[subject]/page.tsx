@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText } from "lucide-react";
 import Link from 'next/link';
 import { notFound } from "next/navigation";
-import { ecatSyllabus } from "@/lib/ecat-syllabus";
+import { ecatSyllabus, Topic } from "@/lib/ecat-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 
@@ -23,8 +23,15 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
     notFound();
   }
   
-  const generateTestLink = (topic: string, numberOfQuestions: number) => {
-     return `/ecat/test?subject=${subject.slug}&topic=${encodeURIComponent(topic)}&numQuestions=${numberOfQuestions}`;
+  const generateTestLink = (topic: Topic, numberOfQuestions: number) => {
+     let link = `/ecat/test?subject=${subject.slug}&topic=${encodeURIComponent(topic.name)}&numQuestions=${numberOfQuestions}`;
+     if (topic.questionStyle) {
+        link += `&questionStyles=${encodeURIComponent(topic.questionStyle)}`;
+     }
+      if (topic.specificInstructions) {
+        link += `&specificInstructions=${encodeURIComponent(topic.specificInstructions)}`;
+     }
+     return link;
   }
 
   const getNumQuestionsForTopic = () => {
@@ -71,7 +78,7 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
                              <h3 className="font-semibold">{topic.name}</h3>
                         </div>
                          <Button asChild size="sm">
-                            <Link href={generateTestLink(topic.name, getNumQuestionsForTopic())}>
+                            <Link href={generateTestLink(topic, getNumQuestionsForTopic())}>
                                 Practice <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
