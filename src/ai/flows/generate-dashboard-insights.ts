@@ -103,6 +103,22 @@ Analyze the student's quiz history and generate a response in the specified JSON
 
 Now, generate the output for the provided student data.`;
 
+const prompt15Flash = ai.definePrompt({
+    name: 'generateDashboardInsightsPrompt15Flash',
+    model: googleAI.model('gemini-1.5-flash'),
+    prompt: promptText,
+    input: { schema: GenerateDashboardInsightsInputSchema },
+    output: { schema: GenerateDashboardInsightsOutputSchema },
+});
+
+const prompt20Flash = ai.definePrompt({
+    name: 'generateDashboardInsightsPrompt20Flash',
+    model: googleAI.model('gemini-2.0-flash'),
+    prompt: promptText,
+    input: { schema: GenerateDashboardInsightsInputSchema },
+    output: { schema: GenerateDashboardInsightsOutputSchema },
+});
+
 const generateDashboardInsightsFlow = ai.defineFlow(
   {
     name: 'generateDashboardInsightsFlow',
@@ -115,14 +131,18 @@ const generateDashboardInsightsFlow = ai.defineFlow(
       ...input,
       quizHistory: input.quizHistory.slice(0, 10),
     };
-    
-    const {output} = await ai.generate({
-        model: googleAI.model("gemini-1.5-flash"),
-        prompt: promptText,
-        input: recentHistory,
-        output: { schema: GenerateDashboardInsightsOutputSchema },
-    });
-    
-    return output!;
+
+    try {
+        const { output } = await prompt15Flash(recentHistory);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash for dashboard insights.');
+            const { output } = await prompt20Flash(recentHistory);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
   }
 );

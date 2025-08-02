@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'katex/dist/katex.min.css';
@@ -109,4 +110,3 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
         </div>
     );
 }
-    
