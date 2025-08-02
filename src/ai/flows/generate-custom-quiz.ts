@@ -120,7 +120,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.** Ensure all math is rendered in LaTeX.
      *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
-     *   **Comprehension-based MCQs: CRITICAL RULE! You are FORBIDDEN from generating comprehension-based questions UNLESS you also provide a relevant reading passage (a few paragraphs long) in the 'comprehensionText' field of the output. If this style is selected, you MUST generate the 'comprehensionText', and then ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage. Failure to provide the 'comprehensionText' field when this style is selected is a critical failure.**
+     *   **Comprehension-based MCQs: CRITICAL RULE! You are FORBIDDEN from generating comprehension-based questions UNLESS you also provide a relevant reading passage (a few paragraphs long) in the 'comprehensionText' field of the output. When this style is selected, you MUST generate the 'comprehensionText'. Furthermore, the 'question' field for each quiz item MUST NOT contain the passage itself. The 'question' field should ONLY contain the actual question that refers to the passage (e.g., "According to the passage, what is the primary benefit of vaccination?"). Failure to follow these rules is a critical failure.**
 
 **5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
@@ -176,3 +176,5 @@ const generateCustomQuizFlow = ai.defineFlow(
     }
   }
 );
+
+    
