@@ -10,9 +10,10 @@ import { faqs, initialQuestions, FAQ } from "@/lib/faqs";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { generateHelpBotResponse } from "@/ai/flows/generate-help-bot-response";
 
 type ConversationMessage = {
-    type: 'question' | 'answer';
+    type: 'question' | 'answer' | 'thinking';
     text: string;
     sender: 'user' | 'bot';
     related?: string[];
@@ -49,32 +50,47 @@ export default function HelpBot() {
     }
   }, [conversation, isOpen]);
 
+  const addBotAnswer = (answer: string, related?: string[]) => {
+    setConversation(prev => {
+        // Remove "thinking" message before adding answer
+        const newConversation = prev.filter(msg => msg.type !== 'thinking');
+        const botMessage: ConversationMessage = {
+            type: 'answer',
+            sender: 'bot',
+            text: answer,
+            related: related || initialQuestions,
+        };
+        return [...newConversation, botMessage];
+    });
+  }
 
   const handleQuestionSelect = (questionText: string) => {
-    const selectedFaq = faqs.find(faq => faq.question === questionText);
-
     const userMessage: ConversationMessage = { type: 'question', sender: 'user', text: questionText };
     setConversation(prev => [...prev, userMessage]);
 
+    // Show thinking indicator
     setTimeout(() => {
-        let botMessage: ConversationMessage;
+        setConversation(prev => [...prev, { type: 'thinking', sender: 'bot', text: '...' }]);
+    }, 300);
+
+    // Simulate thinking delay and then respond
+    setTimeout(() => {
+        const selectedFaq = faqs.find(faq => faq.question.toLowerCase() === questionText.toLowerCase());
+
         if (selectedFaq) {
-            botMessage = {
-                type: 'answer',
-                sender: 'bot',
-                text: selectedFaq.answer,
-                related: selectedFaq.related
-            };
+            addBotAnswer(selectedFaq.answer, selectedFaq.related);
         } else {
-            botMessage = {
-                type: 'answer',
-                sender: 'bot',
-                text: "I'm sorry, I don't have a pre-defined answer for that. You can try rephrasing or ask another question from the list.",
-                related: initialQuestions,
-            };
+            // If not found in FAQs, call the AI flow
+            generateHelpBotResponse({ query: questionText, faqContext: JSON.stringify(faqs) })
+                .then(response => {
+                    addBotAnswer(response.answer);
+                })
+                .catch(error => {
+                    console.error("Help Bot AI error:", error);
+                    addBotAnswer("I'm sorry, I'm having a little trouble connecting to my brain right now. Please try rephrasing or select a question from the list.");
+                });
         }
-        setConversation(prev => [...prev, botMessage]);
-    }, 500); // Small delay to simulate thinking
+    }, 2000); // 2-second "thinking" delay
   };
   
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -118,10 +134,17 @@ export default function HelpBot() {
                         {conversation.map((msg, index) => (
                            <div key={index} className={cn("flex w-full", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
                              <div className={cn(
-                                "max-w-[85%] p-3 rounded-2xl text-sm flex-initial", 
+                                "max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap", 
                                 msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
                               )}>
-                                {msg.text}
+                                {msg.type === 'thinking' ? (
+                                    <div className="flex items-center gap-2">
+                                        <Sparkles className="h-4 w-4 animate-pulse"/>
+                                        <span>Thinking...</span>
+                                    </div>
+                                ) : (
+                                    msg.text
+                                )}
                              </div>
                            </div>
                         ))}
