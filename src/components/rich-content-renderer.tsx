@@ -1,12 +1,11 @@
-
 'use client';
 
 import 'katex/dist/katex.min.css';
 import Latex from 'react-katex';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, LineChart, Line, XAxis, YAxis, CartesianGrid } from '@/components/ui/chart';
-import { ChartConfig } from '@/components/ui/chart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 
 type PlaceholderData = {
     searchQuery: string;
@@ -107,5 +106,3 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
         </div>
     );
 }
-
-    
