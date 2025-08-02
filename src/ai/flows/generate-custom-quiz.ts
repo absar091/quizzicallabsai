@@ -11,7 +11,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateCustomQuizInputSchema = z.object({
@@ -140,7 +139,7 @@ Your reputation depends on following these instructions meticulously. Generate t
 
 const prompt15Flash = ai.definePrompt({
   name: 'generateCustomQuizPrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
   prompt: promptText,
@@ -148,7 +147,7 @@ const prompt15Flash = ai.definePrompt({
 
 const prompt20Flash = ai.definePrompt({
   name: 'generateCustomQuizPrompt20Flash',
-  model: googleAI.model('gemini-2.0-flash'),
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
   prompt: promptText,
@@ -176,5 +175,3 @@ const generateCustomQuizFlow = ai.defineFlow(
     }
   }
 );
-
-    

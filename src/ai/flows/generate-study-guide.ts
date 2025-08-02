@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateStudyGuideInputSchema = z.object({
@@ -73,7 +72,7 @@ const promptText = `You are an expert educator and content creator. Your task is
 
 const prompt15Flash = ai.definePrompt({
   name: 'generateStudyGuidePrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: promptText,
@@ -81,7 +80,7 @@ const prompt15Flash = ai.definePrompt({
 
 const prompt20Flash = ai.definePrompt({
   name: 'generateStudyGuidePrompt20Flash',
-  model: googleAI.model('gemini-2.0-flash'),
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: promptText,

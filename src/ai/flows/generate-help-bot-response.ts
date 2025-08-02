@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 import { faqs } from '@/lib/faqs';
 
@@ -58,7 +57,7 @@ const generateHelpBotResponseFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await ai.generate({
-        model: googleAI.model('gemini-1.5-flash'),
+        model: 'googleai/gemini-1.5-flash',
         prompt: promptText,
         input: input,
         output: { schema: GenerateHelpBotResponseOutputSchema },
@@ -66,4 +65,3 @@ const generateHelpBotResponseFlow = ai.defineFlow(
     return output!;
   }
 );
-

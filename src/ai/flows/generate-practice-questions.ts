@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GeneratePracticeQuestionsInputSchema = z.object({
@@ -72,7 +71,7 @@ Your final output MUST be ONLY the JSON object specified in the output schema. D
 
 const prompt15Flash = ai.definePrompt({
   name: 'generatePracticeQuestionsPrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GeneratePracticeQuestionsInputSchema},
   output: {schema: GeneratePracticeQuestionsOutputSchema},
   prompt: promptText,
@@ -80,7 +79,7 @@ const prompt15Flash = ai.definePrompt({
 
 const prompt20Flash = ai.definePrompt({
   name: 'generatePracticeQuestionsPrompt20Flash',
-  model: googleAI.model('gemini-2.0-flash'),
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: GeneratePracticeQuestionsInputSchema},
   output: {schema: GeneratePracticeQuestionsOutputSchema},
   prompt: promptText,

@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 // Define the structure for a single quiz result to be passed in
@@ -105,7 +104,7 @@ Now, generate the output for the provided student data.`;
 
 const prompt15Flash = ai.definePrompt({
     name: 'generateDashboardInsightsPrompt15Flash',
-    model: googleAI.model('gemini-1.5-flash'),
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
@@ -113,7 +112,7 @@ const prompt15Flash = ai.definePrompt({
 
 const prompt20Flash = ai.definePrompt({
     name: 'generateDashboardInsightsPrompt20Flash',
-    model: googleAI.model('gemini-2.0-flash'),
+    model: 'googleai/gemini-2.0-flash',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },

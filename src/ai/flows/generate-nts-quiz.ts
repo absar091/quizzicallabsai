@@ -11,7 +11,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateNtsQuizInputSchema = z.object({
@@ -92,7 +91,7 @@ const generateNtsQuizFlow = ai.defineFlow(
   },
   async input => {
     const { output } = await ai.generate({
-        model: googleAI.model('gemini-1.5-flash'),
+        model: 'googleai/gemini-1.5-flash',
         prompt: promptText,
         input: input,
         output: { schema: GenerateNtsQuizOutputSchema },
