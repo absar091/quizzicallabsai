@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const GenerateQuizFromDocumentInputSchema = z.object({
@@ -58,7 +57,7 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
 const prompt15Flash = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({
@@ -70,7 +69,7 @@ const prompt15Flash = ai.definePrompt({
 
 const prompt20Flash = ai.definePrompt({
   name: 'generateQuizFromDocumentPrompt20Flash',
-  model: googleAI.model('gemini-2.0-flash'),
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({
