@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff } from "lucide-react";
-import LatexRenderer from '@/components/latex-renderer';
+import RichContentRenderer from '@/components/rich-content-renderer';
 
 
 import { Button } from "@/components/ui/button";
@@ -643,7 +643,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                         <CardTitle>Reading Passage</CardTitle>
                     </CardHeader>
                     <CardContent className="prose prose-sm dark:prose-invert max-h-48 overflow-y-auto">
-                        <LatexRenderer text={comprehensionText} />
+                        <RichContentRenderer content={comprehensionText} />
                     </CardContent>
                 </Card>
             )}
@@ -681,7 +681,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
                           <CardContent className="p-6 flex-grow flex flex-col justify-center gap-6">
                             <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                                <LatexRenderer text={currentQ.question} />
+                                <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} />
                             </div>
                             <div className="w-full max-w-md mx-auto">
                               {currentQ.type === 'descriptive' ? (
@@ -709,7 +709,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                                   <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground font-semibold")}>
                                                       {letter}
                                                   </span>
-                                                  <div className="flex-1 text-left text-base"><LatexRenderer text={answer} /></div>
+                                                  <div className="flex-1 text-left text-base"><RichContentRenderer content={answer} /></div>
                                               </Label>
                                           </FormItem>
                                       )
@@ -783,16 +783,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
-                                            <div className="font-semibold"><LatexRenderer text={`${index + 1}. ${q.question}`} /></div>
+                                            <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} /></div>
                                             <div className="text-sm mt-2 space-y-1">
                                                  <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
-                                                    <span>Your answer: <LatexRenderer text={userAnswers[index] || "Skipped"} /></span>
+                                                    <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
                                                  </p>
                                                  {!isCorrect && q.correctAnswer && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Correct answer: <LatexRenderer text={q.correctAnswer} /></span>
+                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
                                                      </p>
                                                  )}
                                                  {q.type === 'descriptive' && !q.correctAnswer && (

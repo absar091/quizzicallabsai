@@ -33,12 +33,22 @@ const GenerateCustomQuizInputSchema = z.object({
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
+const ChartDataSchema = z.array(
+    z.object({
+        name: z.string().describe("The label for a data point on the x-axis (e.g., 'Time', 'Concentration')."),
+        value: z.number().describe("The numerical value for that data point on the y-axis.")
+    })
+).describe("An array of data points for plotting a simple line chart. For example: [{name: '0s', value: 10}, {name: '10s', value: 50}]");
+
+
 const GenerateCustomQuizOutputSchema = z.object({
   comprehensionText: z.string().optional().describe("A reading passage for comprehension-based questions. This should ONLY be generated if the question style is 'Comprehension-based MCQs'."),
   quiz: z.array(
     z.object({
       type: z.enum(['multiple-choice', 'descriptive']).describe('The type of the question.'),
       question: z.string(),
+      smiles: z.string().optional().describe("A SMILES string representing a chemical structure, if the question requires one. E.g., 'C(C(=O)O)N' for Alanine."),
+      chartData: ChartDataSchema.optional().describe("Data for a chart, if the question is about interpreting a graph."),
       answers: z.array(z.string()).optional().describe('Answer choices for multiple-choice questions.'),
       correctAnswer: z.string().optional().describe('The correct answer for multiple-choice questions.'),
     })
@@ -65,9 +75,11 @@ const promptText = `You are a world-class AI educator and subject matter expert.
     - Do not assume the user wants a mix. Generate ONLY what is explicitly requested in the 'questionTypes' array.
     - Your entire task is considered a failure if you include a single question of a type that was not requested.
 5.  **LATEX FOR FORMULAS:** For any mathematical equations, chemical formulas, or scientific notation, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, $H_2O$. This is non-negotiable for accuracy in science and math questions.
-6.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
-7.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-8.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+6.  **SMILES FOR CHEMICAL STRUCTURES:** For questions involving organic chemistry or other complex molecules, you MUST provide a SMILES string in the 'smiles' field to represent the chemical structure. For example, for a question about Butanoic Acid, you would provide the SMILES string "CCCC(=O)O". This is mandatory for visual representation.
+7.  **CHART DATA FOR GRAPH QUESTIONS:** For questions that require interpreting a graph (e.g., reaction rates, physics motion graphs), you MUST provide structured data in the 'chartData' field. The data should be an array of objects, like [{name: "Time (s)", value: 0}, {name: "10s", value: 20}].
+8.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
+9.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
+10. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
 ---
 
