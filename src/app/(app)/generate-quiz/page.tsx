@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff } from "lucide-react";
+import LatexRenderer from '@/components/latex-renderer';
 
 
 import { Button } from "@/components/ui/button";
@@ -107,16 +108,18 @@ const addPdfHeaderAndFooter = (doc: any) => {
 type GenerateQuizPageProps = {
   initialQuiz?: Quiz;
   initialFormValues?: QuizFormValues;
+  initialComprehensionText?: string;
 }
 
 // --- Main Page Component ---
-export default function GenerateQuizPage({ initialQuiz, initialFormValues }: GenerateQuizPageProps) {
+export default function GenerateQuizPage({ initialQuiz, initialFormValues, initialComprehensionText }: GenerateQuizPageProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   
   const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [comprehensionText, setComprehensionText] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -194,9 +197,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
       
       let loadedFromStorage = false;
 
-      // Try loading from props first (for mock tests)
+      // Try loading from props first (for mock tests and pre-generated quizzes)
       if (initialQuiz && initialFormValues) {
         setQuiz(initialQuiz);
+        setComprehensionText(initialComprehensionText || null);
         setUserAnswers(new Array(initialQuiz.length).fill(null));
         setTimeLeft(initialFormValues.timeLimit * 60);
         setFormValues(initialFormValues);
@@ -216,6 +220,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         const savedState = await getQuizState(user.uid);
         if (savedState) {
             setQuiz(savedState.quiz);
+            // @ts-ignore - backward compatibility for older saved states
+            setComprehensionText(savedState.comprehensionText || null);
             setCurrentQuestion(savedState.currentQuestion);
             setUserAnswers(savedState.userAnswers);
             setTimeLeft(savedState.timeLeft);
@@ -233,7 +239,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     };
 
     initializeQuiz();
-  }, [user, initialQuiz, initialFormValues]);
+  }, [user, initialQuiz, initialFormValues, initialComprehensionText]);
 
 
   const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
@@ -254,6 +260,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         if (user && quiz && !showResults && !initialQuiz) {
             await saveQuizState(user.uid, {
                 quiz,
+                // @ts-ignore
+                comprehensionText,
                 currentQuestion,
                 userAnswers,
                 timeLeft,
@@ -262,7 +270,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
         }
     }
     persistState();
-  }, [quiz, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
+  }, [quiz, comprehensionText, currentQuestion, userAnswers, timeLeft, formValues, showResults, user, initialQuiz]);
 
 
   useEffect(() => {
@@ -325,6 +333,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
            throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
         }
         setQuiz(result.quiz);
+        setComprehensionText(result.comprehensionText || null);
         setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
@@ -369,7 +378,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -628,6 +637,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
     return (
       <FormProvider {...formMethods}>
         <div className="flex flex-col items-center py-4 md:py-12 overflow-hidden">
+           {comprehensionText && (
+                <Card className="w-full max-w-2xl mb-8">
+                    <CardHeader>
+                        <CardTitle>Reading Passage</CardTitle>
+                    </CardHeader>
+                    <CardContent className="prose prose-sm dark:prose-invert max-h-48 overflow-y-auto">
+                        <LatexRenderer text={comprehensionText} />
+                    </CardContent>
+                </Card>
+            )}
           <div className="w-full max-w-2xl min-h-[550px] flex items-center justify-center">
               <AnimatePresence mode="wait">
                   <motion.div
@@ -661,9 +680,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                           </CardHeader>
 
                           <CardContent className="p-6 flex-grow flex flex-col justify-center gap-6">
-                            <p className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                                {currentQ.question}
-                            </p>
+                            <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
+                                <LatexRenderer text={currentQ.question} />
+                            </div>
                             <div className="w-full max-w-md mx-auto">
                               {currentQ.type === 'descriptive' ? (
                                   <Textarea
@@ -690,7 +709,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                                   <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground font-semibold")}>
                                                       {letter}
                                                   </span>
-                                                  <span className="flex-1 text-left text-base">{answer}</span>
+                                                  <div className="flex-1 text-left text-base"><LatexRenderer text={answer} /></div>
                                               </Label>
                                           </FormItem>
                                       )
@@ -764,16 +783,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues }: Gen
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
-                                            <p className="font-semibold">{index + 1}. {q.question}</p>
+                                            <div className="font-semibold"><LatexRenderer text={`${index + 1}. ${q.question}`} /></div>
                                             <div className="text-sm mt-2 space-y-1">
                                                  <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
-                                                    <span>Your answer: {userAnswers[index] || "Skipped"}</span>
+                                                    <span>Your answer: <LatexRenderer text={userAnswers[index] || "Skipped"} /></span>
                                                  </p>
                                                  {!isCorrect && q.correctAnswer && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Correct answer: {q.correctAnswer}</span>
+                                                        <span>Correct answer: <LatexRenderer text={q.correctAnswer} /></span>
                                                      </p>
                                                  )}
                                                  {q.type === 'descriptive' && !q.correctAnswer && (
@@ -856,6 +875,7 @@ const questionStyleOptions = [
     { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
     { id: "Numerical", label: "Numerical", icon: Settings },
     { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
+    { id: "Comprehension-based MCQs", label: "Comprehension", icon: BookCopy },
 ]
 
 const stepTitles = [

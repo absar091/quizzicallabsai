@@ -50,7 +50,8 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
     *   The 'type' field MUST be "multiple-choice".
     *   Provide exactly 4 distinct and plausible options in the 'answers' array. Do not provide more or less than 4.
     *   The 'correctAnswer' field must perfectly match one of the strings in the 'answers' array.
-4.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or markdown.
+4.  **LATEX FOR FORMULAS:** For any mathematical equations or formulas, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$a^2 + b^2 = c^2$$, find the value of $x$. This is essential for clarity.
+5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or markdown.
 
 ---
 
@@ -68,7 +69,7 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
     *   Questions should require critical thinking, not just knowledge recall.
 
 *   **If the Topic includes 'Quantitative Reasoning':**
-    *   Focus on core math skills: algebra, ratios, percentages, arithmetic problems, and basic geometry.
+    *   Focus on core math skills: algebra, ratios, percentages, arithmetic problems, and basic geometry. All mathematical expressions must use LaTeX.
     *   Questions should be similar to those found in standardized aptitude tests, often presented as word problems.
 
 *   **If the Topic includes 'Verbal Reasoning':**
@@ -78,6 +79,7 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
     *   The topic will specify a subject like 'Physics' and a chapter like 'Motion and Force'.
     *   You are REQUIRED to generate questions strictly based on the Pakistani FSc/ICS curriculum for that subject and chapter.
     *   The difficulty should be appropriate for a university admission test (NAT level). Do not use content from outside this curriculum.
+    *   For Physics and Chemistry questions, ensure all formulas and equations are rendered using LaTeX.
 
 Generate the quiz now. Your output must be a valid JSON object with exactly {{{numberOfQuestions}}} questions.`;
 

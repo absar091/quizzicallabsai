@@ -3,7 +3,7 @@ import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type { QuizFormValues, Quiz } from '@/app/(app)/generate-quiz/page';
 
 const DB_NAME = 'QuizzicallabsDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Version updated to handle new quizState structure
 
 export interface QuizResult {
     id: string; // [userId]-[timestamp]
@@ -24,6 +24,7 @@ export interface BookmarkedQuestion {
 
 export interface QuizState {
     quiz: Quiz;
+    comprehensionText?: string | null;
     currentQuestion: number;
     userAnswers: (string | null)[];
     timeLeft: number;
@@ -52,17 +53,28 @@ let dbPromise: Promise<IDBPDatabase<QuizzicalDB>>;
 function getDb(): Promise<IDBPDatabase<QuizzicalDB>> {
   if (!dbPromise) {
     dbPromise = openDB<QuizzicalDB>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('quizResults')) {
-          const store = db.createObjectStore('quizResults', { keyPath: 'id' });
-          store.createIndex('by-user', 'userId');
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+            if (!db.objectStoreNames.contains('quizResults')) {
+              const store = db.createObjectStore('quizResults', { keyPath: 'id' });
+              store.createIndex('by-user', 'userId');
+            }
+            if (!db.objectStoreNames.contains('bookmarks')) {
+              const store = db.createObjectStore('bookmarks', { keyPath: ['userId', 'question'] });
+              store.createIndex('by-user', 'userId');
+            }
+            if (!db.objectStoreNames.contains('quizState')) {
+              db.createObjectStore('quizState');
+            }
         }
-        if (!db.objectStoreNames.contains('bookmarks')) {
-          const store = db.createObjectStore('bookmarks', { keyPath: ['userId', 'question'] });
-          store.createIndex('by-user', 'userId');
-        }
-        if (!db.objectStoreNames.contains('quizState')) {
-          db.createObjectStore('quizState');
+        if (oldVersion < 2) {
+             // The structure of quizState changed, so the best approach is to clear it
+             // to avoid data inconsistency issues. Users with a quiz in progress will
+             // lose it, which is an acceptable tradeoff for the new feature.
+            if (db.objectStoreNames.contains('quizState')) {
+                db.deleteObjectStore('quizState');
+            }
+            db.createObjectStore('quizState');
         }
       },
     });
