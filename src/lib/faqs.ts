@@ -36,12 +36,12 @@ export const faqs: FAQ[] = [
     answer: "In custom quizzes, you can enter any topic and the AI generates relevant questions. In Entry Test mode (MDCAT, ECAT, NTS), the AI generates questions that strictly follow the official syllabus, format, and difficulty for that specific exam.",
     related: ["What are custom quizzes?", "What is MDCAT preparation?", "What is ECAT prep?"]
   },
-    {
+  {
     question: "How do I generate a quiz from a document?",
     answer: "Go to 'Quiz from Document', upload your file (PDF, DOCX), select the number of questions you want, and our AI will create a quiz based *only* on the content of your document. It's perfect for studying your own notes.",
     related: ["What are custom quizzes?", "What is a study guide?", "What is the exam paper generator?"]
   },
-   {
+  {
     question: "What is the exam paper generator?",
     answer: "This is a powerful tool for educators. You can input paper details (school name, marks, etc.), set content parameters (topic, difficulty), and generate multiple variants of a professional, print-ready exam paper with an automatic answer key.",
     related: ["How do I generate a quiz from a document?", "What are custom quizzes?", "What is a study guide?"]
@@ -56,9 +56,9 @@ export const faqs: FAQ[] = [
     answer: "Similar to MDCAT prep, our ECAT module provides syllabus-specific practice tests for Physics, Mathematics, English, and the optional subjects (Chemistry or Computer Science). A full-length mock test is also available.",
     related: ["What is MDCAT preparation?", "What is NTS prep?", "What is the difference between custom quizzes and entry tests?"]
   },
-   {
+  {
     question: "What is NTS prep?",
-    answer: "This module helps you prepare for various NAT categories (e.g., Pre-Engineering, Pre-Medical). It offers tests for the subject portions based on your selected field, plus a comprehensive mock test covering all sections.",
+    answer: "This module helps you prepare for various NAT categories (e.g., Pre-Engineering, Pre-Medical). It offers tests for the subject portions based on your selected field, plus a comprehensive mock test covering all sections (Analytical, Quantitative, Verbal, and Subject).",
     related: ["What is MDCAT preparation?", "What is ECAT prep?", "What is the difference between custom quizzes and entry tests?"]
   },
   {
@@ -90,6 +90,11 @@ export const faqs: FAQ[] = [
     question: "How do I contact support?",
     answer: "The best way to get help is via WhatsApp at +92 326 1536764 or by emailing us at Ahmadraoabsar@gmail.com.",
     related: ["I didn’t receive my verification email.", "Is the app free?"]
+  },
+  {
+    question: "What is spam?",
+    answer: "The spam folder is where your email provider sends suspicious or promotional emails. Sometimes verification emails also land here. In Gmail, you can find it by opening the menu (three lines in the top-left) and scrolling down to 'Spam'.",
+    related: ["How to verify my email?", "I didn’t receive my verification email."]
   }
 ];
 
@@ -97,5 +102,5 @@ export const initialQuestions = [
     "I didn’t receive my verification email. What should I do?",
     "What is the difference between custom quizzes and entry tests?",
     "How do I generate a quiz from a document?",
-    "What does the 'AI is overloaded' error mean?",
+    "What is spam?",
 ];
