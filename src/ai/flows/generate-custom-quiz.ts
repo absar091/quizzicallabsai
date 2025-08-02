@@ -40,6 +40,10 @@ const ChartDataSchema = z.array(
     })
 ).describe("An array of data points for plotting a simple line chart. For example: [{name: '0s', value: 10}, {name: '10s', value: 50}]");
 
+const PlaceholderSchema = z.object({
+    searchQuery: z.string().describe("A one or two-word search query for a diagram (e.g., 'human heart', 'neuron structure')."),
+    aspectRatio: z.enum(["1:1", "4:3", "16:9"]).describe("The aspect ratio of the diagram, e.g., '1:1' for a square, '4:3' for standard.")
+}).describe("A placeholder for a biological or physics diagram. Use this INSTEAD of trying to draw with text.");
 
 const GenerateCustomQuizOutputSchema = z.object({
   comprehensionText: z.string().optional().describe("A reading passage for comprehension-based questions. This should ONLY be generated if the question style is 'Comprehension-based MCQs'."),
@@ -49,6 +53,7 @@ const GenerateCustomQuizOutputSchema = z.object({
       question: z.string(),
       smiles: z.string().optional().describe("A SMILES string representing a chemical structure, if the question requires one. E.g., 'C(C(=O)O)N' for Alanine."),
       chartData: ChartDataSchema.optional().describe("Data for a chart, if the question is about interpreting a graph."),
+      placeholder: PlaceholderSchema.optional().describe("A placeholder for a diagram if needed for biology or physics questions."),
       answers: z.array(z.string()).optional().describe('Answer choices for multiple-choice questions.'),
       correctAnswer: z.string().optional().describe('The correct answer for multiple-choice questions.'),
     })
@@ -79,9 +84,10 @@ const promptText = `You are a world-class AI educator and subject matter expert.
     *   **Chemical Equations & Formulas:** For ALL chemical reactions and formulas, you MUST use the mhchem extension for LaTeX. Enclose the entire expression in a LaTeX block. For example, to show the reaction of hydrogen and oxygen, you MUST write: $$\\ce{2H2 + O2 -> 2H2O}$$. For ions, use: $$\\ce{H3O+}$$. This is non-negotiable for accuracy and readability.
 6.  **SMILES FOR ORGANIC STRUCTURES:** For questions involving specific organic chemistry molecules, you MUST provide a SMILES string in the 'smiles' field to represent the chemical structure. For example, for a question about Butanoic Acid, you would provide the SMILES string "CCCC(=O)O". This is mandatory for visual representation.
 7.  **CHART DATA FOR GRAPH QUESTIONS:** For questions that require interpreting a graph (e.g., reaction rates, physics motion graphs, mathematical functions), you MUST provide structured data in the 'chartData' field. The data should be an array of objects, like [{name: "Time (s)", value: 0}, {name: "10s", value: 20}]. This is mandatory for graph-based questions.
-8.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
-9.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
-10. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+8.  **DIAGRAMS FOR BIOLOGY/PHYSICS:** For questions that need a biological or physics diagram (e.g., "Identify the labeled part of the heart"), DO NOT attempt to draw with text. Instead, you MUST populate the 'placeholder' field with a 'searchQuery' and 'aspectRatio'. For example: { "searchQuery": "human heart", "aspectRatio": "1:1" }.
+9.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
+10. **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
+11. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
 ---
 
@@ -114,7 +120,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.** Ensure all math is rendered in LaTeX.
      *   **Past Paper Style:** Mimic the format, tone, and complexity of questions found in official standardized tests or academic exams for the given topic and user level (e.g., MDCAT, ECAT).
-     *   **Comprehension-based MCQs:** **IMPORTANT!** If this style is selected, you MUST first generate a relevant reading passage (a few paragraphs long) and place it in the 'comprehensionText' field of the output. Then, ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage.
+     *   **Comprehension-based MCQs:** **CRITICAL RULE!** You are FORBIDDEN from generating comprehension-based questions UNLESS you also provide a relevant reading passage (a few paragraphs long) in the 'comprehensionText' field of the output. If this style is selected, you MUST generate the 'comprehensionText' and then ALL generated questions MUST be multiple-choice questions that are based *only* on the provided passage.
 
 **5. TARGET AUDIENCE & PERSONALIZATION:**
    - You MUST tailor the complexity, scope, and wording of the questions to the user's specific context. This is especially critical for standardized tests like MDCAT or ECAT.
@@ -129,3 +135,46 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 ---
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.
+
+`;
+
+const prompt15Flash = ai.definePrompt({
+  name: 'generateCustomQuizPrompt15Flash',
+  model: googleAI.model('gemini-1.5-flash'),
+  input: {schema: GenerateCustomQuizInputSchema},
+  output: {schema: GenerateCustomQuizOutputSchema},
+  prompt: promptText,
+});
+
+const prompt20Flash = ai.definePrompt({
+  name: 'generateCustomQuizPrompt20Flash',
+  model: googleAI.model('gemini-2.0-flash'),
+  input: {schema: GenerateCustomQuizInputSchema},
+  output: {schema: GenerateCustomQuizOutputSchema},
+  prompt: promptText,
+});
+
+const generateCustomQuizFlow = ai.defineFlow(
+  {
+    name: 'generateCustomQuizFlow',
+    inputSchema: GenerateCustomQuizInputSchema,
+    outputSchema: GenerateCustomQuizOutputSchema,
+  },
+  async input => {
+    try {
+        const {output} = await prompt15Flash(input);
+        return output!;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
+            const {output} = await prompt20Flash(input);
+            return output!;
+        }
+        // Re-throw other errors
+        throw error;
+    }
+  }
+);
+
+    

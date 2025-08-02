@@ -378,7 +378,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion(currentQuestion + 1);
     }
   };
 
@@ -638,11 +638,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       <FormProvider {...formMethods}>
         <div className="flex flex-col items-center py-4 md:py-12 overflow-hidden">
            {comprehensionText && (
-                <Card className="w-full max-w-2xl mb-8">
+                <Card className="w-full max-w-2xl mb-8 bg-muted/50">
                     <CardHeader>
                         <CardTitle>Reading Passage</CardTitle>
+                        <CardDescription>Read the passage below to answer the following questions.</CardDescription>
                     </CardHeader>
-                    <CardContent className="prose prose-sm dark:prose-invert max-h-48 overflow-y-auto">
+                    <CardContent className="prose prose-sm dark:prose-invert max-h-48 overflow-y-auto p-4 border rounded-lg bg-background">
                         <RichContentRenderer content={comprehensionText} />
                     </CardContent>
                 </Card>
@@ -681,7 +682,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
                           <CardContent className="p-6 flex-grow flex flex-col justify-center gap-6">
                             <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                                <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} />
+                                <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} placeholder={currentQ.placeholder} />
                             </div>
                             <div className="w-full max-w-md mx-auto">
                               {currentQ.type === 'descriptive' ? (
@@ -783,7 +784,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
-                                            <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} /></div>
+                                            <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
                                             <div className="text-sm mt-2 space-y-1">
                                                  <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
@@ -1212,5 +1213,7 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
+
+    
 
     
