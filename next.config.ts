@@ -1,4 +1,3 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -28,6 +27,17 @@ const nextConfig = {
         pathname: '/**',
       }
     ],
+  },
+   webpack: (config, { isServer }) => {
+    // This is to suppress the 'require.extensions' warning from handlebars
+    // which is a dependency of genkit.
+    config.module.rules.push({
+      test: /\.js$/,
+      include: /node_modules\/handlebars/,
+      use: ['node-loader'],
+    });
+
+    return config;
   },
 };
 
