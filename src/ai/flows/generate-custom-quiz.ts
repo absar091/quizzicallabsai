@@ -74,9 +74,11 @@ const promptText = `You are a world-class AI educator and subject matter expert.
     - If the user specifies ONLY 'Descriptive', you are FORBIDDEN from generating ANY 'Multiple Choice' questions.
     - Do not assume the user wants a mix. Generate ONLY what is explicitly requested in the 'questionTypes' array.
     - Your entire task is considered a failure if you include a single question of a type that was not requested.
-5.  **LATEX FOR FORMULAS:** For any mathematical equations, chemical formulas, or scientific notation, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, $H_2O$. This is non-negotiable for accuracy in science and math questions.
-6.  **SMILES FOR CHEMICAL STRUCTURES:** For questions involving organic chemistry or other complex molecules, you MUST provide a SMILES string in the 'smiles' field to represent the chemical structure. For example, for a question about Butanoic Acid, you would provide the SMILES string "CCCC(=O)O". This is mandatory for visual representation.
-7.  **CHART DATA FOR GRAPH QUESTIONS:** For questions that require interpreting a graph (e.g., reaction rates, physics motion graphs), you MUST provide structured data in the 'chartData' field. The data should be an array of objects, like [{name: "Time (s)", value: 0}, {name: "10s", value: 20}].
+5.  **LATEX FOR FORMULAS & CHEMISTRY (CRITICAL):**
+    *   **Mathematical Equations:** For ALL mathematical equations, variables, and scientific notation (e.g., exponents, units), you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, the variable is $x$.
+    *   **Chemical Equations & Formulas:** For ALL chemical reactions and formulas, you MUST use the mhchem extension for LaTeX. Enclose the entire expression in a LaTeX block. For example, to show the reaction of hydrogen and oxygen, you MUST write: $$\\ce{2H2 + O2 -> 2H2O}$$. For ions, use: $$\\ce{H3O+}$$. This is non-negotiable for accuracy and readability.
+6.  **SMILES FOR ORGANIC STRUCTURES:** For questions involving specific organic chemistry molecules, you MUST provide a SMILES string in the 'smiles' field to represent the chemical structure. For example, for a question about Butanoic Acid, you would provide the SMILES string "CCCC(=O)O". This is mandatory for visual representation.
+7.  **CHART DATA FOR GRAPH QUESTIONS:** For questions that require interpreting a graph (e.g., reaction rates, physics motion graphs, mathematical functions), you MUST provide structured data in the 'chartData' field. The data should be an array of objects, like [{name: "Time (s)", value: 0}, {name: "10s", value: 20}]. This is mandatory for graph-based questions.
 8.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
 9.  **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 10. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
@@ -126,45 +128,4 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 
 ---
 
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.`;
-
-const prompt15Flash = ai.definePrompt({
-  name: 'generateCustomQuizPrompt15Flash',
-  model: googleAI.model('gemini-1.5-flash'),
-  input: {schema: GenerateCustomQuizInputSchema},
-  output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: promptText,
-});
-
-const prompt20Flash = ai.definePrompt({
-    name: 'generateCustomQuizPrompt20Flash',
-    model: googleAI.model('gemini-2.0-flash'),
-    input: {schema: GenerateCustomQuizInputSchema},
-    output: {schema: GenerateCustomQuizOutputSchema},
-    prompt: promptText,
-});
-
-const generateCustomQuizFlow = ai.defineFlow(
-  {
-    name: 'generateCustomQuizFlow',
-    inputSchema: GenerateCustomQuizInputSchema,
-    outputSchema: GenerateCustomQuizOutputSchema,
-  },
-  async input => {
-    try {
-        const {output} = await prompt15Flash(input);
-        return output!;
-    } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return output!;
-        }
-        // Re-throw other errors
-        throw error;
-    }
-  }
-);
-
-    
+Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.
