@@ -21,7 +21,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
@@ -322,19 +322,21 @@ export default function DashboardPage() {
                <CardContent>
                   {scoreTrend.length > 0 ? (
                     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                      <LineChart accessibilityLayer data={scoreTrend}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
-                        <YAxis unit="%" domain={[0,100]} />
-                        <ChartTooltip 
-                          cursor={false}
-                          content={<ChartTooltipContent 
-                            indicator="dot"
-                            formatter={(value, name, props) => [`${props.payload.topic}: ${(value as number).toFixed(2)}%`, null]}
-                          />}
-                         />
-                        <Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} />
-                      </LineChart>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart accessibilityLayer data={scoreTrend}>
+                          <CartesianGrid vertical={false} />
+                          <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
+                          <YAxis unit="%" domain={[0,100]} />
+                          <ChartTooltip 
+                            cursor={false}
+                            content={<ChartTooltipContent 
+                              indicator="dot"
+                              formatter={(value, name, props) => [`${props.payload.topic}: ${(value as number).toFixed(2)}%`, null]}
+                            />}
+                          />
+                          <Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </ChartContainer>
                   ) : <p className="text-muted-foreground text-center py-10">Your score trend will appear here.</p>}
                </CardContent>
@@ -433,3 +435,5 @@ export default function DashboardPage() {
     </motion.div>
   );
 }
+
+    
