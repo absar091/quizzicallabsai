@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,7 +23,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -80,7 +79,7 @@ export function AppHeader() {
              <div className="md:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon"><Menu/></Button>
+                  <Button variant="ghost" size="icon" aria-label="Open menu"><Menu/></Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
                   <SheetHeader className="border-b p-4">
@@ -98,7 +97,7 @@ export function AppHeader() {
               </Sheet>
             </div>
           )}
-          <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
+          <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
             <motion.div
               className="flex h-9 w-9 items-center justify-center rounded-lg"
               whileHover={{ scale: 1.1, rotate: 10 }}
@@ -136,12 +135,12 @@ export function AppHeader() {
             )}
 
             <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+                <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
                     <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
-                 <Link href="/how-to-use" className="hidden md:inline-flex">
+                 <Link href="/how-to-use" className="hidden md:inline-flex" aria-label="Help and Guides">
                     <Button variant="ghost" size="icon">
                         <HelpCircle className="h-5 w-5" />
                         <span className="sr-only">Help and Guides</span>
@@ -151,7 +150,7 @@ export function AppHeader() {
                    <div className="hidden md:flex">
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                        <Button variant="ghost" className="relative h-10 w-10 rounded-full" aria-label="User menu">
                         <Avatar className="h-10 w-10">
                             <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>

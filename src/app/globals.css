@@ -7,7 +7,7 @@
   :root {
     /* Custom Brown/Gold Theme Inspired by Typeform */
     --background: 20 50% 98%; /* Very light, warm off-white */
-    --foreground: 20 20% 15%; /* Dark, warm gray/black for text */
+    --foreground: 20 20% 10%; /* Darker text for higher contrast */
     --card: 20 50% 100%;
     --card-foreground: 20 20% 10%;
     --popover: 20 50% 100%;
