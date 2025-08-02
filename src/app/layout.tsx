@@ -13,18 +13,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://quizzicallabs.ai'),
   title: {
-    default: "Quizzicallabs AI - Your Ultimate AI-Powered Study Partner",
-    template: "%s | Quizzicallabs AI",
+    default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
+    template: "%s | Quizzicallabsᴬᴵ",
   },
   description: "Generate custom quizzes, practice questions, and AI study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, track performance with analytics, and export materials as PDFs. The ultimate study tool for students and educators.",
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
-    title: "Quizzicallabs AI - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
+    title: "Quizzicallabsᴬᴵ - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
     description: "Generate tailored quizzes, practice questions from documents, track your progress, and get AI-powered study guides. Specialized prep for MDCAT, ECAT, and NTS exams. Perfect for students and educators.",
     url: "https://quizzicallabs.ai",
-    siteName: "Quizzicallabs AI",
+    siteName: "Quizzicallabsᴬᴵ",
     images: [
       {
         url: "/og-image.png",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Quizzicallabs AI - AI-Powered Learning for MDCAT, ECAT & NTS",
+    title: "Quizzicallabsᴬᴵ - AI-Powered Learning for MDCAT, ECAT & NTS",
     description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT, ECAT, and NTS.",
     images: ["/og-image.png"],
   },
