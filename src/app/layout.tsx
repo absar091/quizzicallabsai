@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
     template: "%s | Quizzicallabsᴬᴵ",
   },
-  description: "Generate custom quizzes, practice questions, and AI study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, track performance with analytics, and export materials as PDFs. The ultimate study tool for students and educators.",
+  description: "Generate custom quizzes, practice questions with AI explanations, and full study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, create print-ready exam papers for educators, track performance with analytics, and get instant help from our AI bot. The ultimate study tool for students and educators in Pakistan and beyond.",
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
