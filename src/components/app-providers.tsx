@@ -2,12 +2,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
-import HelpBot from "./help-bot";
+
+const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
 
 function AppContent({ children }: { children: React.ReactNode }) {
     return (

@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Bot, User, ChevronsUp, Send, Sparkles } from "lucide-react";
+import { X, Bot, ChevronsUp, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { faqs, initialQuestions, FAQ } from "@/lib/faqs";
@@ -124,7 +124,7 @@ export default function HelpBot() {
                     <CardDescription className="text-xs">Powered by Quizzicallabs AI</CardDescription>
                   </div>
                 </div>
-                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8">
+                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8" aria-label="Close help bot">
                     <X className="h-4 w-4" />
                 </Button>
               </CardHeader>
@@ -163,7 +163,7 @@ export default function HelpBot() {
               <form onSubmit={handleFormSubmit} className="p-4 border-t bg-muted/50">
                   <div className="relative">
                       <Input name="help-input" placeholder="Ask a question..." className="pr-10"/>
-                      <Button type="submit" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8">
+                      <Button type="submit" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8" aria-label="Send message">
                           <Send className="h-4 w-4"/>
                       </Button>
                   </div>
@@ -178,7 +178,7 @@ export default function HelpBot() {
         animate={{ scale: 1, transition: { delay: 0.5, type: 'spring', stiffness: 200 } }}
         className="fixed bottom-4 right-4 z-50"
       >
-        <Button size="icon" className="h-14 w-14 rounded-full shadow-lg" onClick={handleOpen}>
+        <Button size="icon" className="h-14 w-14 rounded-full shadow-lg" onClick={handleOpen} aria-label="Toggle help bot">
           {isOpen ? <ChevronsUp className="h-6 w-6"/> : <Bot className="h-6 w-6" />}
         </Button>
       </motion.div>
