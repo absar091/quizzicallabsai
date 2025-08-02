@@ -87,14 +87,14 @@ export const faqs: FAQ[] = [
     related: ["What is the limit of questions per day?", "How do I contact support?"]
   },
   {
-    question: "How do I contact support?",
-    answer: "The best way to get help is via WhatsApp at +92 326 1536764 or by emailing us at Ahmadraoabsar@gmail.com.",
-    related: ["I didn’t receive my verification email.", "Is the app free?"]
-  },
-  {
     question: "What is spam?",
     answer: "The spam folder is where your email provider sends suspicious or promotional emails. Sometimes verification emails also land here. In Gmail, you can find it by opening the menu (three lines in the top-left) and scrolling down to 'Spam'.",
     related: ["How to verify my email?", "I didn’t receive my verification email."]
+  },
+  {
+    question: "How do I contact support?",
+    answer: "I'm sorry I couldn't resolve your issue. For direct assistance, you can reach out to our team via WhatsApp for the quickest response at +92 326 1536764, or email us at Ahmadraoabsar@gmail.com.",
+    related: ["I didn’t receive my verification email.", "What does the 'AI is overloaded' error mean?"]
   }
 ];
 
@@ -102,5 +102,5 @@ export const initialQuestions = [
     "I didn’t receive my verification email. What should I do?",
     "What is the difference between custom quizzes and entry tests?",
     "How do I generate a quiz from a document?",
-    "What is spam?",
+    "How do I contact support?",
 ];
