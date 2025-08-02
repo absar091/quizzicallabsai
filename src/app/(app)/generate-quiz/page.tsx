@@ -193,49 +193,49 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   useEffect(() => {
     // This effect handles the one-time initialization from props or IndexedDB
     const initializeQuiz = async () => {
-      if (hasInitialized.current) return;
-      
-      let loadedFromStorage = false;
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
 
-      // Try loading from props first (for mock tests and pre-generated quizzes)
-      if (initialQuiz && initialFormValues) {
-        setQuiz(initialQuiz);
-        setComprehensionText(initialComprehensionText || null);
-        setUserAnswers(new Array(initialQuiz.length).fill(null));
-        setTimeLeft(initialFormValues.timeLimit * 60);
-        setFormValues(initialFormValues);
-        loadedFromStorage = true;
-        
-        if (window.location.pathname.includes('mock-test')) {
-             const isShowingResults = initialQuiz.length > 81; 
-             if(isShowingResults && (window as any).__MOCK_TEST_ANSWERS__) {
-                 setUserAnswers((window as any).__MOCK_TEST_ANSWERS__);
-                 setShowResults(true);
-             } else {
-                 setShowResults(false);
-             }
+        // Scenario 1: Mock test results are being displayed
+        const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
+        if (initialQuiz && mockTestAnswers) {
+            setQuiz(initialQuiz);
+            setFormValues(initialFormValues!);
+            setUserAnswers(mockTestAnswers);
+            setShowResults(true);
+            delete (window as any).__MOCK_TEST_ANSWERS__;
+            return;
         }
-      } else if (user) {
-        // Fallback to loading from IndexedDB (for resumed quizzes)
-        const savedState = await getQuizState(user.uid);
-        if (savedState) {
-            setQuiz(savedState.quiz);
-            // @ts-ignore - backward compatibility for older saved states
-            setComprehensionText(savedState.comprehensionText || null);
-            setCurrentQuestion(savedState.currentQuestion);
-            setUserAnswers(savedState.userAnswers);
-            setTimeLeft(savedState.timeLeft);
-            setFormValues(savedState.formValues);
+
+        // Scenario 2: A pre-generated quiz is starting (e.g., mock test section, chapter test)
+        if (initialQuiz) {
+            setQuiz(initialQuiz);
+            setComprehensionText(initialComprehensionText || null);
+            setUserAnswers(new Array(initialQuiz.length).fill(null));
+            setTimeLeft(initialFormValues!.timeLimit * 60);
+            setFormValues(initialFormValues!);
             setShowResults(false);
-            loadedFromStorage = true;
+            return;
         }
-      }
-      
-      if (!loadedFromStorage) {
-        setShowResults(true); // Show form if nothing to load
-      }
-      
-      hasInitialized.current = true;
+
+        // Scenario 3: Resuming a quiz from local storage
+        if (user) {
+            const savedState = await getQuizState(user.uid);
+            if (savedState && savedState.quiz && savedState.formValues) {
+                setQuiz(savedState.quiz);
+                setComprehensionText(savedState.comprehensionText || null);
+                setCurrentQuestion(savedState.currentQuestion);
+                setUserAnswers(savedState.userAnswers);
+                setTimeLeft(savedState.timeLeft);
+                setFormValues(savedState.formValues);
+                setShowResults(false);
+                return;
+            }
+        }
+        
+        // Scenario 4: No quiz state, show the form
+        setQuiz(null);
+        setShowResults(true);
     };
 
     initializeQuiz();
@@ -260,7 +260,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (user && quiz && !showResults && !initialQuiz) {
             await saveQuizState(user.uid, {
                 quiz,
-                // @ts-ignore
                 comprehensionText,
                 currentQuestion,
                 userAnswers,
@@ -378,7 +377,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion(currentQuestion + 1);
     }
   };
 
@@ -741,7 +740,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     );
   }
   
-  if (showResults && quiz) {
+  if (showResults && quiz && formValues) {
     const { score, percentage, totalScorable } = calculateScore();
     const incorrectAnswers = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
 
@@ -1214,9 +1213,3 @@ function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         </div>
     )
 }
-
-    
-
-    
-
-    
