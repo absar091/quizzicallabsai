@@ -9,7 +9,7 @@ export const faqs: FAQ[] = [
   {
     question: "I didn’t receive my verification email. What should I do?",
     answer: "First, check your spam or junk folder. If you still can't find it, go to the login page, enter your credentials, and a 'Resend verification email' link will appear. Click that to get a new link.",
-    related: ["How to verify my email?", "What is a custom quiz?", "How do I contact support?"]
+    related: ["How to verify my email?", "What are custom quizzes?", "How do I contact support?"]
   },
   {
     question: "How to verify my email?",
