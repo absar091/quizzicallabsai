@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: APP_NAME,
   },
+  mobileWebApp: {
+    capable: true,
+  },
   formatDetection: {
     telephone: false,
   },
