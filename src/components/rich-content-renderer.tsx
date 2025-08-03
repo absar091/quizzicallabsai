@@ -5,7 +5,7 @@ import 'katex/dist/katex.min.css';
 import Latex from 'react-katex';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { cn } from '@/lib/utils';
 
@@ -93,15 +93,18 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                 <Card className="bg-muted/50">
                     <CardContent className="pt-6">
                         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                            <ResponsiveContainer width="100%" height={200}>
-                                <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <ChartTooltip content={<ChartTooltipContent />} />
-                                    <Line type="monotone" dataKey="value" stroke="var(--color-value)" />
-                                </LineChart>
-                            </ResponsiveContainer>
+                            <LineChart
+                              data={chartData}
+                              width={400}
+                              height={200}
+                              margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <ChartTooltip content={<ChartTooltipContent />} />
+                                <Line type="monotone" dataKey="value" stroke="var(--color-value)" />
+                            </LineChart>
                         </ChartContainer>
                     </CardContent>
                 </Card>

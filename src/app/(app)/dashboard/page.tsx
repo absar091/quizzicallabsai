@@ -19,7 +19,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -322,8 +321,16 @@ export default function DashboardPage() {
                <CardContent>
                   {scoreTrend.length > 0 ? (
                     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                      <ResponsiveContainer width="100%" height={200}>
-                        <LineChart accessibilityLayer data={scoreTrend}>
+                      <LineChart
+                        accessibilityLayer
+                        data={scoreTrend}
+                        width={500}
+                        height={200}
+                        margin={{
+                          left: 12,
+                          right: 12,
+                        }}
+                      >
                           <CartesianGrid vertical={false} />
                           <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
                           <YAxis unit="%" domain={[0,100]} />
@@ -336,7 +343,6 @@ export default function DashboardPage() {
                           />
                           <Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} />
                         </LineChart>
-                      </ResponsiveContainer>
                     </ChartContainer>
                   ) : <p className="text-muted-foreground text-center py-10">Your score trend will appear here.</p>}
                </CardContent>
@@ -354,7 +360,7 @@ export default function DashboardPage() {
                       <CardContent className="pt-6">
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="font-semibold">{item.topic}</h3>
-                          <p className="text-sm font-bold text-primary">{item.averageScore.toFixed(0)}%</p>
+                          <div className="text-sm font-bold text-primary">{item.averageScore.toFixed(0)}%</div>
                         </div>
                         <Progress value={item.averageScore} />
                       </CardContent>

@@ -23,6 +23,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -91,6 +92,7 @@ export function AppHeader() {
                           <span className="text-xl">Quizzicallabs</span>
                       </Link>
                     </SheetTitle>
+                    <SheetDescription className="sr-only">Main navigation menu for the application.</SheetDescription>
                   </SheetHeader>
                   <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
                 </SheetContent>
