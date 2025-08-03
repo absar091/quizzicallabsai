@@ -82,8 +82,8 @@ export function Footer() {
                         <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
                         <nav className="flex flex-col gap-3 text-sm">
                             <Link href="/how-to-use" className="text-muted-foreground hover:text-primary">Guides</Link>
-                            <Link href="/how-to-use" className="text-muted-foreground hover:text-primary">API</Link>
-                            <Link href="/about-us" className="text-muted-foreground hover:text-primary">Careers</Link>
+                            <Link href="/api-docs" className="text-muted-foreground hover:text-primary">API</Link>
+                            <Link href="/careers" className="text-muted-foreground hover:text-primary">Careers</Link>
                              <a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">Feedback</a>
                         </nav>
                     </div>
@@ -95,6 +95,7 @@ export function Footer() {
                             <Link href="/how-to-use/contact-support" className="text-muted-foreground hover:text-primary">Contact</Link>
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
                             <Link href="/terms-of-use" className="text-muted-foreground hover:text-primary">Terms of Use</Link>
+                            <Link href="/cookies" className="text-muted-foreground hover:text-primary">Cookie Policy</Link>
                              <Link href="/disclaimer" className="text-muted-foreground hover:text-primary">Disclaimer</Link>
                         </nav>
                     </div>
