@@ -90,7 +90,7 @@ export default function HelpBot() {
                     addBotAnswer("I'm sorry, I'm having a little trouble connecting to my brain right now. Please try rephrasing or select a question from the list.");
                 });
         }
-    }, 2000); // 2-second "thinking" delay
+    }, 1500); // 1.5-second "thinking" delay
   };
   
   const handleFormSubmit = (e: React.FormEvent) => {

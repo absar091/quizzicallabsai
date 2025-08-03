@@ -4,7 +4,7 @@ import { BrainCircuit } from "lucide-react";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-muted/50 p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">

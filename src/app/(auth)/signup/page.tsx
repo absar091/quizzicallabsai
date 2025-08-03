@@ -83,7 +83,7 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm">
+    <Card>
       <CardHeader>
         <CardTitle>Create an Account</CardTitle>
         <CardDescription>Get started with your AI learning journey.</CardDescription>

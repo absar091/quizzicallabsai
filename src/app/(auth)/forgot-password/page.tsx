@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="bg-card/80 backdrop-blur-sm">
+    <Card>
       <CardHeader>
         <CardTitle>Forgot Password</CardTitle>
         <CardDescription>Enter your email to receive a password reset link.</CardDescription>
