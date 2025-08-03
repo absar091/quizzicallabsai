@@ -24,8 +24,6 @@ export function Footer() {
     const [appUrl, setAppUrl] = useState('');
 
     useEffect(() => {
-        // This code now runs only on the client, after the component has mounted.
-        // This prevents the hydration mismatch error.
         setAppUrl(window.location.origin);
     }, []);
 
@@ -57,8 +55,8 @@ export function Footer() {
     return (
         <footer className="border-t bg-background">
             <div className="container mx-auto px-6 py-12">
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-                    <div className="md:col-span-4">
+                <div className="grid grid-cols-2 md:grid-cols-12 gap-8">
+                    <div className="col-span-2 md:col-span-4">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
@@ -70,12 +68,23 @@ export function Footer() {
                     </div>
 
                     <div className="md:col-span-2">
-                        <h3 className="font-semibold mb-4 text-foreground">App</h3>
+                        <h3 className="font-semibold mb-4 text-foreground">Features</h3>
                         <nav className="flex flex-col gap-3 text-sm">
-                            <Link href="/dashboard" className="text-muted-foreground hover:text-primary">Dashboard</Link>
                             <Link href="/generate-quiz" className="text-muted-foreground hover:text-primary">Custom Quiz</Link>
+                            <Link href="/generate-questions" className="text-muted-foreground hover:text-primary">Practice Questions</Link>
                             <Link href="/generate-from-document" className="text-muted-foreground hover:text-primary">From Document</Link>
-                            <Link href="#features" className="text-muted-foreground hover:text-primary">Features</Link>
+                            <Link href="/generate-study-guide" className="text-muted-foreground hover:text-primary">Study Guide</Link>
+                            <Link href="/generate-paper" className="text-muted-foreground hover:text-primary">Exam Paper</Link>
+                        </nav>
+                    </div>
+
+                     <div className="md:col-span-2">
+                        <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
+                        <nav className="flex flex-col gap-3 text-sm">
+                            <Link href="/how-to-use" className="text-muted-foreground hover:text-primary">Guides</Link>
+                            <Link href="/how-to-use" className="text-muted-foreground hover:text-primary">API</Link>
+                            <Link href="/about-us" className="text-muted-foreground hover:text-primary">Careers</Link>
+                             <a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">Feedback</a>
                         </nav>
                     </div>
 
@@ -90,13 +99,12 @@ export function Footer() {
                         </nav>
                     </div>
                     
-                    <div className="md:col-span-4">
-                         <h3 className="font-semibold mb-4 text-foreground">Get Involved & Stay Connected</h3>
-                         <p className="text-sm text-muted-foreground mb-4">Enjoying the app? Share it with friends or report an issue.</p>
-                         <div className="flex flex-wrap gap-3 items-center">
-                            <Button onClick={handleNativeShare} variant="outline"><Share2 className="mr-2 h-4 w-4"/> Share</Button>
-                            <Button asChild><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><Heart className="mr-2 h-4 w-4"/> Feedback</a></Button>
-                            <Button asChild variant="destructive"><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><AlertTriangle className="mr-2 h-4 w-4"/> Report</a></Button>
+                    <div className="md:col-span-2">
+                         <h3 className="font-semibold mb-4 text-foreground">Get Involved</h3>
+                         <p className="text-sm text-muted-foreground mb-4">Enjoying the app? Share it or report an issue.</p>
+                         <div className="flex flex-col gap-3 items-start">
+                            <Button onClick={handleNativeShare} variant="outline" size="sm"><Share2 className="mr-2 h-4 w-4"/> Share with Friends</Button>
+                            <Button asChild variant="destructive" size="sm"><a href="https://wa.me/923261536764" target="_blank" rel="noopener noreferrer"><AlertTriangle className="mr-2 h-4 w-4"/> Report a Bug</a></Button>
                          </div>
                     </div>
                 </div>
