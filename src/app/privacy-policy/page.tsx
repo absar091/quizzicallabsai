@@ -1,11 +1,12 @@
 
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="container py-8 max-w-4xl mx-auto">
-      <PageHeader title="Privacy Policy" description="Last updated: July 30, 2024" />
+      <PageHeader title="Privacy Policy" description="Last updated: August 2, 2024" />
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
@@ -38,10 +39,8 @@ export default function PrivacyPolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">3. Advertising, Cookies, and AdSense</h2>
-            <p>We use Google AdSense to serve ads. Our advertising partners, including Google, may use cookies to serve ads based on your prior visits to our website or other websites. This enables personalized advertising.</p>
-            <p>The types of cookies used by Google include those for frequency capping, aggregated ad reporting, and to combat fraud and abuse.</p>
-            <p>You can opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>. You can also opt out of some third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info/choices</a>.</p>
-             <p>We also use essential cookies required for site functionality, such as keeping you logged in. By using our application, you consent to the use of these necessary cookies.</p>
+            <p>We use Google AdSense to serve ads. Our advertising partners, including Google, may use cookies to serve ads based on your prior visits to our website or other websites. This enables personalized advertising. For more detailed information on our use of cookies, please see our <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link>.</p>
+             <p>You can opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>.</p>
           </div>
 
           <div className="space-y-2">
