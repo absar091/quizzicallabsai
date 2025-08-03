@@ -1,34 +1,36 @@
 
 {
-    "name": "Quizzicallabs AI",
-    "short_name": "Quizzicallabs",
-    "description": "Your Ultimate AI-Powered Study Partner for custom quizzes, practice, and exam preparation.",
-    "start_url": "/dashboard",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#0d9488",
-    "icons": [
-        {
-            "src": "/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-maskable-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/icon-maskable-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        }
-    ]
+  "name": "Quizzicallabs AI",
+  "short_name": "Quizzicallabs",
+  "description": "Your ultimate AI-powered study partner.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f2f8f7",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+     {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
