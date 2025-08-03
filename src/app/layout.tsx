@@ -12,6 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  manifest: '/manifest.json',
   metadataBase: new URL('https://quizzicallabs.ai'),
   title: {
     default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
