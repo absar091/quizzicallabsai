@@ -11,14 +11,30 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
+const APP_NAME = "Quizzicallabs AI";
+const APP_DESCRIPTION = "Generate custom quizzes, practice questions with AI explanations, and full study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, create print-ready exam papers for educators, track performance with analytics, and get instant help from our AI bot. The ultimate study tool for students and educators in Pakistan and beyond.";
+
 export const metadata: Metadata = {
-  manifest: '/manifest.json',
-  metadataBase: new URL('https://quizzicallabs.ai'),
+  applicationName: APP_NAME,
   title: {
     default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
     template: "%s | Quizzicallabsᴬᴵ",
   },
-  description: "Generate custom quizzes, practice questions with AI explanations, and full study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, create print-ready exam papers for educators, track performance with analytics, and get instant help from our AI bot. The ultimate study tool for students and educators in Pakistan and beyond.",
+  description: APP_DESCRIPTION,
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_NAME,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  metadataBase: new URL('https://quizzicallabs.ai'),
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
@@ -60,6 +76,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: "#0d9488",
 };
 
 export default function RootLayout({
@@ -69,7 +86,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+         <link rel="icon" href="/icon-192x192.svg" type="image/svg+xml" sizes="any" />
+      </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         <AppProviders>
           {children}
