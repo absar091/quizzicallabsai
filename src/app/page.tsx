@@ -48,7 +48,7 @@ const FeatureCard1 = () => (
         </div>
       </CardContent>
     </div>
-    <Button size="lg" className="w-full bg-accent text-accent-foreground">
+    <Button size="lg" className="w-full bg-primary text-primary-foreground">
       <Sparkles className="mr-2 h-4 w-4" /> Generate Quiz
     </Button>
   </div>
@@ -104,7 +104,7 @@ const FeatureCard3 = () => (
                 </div>
             </CardContent>
         </div>
-        <Button size="lg" className="w-full bg-accent text-accent-foreground">
+        <Button size="lg" className="w-full bg-primary text-primary-foreground">
             <Download className="mr-2 h-4 w-4" /> Download Guide
         </Button>
     </div>
@@ -181,7 +181,7 @@ export default function Home() {
                  transition={{ duration: 0.5, delay: 0.4 }}
                  className="flex flex-col gap-4 sm:flex-row"
               >
-                <Button size="lg" asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button size="lg" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
                   <Link href="/signup">Get Started - it's free</Link>
                 </Button>
                  <Button size="lg" asChild variant="outline">
@@ -191,15 +191,19 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="features" className="py-16 md:py-24">
+        <section id="features" className="py-16 md:py-24 bg-muted/30">
             <div className="container mx-auto text-center">
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything you need to succeed</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">From quick practice sessions to full-length mock exams, our tools are designed to support every step of your learning journey.</p>
                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
+                    initial="hidden"
+                    whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ staggerChildren: 0.1 }}
+                    variants={{
+                        hidden: {},
+                        visible: {}
+                    }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
                   >
                     {allFeatures.map((feature, index) => (
@@ -209,9 +213,6 @@ export default function Home() {
                             hidden: { opacity: 0, y: 20 },
                             visible: { opacity: 1, y: 0 }
                           }}
-                           initial="hidden"
-                           whileInView="visible"
-                           viewport={{ once: true }}
                            transition={{ duration: 0.5, delay: index * 0.1}}
                         >
                             <Card className="text-left h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -231,7 +232,7 @@ export default function Home() {
             </div>
         </section>
         
-        <section className="bg-muted/50 py-16 md:py-24">
+        <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto text-center">
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzicallabs in Action</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Experience the power of AI-driven learning tools that adapt to your needs.</p>
@@ -251,7 +252,7 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-24 bg-muted/30">
              <div className="container mx-auto text-center">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Master any topic in three simple steps.</p>
@@ -299,8 +300,7 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="relative bg-muted/30 py-24 sm:py-32">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background"></div>
+        <section className="relative bg-background py-24 sm:py-32">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -309,7 +309,7 @@ export default function Home() {
               className="container mx-auto max-w-4xl text-center relative"
             >
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-12">A Note from the Creator</h2>
-                 <Card className="bg-background/80 backdrop-blur-sm shadow-xl">
+                 <Card className="bg-muted/30 backdrop-blur-sm shadow-xl border-0">
                     <CardContent className="p-8 md:p-12">
                         <div className="grid md:grid-cols-3 gap-8 items-center">
                            <div className="flex flex-col items-center md:items-start">

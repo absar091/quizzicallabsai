@@ -42,8 +42,6 @@ const appNavItems = [
     { href: "/mdcat", label: "MDCAT" },
     { href: "/ecat", label: "ECAT" },
     { href: "/nts", label: "NTS" },
-    { href: "/generate-study-guide", label: "Study Guide" },
-    { href: "/generate-paper", label: "Generate Paper" },
 ]
 
 function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
@@ -51,13 +49,13 @@ function NavLink({ href, label, currentPath }: { href: string; label: string; cu
     return (
         <Link
             href={href}
-            className="relative px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
             {label}
             {isActive && (
                 <motion.div
                     layoutId="active-nav-link"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 />
             )}
@@ -92,7 +90,9 @@ export function AppHeader() {
                           <span className="text-xl">Quizzicallabs</span>
                       </Link>
                     </SheetTitle>
-                    <SheetDescription className="sr-only">Main navigation menu for the application.</SheetDescription>
+                    <SheetDescription>
+                      Main navigation menu for the application.
+                    </SheetDescription>
                   </SheetHeader>
                   <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
                 </SheetContent>
@@ -101,12 +101,12 @@ export function AppHeader() {
           )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
             <motion.div
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground"
               whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <BrainCircuit className="h-8 w-8 text-primary" />
+              <BrainCircuit className="h-6 w-6" />
             </motion.div>
           </Link>
         </div>
@@ -114,7 +114,7 @@ export function AppHeader() {
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
             <AnimatePresence>
                 {user && (
-                     <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
+                     <nav className="hidden items-center gap-1 text-sm font-medium md:flex">
                          {appNavItems.map((item) => (
                             <NavLink key={item.href} href={item.href} label={item.label} currentPath={pathname} />
                         ))}
@@ -193,8 +193,8 @@ export function AppHeader() {
                     <Button asChild variant="ghost">
                         <Link href="/login">Log In</Link>
                     </Button>
-                    <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                        <Link href="/signup">Create your quiz - it's free</Link>
+                    <Button asChild>
+                        <Link href="/signup">Get Started Free</Link>
                     </Button>
                     </div>
                 )}

@@ -5,56 +5,72 @@
 
 @layer base {
   :root {
-    /* Custom Brown/Gold Theme Inspired by Typeform */
-    --background: 20 50% 98%; /* Very light, warm off-white */
-    --foreground: 20 20% 10%; /* Darker text for higher contrast */
-    --card: 20 50% 100%;
-    --card-foreground: 20 20% 10%;
-    --popover: 20 50% 100%;
-    --popover-foreground: 20 20% 10%;
-    --primary: 35 70% 45%; /* Brownish-gold accent */
-    --primary-foreground: 20 50% 99%;
-    --secondary: 20 20% 94%;
-    --secondary-foreground: 20 20% 10%;
-    --muted: 20 20% 96%;
-    --muted-foreground: 20 15% 55%;
-    --accent: 20 20% 20%; /* Dark accent for buttons */
-    --accent-foreground: 20 50% 98%;
+    /* Teal-based theme for a professional learning-focused feel */
+    --background: 168 25% 97%; /* Desaturated teal/off-white for a clean canvas */
+    --foreground: 180 10% 10%; /* Dark, slightly cool text for readability */
+    
+    --card: 168 25% 100%;
+    --card-foreground: 180 10% 10%;
+    
+    --popover: 168 25% 100%;
+    --popover-foreground: 180 10% 10%;
+    
+    --primary: 173 85% 33%; /* #0d9488 - Vibrant Teal for primary actions */
+    --primary-foreground: 173 85% 98%;
+    
+    --secondary: 173 15% 94%;
+    --secondary-foreground: 173 85% 25%;
+    
+    --muted: 173 20% 95%;
+    --muted-foreground: 173 10% 45%;
+    
+    --accent: 217 91% 60%; /* #3B82F6 - Contrasting blue-green for accents */
+    --accent-foreground: 0 0% 98%;
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 20 20% 90%;
-    --input: 20 20% 92%;
-    --ring: 35 70% 45%;
-    --radius: 0.75rem;
+    
+    --border: 173 20% 88%;
+    --input: 173 25% 94%;
+    --ring: 173 85% 33%;
+    
+    --radius: 0.5rem;
 
-    --chart-1: 35 70% 50%;
-    --chart-2: 20 70% 55%;
+    --chart-1: 173 70% 40%;
+    --chart-2: 204 70% 45%;
   }
  
   .dark {
-    /* Dark version of the Brown/Gold Theme */
-    --background: 20 20% 8%;
-    --foreground: 20 30% 95%;
-    --card: 20 20% 12%;
-    --card-foreground: 20 30% 95%;
-    --popover: 20 20% 10%;
-    --popover-foreground: 20 30% 95%;
-    --primary: 35 70% 50%; /* Lighter gold for dark mode */
-    --primary-foreground: 20 20% 10%;
-    --secondary: 20 15% 18%;
-    --secondary-foreground: 20 30% 95%;
-    --muted: 20 15% 20%;
-    --muted-foreground: 20 20% 65%;
-    --accent: 20 40% 97%; /* Light accent for buttons */
-    --accent-foreground: 20 20% 10%;
+    --background: 180 10% 10%;
+    --foreground: 173 10% 85%;
+    
+    --card: 180 10% 12%;
+    --card-foreground: 173 10% 85%;
+    
+    --popover: 180 10% 8%;
+    --popover-foreground: 173 10% 85%;
+
+    --primary: 173 80% 40%; /* Slightly brighter teal for dark mode */
+    --primary-foreground: 180 10% 5%;
+    
+    --secondary: 173 15% 18%;
+    --secondary-foreground: 173 10% 85%;
+    
+    --muted: 173 10% 15%;
+    --muted-foreground: 173 10% 60%;
+
+    --accent: 217 85% 65%; /* Brighter blue for dark mode accent */
+    --accent-foreground: 0 0% 98%;
+    
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 20 15% 22%;
-    --input: 20 15% 18%;
-    --ring: 35 70% 50%;
-    
-    --chart-1: 35 70% 55%;
-    --chart-2: 20 70% 60%;
+
+    --border: 173 10% 20%;
+    --input: 173 10% 17%;
+    --ring: 173 80% 45%;
+
+    --chart-1: 173 70% 45%;
+    --chart-2: 204 70% 50%;
   }
 }
  
@@ -68,18 +84,6 @@
   }
 }
 
-@layer components {
-  .btn {
-    @apply transition-all duration-200 ease-in-out;
-  }
-  .btn:hover {
-    @apply shadow-md -translate-y-0.5;
-  }
-  .btn:active {
-    @apply shadow-sm translate-y-0;
-  }
-}
-
 /* --- Splash Screen Styles --- */
 #splashScreen {
     display: flex;
@@ -87,7 +91,7 @@
     align-items: center;
     min-height: 100vh;
     width: 100vw;
-    background-color: #121212;
+    background-color: hsl(var(--background));
     transition: opacity 0.8s ease-in-out;
     position: fixed;
     top: 0;
@@ -98,31 +102,21 @@
 .logo-container {
     position: relative;
     padding: 6px;
-    clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
-}
-
-.logo-container::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 250%;
-    height: 250%;
-    z-index: 0;
-    background: conic-gradient(#fd004c, #fe9000, #fff020, #3edf4b, #3363ff, #b102b7, #fd004c);
-    animation: rotateGradient 6s linear infinite;
+    background: conic-gradient(from 180deg at 50% 50%, hsl(var(--primary)) 0deg, hsl(var(--accent)) 180deg, hsl(var(--primary)) 360deg);
+    animation: rotateGradient 4s linear infinite;
+    border-radius: 2rem;
 }
 
 @keyframes rotateGradient {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .name-container {
     position: relative;
-    background-color: #1a1a1a;
+    background-color: hsl(var(--background));
     padding: 30px 45px;
-    clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
+    border-radius: 1.75rem;
     z-index: 1;
 }
 
@@ -138,17 +132,17 @@
 .letter {
     display: inline-block;
     font-weight: 700;
-    color: #f0f0f0;
+    color: hsl(var(--primary));
     transform-style: preserve-3d;
     position: relative;
     animation: fadeInSlideUp 1s both;
 }
 
-.primary .letter { font-size: 5.5vw; }
-.secondary .letter { font-size: 2vw; font-weight: 400; color: #aaa; }
+.primary .letter { font-size: clamp(2rem, 5.5vw, 4rem); }
+.secondary .letter { font-size: clamp(1rem, 2vw, 1.5rem); font-weight: 400; color: hsl(var(--muted-foreground)); }
 .letter.space { width: 1vw; }
 
 @keyframes fadeInSlideUp {
-    from { opacity: 0; transform: translateY(60px) translateZ(-150px); }
-    to { opacity: 1; transform: translateY(0) translateZ(0); }
+    from { opacity: 0; transform: translateY(60px) translateZ(-150px) rotateX(-90deg); }
+    to { opacity: 1; transform: translateY(0) translateZ(0) rotateX(0deg); }
 }

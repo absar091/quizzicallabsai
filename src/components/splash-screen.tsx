@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const primaryText = "Quizzicalabs™";
+const primaryText = "Quizzicallabs™";
 const secondaryText = "— By Absar Ahmad Rao";
 const letterStaggerDelay = 0.07;
 
@@ -29,7 +29,7 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
 
     if (!splashShown) {
       setIsVisible(true);
-      const totalAnimationTime = (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 1500;
+      const totalAnimationTime = (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 2000; // Increased delay
       
       const timer = setTimeout(() => {
         sessionStorage.setItem('splashShown', 'true');
@@ -38,7 +38,6 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
 
       return () => clearTimeout(timer);
     } else {
-      // If already shown, immediately signal completion.
       onAnimationComplete();
     }
   }, [onAnimationComplete]);
