@@ -103,13 +103,7 @@
     position: relative;
     padding: 6px;
     background: conic-gradient(from 180deg at 50% 50%, hsl(var(--primary)) 0deg, hsl(var(--accent)) 180deg, hsl(var(--primary)) 360deg);
-    animation: rotateGradient 4s linear infinite;
     border-radius: 2rem;
-}
-
-@keyframes rotateGradient {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
 }
 
 .name-container {
