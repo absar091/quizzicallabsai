@@ -61,7 +61,7 @@ export default function InstallPwaPrompt() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className="fixed bottom-20 sm:bottom-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
+          className="fixed bottom-4 sm:bottom-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
         >
           <Card className="bg-background/90 backdrop-blur-sm border-2 shadow-2xl">
             <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-7 w-7" onClick={closePrompt}>

@@ -11,6 +11,7 @@ import '@/ai/flows/generate-simple-explanation.ts';
 import '@/ai/flows/generate-nts-quiz.ts';
 import '@/ai/flows/generate-dashboard-insights.ts';
 import '@/ai/flows/generate-help-bot-response.ts';
+import '@/ai/flows/explain-image.ts';
 
 import * as cron from 'node-cron';
 import { sendDailyReminderNotifications } from '@/services/notification-service';
