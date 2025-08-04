@@ -11,10 +11,10 @@ import type { Analytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCzRpRNFBAodjKhmmJAMvaBiDNH9-vK1Yg",
-  authDomain: "quizzicallab-ai.firebaseapp.com",
-  databaseURL: "https://quizzicallab-ai-default-rtdb.firebaseio.com",
-  projectId: "quizzicallab-ai",
-  storageBucket: "quizzicallab-ai.firebasestorage.app",
+  authDomain: "quizzical-ai.firebaseapp.com",
+  databaseURL: "https://quizzical-ai-default-rtdb.firebaseio.com",
+  projectId: "quizzical-ai",
+  storageBucket: "quizzical-ai.appspot.com",
   messagingSenderId: "208281807503",
   appId: "1:208281807503:web:8130ddca90c6068a7f1efa"
 };
@@ -44,6 +44,5 @@ if (typeof window !== 'undefined') {
         });
     });
 }
-
 
 export { app, auth, analytics };

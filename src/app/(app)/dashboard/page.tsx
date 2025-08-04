@@ -36,7 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const chartConfig = {
   score: {
     label: "Score",
-    color: "hsl(var(--primary))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
@@ -101,7 +101,7 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
 
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-br from-primary/10 to-background">
+      <Card>
         <CardHeader>
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-4 w-1/2" />
@@ -116,9 +116,9 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
   if (!insights) return null;
 
   return (
-    <Card className="bg-gradient-to-br from-primary/10 via-background to-background">
+    <Card className="bg-gradient-to-br from-blue-50 to-background dark:from-blue-950/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-primary">
           <MessageSquareQuote /> Your AI Coach
         </CardTitle>
         <CardDescription>
@@ -166,10 +166,7 @@ const calculateStreak = (results: QuizResult[]): number => {
                 if (i > 0) streak++;
                 lastDate = currentDate;
             } else if (currentDate < expectedPreviousDay) {
-                // Found a gap, stop counting
-                // But need to re-check if we started from today or yesterday
                 if (i === 0 && sortedDays[0].toDateString() !== today.toDateString()) {
-                   // User didn't practice today. Check if they practiced yesterday.
                    if (sortedDays[0].toDateString() === yesterday.toDateString()) {
                         streak = 1;
                         lastDate = sortedDays[0];
@@ -336,10 +333,9 @@ export default function DashboardPage() {
                     <Card className="h-full">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-base"><Flame className="text-primary"/> Daily Streak</CardTitle>
-                            <CardDescription>Practice every day to build your streak.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-3xl font-bold">{streak} <span className="text-lg font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
+                            <p className="text-4xl font-bold">{streak} <span className="text-lg font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
                         </CardContent>
                     </Card>
                 </motion.div>
@@ -347,7 +343,6 @@ export default function DashboardPage() {
                  <Card className="h-full">
                    <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-base"><Target className="text-primary"/> Daily Goal</CardTitle>
-                      <CardDescription>Complete 5 quizzes today.</CardDescription>
                    </CardHeader>
                    <CardContent>
                       <Progress value={dailyGoalProgress} />
@@ -359,7 +354,6 @@ export default function DashboardPage() {
                  <Card className="h-full">
                    <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-base"><Zap className="text-primary"/> Quick Start</CardTitle>
-                      <CardDescription>Start a new quiz in seconds.</CardDescription>
                    </CardHeader>
                    <CardContent>
                       <Button asChild size="sm">
@@ -499,5 +493,3 @@ export default function DashboardPage() {
     </motion.div>
   );
 }
-
-    

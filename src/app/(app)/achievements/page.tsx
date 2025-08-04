@@ -91,11 +91,11 @@ export default function AchievementsPage() {
                   <motion.div variants={itemVariants}>
                     <Card className={cn(
                       "flex flex-col items-center justify-center text-center p-6 aspect-square transition-all duration-300",
-                      isUnlocked ? "bg-primary/10 border-primary shadow-lg" : "bg-muted/50 border-dashed"
+                      isUnlocked ? "bg-primary/10 border-primary shadow-md" : "bg-muted/50"
                     )}>
                       <div className={cn(
-                        "flex h-16 w-16 items-center justify-center rounded-full mb-4",
-                        isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground"
+                        "flex h-16 w-16 items-center justify-center rounded-full mb-4 transition-colors",
+                        isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                       )}>
                         <ach.icon className="h-8 w-8" />
                       </div>

@@ -12,6 +12,8 @@ import {
   HelpCircle,
   BarChart2,
   Trophy,
+  BrainCircuit,
+  Settings
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -26,7 +28,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { Separator } from "./ui/separator";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,7 +41,6 @@ const mainNav = [
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use", icon: HelpCircle },
-    { href: "/profile", label: "Profile", icon: User },
 ]
 
 type MainSidebarProps = {
@@ -47,7 +49,7 @@ type MainSidebarProps = {
 
 export function MainSidebar({ onNavigate }: MainSidebarProps) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
@@ -56,8 +58,8 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
           href={href} 
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary",
-            isActive && "bg-primary/10 text-primary font-semibold"
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-foreground/80 transition-all hover:bg-secondary hover:text-primary",
+            isActive && "bg-secondary text-primary font-semibold"
       )}>
         <Icon className="h-5 w-5" />
         <span>{label}</span>
@@ -66,40 +68,38 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
   }
   
   return (
-    <div className="flex flex-col h-full">
-       <div className="flex-1 overflow-auto py-2">
-        <nav className="grid items-start px-4 text-base font-medium">
+    <div className="flex flex-col h-full bg-card border-r">
+       <div className="flex items-center border-b p-4 h-16">
+          <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <BrainCircuit className="h-5 w-5" />
+              </div>
+              <span className="text-lg">Quizzical</span>
+          </Link>
+       </div>
+       <div className="flex-1 overflow-auto py-4">
+        <nav className="grid items-start px-4 text-sm font-medium gap-1">
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
         </nav>
       </div>
       <div className="mt-auto p-4 border-t">
-        <nav className="grid items-start px-4 text-base font-medium">
-          {supportLinks.map(item => <NavLink key={item.href} {...item} />)}
-          
-          <AlertDialog>
-              <AlertDialogTrigger asChild>
-                  <button className="flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary text-left">
-                      <LogOut className="h-5 w-5" /> 
-                      <span>Logout</span>
-                  </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                  <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                          You will be returned to the login page.
-                      </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => {
-                        logout();
-                        if (onNavigate) onNavigate();
-                      }}>Logout</AlertDialogAction>
-                  </AlertDialogFooter>
-              </AlertDialogContent>
-          </AlertDialog>
-        </nav>
+         <nav className="grid items-start px-4 text-sm font-medium gap-1">
+            {supportLinks.map(item => <NavLink key={item.href} {...item} />)}
+         </nav>
+         <Separator className="my-4"/>
+         <div className="px-4">
+            <Link href="/profile">
+              <div className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-muted">
+                  <Avatar className="h-9 w-9">
+                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{user?.displayName}</span>
+                      <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  </div>
+              </div>
+            </Link>
+         </div>
       </div>
     </div>
   )
