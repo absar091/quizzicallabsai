@@ -6,7 +6,6 @@ import { AppHeader } from "@/components/app-header";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import NotificationHandler from "@/components/notification-handler";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Menu } from "lucide-react";
 import HelpBot from "@/components/help-bot";
@@ -37,11 +36,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
+      <div className="hidden border-r bg-card md:block">
         <MainSidebar />
       </div>
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -49,7 +48,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                     <span className="sr-only">Toggle navigation menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col p-0">
+              <SheetContent side="left" className="flex flex-col p-0 w-3/4">
                   <MainSidebar onNavigate={() => setIsSheetOpen(false)}/>
               </SheetContent>
             </Sheet>
@@ -60,7 +59,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
             <AppHeader />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-20 md:pb-6">
            <AnimatePresence mode="wait">
             <motion.div
                 key={pathname}
@@ -74,9 +73,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </AnimatePresence>
         </main>
         
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
           <HelpBot />
         </div>
+        <BottomNavBar />
       </div>
     </div>
   );
