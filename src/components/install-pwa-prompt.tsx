@@ -17,10 +17,15 @@ export default function InstallPwaPrompt() {
     const userAgent = window.navigator.userAgent;
     setIsIOS(/iPhone|iPad|iPod/.test(userAgent));
     
-    if (!installPromptShown && !window.matchMedia('(display-mode: standalone)').matches) {
+    // Check if the app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        return;
+    }
+
+    if (!installPromptShown) {
        const timer = setTimeout(() => {
          setShowPrompt(true);
-       }, 5000); // Show after 5 seconds
+       }, 7000); // Show after 7 seconds
       
       return () => clearTimeout(timer);
     }
@@ -30,7 +35,7 @@ export default function InstallPwaPrompt() {
      if (showPrompt) {
         const timer = setTimeout(() => {
             closePrompt();
-        }, 12000); // Auto-dismiss after 12 seconds
+        }, 15000); // Auto-dismiss after 15 seconds
         return () => clearTimeout(timer);
      }
   }, [showPrompt]);
@@ -53,11 +58,11 @@ export default function InstallPwaPrompt() {
     <AnimatePresence>
       {showPrompt && (
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
+          exit={{ opacity: 0, y: 100 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
+          className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
         >
           <Card className="bg-background/90 backdrop-blur-sm border-2 shadow-2xl">
             <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-7 w-7" onClick={closePrompt}>
