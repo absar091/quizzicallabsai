@@ -101,7 +101,7 @@ export function AppHeader() {
                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                             <BrainCircuit className="h-6 w-6" />
                        </div>
-                      <span className="hidden sm:inline-block font-bold">Quizzicallabs AI</span>
+                      <span className="hidden sm:inline-block font-bold">Quizzicallabs<sup className='font-serif text-lg'>ᴬᴵ</sup></span>
                   </Link>
               </div>
               
@@ -131,15 +131,15 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
-            <div className="mr-4 hidden md:flex">
+            {/* Desktop Navigation */}
+             <div className="mr-4 hidden md:flex">
                  <Link href="/dashboard" className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                         <BrainCircuit className="h-6 w-6" />
                     </div>
                 </Link>
             </div>
             
-            {/* Desktop Navigation */}
             <NavigationMenu className="hidden md:flex">
                 <NavigationMenuList>
                     <NavigationMenuItem>
@@ -204,32 +204,37 @@ export function AppHeader() {
             </NavigationMenu>
 
             {/* Mobile Title */}
-             <div className="md:hidden">
-                <span className="font-bold text-lg">Quizzicallabs AI</span>
+             <div className="flex-1 md:hidden">
+                <span className="font-bold text-lg">Quizzicallabs<sup className='font-serif'>ᴬᴵ</sup></span>
             </div>
 
-            <div className="flex flex-1 items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-4 md:flex-1">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                        <Avatar className="h-10 w-10">
-                        <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                    </Button>
+                        <Button variant="ghost" className="relative h-10 w-10 rounded-full hidden md:flex">
+                            <Avatar className="h-10 w-10">
+                            <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Link href="/profile">Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href="/how-to-use">Guides</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/profile">Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/how-to-use">Guides</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                 <Link href="/profile" className="md:hidden">
+                    <Avatar className="h-9 w-9">
+                        <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                </Link>
             </div>
         </div>
     </header>
