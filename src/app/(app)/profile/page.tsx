@@ -15,10 +15,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Link from 'next/link';
-import { Separator } from "@/components/ui/separator";
-import dynamic from "next/dynamic";
-
-const HelpBot = dynamic(() => import('@/components/help-bot'), { ssr: false });
 
 const infoLinks = [
     { href: "/about-us", label: "About Us", icon: Info },
@@ -34,7 +30,6 @@ export default function ProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [deleteReason, setDeleteReason] = useState("");
-  const [isHelpBotOpen, setIsHelpBotOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -140,10 +135,6 @@ export default function ProfilePage() {
                             </Link>
                          </Button>
                     ))}
-                     <Button variant="outline" className="justify-start gap-3" onClick={() => setIsHelpBotOpen(true)}>
-                        <Bot className="h-4 w-4 text-muted-foreground"/>
-                        AI Help Assistant
-                    </Button>
                 </div>
             </CardContent>
         </Card>
@@ -207,7 +198,6 @@ export default function ProfilePage() {
             </CardFooter>
         </Card>
       </div>
-       <HelpBot isOpen={isHelpBotOpen} onOpenChange={setIsHelpBotOpen} />
     </div>
   );
 }
