@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
+import InstallPwaPrompt from "./install-pwa-prompt";
 
 const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
 
@@ -17,7 +18,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
             {children}
             <Toaster />
             <CookieConsentBanner />
-            <HelpBot />
+            <InstallPwaPrompt />
         </>
     );
 }
