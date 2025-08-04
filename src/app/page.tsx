@@ -17,7 +17,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 
 const FeatureCard1 = () => (
-  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-lg border flex flex-col justify-between">
     <div className="space-y-4">
       <CardHeader className="p-0">
         <CardTitle className="text-xl">Custom Quiz Setup</CardTitle>
@@ -34,7 +34,7 @@ const FeatureCard1 = () => (
           />
           <div className="flex justify-between gap-2">
             <Button variant="outline" className="w-full">Easy</Button>
-            <Button variant="default" className="w-full">Medium</Button>
+            <Button variant="secondary" className="w-full">Medium</Button>
             <Button variant="outline" className="w-full">Hard</Button>
           </div>
           <div className="flex items-center space-x-2">
@@ -48,14 +48,14 @@ const FeatureCard1 = () => (
         </div>
       </CardContent>
     </div>
-    <Button size="lg" className="w-full bg-primary text-primary-foreground">
+    <Button size="lg" className="w-full">
       <Sparkles className="mr-2 h-4 w-4" /> Generate Quiz
     </Button>
   </div>
 );
 
 const FeatureCard2 = () => (
-  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+  <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-lg border flex flex-col justify-between">
      <div className="space-y-4">
       <CardHeader className="p-0">
         <CardTitle className="text-xl">MDCAT: Biology</CardTitle>
@@ -66,7 +66,7 @@ const FeatureCard2 = () => (
           <p className="font-semibold text-base">1. Which of these is a polysaccharide?</p>
           <div className="space-y-2">
             <div className="p-3 rounded-lg border bg-background">Glucose</div>
-            <div className="p-3 rounded-lg border bg-primary/10 border-primary">Cellulose</div>
+            <div className="p-3 rounded-lg border bg-secondary border-primary">Cellulose</div>
             <div className="p-3 rounded-lg border bg-background">Fructose</div>
             <div className="p-3 rounded-lg border bg-background">Lactose</div>
           </div>
@@ -86,7 +86,7 @@ const FeatureCard2 = () => (
 );
 
 const FeatureCard3 = () => (
-    <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-2xl border flex flex-col justify-between">
+    <div className="relative h-[500px] w-full max-w-sm mx-auto bg-card p-6 rounded-2xl shadow-lg border flex flex-col justify-between">
         <div className="space-y-4">
             <CardHeader className="p-0">
                 <CardTitle className="text-xl">AI Study Guide</CardTitle>
@@ -104,7 +104,7 @@ const FeatureCard3 = () => (
                 </div>
             </CardContent>
         </div>
-        <Button size="lg" className="w-full bg-primary text-primary-foreground">
+        <Button size="lg" className="w-full">
             <Download className="mr-2 h-4 w-4" /> Download Guide
         </Button>
     </div>
@@ -181,7 +181,7 @@ export default function Home() {
                  transition={{ duration: 0.5, delay: 0.4 }}
                  className="flex flex-col gap-4 sm:flex-row"
               >
-                <Button size="lg" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button size="lg" asChild>
                   <Link href="/signup">Get Started - it's free</Link>
                 </Button>
                  <Button size="lg" asChild variant="outline">
@@ -234,7 +234,7 @@ export default function Home() {
         
         <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto text-center">
-                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzicallabs in Action</h2>
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzical in Action</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Experience the power of AI-driven learning tools that adapt to your needs.</p>
                 <div className="mt-12">
                      <Carousel
@@ -309,7 +309,7 @@ export default function Home() {
               className="container mx-auto max-w-4xl text-center relative"
             >
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-12">A Note from the Creator</h2>
-                 <Card className="bg-muted/30 backdrop-blur-sm shadow-xl border-0">
+                 <Card className="bg-muted/30 backdrop-blur-sm shadow-xl border">
                     <CardContent className="p-8 md:p-12">
                         <div className="grid md:grid-cols-3 gap-8 items-center">
                            <div className="flex flex-col items-center md:items-start">
@@ -317,12 +317,12 @@ export default function Home() {
                                 <AvatarFallback className="text-5xl">AR</AvatarFallback>
                             </Avatar>
                              <p className="font-bold mt-4 text-xl">Absar Ahmad Rao</p>
-                             <p className="text-sm text-muted-foreground">Creator of Quizzicallabs AI</p>
+                             <p className="text-sm text-muted-foreground">Creator of Quizzical</p>
                            </div>
                            <div className="md:col-span-2 relative text-left">
                                 <Quote className="absolute -top-4 -left-4 h-12 w-12 text-primary/10" />
                                 <p className="text-lg text-muted-foreground leading-relaxed z-10">
-                                    As a student myself, I built Quizzicallabs AI to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey.
+                                    As a student myself, I built Quizzical to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey.
                                 </p>
                             </div>
                         </div>

@@ -8,14 +8,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NotificationHandler from "@/components/notification-handler";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Menu } from "lucide-react";
 import HelpBot from "@/components/help-bot";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
+import { MainSidebar } from "@/components/main-sidebar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -32,29 +36,48 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-      <div className="flex min-h-screen flex-col">
-        <NotificationHandler />
-        <AppHeader />
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <MainSidebar />
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="flex flex-col p-0">
+                  <MainSidebar onNavigate={() => setIsSheetOpen(false)}/>
+              </SheetContent>
+            </Sheet>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-8">
-            <AnimatePresence mode="wait">
+            <div className="w-full flex-1">
+              {/* Future: Could add a global search here */}
+            </div>
+
+            <AppHeader />
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+           <AnimatePresence mode="wait">
             <motion.div
                 key={pathname}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
             >
                 {children}
             </motion.div>
             </AnimatePresence>
         </main>
         
-        <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
+        <div className="fixed bottom-6 right-6 z-50">
           <HelpBot />
         </div>
-
-        <BottomNavBar />
       </div>
+    </div>
   );
 }

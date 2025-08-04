@@ -80,9 +80,9 @@ export default function GenLabPage() {
         {tools.map((tool) => (
           <motion.div key={tool.title} variants={itemVariants}>
             <Link href={tool.href} className="flex h-full">
-              <Card className="flex flex-col w-full hover:border-primary transition-all duration-200 hover:shadow-lg group">
+              <Card className="flex flex-col w-full hover:border-primary transition-all duration-200 hover:shadow-md group">
                 <CardHeader>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-3">
                     <tool.icon className="h-6 w-6 text-primary" />
                   </div>
                   <CardTitle>{tool.title}</CardTitle>
@@ -90,11 +90,11 @@ export default function GenLabPage() {
                 <CardContent className="flex-grow">
                   <CardDescription>{tool.description}</CardDescription>
                 </CardContent>
-                <CardContent className="mt-auto">
+                <CardFooter className="mt-auto">
                   <div className="flex items-center text-primary font-semibold text-sm">
                     Use Tool <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </CardContent>
+                </CardFooter>
               </Card>
             </Link>
           </motion.div>

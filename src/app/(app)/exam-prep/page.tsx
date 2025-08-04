@@ -2,7 +2,7 @@
 'use client';
 
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, GraduationCap } from 'lucide-react';
@@ -71,22 +71,24 @@ export default function ExamPrepPage() {
       >
         {tests.map((test) => (
           <motion.div key={test.name} variants={itemVariants} whileHover="hover" whileTap="tap">
-            <Card className="flex flex-col group h-full transition-all duration-300">
+            <Card className="flex flex-col group h-full transition-all duration-300 hover:shadow-md">
               <CardHeader className="flex-row items-center gap-4">
-                <GraduationCap className="h-8 w-8 text-primary shrink-0" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <GraduationCap className="h-6 w-6 text-primary shrink-0" />
+                </div>
                 <div>
                   <CardTitle>{test.name}</CardTitle>
                   <CardDescription className="mt-1">{test.description}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="mt-auto">
-                <Button asChild>
+              <CardFooter className="mt-auto">
+                <Button asChild variant="secondary" className="w-full">
                   <Link href={test.href}>
                     View Prep Material{' '}
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-              </CardContent>
+              </CardFooter>
             </Card>
           </motion.div>
         ))}
