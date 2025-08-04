@@ -6,25 +6,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DownloadCloud, MoreVertical, PlusSquare, Share, X } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function InstallPwaPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
-  const isMobile = useIsMobile();
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const installPromptShown = localStorage.getItem("install_prompt_shown");
     
-    // Determine OS
     const userAgent = window.navigator.userAgent;
     setIsIOS(/iPhone|iPad|iPod/.test(userAgent));
     
-    // Only show the prompt if it hasn't been shown before and the user is not in standalone mode (app already installed)
     if (!installPromptShown && !window.matchMedia('(display-mode: standalone)').matches) {
        const timer = setTimeout(() => {
          setShowPrompt(true);
-       }, 2000); // Show after 2 seconds
+       }, 5000); // Show after 5 seconds
       
       return () => clearTimeout(timer);
     }
@@ -57,11 +53,11 @@ export default function InstallPwaPrompt() {
     <AnimatePresence>
       {showPrompt && (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
+          exit={{ opacity: 0, y: -50 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className="fixed bottom-4 sm:bottom-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
         >
           <Card className="bg-background/90 backdrop-blur-sm border-2 shadow-2xl">
             <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-7 w-7" onClick={closePrompt}>
