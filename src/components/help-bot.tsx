@@ -29,16 +29,9 @@ export default function HelpBot() {
 
   useEffect(() => {
     if (isOpen && conversation.length === 0) {
-      setConversation([
-        {
-          type: 'answer',
-          sender: 'bot',
-          text: "Hello! I'm the Quizzicallabs AI assistant. How can I help you today?",
-          related: initialQuestions
-        }
-      ]);
+      handleQuestionSelect("Initial Greeting"); // Special case to trigger welcome
     }
-  }, [isOpen, conversation.length]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && scrollAreaRef.current) {
@@ -67,12 +60,24 @@ export default function HelpBot() {
   }
 
   const handleQuestionSelect = (questionText: string) => {
-    const userMessage: ConversationMessage = { type: 'question', sender: 'user', text: questionText };
-    setConversation(prev => [...prev, userMessage]);
+    if (questionText !== "Initial Greeting") {
+        const userMessage: ConversationMessage = { type: 'question', sender: 'user', text: questionText };
+        setConversation(prev => [...prev, userMessage]);
+    } else if (conversation.length > 0) {
+        // Don't re-add greeting if convo exists
+        return;
+    }
+
     setIsLoading(true);
+    setConversation(prev => [...prev, { type: 'thinking', sender: 'bot', text: '...' }]);
 
     // Simulate thinking delay and then respond
     setTimeout(() => {
+        if (questionText === "Initial Greeting") {
+            addBotAnswer("Hello! I'm the Quizzicallabs AI assistant. How can I help you today?", initialQuestions);
+            return;
+        }
+
         const selectedFaq = faqs.find(faq => faq.question.toLowerCase() === questionText.toLowerCase());
 
         if (selectedFaq) {
@@ -125,28 +130,33 @@ export default function HelpBot() {
           <div className="flex-1 overflow-hidden">
              <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
               <div className="space-y-4">
-                      {conversation.map((msg, index) => (
-                      <div key={index} className={cn("flex w-full", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
-                          <div className={cn(
-                          "max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap", 
-                          msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
-                          )}>
-                              {msg.text}
+                      {conversation.map((msg, index) => {
+                        if (msg.type === 'thinking') {
+                             return (
+                               <div key={index} className="flex justify-start">
+                                 <div className="max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap bg-muted text-muted-foreground rounded-bl-none">
+                                    <div className="flex items-center gap-2">
+                                        <Sparkles className="h-4 w-4 animate-pulse"/>
+                                        <span>Thinking...</span>
+                                    </div>
+                                 </div>
+                               </div>
+                             );
+                        }
+                        return (
+                          <div key={index} className={cn("flex w-full", msg.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                              <div className={cn(
+                              "max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap", 
+                              msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
+                              )}>
+                                  {msg.text}
+                              </div>
                           </div>
-                      </div>
-                      ))}
-                      {isLoading && (
-                           <div className="flex justify-start">
-                             <div className="max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap bg-muted text-muted-foreground rounded-bl-none">
-                                <div className="flex items-center gap-2">
-                                    <Sparkles className="h-4 w-4 animate-pulse"/>
-                                    <span>Thinking...</span>
-                                </div>
-                             </div>
-                           </div>
-                      )}
-                      {conversation.length > 0 && conversation[conversation.length - 1].sender === 'bot' && conversation[conversation.length - 1].related && !isLoading && (
-                          <div className="flex flex-col items-start gap-2 w-full pt-2">
+                        );
+                      })}
+
+                      {!isLoading && conversation.length > 0 && conversation[conversation.length - 1].related && (
+                          <div className="flex flex-col items-start gap-2 w-full pt-4">
                               {conversation[conversation.length - 1].related!.map((q, i) => (
                                   <Button key={i} variant="outline" size="sm" className="h-auto whitespace-normal py-1.5 w-full justify-start text-left" onClick={() => handleQuestionSelect(q)}>
                                       {q}
