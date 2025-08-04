@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    shortcut: "/favicon.ico",
-    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+    shortcut: "/icon-192x192.svg",
+    apple: [{ url: "/icon-192x192.svg", sizes: "180x180" }],
   },
   metadataBase: new URL('https://quizzicallabs.ai'),
   verification: {

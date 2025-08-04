@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, HelpCircle, Sun, Moon, User, LogOut, BrainCircuit } from "lucide-react";
+import { Menu, HelpCircle, Sun, Moon, User, LogOut, BrainCircuit, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,34 +35,6 @@ const publicNavItems = [
   { href: "/how-to-use", label: "Guides" },
 ];
 
-const appNavItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/generate-quiz", label: "Custom Quiz" },
-    { href: "/generate-questions", label: "Practice" },
-    { href: "/mdcat", label: "MDCAT" },
-    { href: "/ecat", label: "ECAT" },
-    { href: "/nts", label: "NTS" },
-]
-
-function NavLink({ href, label, currentPath }: { href: string; label: string; currentPath: string }) {
-    const isActive = currentPath === href || (href !== '/' && href !== '/dashboard' && currentPath.startsWith(href));
-    return (
-        <Link
-            href={href}
-            className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-        >
-            {label}
-            {isActive && (
-                <motion.div
-                    layoutId="active-nav-link"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                />
-            )}
-        </Link>
-    );
-}
-
 export function AppHeader() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
@@ -74,34 +46,9 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex items-center gap-2 md:gap-4">
-          {user && (
-             <div className="md:hidden">
-              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Open menu"><Menu/></Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
-                  <SheetHeader className="border-b p-4">
-                    <SheetTitle>
-                      <Link href="/dashboard" className="flex items-center gap-2 font-semibold" onClick={() => setMobileMenuOpen(false)}>
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                              <BrainCircuit className="h-6 w-6 text-primary-foreground" />
-                          </div>
-                          <span className="text-xl">Quizzicallabs</span>
-                      </Link>
-                    </SheetTitle>
-                    <SheetDescription>
-                      Main navigation menu for the application.
-                    </SheetDescription>
-                  </SheetHeader>
-                  <MainSidebar isMobile={true} onNavigate={() => setMobileMenuOpen(false)} />
-                </SheetContent>
-              </Sheet>
-            </div>
-          )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
             <motion.div
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground"
               whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.9, rotate: -15 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -112,16 +59,6 @@ export function AppHeader() {
         </div>
         
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
-            <AnimatePresence>
-                {user && (
-                     <nav className="hidden items-center gap-1 text-sm font-medium md:flex">
-                         {appNavItems.map((item) => (
-                            <NavLink key={item.href} href={item.href} label={item.label} currentPath={pathname} />
-                        ))}
-                    </nav>
-                )}
-            </AnimatePresence>
-
             {isHomePage && (
               <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
                  {publicNavItems.map((item) => (
@@ -142,53 +79,7 @@ export function AppHeader() {
                     <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
-                 <Link href="/how-to-use" className="hidden md:inline-flex" aria-label="Help and Guides">
-                    <Button variant="ghost" size="icon">
-                        <HelpCircle className="h-5 w-5" />
-                        <span className="sr-only">Help and Guides</span>
-                    </Button>
-                </Link>
-                {user ? (
-                   <div className="hidden md:flex">
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-10 w-10 rounded-full" aria-label="User menu">
-                        <Avatar className="h-10 w-10">
-                            <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                        <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                            <p className="text-xs leading-none text-muted-foreground">
-                            {user.email}
-                            </p>
-                        </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                        </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                        <Link href="/how-to-use">
-                            <HelpCircle className="mr-2 h-4 w-4" />
-                            <span>How to Use</span>
-                        </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => logout()}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                    </DropdownMenu>
-                   </div>
-                ) : (
+                {!user && (
                     <div className="hidden items-center gap-2 md:flex">
                     <Button asChild variant="ghost">
                         <Link href="/login">Log In</Link>

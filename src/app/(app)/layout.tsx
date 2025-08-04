@@ -3,7 +3,7 @@
 
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
-import { Footer } from "@/components/footer";
+import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -34,7 +34,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
         <NotificationHandler />
         <AppHeader />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 container">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 container pb-24">
            <AnimatePresence mode="wait">
               <motion.div
                   key={pathname}
@@ -47,7 +47,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </motion.div>
           </AnimatePresence>
         </main>
-        <Footer />
+        <BottomNavBar />
       </div>
   );
 }
