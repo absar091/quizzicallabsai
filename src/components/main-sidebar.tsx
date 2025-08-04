@@ -5,17 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  FileText,
-  FileUp,
+  FlaskConical,
   GraduationCap,
   LogOut,
   User,
-  BotMessageSquare,
-  BookOpen,
-  ClipboardSignature,
   HelpCircle,
-  BookMarked,
-  BrainCircuit,
   BarChart2,
   Trophy,
 } from "lucide-react";
@@ -32,28 +26,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "./ui/button";
+import { useSidebar } from "./ui/sidebar";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/bookmarks", label: "Bookmarks", icon: BookMarked },
+  { href: "/genlab", label: "GenLab", icon: FlaskConical },
+  { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
   { href: "/my-stats", label: "My Stats", icon: BarChart2 },
   { href: "/achievements", label: "Achievements", icon: Trophy },
 ];
-
-const generationTools = [
-    { href: "/generate-quiz", label: "Custom Quiz", icon: BotMessageSquare },
-    { href: "/generate-questions", label: "Practice Questions", icon: BookOpen },
-    { href: "/generate-from-document", label: "Quiz from Document", icon: FileUp },
-    { href: "/generate-study-guide", label: "Study Guide", icon: FileText },
-    { href: "/generate-paper", label: "Generate Paper", icon: ClipboardSignature },
-];
-
-const examPrep = [
-    { href: "/mdcat", label: "MDCAT Prep", icon: GraduationCap },
-    { href: "/ecat", label: "ECAT Prep", icon: GraduationCap },
-    { href: "/nts", label: "NTS Prep", icon: GraduationCap },
-]
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use", icon: HelpCircle },
@@ -61,13 +42,15 @@ const supportLinks = [
 ]
 
 type MainSidebarProps = {
-  onNavigate?: () => void;
   isMobile?: boolean;
 }
 
-export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
+export function MainSidebar({ isMobile }: MainSidebarProps) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { setOpen } = useSidebar();
+  const onNavigate = isMobile ? () => setOpen(false) : undefined;
+
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
@@ -76,29 +59,20 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
           href={href} 
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:text-primary",
+            "flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary",
             isActive && "bg-primary/10 text-primary font-semibold"
       )}>
         <Icon className="h-5 w-5" />
-        {label}
+        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
       </Link>
     )
   }
   
-  if (!isMobile) return null;
-
   return (
     <>
        <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-base font-medium">
-          <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground/70 tracking-wider">Main</h3>
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
-          
-          <h3 className="px-4 py-2 mt-4 text-sm font-semibold text-muted-foreground/70 tracking-wider">Generation Tools</h3>
-          {generationTools.map(item => <NavLink key={item.href} {...item} />)}
-
-          <h3 className="px-4 py-2 mt-4 text-sm font-semibold text-muted-foreground/70 tracking-wider">Exam Prep</h3>
-          {examPrep.map(item => <NavLink key={item.href} {...item} />)}
         </nav>
       </div>
       <div className="mt-auto p-4 border-t">
@@ -107,8 +81,9 @@ export function MainSidebar({ onNavigate, isMobile }: MainSidebarProps) {
           
           <AlertDialog>
               <AlertDialogTrigger asChild>
-                  <button className="flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:text-primary text-left">
-                      <LogOut className="h-5 w-5" /> Logout
+                  <button className="flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary text-left">
+                      <LogOut className="h-5 w-5" /> 
+                      <span className="group-data-[collapsible=icon]:hidden">Logout</span>
                   </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
