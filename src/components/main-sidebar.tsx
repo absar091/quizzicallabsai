@@ -16,6 +16,8 @@ import {
   HelpCircle,
   BookMarked,
   BrainCircuit,
+  BarChart2,
+  Trophy,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -35,6 +37,8 @@ import { Button } from "./ui/button";
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/bookmarks", label: "Bookmarks", icon: BookMarked },
+  { href: "/my-stats", label: "My Stats", icon: BarChart2 },
+  { href: "/achievements", label: "Achievements", icon: Trophy },
 ];
 
 const generationTools = [
