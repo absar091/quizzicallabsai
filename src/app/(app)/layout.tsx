@@ -6,15 +6,18 @@ import { AppHeader } from "@/components/app-header";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import NotificationHandler from "@/components/notification-handler";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
+import HelpBot from "@/components/help-bot";
+import { Button } from "@/components/ui/button";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isHelpBotOpen, setIsHelpBotOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -48,6 +51,18 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </AnimatePresence>
         </main>
         <BottomNavBar />
+
+         <div className="fixed bottom-20 right-4 z-50 md:hidden">
+            <Button
+                size="icon"
+                className="rounded-full h-14 w-14 shadow-lg"
+                onClick={() => setIsHelpBotOpen(true)}
+                aria-label="Open AI Help Assistant"
+            >
+                <MessageCircle className="h-7 w-7" />
+            </Button>
+        </div>
+        <HelpBot isOpen={isHelpBotOpen} onOpenChange={setIsHelpBotOpen} />
       </div>
   );
 }
