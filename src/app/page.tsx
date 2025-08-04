@@ -234,7 +234,7 @@ export default function Home() {
         
         <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto text-center">
-                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzical in Action</h2>
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">See Quizzicallabs AI in Action</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Experience the power of AI-driven learning tools that adapt to your needs.</p>
                 <div className="mt-12">
                      <Carousel
@@ -317,12 +317,12 @@ export default function Home() {
                                 <AvatarFallback className="text-5xl">AR</AvatarFallback>
                             </Avatar>
                              <p className="font-bold mt-4 text-xl">Absar Ahmad Rao</p>
-                             <p className="text-sm text-muted-foreground">Creator of Quizzical</p>
+                             <p className="text-sm text-muted-foreground">Creator of Quizzicallabs AI</p>
                            </div>
                            <div className="md:col-span-2 relative text-left">
                                 <Quote className="absolute -top-4 -left-4 h-12 w-12 text-primary/10" />
                                 <p className="text-lg text-muted-foreground leading-relaxed z-10">
-                                    As a student myself, I built Quizzical to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey.
+                                    As a student myself, I built Quizzicallabs AI to solve a problem I faced every day: finding high-quality, specific study materials on demand. My goal is to empower students and educators with a tool that makes learning more effective and personalized. I hope it helps you on your academic journey.
                                 </p>
                             </div>
                         </div>

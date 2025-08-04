@@ -13,7 +13,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
         <path d="M11.623 5.423a4.23 4.23 0 0 1 4.23 4.23v0a4.23 4.23 0 0 1-4.23 4.23H7.393a4.23 4.23 0 0 1-4.23-4.23v0a4.23 4.23 0 0 1 4.23-4.23h4.23Z"/>
         <path d="M15.853 9.653a4.23 4.23 0 0 1-4.23-4.23v0"/>
-        <path d="M12.493 18.347a4.23 4.23 0 0 1-4.23-4.23h0"/>
+        <path d="m12.493 18.347a4.23 4.23 0 0 1-4.23-4.23h0"/>
     </svg>
 )
 
@@ -40,7 +40,7 @@ export function Footer() {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: 'Quizzical',
+                    title: 'Quizzicallabs AI',
                     text: 'Check out this AI-powered learning platform!',
                     url: appUrl,
                 });
@@ -61,7 +61,7 @@ export function Footer() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                             </div>
-                            <span className="text-xl font-bold">Quizzical</span>
+                            <span className="text-xl font-bold">Quizzicallabs AI</span>
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">A product by <strong>QuizzicalLabs™</strong></p>
                         <p className="text-sm text-muted-foreground">The ultimate AI-powered study partner designed to revolutionize learning and assessment.</p>
