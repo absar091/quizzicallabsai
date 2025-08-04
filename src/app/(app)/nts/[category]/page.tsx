@@ -40,7 +40,11 @@ export default function NtsCategoryPage({ params }: CategoryPageProps) {
           return (
             <Card key={subject.id}>
                 <CardHeader className="flex-row items-center gap-4">
-                  {Icon && <Icon className="h-8 w-8 text-primary shrink-0" />}
+                  {Icon && 
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                        <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                  }
                   <div>
                     <CardTitle>{subject.name}</CardTitle>
                     <CardDescription>Select a chapter to start a practice test.</CardDescription>
@@ -49,7 +53,7 @@ export default function NtsCategoryPage({ params }: CategoryPageProps) {
                 <CardContent>
                      <Accordion type="single" collapsible className="w-full">
                         {subject.chapters.map((chapter, index) => (
-                             <AccordionItem value={`item-${index}`} key={chapter.id} className="border-b">
+                             <AccordionItem value={`item-${index}`} key={chapter.id} className="border-b last:border-b-0">
                                 <AccordionTrigger className="text-left py-4 hover:no-underline font-semibold">
                                     <div className="flex items-center gap-3">
                                         <ChevronsRight className="h-4 w-4 text-primary/80" />
