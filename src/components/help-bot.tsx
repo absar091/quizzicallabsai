@@ -28,9 +28,8 @@ export default function HelpBot({ isOpen, onOpenChange }: HelpBotProps) {
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const handleOpen = () => {
-    onOpenChange(true);
-    if (conversation.length === 0) {
+  useEffect(() => {
+    if (isOpen && conversation.length === 0) {
       setConversation([
         {
           type: 'answer',
@@ -40,7 +39,7 @@ export default function HelpBot({ isOpen, onOpenChange }: HelpBotProps) {
         }
       ]);
     }
-  };
+  }, [isOpen, conversation.length]);
 
   useEffect(() => {
     if (isOpen && scrollAreaRef.current) {
