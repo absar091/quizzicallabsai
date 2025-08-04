@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useSidebar } from "./ui/sidebar";
+
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -42,15 +42,12 @@ const supportLinks = [
 ]
 
 type MainSidebarProps = {
-  isMobile?: boolean;
+  onNavigate?: () => void;
 }
 
-export function MainSidebar({ isMobile }: MainSidebarProps) {
+export function MainSidebar({ onNavigate }: MainSidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
-  const { setOpen } = useSidebar();
-  const onNavigate = isMobile ? () => setOpen(false) : undefined;
-
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
@@ -63,13 +60,13 @@ export function MainSidebar({ isMobile }: MainSidebarProps) {
             isActive && "bg-primary/10 text-primary font-semibold"
       )}>
         <Icon className="h-5 w-5" />
-        <span className="group-data-[collapsible=icon]:hidden">{label}</span>
+        <span>{label}</span>
       </Link>
     )
   }
   
   return (
-    <>
+    <div className="flex flex-col h-full">
        <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-base font-medium">
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
@@ -83,7 +80,7 @@ export function MainSidebar({ isMobile }: MainSidebarProps) {
               <AlertDialogTrigger asChild>
                   <button className="flex items-center gap-4 rounded-lg px-4 py-2.5 text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary text-left">
                       <LogOut className="h-5 w-5" /> 
-                      <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+                      <span>Logout</span>
                   </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -104,6 +101,6 @@ export function MainSidebar({ isMobile }: MainSidebarProps) {
           </AlertDialog>
         </nav>
       </div>
-    </>
+    </div>
   )
 }
