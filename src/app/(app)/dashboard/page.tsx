@@ -11,7 +11,7 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookMarked, Lightbulb, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Sparkles, BrainCircuit, MessageSquareQuote } from "lucide-react";
+import { BookMarked, Lightbulb, PlayCircle, Activity, Target, Zap, ArrowRight, Shapes, Sparkles, BrainCircuit, MessageSquareQuote, Flame } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -138,6 +138,65 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
   )
 }
 
+const calculateStreak = (results: QuizResult[]): number => {
+    if (results.length === 0) return 0;
+
+    const uniqueDays = new Set<string>();
+    results.forEach(result => {
+        uniqueDays.add(new Date(result.date).toDateString());
+    });
+
+    const sortedDays = Array.from(uniqueDays).map(d => new Date(d)).sort((a, b) => b.getTime() - a.getTime());
+
+    let streak = 0;
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (sortedDays.some(d => d.toDateString() === today.toDateString())) {
+        streak = 1;
+        let lastDate = today;
+
+        for (let i = 0; i < sortedDays.length; i++) {
+            const currentDate = sortedDays[i];
+            const expectedPreviousDay = new Date(lastDate);
+            expectedPreviousDay.setDate(lastDate.getDate() - 1);
+
+            if (currentDate.toDateString() === expectedPreviousDay.toDateString()) {
+                if (i > 0) streak++;
+                lastDate = currentDate;
+            } else if (currentDate < expectedPreviousDay) {
+                // Found a gap, stop counting
+                // But need to re-check if we started from today or yesterday
+                if (i === 0 && sortedDays[0].toDateString() !== today.toDateString()) {
+                   // User didn't practice today. Check if they practiced yesterday.
+                   if (sortedDays[0].toDateString() === yesterday.toDateString()) {
+                        streak = 1;
+                        lastDate = sortedDays[0];
+                        continue;
+                   } else {
+                       return 0; // Streak is broken
+                   }
+                }
+            }
+        }
+    } else if (sortedDays.some(d => d.toDateString() === yesterday.toDateString())) {
+         streak = 1;
+         let lastDate = yesterday;
+         for (let i = 0; i < sortedDays.length; i++) {
+             const currentDate = sortedDays[i];
+             const expectedPreviousDay = new Date(lastDate);
+             expectedPreviousDay.setDate(lastDate.getDate() - 1);
+             if (currentDate.toDateString() === expectedPreviousDay.toDateString()) {
+                 streak++;
+                 lastDate = currentDate;
+             }
+         }
+    }
+
+    return streak;
+};
+
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -227,6 +286,7 @@ export default function DashboardPage() {
 
   const quizzesToday = recentActivity.filter(activity => new Date(activity.date) >= todayStart);
   const dailyGoalProgress = Math.min((quizzesToday.length / 5) * 100, 100);
+  const streak = calculateStreak(recentActivity);
 
   if (loading) {
     return (
@@ -272,6 +332,17 @@ export default function DashboardPage() {
              variants={containerVariants}
              className="grid grid-cols-1 md:grid-cols-3 gap-6"
            >
+                <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-base"><Flame className="text-primary"/> Daily Streak</CardTitle>
+                            <CardDescription>Practice every day to build your streak.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-3xl font-bold">{streak} <span className="text-lg font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
               <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
                  <Card className="h-full">
                    <CardHeader>
@@ -281,19 +352,6 @@ export default function DashboardPage() {
                    <CardContent>
                       <Progress value={dailyGoalProgress} />
                       <p className="text-sm text-muted-foreground mt-2">{quizzesToday.length} of 5 completed</p>
-                   </CardContent>
-                 </Card>
-              </motion.div>
-              <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
-                 <Card className="h-full">
-                   <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base"><PlayCircle className="text-primary"/> Pick up</CardTitle>
-                      <CardDescription>{lastQuizTopic ? `Last quiz: ${lastQuizTopic}` : "No recent quizzes."}</CardDescription>
-                   </CardHeader>
-                   <CardContent>
-                       <Button asChild variant="outline" disabled={!lastQuizTopic} size="sm">
-                          <Link href={`/generate-quiz?topic=${encodeURIComponent(lastQuizTopic || '')}`}>Retake Quiz <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                      </Button>
                    </CardContent>
                  </Card>
               </motion.div>
@@ -324,8 +382,6 @@ export default function DashboardPage() {
                       <LineChart
                         accessibilityLayer
                         data={scoreTrend}
-                        width={500}
-                        height={200}
                         margin={{
                           left: 12,
                           right: 12,
@@ -367,7 +423,9 @@ export default function DashboardPage() {
                     </Card>
                 </motion.div>
               )) : (
-                 <p className="text-muted-foreground text-center py-10 col-span-2">Take some quizzes to see your topic mastery.</p>
+                 <div className="text-center py-10 col-span-2">
+                    <p className="text-muted-foreground">Take some quizzes to see your topic mastery.</p>
+                 </div>
               )}
              </motion.div>
            </motion.div>

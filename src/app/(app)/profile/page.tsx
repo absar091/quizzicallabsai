@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Mail, GraduationCap, Trash2, ShieldAlert, Cake, FileText, Info, Phone, MessageSquare, ShieldCheck, Moon, Sun, Bot, HelpCircle } from "lucide-react";
+import { LogOut, User, Mail, GraduationCap, Trash2, ShieldAlert, Cake, FileText, Info, Phone, MessageSquare, ShieldCheck, Moon, Sun, Bot, HelpCircle, Trophy, BarChart2, ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -19,9 +19,9 @@ import { useTheme } from "next-themes";
 import { Separator } from "@/components/ui/separator";
 
 const infoLinks = [
-    { href: "/how-to-use/contact-support", label: "Contact Us", icon: Phone },
     { href: "/how-to-use", label: "How to Use Guide", icon: HelpCircle },
     { href: "/about-us", label: "About Us", icon: Info },
+    { href: "/how-to-use/contact-support", label: "Contact Us", icon: Phone },
 ];
 
 const legalLinks = [
@@ -38,6 +38,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [deleteReason, setDeleteReason] = useState("");
+  const [isHelpBotOpen, setIsHelpBotOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -118,6 +119,26 @@ export default function ProfilePage() {
             </CardContent>
         </Card>
         
+        <Card>
+            <CardHeader>
+                <CardTitle>Analytics & Progress</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                 <Button asChild variant="outline" className="justify-start gap-3">
+                    <Link href="/my-stats">
+                        <BarChart2 className="h-4 w-4 text-muted-foreground" />
+                        My Stats
+                    </Link>
+                 </Button>
+                 <Button asChild variant="outline" className="justify-start gap-3">
+                    <Link href="/achievements">
+                        <Trophy className="h-4 w-4 text-muted-foreground" />
+                        Achievements
+                    </Link>
+                 </Button>
+            </CardContent>
+        </Card>
+
         <Card>
             <CardHeader>
                 <CardTitle>Settings & Information</CardTitle>
