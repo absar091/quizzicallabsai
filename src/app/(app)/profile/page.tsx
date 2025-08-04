@@ -183,7 +183,7 @@ export default function ProfilePage() {
             </CardContent>
         </Card>
 
-        <Card className="border-destructive">
+        <Card className="border-destructive/50 bg-destructive/5">
              <CardHeader>
                 <CardTitle className="text-destructive">Danger Zone</CardTitle>
             </CardHeader>
