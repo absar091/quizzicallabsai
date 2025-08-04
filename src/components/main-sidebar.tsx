@@ -69,12 +69,12 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
   
   return (
     <div className="flex flex-col h-full bg-card border-r">
-       <div className="flex items-center border-b p-4 h-16">
+       <div className="flex items-center border-b p-4 h-14 lg:h-[60px]">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>
-              <span className="text-lg">Quizzical</span>
+              <span className="text-lg">Quizzicallabs AI</span>
           </Link>
        </div>
        <div className="flex-1 overflow-auto py-4">

@@ -11,14 +11,14 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
-const APP_NAME = "Quizzical";
+const APP_NAME = "Quizzicallabs AI";
 const APP_DESCRIPTION = "Generate custom quizzes, practice questions with AI explanations, and full study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams. Upload documents to create quizzes, create print-ready exam papers for educators, track performance with analytics, and get instant help from our AI bot. The ultimate study tool for students and educators in Pakistan and beyond.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
   title: {
-    default: "Quizzical - Your Ultimate AI-Powered Study Partner",
-    template: "%s | Quizzical",
+    default: "Quizzicallabs AI - Your Ultimate AI-Powered Study Partner",
+    template: "%s | Quizzicallabs AI",
   },
   description: APP_DESCRIPTION,
   manifest: "/manifest.json",
@@ -37,15 +37,15 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
     apple: [{ url: "/icon.svg", sizes: "180x180" }],
   },
-  metadataBase: new URL('https://quizzical.ai'),
+  metadataBase: new URL('https://quizzicallabs.com'),
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
-    title: "Quizzical - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
+    title: "Quizzicallabs AI - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
     description: "Generate tailored quizzes, practice questions from documents, track your progress, and get AI-powered study guides. Specialized prep for MDCAT, ECAT, and NTS exams. Perfect for students and educators.",
-    url: "https://quizzical.ai",
-    siteName: "Quizzical",
+    url: "https://quizzicallabs.com",
+    siteName: "Quizzicallabs AI",
     images: [
       {
         url: "/og-image.png",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Quizzical - AI-Powered Learning for MDCAT, ECAT & NTS",
+    title: "Quizzicallabs AI - AI-Powered Learning for MDCAT, ECAT & NTS",
     description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT, ECAT, and NTS.",
     images: ["/og-image.png"],
   },
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "ecat prep", "nts prep", "mock test", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor", "quiz from pdf", "test generator", "Absar Ahmad Rao", "QuizzicalLabs", "Quizzical"],
+  keywords: ["quiz generator", "ai quiz maker", "study tool", "practice questions", "mdcat prep", "ecat prep", "nts prep", "mock test", "learning platform", "exam paper generator", "study guide generator", "personalized learning", "ai tutor", "quiz from pdf", "test generator", "Absar Ahmad Rao", "QuizzicalLabs", "Quizzicallabs AI"],
 };
 
 export const viewport: Viewport = {

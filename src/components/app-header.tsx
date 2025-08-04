@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 export function AppHeader() {
   const { user, logout } = useAuth();
   
+  // Header for unauthenticated users on the landing page
   if (!user) {
     return (
        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -34,27 +35,8 @@ export function AppHeader() {
 
   // App Header for logged in users
   return (
-    <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Toggle user menu</span>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-                <Link href="/profile">Profile</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-                <Link href="/how-to-use">Support</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="w-full flex-1">
+        {/* Future: Could add a global search here */}
+    </div>
   );
 }

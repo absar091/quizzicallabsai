@@ -53,10 +53,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </SheetContent>
             </Sheet>
 
-            <div className="w-full flex-1">
-              {/* Future: Could add a global search here */}
-            </div>
-
             <AppHeader />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-20 md:pb-6">
