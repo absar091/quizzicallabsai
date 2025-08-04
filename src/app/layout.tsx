@@ -17,8 +17,8 @@ const APP_DESCRIPTION = "Generate custom quizzes, practice questions with AI exp
 export const metadata: Metadata = {
   applicationName: APP_NAME,
   title: {
-    default: "Quizzicallabsᴬᴵ - Your Ultimate AI-Powered Study Partner",
-    template: "%s | Quizzicallabsᴬᴵ",
+    default: "Quizzicallabs AI - Your Ultimate AI-Powered Study Partner",
+    template: "%s | Quizzicallabs AI",
   },
   description: APP_DESCRIPTION,
   manifest: "/manifest.json",
@@ -34,18 +34,18 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    shortcut: "/icon-192x192.svg",
-    apple: [{ url: "/icon-192x192.svg", sizes: "180x180" }],
+    shortcut: "/icon.svg",
+    apple: [{ url: "/icon.svg", sizes: "180x180" }],
   },
   metadataBase: new URL('https://quizzicallabs.ai'),
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
-    title: "Quizzicallabsᴬᴵ - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
+    title: "Quizzicallabs AI - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
     description: "Generate tailored quizzes, practice questions from documents, track your progress, and get AI-powered study guides. Specialized prep for MDCAT, ECAT, and NTS exams. Perfect for students and educators.",
     url: "https://quizzicallabs.ai",
-    siteName: "Quizzicallabsᴬᴵ",
+    siteName: "Quizzicallabs AI",
     images: [
       {
         url: "/og-image.png",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Quizzicallabsᴬᴵ - AI-Powered Learning for MDCAT, ECAT & NTS",
+    title: "Quizzicallabs AI - AI-Powered Learning for MDCAT, ECAT & NTS",
     description: "Create custom quizzes, practice questions, and study guides in seconds. Track progress, get AI explanations, and prepare for exams like MDCAT, ECAT, and NTS.",
     images: ["/og-image.png"],
   },
@@ -90,7 +90,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-         <link rel="icon" href="/icon-192x192.svg" type="image/svg+xml" sizes="any" />
+         <link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any" />
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         <AppProviders>

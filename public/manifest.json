@@ -1,23 +1,26 @@
 {
   "name": "Quizzicallabs AI",
   "short_name": "Quizzicallabs",
-  "description": "Your Ultimate AI-Powered Study Partner for MDCAT, ECAT, NTS, and general learning.",
+  "description": "Your ultimate AI-powered study partner for quizzes, practice, and exam prep.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#14532d",
+  "background_color": "#0d9488",
   "theme_color": "#0d9488",
   "icons": [
     {
-      "src": "/icon-192x192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     },
     {
-      "src": "/icon-512x512.svg",
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
