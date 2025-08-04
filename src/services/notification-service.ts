@@ -73,7 +73,7 @@ export async function sendDailyReminderNotifications() {
         notification: {
             title: '🎯 Daily Goal Reminder',
             body: 'You haven’t completed a quiz today. Hop back in to keep your streak going!',
-            icon: '/icon-192x192.png',
+            icon: '/icon-192x192.svg',
         },
     };
 

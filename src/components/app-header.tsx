@@ -46,6 +46,30 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex items-center gap-2 md:gap-4">
+          {user && (
+             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Open Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-72">
+                 <SheetHeader className="p-4 border-b">
+                     <SheetTitle>
+                       <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                            <BrainCircuit className="h-6 w-6" />
+                          </div>
+                          <span className="font-bold">Quizzicallabs AI</span>
+                       </Link>
+                     </SheetTitle>
+                      <SheetDescription className="sr-only">Main application navigation menu.</SheetDescription>
+                 </SheetHeader>
+                 <MainSidebar onNavigate={() => setMobileMenuOpen(false)} isMobile={true} />
+              </SheetContent>
+            </Sheet>
+          )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
             <motion.div
               className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground"
@@ -55,6 +79,7 @@ export function AppHeader() {
             >
               <BrainCircuit className="h-6 w-6" />
             </motion.div>
+             <span className="hidden sm:inline-block font-bold">Quizzicallabs AI</span>
           </Link>
         </div>
         

@@ -52,7 +52,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </main>
         <BottomNavBar />
 
-         <div className="fixed bottom-20 right-4 z-50 md:hidden">
+         <div className="fixed bottom-20 right-4 z-50">
             <Button
                 size="icon"
                 className="rounded-full h-14 w-14 shadow-lg"
