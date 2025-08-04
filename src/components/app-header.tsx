@@ -3,32 +3,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, HelpCircle, Sun, Moon, User, LogOut, BrainCircuit, X } from "lucide-react";
+import { HelpCircle, Sun, Moon, BrainCircuit } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { MainSidebar } from "./main-sidebar";
 
 const publicNavItems = [
   { href: "#features", label: "Features" },
@@ -37,39 +17,14 @@ const publicNavItems = [
 
 export function AppHeader() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const isHomePage = pathname === "/";
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex items-center gap-2 md:gap-4">
-          {user && (
-             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72">
-                 <SheetHeader className="p-4 border-b">
-                     <SheetTitle>
-                       <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                            <BrainCircuit className="h-6 w-6" />
-                          </div>
-                          <span className="font-bold">Quizzicallabs AI</span>
-                       </Link>
-                     </SheetTitle>
-                      <SheetDescription className="sr-only">Main application navigation menu.</SheetDescription>
-                 </SheetHeader>
-                 <MainSidebar onNavigate={() => setMobileMenuOpen(false)} isMobile={true} />
-              </SheetContent>
-            </Sheet>
-          )}
           <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2" aria-label="Go to homepage">
             <motion.div
               className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground"

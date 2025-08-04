@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature } from 'lucide-react';
+import { ArrowRight, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -37,6 +37,12 @@ const tools = [
     title: 'Exam Paper Generator',
     description: 'A tool for educators to create and format professional exam papers with answer keys.',
     href: '/generate-paper',
+  },
+  {
+    icon: Camera,
+    title: 'Explain Image',
+    description: 'Upload a diagram or image and get a detailed AI explanation of what it shows.',
+    href: '/image-to-explanation',
   },
 ];
 
