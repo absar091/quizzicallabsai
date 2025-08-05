@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake } from "@phosphor-icons/react";
+import { Question, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 const supportLinks = [
-    { href: "/how-to-use", label: "How to Use Guide", icon: LifeBuoy },
+    { href: "/how-to-use", label: "How to Use Guide", icon: Question },
     { href: "/how-to-use/contact-support", label: "Contact Us", icon: FileText },
     { href: "/terms-of-use", label: "Terms of Use", icon: Shield },
     { href: "/privacy-policy", label: "Privacy Policy", icon: Shield },
@@ -63,7 +63,10 @@ export default function ProfilePage() {
                     <DetailRow label="Class / Level" value={user?.className} icon={Student} />
                     <DetailRow label="Age" value={user?.age} icon={Cake}/>
                     <div className="flex items-center justify-between p-4">
-                        <p className="text-muted-foreground">Manage Subscription</p>
+                         <div className="flex items-center gap-2 text-muted-foreground">
+                            <User className="h-5 w-5"/>
+                            <p>Manage Subscription</p>
+                        </div>
                         <p className="font-medium text-primary">Free Plan</p>
                     </div>
                 </CardContent>
