@@ -13,11 +13,6 @@ import Link from 'next/link';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const settingsLinks = [
-    { href: "/profile", label: "Account", icon: User },
-    { href: "#", label: "Notifications", icon: Bell },
-];
-
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: LifeBuoy },
     { href: "#", label: "Contact Us", icon: FileText },
