@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FlaskConical, GraduationCap, BarChart2, User } from "lucide-react";
+import { LayoutDashboard, FlaskConical, GraduationCap, Layers, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,7 +13,7 @@ const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/genlab", label: "GenLab", icon: FlaskConical },
   { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
-  { href: "/my-stats", label: "Stats", icon: BarChart2 },
+  { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/profile", label: "Profile", icon: User },
 ];
 

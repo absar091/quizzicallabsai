@@ -13,7 +13,8 @@ import {
   BarChart2,
   Trophy,
   BrainCircuit,
-  Settings
+  Settings,
+  Layers
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -35,8 +36,7 @@ const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/genlab", label: "GenLab", icon: FlaskConical },
   { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
-  { href: "/my-stats", label: "My Stats", icon: BarChart2 },
-  { href: "/achievements", label: "Achievements", icon: Trophy },
+  { href: "/flashcards", label: "Flashcards", icon: Layers },
 ];
 
 const supportLinks = [
