@@ -56,6 +56,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </AnimatePresence>
         </main>
         
+         <div className="fixed bottom-20 right-4 z-50">
+           <HelpBot />
+        </div>
+        
         <div className="md:hidden">
           <BottomNavBar />
         </div>
