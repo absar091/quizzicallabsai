@@ -78,9 +78,9 @@ const prompt15Flash = ai.definePrompt({
   prompt: promptText,
 });
 
-const prompt20Flash = ai.definePrompt({
-  name: 'generateStudyGuidePrompt20Flash',
-  model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+  name: 'generateStudyGuidePrompt15Pro',
+  model: 'googleai/gemini-1.5-pro',
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: promptText,
@@ -93,18 +93,25 @@ const generateStudyGuideFlow = ai.defineFlow(
     outputSchema: GenerateStudyGuideOutputSchema,
   },
   async input => {
+    let output;
     try {
-        const {output} = await prompt15Flash(input);
-        return output!;
+        const result = await prompt15Flash(input);
+        output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return output!;
+            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
+            const result = await prompt15Pro(input);
+            output = result.output;
+        } else {
+            // Re-throw other errors
+            throw error;
         }
-        // Re-throw other errors
-        throw error;
     }
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid study guide. Please try again.");
+    }
+    return output;
   }
 );

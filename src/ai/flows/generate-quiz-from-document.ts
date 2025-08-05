@@ -55,6 +55,14 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
   Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{numberOfQuestions}}} questions.`;
 
+const prompt = ai.definePrompt({
+    name: 'generateQuizFromDocumentPrompt',
+    model: 'googleai/gemini-1.5-flash',
+    prompt: promptText,
+    input: { schema: GenerateQuizFromDocumentInputSchema },
+    output: { schema: GenerateQuizFromDocumentOutputSchema },
+});
+
 const generateQuizFromDocumentFlow = ai.defineFlow(
   {
     name: 'generateQuizFromDocumentFlow',
@@ -62,12 +70,11 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
     outputSchema: GenerateQuizFromDocumentOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
-        prompt: promptText,
-        input: input,
-        output: { schema: GenerateQuizFromDocumentOutputSchema },
-    });
-    return output!;
+    const { output } = await prompt(input);
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid quiz from the document. Please try again.");
+    }
+    return output;
   }
 );

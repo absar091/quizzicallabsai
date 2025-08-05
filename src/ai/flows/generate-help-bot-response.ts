@@ -49,6 +49,14 @@ You have been provided with a list of Frequently Asked Questions (FAQs) that con
 4.  Keep your answers concise and easy to understand.
 5.  Your response MUST be just the answer text, formatted for the JSON output.`;
 
+const prompt = ai.definePrompt({
+    name: 'generateHelpBotResponsePrompt',
+    model: 'googleai/gemini-1.5-flash',
+    prompt: promptText,
+    input: { schema: GenerateHelpBotResponseInputSchema },
+    output: { schema: GenerateHelpBotResponseOutputSchema },
+});
+
 const generateHelpBotResponseFlow = ai.defineFlow(
   {
     name: 'generateHelpBotResponseFlow',
@@ -56,13 +64,11 @@ const generateHelpBotResponseFlow = ai.defineFlow(
     outputSchema: GenerateHelpBotResponseOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
-        prompt: promptText,
-        input: input,
-        output: { schema: GenerateHelpBotResponseOutputSchema },
-    });
-    return output!;
+    const { output } = await prompt(input);
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid response. Please try again.");
+    }
+    return output;
   }
 );
-
