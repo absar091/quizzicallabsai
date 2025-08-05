@@ -2,11 +2,11 @@
 'use server';
 
 /**
- * @fileOverview Generates a quiz from a document.
+ * @fileOverview Generates a quiz from a document or image file.
  *
- * - generateQuizFromDocument - A function that generates a quiz from a document.
- * - GenerateQuizFromDocumentInput - The input type for the generateQuizFromDocument function.
- * - GenerateQuizFromDocumentOutput - The return type for the generateQuizFromDocument function.
+ * - generateQuizFromDocument - A function that generates a quiz from a file.
+ * - GenerateQuizFromDocumentInput - The input type for the function.
+ * - GenerateQuizFromDocumentOutput - The return type for the function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -15,20 +15,23 @@ import {z} from 'genkit';
 const GenerateQuizFromDocumentInputSchema = z.object({
   documentDataUri: z
     .string()
-    .max(10000000, "The document is too large. Please upload a smaller document.") // Increased limit for larger files
+    .max(10000000, "The document is too large. Please upload a smaller document.")
     .describe(
-      "A document to generate a quiz from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A document or image to generate a quiz from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  quizLength: z.number().describe('The number of questions to generate for the quiz.').min(1).max(55),
+  numberOfQuestions: z.number().min(1).max(55),
+  difficulty: z.enum(["easy", "medium", "hard", "master"]),
+  questionTypes: z.array(z.string()),
 });
 export type GenerateQuizFromDocumentInput = z.infer<typeof GenerateQuizFromDocumentInputSchema>;
 
 const GenerateQuizFromDocumentOutputSchema = z.object({
   quiz: z.array(
     z.object({
+      type: z.enum(['multiple-choice', 'descriptive']).describe('The type of the question.'),
       question: z.string(),
-      answers: z.array(z.string()),
-      correctAnswerIndex: z.number(),
+      answers: z.array(z.string()).optional().describe('Answer choices for multiple-choice questions.'),
+      correctAnswer: z.string().optional().describe('The correct answer for multiple-choice questions.'),
     })
   ).describe('The generated quiz questions and answers based on the document.'),
 });
@@ -40,44 +43,17 @@ export async function generateQuizFromDocument(
   return generateQuizFromDocumentFlow(input);
 }
 
-const promptText = `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document.
+const promptText = `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
 
   **Critical Instructions - Follow these rules without exception:**
-  1.  **STRICTLY ADHERE TO THE DOCUMENT:** You MUST generate exactly {{{quizLength}}} questions and answers using ONLY the information found in the following document: {{media url=documentDataUri}}.
-  2.  **EXACT QUESTION COUNT:** Your response must contain exactly {{{quizLength}}} questions. Not more, not less.
-  3.  **NO EXTERNAL KNOWLEDGE:** Do NOT use any information from outside the provided document. All questions and answers (including incorrect ones) must be derivable solely from the text in the document. This is your most important rule.
-  4.  **HIGH-QUALITY QUESTIONS:** Generate clear, unambiguous questions that test comprehension of the document's key points.
-  5.  **PLAUSIBLE DISTRACTORS:** For the incorrect answers, create options that are plausible within the context of the document but are factually incorrect according to the document's text. Avoid obviously wrong or nonsensical options.
-  6.  **OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable. Each question object must have:
-      *   "question": The question text.
-      *   "answers": An array of exactly 4 possible answers.
-      *   "correctAnswerIndex": The index (0-3) of the single correct answer in the "answers" array. This must be an integer.
+  1.  **STRICTLY ADHERE TO THE DOCUMENT:** Analyze the provided file: {{media url=documentDataUri}}. You MUST generate exactly {{{numberOfQuestions}}} questions and answers using ONLY the information found within it.
+  2.  **EXACT QUESTION COUNT & TYPES:** Your response must contain exactly {{{numberOfQuestions}}} questions of the types specified: {{#each questionTypes}}'{{this}}'{{/each}}.
+  3.  **NO EXTERNAL KNOWLEDGE:** Do NOT use any information from outside the provided document. All questions and answers must be derivable solely from the text in the document. This is your most important rule.
+  4.  **HIGH-QUALITY QUESTIONS:** Generate clear, unambiguous questions that test comprehension of the document's key points, tailored to a '{{{difficulty}}}' difficulty level.
+  5.  **PLAUSIBLE DISTRACTORS:** For multiple-choice questions, create plausible incorrect answers (distractors) that are relevant to the document's context.
+  6.  **OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
 
-  Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{quizLength}}} questions.`;
-
-const prompt15Flash = ai.definePrompt({
-  name: 'generateQuizFromDocumentPrompt15Flash',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateQuizFromDocumentInputSchema},
-  output: {
-    schema: z.object({
-        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
-    })
-  },
-  prompt: promptText,
-});
-
-const prompt20Flash = ai.definePrompt({
-  name: 'generateQuizFromDocumentPrompt20Flash',
-  model: 'googleai/gemini-2.0-flash',
-  input: {schema: GenerateQuizFromDocumentInputSchema},
-  output: {
-    schema: z.object({
-        quiz: GenerateQuizFromDocumentOutputSchema.shape.quiz
-    })
-  },
-  prompt: promptText,
-});
+  Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{numberOfQuestions}}} questions.`;
 
 const generateQuizFromDocumentFlow = ai.defineFlow(
   {
@@ -85,19 +61,13 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
     inputSchema: GenerateQuizFromDocumentInputSchema,
     outputSchema: GenerateQuizFromDocumentOutputSchema,
   },
-  async input => {
-    try {
-        const {output} = await prompt15Flash(input);
-        return { quiz: output!.quiz };
-    } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return { quiz: output!.quiz };
-        }
-        // Re-throw other errors
-        throw error;
-    }
+  async (input) => {
+    const { output } = await ai.generate({
+        model: 'googleai/gemini-1.5-flash',
+        prompt: promptText,
+        input: input,
+        output: { schema: GenerateQuizFromDocumentOutputSchema },
+    });
+    return output!;
   }
 );
