@@ -2,9 +2,9 @@
 'use client';
 
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, TextT } from 'lucide-react';
+import { ArrowRight, FilePlus, Lightbulb, TextT, Cards } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -19,6 +19,12 @@ const tools = [
     title: 'Practice Questions',
     description: 'Generate topic-specific questions with detailed answers and explanations.',
     href: '/generate-questions',
+  },
+   {
+    icon: Cards,
+    title: 'Flashcards',
+    description: 'Generate flashcards for any topic to study.',
+    href: '/flashcards',
   },
   {
     icon: TextT,
@@ -61,7 +67,7 @@ export default function GenLabPage() {
       >
         {tools.map((tool) => (
           <motion.div key={tool.title} variants={itemVariants}>
-            <Link href={tool.href} className="flex h-full">
+            <Link href={tool.href} className="flex h-full group">
               <Card className="flex flex-row items-center w-full hover:bg-secondary transition-all duration-200 shadow-sm p-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mr-4">
                     <tool.icon className="h-6 w-6 text-primary" />
@@ -70,7 +76,7 @@ export default function GenLabPage() {
                     <CardTitle className="text-base font-semibold">{tool.title}</CardTitle>
                     <CardDescription className="text-sm">{tool.description}</CardDescription>
                   </div>
-                   <ArrowRight className="h-5 w-5 text-muted-foreground ml-4" />
+                   <ArrowRight className="h-5 w-5 text-muted-foreground ml-4 group-hover:translate-x-1 transition-transform" />
               </Card>
             </Link>
           </motion.div>
