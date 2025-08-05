@@ -4,43 +4,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  FlaskConical,
-  GraduationCap,
-  LogOut,
-  User,
-  HelpCircle,
-  BarChart2,
-  Trophy,
-  BrainCircuit,
-  Settings,
-  Layers
-} from "lucide-react";
+  House,
+  Flask,
+  Exam,
+  User
+} from "@phosphor-icons/react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Separator } from "./ui/separator";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { BrainCircuit } from "lucide-react";
 
 const mainNav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/genlab", label: "GenLab", icon: FlaskConical },
-  { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
+  { href: "/dashboard", label: "Home", icon: House },
+  { href: "/genlab", label: "GenLab", icon: Flask },
+  { href: "/exam-prep", label: "Exam Prep", icon: Exam },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
-const supportLinks = [
-    { href: "/how-to-use", label: "How to Use", icon: HelpCircle },
-]
 
 type MainSidebarProps = {
   onNavigate?: () => void;
@@ -57,48 +36,29 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
           href={href} 
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-foreground/80 transition-all hover:bg-secondary hover:text-primary",
+            "flex items-center gap-4 rounded-lg px-4 py-3 text-muted-foreground transition-all hover:bg-secondary hover:text-primary",
             isActive && "bg-secondary text-primary font-semibold"
       )}>
-        <Icon className="h-5 w-5" />
-        <span>{label}</span>
+        <Icon weight={isActive ? 'fill' : 'regular'} className="h-6 w-6" />
+        <span className="text-base">{label}</span>
       </Link>
     )
   }
   
   return (
-    <div className="flex flex-col h-full bg-card border-r">
-       <div className="flex items-center border-b p-4 h-14 lg:h-[60px]">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
+    <div className="flex flex-col h-full bg-card">
+       <div className="flex items-center p-4 h-16 lg:h-[64px]">
+          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>
-              <span className="text-lg">Quizzicallabs AI</span>
+              <span>Quizzicallabs</span>
           </Link>
        </div>
        <div className="flex-1 overflow-auto py-4">
-        <nav className="grid items-start px-4 text-sm font-medium gap-1">
+        <nav className="grid items-start px-2 text-sm font-medium gap-1">
           {mainNav.map(item => <NavLink key={item.href} {...item} />)}
         </nav>
-      </div>
-      <div className="mt-auto p-4 border-t">
-         <nav className="grid items-start px-4 text-sm font-medium gap-1">
-            {supportLinks.map(item => <NavLink key={item.href} {...item} />)}
-         </nav>
-         <Separator className="my-4"/>
-         <div className="px-4">
-            <Link href="/profile">
-              <div className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-muted">
-                  <Avatar className="h-9 w-9">
-                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{user?.displayName}</span>
-                      <span className="text-xs text-muted-foreground">{user?.email}</span>
-                  </div>
-              </div>
-            </Link>
-         </div>
       </div>
     </div>
   )

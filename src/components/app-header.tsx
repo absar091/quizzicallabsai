@@ -6,11 +6,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { PageHeader } from "./page-header";
+import { Bell } from "lucide-react";
 
 export function AppHeader() {
   const { user, logout } = useAuth();
   
-  // Header for unauthenticated users on the landing page
   if (!user) {
     return (
        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -24,7 +25,7 @@ export function AppHeader() {
                   <Button asChild variant="ghost">
                       <Link href="/login">Log In</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                       <Link href="/signup">Get Started Free</Link>
                   </Button>
               </div>
@@ -37,31 +38,17 @@ export function AppHeader() {
   return (
     <div className="w-full flex-1 flex items-center justify-between">
         <div className="md:hidden">
-            <h1 className="font-bold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
+            <h1 className="font-semibold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
         </div>
-         <div className="w-full flex-1 md:w-auto flex-shrink-0" />
+        <div className="hidden md:block">
+            {/* The PageHeader component will now handle displaying the title on desktop */}
+        </div>
          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="rounded-full">
-                  <Avatar>
-                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <span className="sr-only">Toggle user menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/how-to-use">Support</Link></DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5"/>
+                <span className="sr-only">Notifications</span>
+            </Button>
          </div>
     </div>
   );
 }
-
-    

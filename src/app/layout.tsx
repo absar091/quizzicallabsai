@@ -1,13 +1,14 @@
 
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import AppProviders from "@/components/app-providers";
 import 'katex/dist/katex.min.css';
 
-const inter = Inter({ 
+const poppins = Poppins({ 
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: '--font-sans',
 });
 
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: "#1a73e8",
+  themeColor: "#1A237E",
 };
 
 export default function RootLayout({
@@ -92,7 +93,7 @@ export default function RootLayout({
       <head>
          <link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any" />
       </head>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>
         <AppProviders>
           {children}
         </AppProviders>

@@ -1,13 +1,11 @@
 
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { ecatSyllabus, Topic } from "@/lib/ecat-syllabus";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 
 type SubjectPageProps = {
   params: {
@@ -58,31 +56,25 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
       />
 
       <div className="max-w-4xl mx-auto">
-        <Card>
+        <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center gap-4 border-b">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                     {Icon && <Icon className="h-6 w-6 text-primary" />}
                 </div>
                 <div>
-                     <CardTitle>{subject.name}</CardTitle>
+                     <CardTitle className="text-lg font-semibold">{subject.name}</CardTitle>
+                     <CardDescription>{subject.description}</CardDescription>
                 </div>
             </CardHeader>
             <CardContent className="p-6">
-                <div className="space-y-4">
-                  {subject.topics.map((topic, index) => (
-                    <div key={topic.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 shrink-0">
-                                <span className="text-primary font-bold">{index + 1}</span>
-                            </div>
-                             <h3 className="font-semibold">{topic.name}</h3>
+                <div className="space-y-3">
+                  {subject.topics.map((topic) => (
+                    <Link href={generateTestLink(topic, getNumQuestionsForTopic())} key={topic.id}>
+                        <div className="flex items-center justify-between p-4 rounded-xl border bg-background hover:bg-secondary cursor-pointer transition-colors">
+                            <span className="font-medium text-foreground">{topic.name}</span>
+                            <ArrowRight className="h-5 w-5 text-muted-foreground"/>
                         </div>
-                         <Button asChild size="sm">
-                            <Link href={generateTestLink(topic, getNumQuestionsForTopic())}>
-                                Practice <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                        </Button>
-                    </div>
+                    </Link>
                   ))}
                 </div>
             </CardContent>

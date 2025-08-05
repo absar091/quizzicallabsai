@@ -2,12 +2,11 @@
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { ntsSyllabus } from "@/lib/nts-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 
 type CategoryPageProps = {
   params: {
@@ -38,30 +37,29 @@ export default function NtsCategoryPage({ params }: CategoryPageProps) {
         {category.subjects.map((subject) => {
           const Icon = subject.icon;
           return (
-            <Card key={subject.id}>
+            <Card key={subject.id} className="shadow-sm">
                 <CardHeader className="flex-row items-center gap-4">
                   {Icon && 
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                         <Icon className="h-6 w-6 text-primary" />
                     </div>
                   }
                   <div>
-                    <CardTitle>{subject.name}</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{subject.name}</CardTitle>
                     <CardDescription>Select a chapter to start a practice test.</CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 pb-2">
                      <Accordion type="single" collapsible className="w-full">
                         {subject.chapters.map((chapter, index) => (
-                             <AccordionItem value={`item-${index}`} key={chapter.id} className="border-b last:border-b-0">
-                                <AccordionTrigger className="text-left py-4 hover:no-underline font-semibold">
+                             <AccordionItem value={`item-${index}`} key={chapter.id} className="border-b-0">
+                                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline font-medium hover:bg-secondary rounded-lg">
                                     <div className="flex items-center gap-3">
-                                        <ChevronsRight className="h-4 w-4 text-primary/80" />
-                                        {chapter.name}
+                                        <span>{chapter.name}</span>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="p-4 bg-muted/50 text-right">
-                                    <Button asChild variant="outline" size="sm">
+                                    <Button asChild variant="outline" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 border-0">
                                         <Link href={generateTestLink(subject.name, chapter.name)}>
                                             Test this Chapter <ArrowRight className="ml-2 h-4 w-4" />
                                         </Link>
