@@ -2,15 +2,14 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { PageHeader } from "./page-header";
 import { Bell } from "lucide-react";
+import { UserNav } from "./user-nav";
+import { useAuth } from "@/hooks/useAuth";
+
 
 export function AppHeader() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   
   if (!user) {
     return (
@@ -43,11 +42,12 @@ export function AppHeader() {
         <div className="hidden md:block">
             {/* The PageHeader component will now handle displaying the title on desktop */}
         </div>
-         <div>
+         <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5"/>
                 <span className="sr-only">Notifications</span>
             </Button>
+            <UserNav />
          </div>
     </div>
   );
