@@ -36,6 +36,11 @@ export default function AppProviders({
       setIsSplashLoading(false);
     }
   }, []);
+  
+  const handleAnimationComplete = () => {
+    sessionStorage.setItem('splashShown', 'true');
+    setIsSplashLoading(false);
+  };
 
   return (
     <ThemeProvider
@@ -46,7 +51,7 @@ export default function AppProviders({
     >
       <AuthProvider>
         {isSplashLoading ? (
-          <SplashScreen onAnimationComplete={() => setIsSplashLoading(false)} />
+          <SplashScreen onAnimationComplete={handleAnimationComplete} />
         ) : (
           <AppContent>{children}</AppContent>
         )}
@@ -54,3 +59,5 @@ export default function AppProviders({
     </ThemeProvider>
   );
 }
+
+    

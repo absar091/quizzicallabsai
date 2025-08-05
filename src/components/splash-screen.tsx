@@ -1,21 +1,10 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-
-const primaryText = "Quizzicallabs™";
-const secondaryText = "— By Absar Ahmad Rao";
-const letterStaggerDelay = 0.07;
-
-const createSpans = (text: string, baseDelay: number) => {
-    return text.split('').map((char, index) => {
-        const style = { animationDelay: `${baseDelay + (index * letterStaggerDelay)}s` };
-        if (char === ' ') {
-            return <span key={index} className="letter space" style={style}>&nbsp;</span>;
-        }
-        return <span key={index} className="letter" style={style}>{char}</span>;
-    });
-};
+import { BrainCircuit } from "lucide-react";
+import "/src/styles/splash.css";
 
 type SplashScreenProps = {
     onAnimationComplete: () => void;
@@ -29,12 +18,9 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
 
     if (!splashShown) {
       setIsVisible(true);
-      const totalAnimationTime = (primaryText.length + secondaryText.length) * letterStaggerDelay * 1000 + 2000; // Increased delay
-      
       const timer = setTimeout(() => {
-        sessionStorage.setItem('splashShown', 'true');
         onAnimationComplete();
-      }, totalAnimationTime);
+      }, 3000); // Animation duration
 
       return () => clearTimeout(timer);
     } else {
@@ -46,23 +32,33 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
     <AnimatePresence>
         {isVisible && (
             <motion.div 
-              id="splashScreen"
-              exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeIn" } }}
+              className="splash-screen"
+              exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeOut" } }}
             >
-                <div className="logo-container">
-                    <div className="name-container">
-                        <div className="text-wrapper">
-                            <div className="name-group primary">
-                                {createSpans(primaryText, 0)}
-                            </div>
-                            <div className="name-group secondary">
-                                {createSpans(secondaryText, (primaryText.length) * letterStaggerDelay)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               <motion.div
+                    className="logo"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                        duration: 0.8,
+                        delay: 0.2,
+                        ease: [0, 0.71, 0.2, 1.01]
+                    }}
+                >
+                    <BrainCircuit className="logo-icon" />
+               </motion.div>
+                <motion.h1
+                    className="logo-text"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                    Quizzicallabs <sup className="logo-sup">AI</sup>
+                </motion.h1>
             </motion.div>
         )}
     </AnimatePresence>
   );
 }
+
+    
