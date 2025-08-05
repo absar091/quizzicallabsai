@@ -255,7 +255,7 @@ function StatsTab({ quizHistory }: { quizHistory: QuizResult[] }) {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={topicPerformance} margin={{ top: 5, right: 20, left: -5, bottom: 50 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} tick={{ fontSize: 12 }} />
+                <XAxis dataKey="name" angle={0} textAnchor="middle" interval="preserveStartEnd" tick={{ fontSize: 12 }} />
                 <YAxis unit="%" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="averageScore" fill="var(--color-averageScore)" radius={4} />
@@ -431,3 +431,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
