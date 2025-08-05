@@ -35,8 +35,33 @@ export function AppHeader() {
 
   // App Header for logged in users
   return (
-    <div className="w-full flex-1">
-        {/* Future: Could add a global search here */}
+    <div className="w-full flex-1 flex items-center justify-between">
+        <div className="md:hidden">
+            <h1 className="font-bold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
+        </div>
+         <div className="w-full flex-1 md:w-auto flex-shrink-0" />
+         <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="icon" className="rounded-full">
+                  <Avatar>
+                    <AvatarFallback>{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Toggle user menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/how-to-use">Support</Link></DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+         </div>
     </div>
   );
 }
+
+    

@@ -147,8 +147,7 @@ function OverviewTab({ recentActivity, user, bookmarksCount }: { recentActivity:
         animate="visible"
         variants={containerVariants}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="space-y-8">
           <motion.div variants={itemVariants}>
             <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
           </motion.div>
@@ -175,8 +174,6 @@ function OverviewTab({ recentActivity, user, bookmarksCount }: { recentActivity:
               </Card>
             </motion.div>
           </motion.div>
-        </div>
-        <div className="lg:col-span-1 space-y-8">
           <motion.div variants={itemVariants} whileHover="hover" whileTap="tap">
             <Card>
               <CardHeader className="flex-row items-center justify-between">
@@ -213,7 +210,6 @@ function OverviewTab({ recentActivity, user, bookmarksCount }: { recentActivity:
               </CardContent>
             </Card>
           </motion.div>
-        </div>
       </div>
     </motion.div>
   );
@@ -404,3 +400,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateFlashcards, GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
@@ -39,6 +39,7 @@ export default function FlashcardsPage() {
   const [flashcards, setFlashcards] = useState<Flashcard[] | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [direction, setDirection] = useState(0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,6 +78,7 @@ export default function FlashcardsPage() {
 
   const handleNext = () => {
     if (flashcards && currentIndex < flashcards.length - 1) {
+      setDirection(1);
       setIsFlipped(false);
       setTimeout(() => setCurrentIndex(currentIndex + 1), 150);
     }
@@ -84,6 +86,7 @@ export default function FlashcardsPage() {
 
   const handlePrev = () => {
     if (currentIndex > 0) {
+      setDirection(-1);
       setIsFlipped(false);
       setTimeout(() => setCurrentIndex(currentIndex - 1), 150);
     }
@@ -164,14 +167,14 @@ export default function FlashcardsPage() {
       {flashcards && (
         <div className="flex flex-col items-center gap-6">
            <div className="w-full max-w-xl h-72 perspective-[1000px]">
-                <AnimatePresence initial={false}>
+                <AnimatePresence initial={false} custom={direction}>
                     <motion.div
                         key={currentIndex}
                         className="relative w-full h-full cursor-pointer"
                         onClick={() => setIsFlipped(!isFlipped)}
-                        initial={{ opacity: 0, x: 100 }}
+                        initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
+                        exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
                         transition={{ duration: 0.3 }}
                         style={{ transformStyle: 'preserve-3d' }}
                     >
@@ -215,3 +218,5 @@ export default function FlashcardsPage() {
     </div>
   );
 }
+
+    

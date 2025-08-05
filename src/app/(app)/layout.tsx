@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Menu } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import HelpBot from "@/components/help-bot";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { MainSidebar } from "@/components/main-sidebar";
@@ -41,18 +41,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
-           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col p-0 w-3/4">
-                  <MainSidebar onNavigate={() => setIsSheetOpen(false)}/>
-              </SheetContent>
-            </Sheet>
-
             <AppHeader />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-20 md:pb-6">
@@ -72,8 +60,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
           <HelpBot />
         </div>
-        <BottomNavBar />
+        <div className="md:hidden">
+          <BottomNavBar />
+        </div>
       </div>
     </div>
   );
 }
+
+    
