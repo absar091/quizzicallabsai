@@ -62,6 +62,9 @@ const generateHelpBotResponseFlow = ai.defineFlow(
         input: input,
         output: { schema: GenerateHelpBotResponseOutputSchema },
     });
-    return output!;
+    if (!output) {
+        throw new Error('AI model returned an empty or invalid response.');
+    }
+    return output;
   }
 );

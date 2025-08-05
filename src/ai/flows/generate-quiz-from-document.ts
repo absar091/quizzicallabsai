@@ -67,9 +67,9 @@ const prompt15Flash = ai.definePrompt({
   prompt: promptText,
 });
 
-const prompt20Flash = ai.definePrompt({
-  name: 'generateQuizFromDocumentPrompt20Flash',
-  model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+  name: 'generateQuizFromDocumentPrompt15Pro',
+  model: 'googleai/gemini-1.5-pro',
   input: {schema: GenerateQuizFromDocumentInputSchema},
   output: {
     schema: z.object({
@@ -88,13 +88,19 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
   async input => {
     try {
         const {output} = await prompt15Flash(input);
-        return { quiz: output!.quiz };
+        if (!output || !output.quiz) {
+            throw new Error('AI model returned an empty or invalid response.');
+        }
+        return { quiz: output.quiz };
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return { quiz: output!.quiz };
+            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
+            const {output} = await prompt15Pro(input);
+            if (!output || !output.quiz) {
+                throw new Error('Fallback AI model also returned an empty or invalid response.');
+            }
+            return { quiz: output.quiz };
         }
         // Re-throw other errors
         throw error;

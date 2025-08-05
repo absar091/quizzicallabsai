@@ -145,9 +145,9 @@ const prompt15Flash = ai.definePrompt({
   prompt: promptText,
 });
 
-const prompt20Flash = ai.definePrompt({
-  name: 'generateCustomQuizPrompt20Flash',
-  model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+  name: 'generateCustomQuizPrompt15Pro',
+  model: 'googleai/gemini-1.5-pro',
   input: {schema: GenerateCustomQuizInputSchema},
   output: {schema: GenerateCustomQuizOutputSchema},
   prompt: promptText,
@@ -162,13 +162,19 @@ const generateCustomQuizFlow = ai.defineFlow(
   async input => {
     try {
         const {output} = await prompt15Flash(input);
-        return output!;
+        if (!output) {
+            throw new Error('AI model returned an empty or invalid response.');
+        }
+        return output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash.');
-            const {output} = await prompt20Flash(input);
-            return output!;
+            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
+            const {output} = await prompt15Pro(input);
+            if (!output) {
+                throw new Error('Fallback AI model also returned an empty or invalid response.');
+            }
+            return output;
         }
         // Re-throw other errors
         throw error;

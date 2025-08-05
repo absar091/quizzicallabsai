@@ -47,10 +47,10 @@ export async function generateDashboardInsights(
     return {
       greeting: `Welcome, ${input.userName}!`,
       observation: "You're just getting started on your learning journey.",
-      suggestion: "Take your first quiz to see your personalized insights here.",
+      suggestion: "Create your first flashcard deck to see your personalized insights.",
       suggestedAction: {
-        buttonText: "Start a New Quiz",
-        link: "/generate-quiz"
+        buttonText: "Create a New Deck",
+        link: "/flashcards"
       }
     };
   }
@@ -104,9 +104,9 @@ const prompt15Flash = ai.definePrompt({
     output: { schema: GenerateDashboardInsightsOutputSchema },
 });
 
-const prompt20Flash = ai.definePrompt({
-    name: 'generateDashboardInsightsPrompt20Flash',
-    model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+    name: 'generateDashboardInsightsPrompt15Pro',
+    model: 'googleai/gemini-1.5-pro',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
@@ -127,12 +127,18 @@ const generateDashboardInsightsFlow = ai.defineFlow(
 
     try {
         const { output } = await prompt15Flash(recentHistory);
-        return output!;
+        if (!output) {
+            throw new Error('AI model returned an empty or invalid response.');
+        }
+        return output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash for dashboard insights.');
-            const { output } = await prompt20Flash(recentHistory);
-            return output!;
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for dashboard insights.');
+            const { output } = await prompt15Pro(recentHistory);
+            if (!output) {
+                throw new Error('Fallback AI model also returned an empty or invalid response.');
+            }
+            return output;
         }
         // Re-throw other errors
         throw error;
