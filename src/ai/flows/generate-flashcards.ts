@@ -52,6 +52,13 @@ const promptText = `You are an expert educator specializing in creating effectiv
 
 Generate the flashcards now.`;
 
+const prompt = ai.definePrompt({
+    name: "generateFlashcardsPrompt",
+    prompt: promptText,
+    input: { schema: GenerateFlashcardsInputSchema },
+    output: { schema: GenerateFlashcardsOutputSchema },
+});
+
 const generateFlashcardsFlow = ai.defineFlow(
   {
     name: 'generateFlashcardsFlow',
@@ -59,12 +66,7 @@ const generateFlashcardsFlow = ai.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
-        prompt: promptText,
-        input: input,
-        output: { schema: GenerateFlashcardsOutputSchema },
-    });
+    const { output } = await prompt(input);
     return output!;
   }
 );

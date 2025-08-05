@@ -36,7 +36,6 @@ const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/genlab", label: "GenLab", icon: FlaskConical },
   { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
-  { href: "/flashcards", label: "Flashcards", icon: Layers },
 ];
 
 const supportLinks = [
