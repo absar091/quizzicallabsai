@@ -4,9 +4,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Bell, LifeBuoy, FileText, Shield, Moon, Sun, SignOut } from "@phosphor-icons/react";
+import { LifeBuoy, FileText, Shield, Moon, Sun, SignOut, Bell } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
@@ -38,13 +37,6 @@ export default function ProfilePage() {
       <div className="space-y-8">
         <Card className="shadow-sm">
             <CardHeader className="text-center">
-                 {loading ? (
-                    <Skeleton className="h-20 w-20 rounded-full mx-auto" />
-                ) : (
-                    <Avatar className="h-20 w-20 mx-auto border-4 border-background outline outline-2 outline-primary/20">
-                        <AvatarFallback className="text-3xl bg-muted">{user?.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                )}
                  <div className="mt-2">
                     {loading ? (
                         <div className="space-y-2 flex flex-col items-center">
