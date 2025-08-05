@@ -54,6 +54,7 @@ Generate the flashcards now.`;
 
 const prompt = ai.definePrompt({
     name: "generateFlashcardsPrompt",
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
@@ -67,6 +68,10 @@ const generateFlashcardsFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+
+    if (!output) {
+      throw new Error("The AI model failed to return valid flashcards. Please try again.");
+    }
+    return output;
   }
 );

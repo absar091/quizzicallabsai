@@ -47,10 +47,10 @@ export async function generateDashboardInsights(
     return {
       greeting: `Welcome, ${input.userName}!`,
       observation: "You're just getting started on your learning journey.",
-      suggestion: "Take your first quiz to see your personalized insights here.",
+      suggestion: "Explore our Generation Lab to create your first quiz or study guide.",
       suggestedAction: {
-        buttonText: "Start a New Quiz",
-        link: "/generate-quiz"
+        buttonText: "Go to GenLab",
+        link: "/genlab"
       }
     };
   }
@@ -104,9 +104,9 @@ const prompt15Flash = ai.definePrompt({
     output: { schema: GenerateDashboardInsightsOutputSchema },
 });
 
-const prompt20Flash = ai.definePrompt({
-    name: 'generateDashboardInsightsPrompt20Flash',
-    model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+    name: 'generateDashboardInsightsPrompt15Pro',
+    model: 'googleai/gemini-1.5-pro',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
@@ -124,18 +124,25 @@ const generateDashboardInsightsFlow = ai.defineFlow(
       ...input,
       quizHistory: input.quizHistory.slice(0, 10),
     };
-
+    
+    let output;
     try {
-        const { output } = await prompt15Flash(recentHistory);
-        return output!;
+        const result = await prompt15Flash(recentHistory);
+        output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash for dashboard insights.');
-            const { output } = await prompt20Flash(recentHistory);
-            return output!;
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for dashboard insights.');
+            const result = await prompt15Pro(recentHistory);
+            output = result.output;
+        } else {
+            // Re-throw other errors
+            throw error;
         }
-        // Re-throw other errors
-        throw error;
     }
+
+    if (!output) {
+      throw new Error("The AI model failed to return valid insights. Please try again.");
+    }
+    return output;
   }
 );

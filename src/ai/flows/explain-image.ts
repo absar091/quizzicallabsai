@@ -58,9 +58,9 @@ const prompt15Flash = ai.definePrompt({
     output: { schema: ExplainImageOutputSchema },
 });
 
-const prompt20Flash = ai.definePrompt({
-    name: 'explainImagePrompt20Flash',
-    model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+    name: 'explainImagePrompt15Pro',
+    model: 'googleai/gemini-1.5-pro',
     prompt: promptText,
     input: { schema: ExplainImageInputSchema },
     output: { schema: ExplainImageOutputSchema },
@@ -73,17 +73,24 @@ const explainImageFlow = ai.defineFlow(
     outputSchema: ExplainImageOutputSchema,
   },
   async (input) => {
+    let output;
     try {
-      const { output } = await prompt15Flash(input);
-      return output!;
+      const result = await prompt15Flash(input);
+      output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash for image explanation.');
-            const { output } = await prompt20Flash(input);
-            return output!;
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for image explanation.');
+            const result = await prompt15Pro(input);
+            output = result.output;
+        } else {
+            // Re-throw other errors
+            throw error;
         }
-        // Re-throw other errors
-        throw error;
     }
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid explanation. Please try again.");
+    }
+    return output;
   }
 );

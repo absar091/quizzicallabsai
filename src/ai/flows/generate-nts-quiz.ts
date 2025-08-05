@@ -91,9 +91,9 @@ const prompt15Flash = ai.definePrompt({
   prompt: promptText,
 });
 
-const prompt20Flash = ai.definePrompt({
-  name: 'generateNtsQuizPrompt20Flash',
-  model: 'googleai/gemini-2.0-flash',
+const prompt15Pro = ai.definePrompt({
+  name: 'generateNtsQuizPrompt15Pro',
+  model: 'googleai/gemini-1.5-pro',
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: promptText,
@@ -106,18 +106,25 @@ const generateNtsQuizFlow = ai.defineFlow(
     outputSchema: GenerateNtsQuizOutputSchema,
   },
   async input => {
-     try {
-        const {output} = await prompt15Flash(input);
-        return output!;
+    let output;
+    try {
+        const result = await prompt15Flash(input);
+        output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-2.0-flash if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 2.0 Flash for NTS quiz.');
-            const {output} = await prompt20Flash(input);
-            return output!;
+            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for NTS quiz.');
+            const result = await prompt15Pro(input);
+            output = result.output;
+        } else {
+            // Re-throw other errors
+            throw error;
         }
-        // Re-throw other errors
-        throw error;
     }
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid NTS quiz. Please try again.");
+    }
+    return output;
   }
 );
