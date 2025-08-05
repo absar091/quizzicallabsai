@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, TextT, Cards } from '@phosphor-icons/react';
+import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -20,7 +20,13 @@ const tools = [
     description: 'Generate topic-specific questions with detailed answers and explanations.',
     href: '/generate-questions',
   },
-   {
+  {
+    icon: FileArrowUp,
+    title: 'Smart File-to-Quiz',
+    description: 'Upload a PDF or image and have the AI generate a quiz from its content automatically.',
+    href: '/generate-from-file',
+  },
+  {
     icon: Cards,
     title: 'Flashcards',
     description: 'Generate flashcards for any topic to study.',
