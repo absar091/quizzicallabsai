@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,6 +38,7 @@ export default function FlashcardsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [flashcards, setFlashcards] = useState<Flashcard[] | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeCard, setActiveCard] = useState<Flashcard | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0);
 
@@ -48,6 +49,14 @@ export default function FlashcardsPage() {
       count: 10,
     },
   });
+
+  useEffect(() => {
+    if (flashcards && flashcards.length > 0) {
+      setActiveCard(flashcards[currentIndex]);
+    } else {
+      setActiveCard(null);
+    }
+  }, [flashcards, currentIndex]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
@@ -80,7 +89,7 @@ export default function FlashcardsPage() {
     if (flashcards && currentIndex < flashcards.length - 1) {
       setDirection(1);
       setIsFlipped(false);
-      setTimeout(() => setCurrentIndex(currentIndex + 1), 150);
+      setCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -88,7 +97,7 @@ export default function FlashcardsPage() {
     if (currentIndex > 0) {
       setDirection(-1);
       setIsFlipped(false);
-      setTimeout(() => setCurrentIndex(currentIndex - 1), 150);
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
@@ -164,7 +173,7 @@ export default function FlashcardsPage() {
         </Card>
       )}
 
-      {flashcards && (
+      {flashcards && activeCard && (
         <div className="flex flex-col items-center gap-6">
            <div className="w-full max-w-xl h-72 perspective-[1000px]">
                 <AnimatePresence initial={false} custom={direction}>
@@ -185,7 +194,7 @@ export default function FlashcardsPage() {
                             animate={{ rotateY: isFlipped ? 180 : 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <h3 className="text-2xl md:text-3xl font-bold">{flashcards[currentIndex].term}</h3>
+                            <h3 className="text-2xl md:text-3xl font-bold">{activeCard.term}</h3>
                         </motion.div>
                         {/* Back of the card */}
                         <motion.div
@@ -194,7 +203,7 @@ export default function FlashcardsPage() {
                             animate={{ rotateY: isFlipped ? 0 : -180 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <p className="text-lg md:text-xl text-muted-foreground">{flashcards[currentIndex].definition}</p>
+                            <p className="text-lg md:text-xl text-muted-foreground">{activeCard.definition}</p>
                         </motion.div>
                     </motion.div>
                 </AnimatePresence>
