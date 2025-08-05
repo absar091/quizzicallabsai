@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp } from '@phosphor-icons/react';
+import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp, FileText } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -27,16 +27,16 @@ const tools = [
     href: '/generate-from-file',
   },
   {
-    icon: Cards,
-    title: 'Flashcards',
-    description: 'Generate flashcards for any topic to study.',
-    href: '/flashcards',
+    icon: FileText,
+    title: 'Study Guide Generator',
+    description: 'Get a comprehensive guide on any topic with summaries and key concepts.',
+    href: '/generate-study-guide',
   },
   {
-    icon: TextT,
-    title: 'Text Summarizer',
-    description: 'Paste in long articles or notes to get key summaries and concepts.',
-    href: '#', // Placeholder
+    icon: Cards,
+    title: 'Flashcards',
+    description: 'Generate a deck of flashcards for any topic to supercharge your study sessions.',
+    href: '/flashcards',
   },
 ];
 

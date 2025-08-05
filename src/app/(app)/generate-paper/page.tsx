@@ -119,16 +119,20 @@ export default function GeneratePaperPage() {
                 specificInstructions: ""
             });
 
+            if (!result.quiz || result.quiz.length === 0) {
+              throw new Error(`The AI failed to generate questions for Variant ${String.fromCharCode(65 + i)}. Please try adjusting the topic or difficulty.`);
+            }
+
             variants.push({
                 variant: String.fromCharCode(65 + i), // A, B, C...
                 questions: result.quiz,
             });
         }
         setQuizVariants(variants);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error Generating Paper",
-        description: "An error occurred while generating questions. The AI model might be busy. Please try again.",
+        description: error.message || "An error occurred while generating questions. The AI model might be busy. Please try again.",
         variant: "destructive",
       });
     } finally {

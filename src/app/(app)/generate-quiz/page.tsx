@@ -848,10 +848,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   );
 }
 
+const questionTypeOptions = [
+    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
+    { id: "Descriptive", label: "Short/Long Answer", icon: FileText },
+]
+const questionStyleOptions = [
+    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
+    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
+    { id: "Numerical", label: "Numerical", icon: BarChart },
+    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
+    { id: "Comprehension-based MCQs", label: "Comprehension-based", icon: MessageSquareQuote },
+]
 
 // --- Form Component ---
 function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void; }) {
     const form = useFormContext<QuizFormValues>();
+    const watchQuestionTypes = form.watch('questionTypes');
     
     return (
         <div>
@@ -863,7 +875,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
             <form onSubmit={form.handleSubmit(onGenerateQuiz)} className="space-y-8">
               <Card>
                 <CardHeader>
-                  <CardTitle>Quiz Details</CardTitle>
+                  <CardTitle>1. Quiz Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <FormField
@@ -873,7 +885,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                         <FormItem>
                           <FormLabel>Topic</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., The Solar System, React Hooks" {...field} />
+                            <Input placeholder="e.g., The Solar System, React Hooks, The French Revolution" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -912,9 +924,111 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Question Settings</CardTitle>
+                  <CardTitle>2. Question Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="questionTypes"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Question Types</FormLabel>
+                           <Alert className="mt-2 text-xs p-2">
+                            <ShieldAlert className="h-4 w-4"/>
+                            <AlertDescription>
+                               For entry test topics (MDCAT/ECAT/NTS), the AI will automatically generate 'Multiple Choice' questions only, regardless of your selection, to match the real exam format.
+                            </AlertDescription>
+                           </Alert>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            {questionTypeOptions.map((item) => (
+                              <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="questionTypes"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(item.id)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, item.id])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.id
+                                                  )
+                                                )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                        <item.icon className="h-4 w-4"/>
+                                        {item.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="questionStyles"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Question Styles</FormLabel>
+                           {watchQuestionTypes.includes('Comprehension-based MCQs') && (
+                               <Alert className="mt-2 text-xs p-2">
+                                <AlertTriangle className="h-4 w-4"/>
+                                <AlertDescription>
+                                    When 'Comprehension-based' is selected, the AI will generate a reading passage for the quiz.
+                                </AlertDescription>
+                               </Alert>
+                           )}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                            {questionStyleOptions.map((item) => (
+                              <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="questionStyles"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(item.id)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, item.id])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.id
+                                                  )
+                                                )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                         <item.icon className="h-4 w-4"/>
+                                        {item.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                    <FormField
                       control={form.control}
                       name="numberOfQuestions"
@@ -924,6 +1038,12 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                            <FormControl>
                               <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
                           </FormControl>
+                           <Alert className="mt-2 text-xs p-2">
+                            <AlertTriangle className="h-4 w-4"/>
+                            <AlertDescription>
+                                The AI-generated count may sometimes vary slightly from your selection.
+                            </AlertDescription>
+                           </Alert>
                         </FormItem>
                       )}
                     />
@@ -941,6 +1061,31 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                     />
                 </CardContent>
               </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>3. Fine-Tuning (Optional)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <FormField
+                            control={form.control}
+                            name="specificInstructions"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Specific Instructions for the AI</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                    placeholder="e.g., Focus on the contributions of Louis Pasteur. Include questions about the 19th-century scientific context."
+                                    className="resize-none"
+                                    {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
 
               <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                  <Sparkles className="mr-2 h-5 w-5"/>
