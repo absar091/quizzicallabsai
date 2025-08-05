@@ -18,7 +18,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   BarChart,
   Bar,
   ResponsiveContainer
@@ -246,12 +245,44 @@ function StatsTab({ quizHistory }: { quizHistory: QuizResult[] }) {
         <motion.div variants={itemVariants}><Card><CardHeader className="flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Average Score</CardTitle><Trophy className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{averageScore.toFixed(1)}%</div></CardContent></Card></motion.div>
         <motion.div variants={itemVariants}><Card><CardHeader className="flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Best Topic</CardTitle><Sparkles className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold truncate">{topicPerformance.length > 0 ? [...topicPerformance].sort((a,b) => b.averageScore - a.averageScore)[0].name : 'N/A'}</div></CardContent></Card></motion.div>
       </motion.div>
-      <motion.div variants={itemVariants}><Card><CardHeader><CardTitle>Topic Performance</CardTitle><CardDescription>Your average score in different topics.</CardDescription></CardHeader><CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[250px] w-full"><BarChart data={topicPerformance} margin={{ top: 5, right: 20, left: -5, bottom: 50 }}><CartesianGrid vertical={false} /><XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={100} /><YAxis unit="%" /><ChartTooltip content={<ChartTooltipContent />} /><Bar dataKey="averageScore" fill="var(--color-averageScore)" radius={4} /></BarChart></ChartContainer>
-      </CardContent></Card></motion.div>
-      <motion.div variants={itemVariants}><Card><CardHeader><CardTitle>Score Trend</CardTitle><CardDescription>Your performance over the last 20 quizzes.</CardDescription></CardHeader><CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[250px] w-full"><LineChart data={scoreTrend} margin={{ top: 5, right: 20, left: -5, bottom: 5 }}><CartesianGrid vertical={false} /><XAxis dataKey="name" /><YAxis unit="%" domain={[0, 100]} /><ChartTooltip content={<ChartTooltipContent />} /><Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} /></LineChart></ChartContainer>
-      </CardContent></Card></motion.div>
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Topic Performance</CardTitle>
+            <CardDescription>Your average score in different topics.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+              <BarChart data={topicPerformance} margin={{ top: 5, right: 20, left: -5, bottom: 5 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 15) + (value.length > 15 ? '...' : '')} />
+                <YAxis unit="%" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="averageScore" fill="var(--color-averageScore)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </motion.div>
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Score Trend</CardTitle>
+            <CardDescription>Your performance over the last 20 quizzes.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+              <LineChart data={scoreTrend} margin={{ top: 5, right: 20, left: -5, bottom: 5 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="name" />
+                <YAxis unit="%" domain={[0, 100]} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line type="monotone" dataKey="score" stroke="var(--color-score)" strokeWidth={2} dot={true} />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </motion.div>
     </motion.div>
   );
 }
@@ -400,5 +431,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
