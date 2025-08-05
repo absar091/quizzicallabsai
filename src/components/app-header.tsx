@@ -4,7 +4,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
-import { UserNav } from "./user-nav";
 import { useAuth } from "@/hooks/useAuth";
 
 
@@ -47,7 +46,6 @@ export function AppHeader() {
                 <Bell className="h-5 w-5"/>
                 <span className="sr-only">Notifications</span>
             </Button>
-            <UserNav />
          </div>
     </div>
   );
