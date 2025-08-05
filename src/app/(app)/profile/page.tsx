@@ -3,9 +3,9 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, FileText, Shield, Moon, Sun, SignOut, Bell } from "@phosphor-icons/react";
+import { LifeBuoy, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: LifeBuoy },
-    { href: "#", label: "Contact Us", icon: FileText },
+    { href: "/how-to-use/contact-support", label: "Contact Us", icon: FileText },
     { href: "/terms-of-use", label: "Terms of Use", icon: Shield },
     { href: "/privacy-policy", label: "Privacy Policy", icon: Shield },
 ];
@@ -23,9 +23,12 @@ export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
   const { theme, setTheme } = useTheme();
 
-  const DetailRow = ({ label, value }: { label: string, value: string | number | null | undefined }) => (
-    <div className="flex items-center justify-between py-3">
-        <p className="text-muted-foreground">{label}</p>
+  const DetailRow = ({ label, value, icon: Icon }: { label: string; value: string | number | null | undefined; icon: React.ElementType }) => (
+    <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Icon className="h-5 w-5" />
+          <p>{label}</p>
+        </div>
         <p className="font-medium">{value || 'N/A'}</p>
     </div>
   );
@@ -57,8 +60,8 @@ export default function ProfilePage() {
             <h3 className="text-sm font-semibold text-muted-foreground px-4">ACCOUNT</h3>
             <Card className="shadow-sm">
                 <CardContent className="divide-y p-0">
-                    <DetailRow label="Class / Level" value={user?.className} />
-                    <DetailRow label="Age" value={user?.age} />
+                    <DetailRow label="Class / Level" value={user?.className} icon={Student} />
+                    <DetailRow label="Age" value={user?.age} icon={Cake}/>
                     <div className="flex items-center justify-between p-4">
                         <p className="text-muted-foreground">Manage Subscription</p>
                         <p className="font-medium text-primary">Free Plan</p>
