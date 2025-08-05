@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Bell, LifeBuoy, FileText, Shield, Moon, Sun, SignOut } from "lucide-react";
+import { User, Bell, LifeBuoy, FileText, Shield, Moon, Sun, SignOut } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
