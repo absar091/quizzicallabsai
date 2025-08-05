@@ -13,7 +13,6 @@ const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/genlab", label: "GenLab", icon: FlaskConical },
   { href: "/exam-prep", label: "Exam Prep", icon: GraduationCap },
-  { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/profile", label: "Profile", icon: User },
 ];
 
@@ -23,7 +22,7 @@ export function BottomNavBar() {
 
   return (
     <div className="fixed bottom-0 left-0 z-40 w-full h-16 bg-background border-t">
-      <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           const isProfile = item.label === "Profile";
@@ -62,5 +61,3 @@ export function BottomNavBar() {
     </div>
   );
 }
-
-    

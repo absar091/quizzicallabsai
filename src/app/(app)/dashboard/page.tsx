@@ -252,15 +252,15 @@ function StatsTab({ quizHistory }: { quizHistory: QuizResult[] }) {
             <CardDescription>Your average score in different topics.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-              <BarChart data={topicPerformance} margin={{ top: 5, right: 20, left: -5, bottom: 5 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={topicPerformance} margin={{ top: 5, right: 20, left: -5, bottom: 50 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 15) + (value.length > 15 ? '...' : '')} />
+                <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} tick={{ fontSize: 12 }} />
                 <YAxis unit="%" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="averageScore" fill="var(--color-averageScore)" radius={4} />
               </BarChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </motion.div>

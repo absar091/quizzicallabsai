@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, Camera } from 'lucide-react';
+import { ArrowRight, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, Camera, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -31,6 +31,12 @@ const tools = [
     title: 'AI Study Guide',
     description: 'Get comprehensive study guides on any topic with summaries and key concepts.',
     href: '/generate-study-guide',
+  },
+   {
+    icon: Layers,
+    title: 'AI Flashcards',
+    description: 'Create a deck of flashcards for any topic to supercharge your study sessions.',
+    href: '/flashcards',
   },
   {
     icon: ClipboardSignature,
