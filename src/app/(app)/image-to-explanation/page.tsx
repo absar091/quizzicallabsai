@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,8 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { explainImage, ExplainImageOutput } from "@/ai/flows/explain-image";
-import { cn } from "@/lib/utils";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -55,6 +53,20 @@ export default function ExplainImagePage() {
   });
 
   const fileRef = form.register("image");
+  const watchedImage = form.watch("image");
+
+  useEffect(() => {
+    if (watchedImage && watchedImage.length > 0) {
+      const file = watchedImage[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+        setImagePreview(null);
+    }
+  }, [watchedImage]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
@@ -85,19 +97,6 @@ export default function ExplainImagePage() {
 
     reader.readAsDataURL(file);
   }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      form.setValue("image", e.target.files);
-      form.trigger("image");
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
   
   return (
     <>
@@ -133,7 +132,7 @@ export default function ExplainImagePage() {
                                     <p className="text-xs text-muted-foreground">JPG, PNG, WEBP (MAX. 5MB)</p>
                                 </div>
                             )}
-                            <input id="dropzone-file" type="file" className="hidden" {...fileRef} onChange={handleFileChange} accept="image/jpeg,image/png,image/webp" />
+                            <input id="dropzone-file" type="file" className="hidden" {...fileRef} accept="image/jpeg,image/png,image/webp" />
                           </label>
                         </div>
                       </FormControl>
