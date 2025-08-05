@@ -2,7 +2,7 @@
 'use client';
 
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
 import { ArrowRight, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';

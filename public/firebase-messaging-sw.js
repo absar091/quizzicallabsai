@@ -6,7 +6,7 @@ import { getMessaging } from 'firebase/messaging/sw';
 const firebaseConfig = {
   apiKey: "AIzaSyCzRpRNFBAodjKhmmJAMvaBiDNH9-vK1Yg",
   authDomain: "quizzicallab-ai.firebaseapp.com",
-  databaseURL: "https://quizzicallab-ai-default-rtdb.firebaseio.com",
+  databaseURL: "https://quizzical-ai-default-rtdb.firebaseio.com/",
   projectId: "quizzicallab-ai",
   storageBucket: "quizzicallab-ai.firebasestorage.app",
   messagingSenderId: "208281807503",
