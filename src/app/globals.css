@@ -1,43 +1,41 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Firebase-inspired theme: Blue primary, Amber accent, clean grays */
-    --background: 210 20% 98%; /* #f8f9fa */
-    --foreground: 220 7% 13%; /* #202124 */
-    
-    --card: 0 0% 100%;
-    --card-foreground: 220 7% 13%;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 7% 13%;
-    
-    --primary: 217 89% 53%; /* #1a73e8 - Google Blue */
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 217 96% 95%; /* #e8f0fe */
-    --secondary-foreground: 217 89% 53%;
-    
-    --muted: 220 17% 95%; /* #f1f3f4 */
-    --muted-foreground: 220 9% 46%;
-    
-    --accent: 45 100% 58%; /* #ffca28 - Amber */
-    --accent-foreground: 240 6% 10%;
-    
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    
-    --border: 220 13% 89%; /* #dadce0 */
-    --input: 220 13% 89%;
-    --ring: 217 89% 53%;
-    
-    --radius: 0.5rem;
+    --background: 228 67% 98%; /* #F7F8FC */
+    --foreground: 200 15% 18%; /* #263238 */
 
-    --chart-1: 217 89% 53%;
-    --chart-2: 45 100% 58%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 15% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 15% 18%;
+
+    --primary: 233 64% 30%; /* #1A237E */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 228 60% 95%; /* Lighter shade of background for subtle contrast */
+    --secondary-foreground: 233 64% 30%;
+
+    --muted: 220 17% 95%; /* #f1f3f4 */
+    --muted-foreground: 202 18% 41%; /* #546E7A */
+    
+    --accent: 145 100% 39%; /* #00C853 */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%; /* #D32F2F */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 233 64% 30%;
+    
+    --radius: 1rem; /* 16px */
+
+    --chart-1: 233 64% 30%;
+    --chart-2: 145 100% 39%;
   }
  
   .dark {
@@ -50,7 +48,7 @@
     --popover: 222 18% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 220 70% 75%; /* Lighter blue for dark mode */
     --primary-foreground: 222 18% 12%;
     
     --secondary: 217 32% 19%;
@@ -59,18 +57,18 @@
     --muted: 217 32% 19%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 45 90% 55%;
-    --accent-foreground: 240 6% 10%;
+    --accent: 145 80% 45%; /* Slightly brighter green for dark mode */
+    --accent-foreground: 0 0% 0%;
     
     --destructive: 0 63% 51%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217 32% 24%;
     --input: 217 32% 24%;
-    --ring: 217 91% 60%;
+    --ring: 220 70% 75%;
 
-    --chart-1: 217 91% 60%;
-    --chart-2: 45 90% 55%;
+    --chart-1: 220 70% 75%;
+    --chart-2: 145 80% 45%;
   }
 }
  

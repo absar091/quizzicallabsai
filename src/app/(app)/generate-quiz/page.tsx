@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -7,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff } from "lucide-react";
+import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell } from "lucide-react";
 import RichContentRenderer from '@/components/rich-content-renderer';
 
 
@@ -660,13 +659,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   if (quiz && !showResults) {
     const currentQ = quiz[currentQuestion];
     const progress = ((currentQuestion + 1) / quiz.length) * 100;
-    const isBookmarked = bookmarkedQuestions.some(bm => bm.question === currentQ.question);
-
+    
     return (
       <FormProvider {...formMethods}>
-        <div className="flex flex-col items-center py-4 md:py-12 overflow-hidden">
+        <div className="flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</p>
+                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                </div>
+            </div>
+            <Progress value={progress} className="h-2 w-full mb-6" />
+
            {comprehensionText && (
-                <Card className="w-full max-w-2xl mb-8 bg-muted/50">
+                <Card className="w-full max-w-4xl mx-auto mb-8 bg-muted/50">
                     <CardHeader>
                         <CardTitle>Reading Passage</CardTitle>
                         <CardDescription>Read the passage below to answer the following questions.</CardDescription>
@@ -676,93 +683,60 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                     </CardContent>
                 </Card>
             )}
-          <div className="w-full max-w-2xl min-h-[550px] flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                  <motion.div
-                      key={currentQuestion}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      transition={{ duration: 0.3 }}
-                      className="w-full"
-                  >
-                      <Card className="w-full flex flex-col shadow-2xl overflow-hidden">
-                          <CardHeader className="p-6 space-y-4">
-                             <div className="flex justify-between items-center gap-4">
-                               <h2 className="text-2xl font-bold uppercase tracking-wider truncate flex-1">{formValues?.topic}</h2>
-                               <div className="flex items-center gap-2 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium shrink-0">
-                                  <Clock className="h-4 w-4" />
-                                  <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
-                               </div>
-                             </div>
-                             <Progress value={progress} className="h-2 w-full" />
-                             <div className="flex justify-between items-center text-sm text-muted-foreground">
-                                {currentQ.correctAnswer && (
-                                  <Button variant="ghost" size="sm" onClick={() => toggleBookmark(currentQ.question, currentQ.correctAnswer || "")} className="-ml-3">
-                                    <Star className={cn("mr-2 h-4 w-4", isBookmarked && "text-yellow-400 fill-yellow-400")} />
-                                    Bookmark
-                                  </Button>
-                                )}
-                                <p>Question {currentQuestion + 1} of {quiz.length}</p>
-                              </div>
-                          </CardHeader>
 
-                          <CardContent className="p-6 flex-grow flex flex-col justify-center gap-6">
-                            <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                                <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} placeholder={currentQ.placeholder} />
-                            </div>
-                            <div className="w-full max-w-md mx-auto">
-                              {currentQ.type === 'descriptive' ? (
-                                  <Textarea
-                                      value={userAnswers[currentQuestion] || ""}
-                                      onChange={(e) => handleAnswer(e.target.value)}
-                                      placeholder="Type your answer here..."
-                                      rows={5}
-                                      className="text-base"
-                                  />
-                              ) : (
-                                  <RadioGroup
-                                      value={userAnswers[currentQuestion] || ""}
-                                      onValueChange={handleAnswer}
-                                      className="grid grid-cols-1 gap-3"
-                                  >
-                                      {(currentQ.answers || []).map((answer, index) => {
-                                      const letter = String.fromCharCode(65 + index);
-                                      return (
-                                          <FormItem key={index}>
-                                              <FormControl>
-                                                  <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
-                                              </FormControl>
-                                              <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-md border-2 border-muted bg-popover hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer min-h-[60px]">
-                                                  <span className={cn("flex items-center justify-center h-6 w-6 rounded-full mr-4 text-xs shrink-0 bg-muted text-muted-foreground font-semibold")}>
-                                                      {letter}
-                                                  </span>
-                                                  <div className="flex-1 text-left text-base"><RichContentRenderer content={answer} /></div>
-                                              </Label>
-                                          </FormItem>
-                                      )
-                                      })}
-                                  </RadioGroup>
-                              )}
-                            </div>
-                          </CardContent>
-                          
-                          <CardFooter className="p-6">
-                            <div className="flex justify-between w-full">
-                                <Button variant="outline" onClick={handleBack} disabled={currentQuestion === 0}>
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    Back
-                                </Button>
-                                <Button onClick={handleNext}>
-                                    {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
-                                    {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-4 w-4" />}
-                                </Button>
-                            </div>
-                          </CardFooter>
-                      </Card>
-                  </motion.div>
-              </AnimatePresence>
+          <AnimatePresence mode="wait">
+              <motion.div
+                  key={currentQuestion}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  transition={{ duration: 0.3 }}
+                  className="w-full"
+              >
+                <div className="space-y-6">
+                    <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
+                        <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} placeholder={currentQ.placeholder} />
+                    </div>
+                    <div className="w-full max-w-md mx-auto">
+                      {currentQ.type === 'descriptive' ? (
+                          <Textarea
+                              value={userAnswers[currentQuestion] || ""}
+                              onChange={(e) => handleAnswer(e.target.value)}
+                              placeholder="Type your answer here..."
+                              rows={5}
+                              className="text-base"
+                          />
+                      ) : (
+                          <RadioGroup
+                              value={userAnswers[currentQuestion] || ""}
+                              onValueChange={handleAnswer}
+                              className="grid grid-cols-1 gap-3"
+                          >
+                              {(currentQ.answers || []).map((answer, index) => {
+                              return (
+                                  <FormItem key={index}>
+                                      <FormControl>
+                                          <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
+                                      </FormControl>
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-xl border-2 border-transparent bg-card shadow-sm hover:bg-secondary has-[:checked]:border-accent has-[:checked]:bg-accent/10 cursor-pointer min-h-[60px] text-base transition-all">
+                                          <div className="flex-1 text-left"><RichContentRenderer content={answer} /></div>
+                                      </Label>
+                                  </FormItem>
+                              )
+                              })}
+                          </RadioGroup>
+                      )}
+                    </div>
+                </div>
+              </motion.div>
+          </AnimatePresence>
+            
+          <div className="mt-8 flex justify-center w-full">
+            <Button onClick={handleNext} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full max-w-sm">
+                {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
+                {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-5 w-5" />}
+            </Button>
           </div>
         </div>
       </FormProvider>
@@ -788,16 +762,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 </CardHeader>
                 <CardContent className="pt-6">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
-                        <Card className="pt-6 bg-muted/50">
-                            <CardTitle className="text-4xl font-bold">{score}/{totalScorable}</CardTitle>
+                        <Card className="p-4 bg-muted/50">
+                            <CardTitle className="text-3xl font-bold">{score}/{totalScorable}</CardTitle>
                             <CardDescription>Score</CardDescription>
                         </Card>
-                         <Card className="pt-6 bg-muted/50">
-                            <CardTitle className="text-4xl font-bold">{percentage.toFixed(0)}%</CardTitle>
+                         <Card className="p-4 bg-muted/50">
+                            <CardTitle className="text-3xl font-bold">{percentage.toFixed(0)}%</CardTitle>
                              <CardDescription>Percentage</CardDescription>
                         </Card>
-                         <Card className="pt-6 bg-muted/50">
-                            <CardTitle className={cn("text-4xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
+                         <Card className="p-4 bg-muted/50">
+                            <CardTitle className={cn("text-3xl font-bold", percentage >= 50 ? "text-green-600" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
                              <CardDescription>Status</CardDescription>
                         </Card>
                     </div>
@@ -810,16 +784,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 const explanationState = explanations[index];
                                 
                                 return (
-                                    <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
+                                    <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-green-500/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
                                             <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
                                             <div className="text-sm mt-2 space-y-1">
-                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
+                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-green-700' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
                                                     <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
                                                  </p>
                                                  {!isCorrect && q.correctAnswer && (
-                                                     <p className="text-primary flex items-start gap-2">
+                                                     <p className="text-green-700 flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                                         <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
                                                      </p>
@@ -846,24 +820,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                                             <AlertDescription>{explanationState.simpleExplanation}</AlertDescription>
                                                          </Alert>
                                                     )}
-                                                </div>
-                                            )}
-
-                                            {!isCorrect && q.type !== 'descriptive' && (
-                                                <div className="flex flex-wrap gap-2 items-center mt-4">
-                                                    {!explanationState?.isLoading && !explanationState?.explanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getExplanation(index)} className="p-0 h-auto">
-                                                            <MessageSquareQuote className="mr-2 h-4 w-4"/> Get AI Explanation
-                                                        </Button>
-                                                    )}
-                                                    {explanationState?.isLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting explanation...</div>}
-                                                    
-                                                     {!explanationState?.isSimpleLoading && !explanationState?.simpleExplanation && (
-                                                         <Button variant="link" size="sm" onClick={() => getSimpleExplanation(index)} className="p-0 h-auto text-purple-600 dark:text-purple-400">
-                                                            <Lightbulb className="mr-2 h-4 w-4"/> Explain Like I'm 5
-                                                        </Button>
-                                                    )}
-                                                    {explanationState?.isSimpleLoading && <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Simplifying...</div>}
                                                 </div>
                                             )}
                                         </CardContent>
@@ -894,351 +850,104 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
 
 // --- Form Component ---
-const questionTypeOptions = [
-    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
-    { id: "Descriptive", label: "Descriptive", icon: FileText },
-]
-
-const questionStyleOptions = [
-    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
-    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
-    { id: "Numerical", label: "Numerical", icon: Settings },
-    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
-    { id: "Comprehension-based MCQs", label: "Comprehension", icon: BookCopy },
-]
-
-const stepTitles = [
-    { icon: FileText, title: "Enter Topic", description: "What subject do you want a quiz on?" },
-    { icon: Settings, title: "Core Settings", description: "Adjust the main quiz parameters." },
-    { icon: SlidersHorizontal, title: "Fine-tune Questions", description: "Select the format and style of your questions." },
-    { icon: Eye, title: "Review & Generate", description: "Confirm your settings and create the quiz." },
-];
-
-type QuizSetupFormProps = {
-    onGenerateQuiz: (values: QuizFormValues) => void;
-}
-
-function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
+function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void; }) {
     const form = useFormContext<QuizFormValues>();
-    const { control, trigger, getValues, handleSubmit, watch } = form;
-    const [step, setStep] = useState(1);
-    const [direction, setDirection] = useState(0);
-    const [cooldownTime, setCooldownTime] = useState(0);
-    const cooldownTimerRef = useRef<NodeJS.Timeout>();
-    const questionStyles = watch('questionStyles');
-
-    useEffect(() => {
-        return () => {
-            if (cooldownTimerRef.current) {
-                clearInterval(cooldownTimerRef.current);
-            }
-        };
-    }, []);
-
-    const startCooldown = () => {
-        setCooldownTime(60);
-        cooldownTimerRef.current = setInterval(() => {
-            setCooldownTime(prev => {
-                if (prev <= 1) {
-                    clearInterval(cooldownTimerRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-    };
-
-    const nextStep = async () => {
-        const validationMap = {
-          1: ["topic", "specificInstructions"],
-          2: ["difficulty", "numberOfQuestions", "timeLimit"],
-          3: ["questionTypes", "questionStyles"]
-        } as const;
-        const fieldsToValidate = validationMap[step as keyof typeof validationMap];
-        if (fieldsToValidate) {
-            const isValid = await trigger(fieldsToValidate);
-            if (!isValid) return;
-        }
-        if (step < 4) {
-          setDirection(1);
-          setStep(s => s + 1);
-        }
-    };
-
-    const prevStep = () => {
-        if (step > 1) {
-            setDirection(-1);
-            setStep(s => s - 1);
-        }
-    };
-
-    const handleFormSubmit = handleSubmit((values) => {
-      onGenerateQuiz(values);
-      startCooldown();
-    });
-
-    const renderStepContent = () => {
-        const animationProps = {
-            initial: { opacity: 0, x: direction > 0 ? 50 : -50 },
-            animate: { opacity: 1, x: 0 },
-            exit: { opacity: 0, x: direction > 0 ? -50 : 50 },
-            transition: { duration: 0.3 }
-        };
-
-        switch (step) {
-          case 1:
-            return (
-              <motion.div key="step1" {...animationProps} className="w-full">
-                <div className="w-full flex flex-col items-center space-y-6">
-                    <FormField
-                      control={control}
-                      name="topic"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex flex-col items-center">
-                          <FormLabel className="text-2xl font-semibold text-center block mb-2">What topic do you want a quiz on?</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., The Solar System, World War II, React Hooks" {...field} className="text-lg py-6 text-center max-w-lg" />
-                          </FormControl>
-                          <FormMessage className="text-center"/>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name="specificInstructions"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex flex-col items-center">
-                          <FormLabel className="text-2xl font-semibold text-center block mb-2">Specific Instructions <span className="text-muted-foreground text-lg">(Optional)</span></FormLabel>
-                          <FormControl>
-                             <Textarea placeholder="e.g., Focus on the moons of Jupiter. Include questions comparing mitosis and meiosis." {...field} className="text-lg text-center max-w-lg" />
-                          </FormControl>
-                           <FormDescription className="text-center max-w-lg">
-                                Provide sub-topics, concepts to include, or any other details to guide the AI.
-                           </FormDescription>
-                          <FormMessage className="text-center"/>
-                        </FormItem>
-                      )}
-                    />
-                </div>
-              </motion.div>
-            );
-          case 2:
-            return (
-              <motion.div key="step2" {...animationProps} className="space-y-6 w-full">
-                <FormField
-                  control={control}
-                  name="difficulty"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xl font-semibold">Difficulty</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                        >
-                          {["easy", "medium", "hard", "master"].map((level) => (
-                             <FormItem key={level} className="flex-1">
-                                <FormControl>
-                                   <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                                </FormControl>
-                                <Label htmlFor={level} className="flex h-full flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                                  {level}
-                                </Label>
-                              </FormItem>
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="numberOfQuestions"
-                  render={({ field }) => (
-                     <FormItem>
-                      <FormLabel className="text-xl font-semibold">Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                       <FormControl>
-                          <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
-                      </FormControl>
-                       <Alert className="mt-2 text-xs p-2">
-                         <AlertTriangle className="h-4 w-4"/>
-                         <AlertDescription>
-                           The AI-generated count may sometimes vary slightly from your selection.
-                         </AlertDescription>
-                       </Alert>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="timeLimit"
-                  render={({ field }) => (
-                     <FormItem>
-                      <FormLabel className="text-xl font-semibold">Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                       <FormControl>
-                          <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-            );
-          case 3:
-              return (
-                 <motion.div key="step3" {...animationProps} className="space-y-6 w-full">
-                     <FormField
-                      control={control}
-                      name="questionTypes"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-xl font-semibold">Question Formats</FormLabel>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            {questionTypeOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={control}
-                                name="questionTypes"
-                                render={({ field }) => {
-                                    const fieldId = `question-type-${item.id.replace(/\s+/g, '-')}`;
-                                    return (
-                                        <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                            <FormControl>
-                                                <Checkbox 
-                                                    id={fieldId}
-                                                    checked={field.value?.includes(item.id)} 
-                                                    onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} 
-                                                />
-                                            </FormControl>
-                                            <Label htmlFor={fieldId} className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                                <item.icon className="h-5 w-5" />
-                                                {item.label}
-                                            </Label>
-                                        </div>
-                                    )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name="questionStyles"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-xl font-semibold">Question Styles</FormLabel>
-                          {questionStyles?.includes("Comprehension-based MCQs") && (
-                            <Alert variant="default" className="text-xs p-2 bg-primary/10 border-primary/20 text-primary-foreground">
-                                <AlertTriangle className="h-4 w-4 text-primary" />
-                                <AlertDescription className="text-primary/80">
-                                  When using comprehension, the AI will generate a passage first, and all questions will be based on it.
-                                </AlertDescription>
-                            </Alert>
-                          )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            {questionStyleOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={control}
-                                name="questionStyles"
-                                render={({ field }) => {
-                                    const fieldId = `question-style-${item.id.replace(/\s+/g, '-')}`;
-                                    return (
-                                        <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                            <FormControl>
-                                                <Checkbox
-                                                    id={fieldId}
-                                                    checked={field.value?.includes(item.id)} 
-                                                    onCheckedChange={(checked) => (checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id)))} 
-                                                />
-                                            </FormControl>
-                                            <Label htmlFor={fieldId} className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                                <item.icon className="h-5 w-5" />
-                                                {item.label}
-                                            </Label>
-                                        </div>
-                                    )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                 </motion.div>
-              );
-            case 4: {
-                const values = getValues();
-                return (
-                    <motion.div key="step4" {...animationProps} className="w-full">
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-semibold text-center">Review your quiz details:</h3>
-                            <div className="p-4 border rounded-lg bg-muted/50 space-y-2 text-base">
-                                <p><strong>Topic:</strong> {values.topic}</p>
-                                {values.specificInstructions && <p><strong>Instructions:</strong> {values.specificInstructions}</p>}
-                                <p><strong>Difficulty:</strong> <span className="capitalize">{values.difficulty}</span></p>
-                                <p><strong>Number of Questions:</strong> {values.numberOfQuestions}</p>
-                                <p><strong>Time Limit:</strong> {values.timeLimit} minutes</p>
-                                <p><strong>Question Formats:</strong> {values.questionTypes.join(', ')}</p>
-                                <p><strong>Question Styles:</strong> {values.questionStyles.join(', ')}</p>
-                            </div>
-                        </div>
-                    </motion.div>
-                )
-            }
-          default:
-            return null;
-        }
-    };
     
     return (
-        <div className="flex flex-col items-center w-full">
+        <div>
           <PageHeader
-            title={stepTitles[step - 1].title}
-            description={stepTitles[step - 1].description}
+            title="Custom Quiz Generator"
+            description="Create personalized tests on any topic, with custom difficulty and question styles."
           />
-           <form onSubmit={(e) => e.preventDefault()} className="max-w-2xl w-full">
-                 <Card>
-                    <CardContent className="p-4 sm:p-6 min-h-[420px] flex items-center justify-center">
-                        <AnimatePresence mode="wait" initial={false} custom={direction}>
-                            {renderStepContent()}
-                        </AnimatePresence>
-                    </CardContent>
-                    <CardFooter className="p-4 sm:p-6 pt-6 border-t flex justify-between bg-muted/50">
-                        {step > 1 ? (
-                        <Button type="button" variant="outline" onClick={prevStep}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back
-                        </Button>
-                        ) : <div />}
-                        {step < 4 ? (
-                        <Button type="button" onClick={nextStep}>
-                            Next
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                        ) : (
-                        <Button type="button" onClick={handleFormSubmit} size="lg" disabled={cooldownTime > 0}>
-                           {cooldownTime > 0 ? (
-                                <>
-                                    <TimerOff className="mr-2 h-5 w-5" />
-                                    Please wait ({cooldownTime}s)
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles className="mr-2 h-5 w-5" />
-                                    Generate Quiz
-                                </>
-                            )}
-                        </Button>
-                        )}
-                    </CardFooter>
-                  </Card>
-              </form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onGenerateQuiz)} className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quiz Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="topic"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Topic</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., The Solar System, React Hooks" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="difficulty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Difficulty Level</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
+                            >
+                              {["easy", "medium", "hard", "master"].map((level) => (
+                                 <FormItem key={level} className="flex-1">
+                                    <FormControl>
+                                       <RadioGroupItem value={level} id={level} className="sr-only peer" />
+                                    </FormControl>
+                                    <Label htmlFor={level} className="flex h-full flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-secondary peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
+                                      {level}
+                                    </Label>
+                                  </FormItem>
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Question Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                   <FormField
+                      control={form.control}
+                      name="numberOfQuestions"
+                      render={({ field }) => (
+                         <FormItem>
+                          <FormLabel>Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                           <FormControl>
+                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="timeLimit"
+                      render={({ field }) => (
+                         <FormItem>
+                          <FormLabel>Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
+                           <FormControl>
+                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                </CardContent>
+              </Card>
+
+              <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                 <Sparkles className="mr-2 h-5 w-5"/>
+                 Generate Quiz
+              </Button>
+            </form>
+          </Form>
         </div>
     )
 }
