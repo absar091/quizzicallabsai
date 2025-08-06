@@ -771,7 +771,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                              <CardDescription>Percentage</CardDescription>
                         </Card>
                          <Card className="p-4 bg-muted/50">
-                            <CardTitle className={cn("text-3xl font-bold", percentage >= 50 ? "text-green-600" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
+                            <CardTitle className={cn("text-3xl font-bold", percentage >= 50 ? "text-primary" : "text-destructive")}>{percentage >= 50 ? 'Pass' : 'Fail'}</CardTitle>
                              <CardDescription>Status</CardDescription>
                         </Card>
                     </div>
@@ -784,16 +784,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 const explanationState = explanations[index];
                                 
                                 return (
-                                    <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-green-500/20" : "border-destructive/20")}>
+                                    <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardContent className="p-4 sm:p-6">
                                             <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
                                             <div className="text-sm mt-2 space-y-1">
-                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-green-700' : 'text-destructive')}>
+                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
                                                     <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
                                                  </p>
                                                  {!isCorrect && q.correctAnswer && (
-                                                     <p className="text-green-700 flex items-start gap-2">
+                                                     <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                                         <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
                                                      </p>
@@ -809,8 +809,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                             {!isCorrect && q.type !== 'descriptive' && (
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
-                                                        <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
-                                                            <AlertTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
+                                                        <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
+                                                            <AlertTitle className="text-accent flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
                                                             <AlertDescription>{explanationState.explanation}</AlertDescription>
                                                         </Alert>
                                                     )}
@@ -1096,3 +1096,5 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         </div>
     )
 }
+
+    
