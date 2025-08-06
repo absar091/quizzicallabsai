@@ -88,8 +88,6 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 10. **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 11. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
----
-
 **DETAILED PARAMETER INSTRUCTIONS:**
 
 **1. TOPIC: '{{{topic}}}'**
@@ -131,6 +129,53 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 **6. NUMBER OF QUESTIONS: {{{numberOfQuestions}}}**
    - I repeat, you must generate exactly this number of questions. This is not a suggestion. It is a strict requirement.
 
----
-
 Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.
+`;
+
+
+const prompt15Flash = ai.definePrompt({
+    name: "generateCustomQuizPrompt15Flash",
+    model: 'googleai/gemini-1.5-flash',
+    prompt: promptText,
+    input: { schema: GenerateCustomQuizInputSchema },
+    output: { schema: GenerateCustomQuizOutputSchema },
+});
+
+const prompt15Pro = ai.definePrompt({
+    name: "generateCustomQuizPrompt15Pro",
+    model: 'googleai/gemini-1.5-pro',
+    prompt: promptText,
+    input: { schema: GenerateCustomQuizInputSchema },
+    output: { schema: GenerateCustomQuizOutputSchema },
+});
+
+
+const generateCustomQuizFlow = ai.defineFlow(
+  {
+    name: 'generateCustomQuizFlow',
+    inputSchema: GenerateCustomQuizInputSchema,
+    outputSchema: GenerateCustomQuizOutputSchema,
+  },
+  async (input) => {
+    let output;
+    try {
+        const result = await prompt15Flash(input);
+        output = result.output;
+    } catch (error: any) {
+        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for custom quiz.');
+            const result = await prompt15Pro(input);
+            output = result.output;
+        } else {
+            // Re-throw other errors
+            throw error;
+        }
+    }
+    
+    if (!output) {
+      throw new Error("The AI model failed to return a valid quiz. Please try again.");
+    }
+    return output;
+  }
+);
