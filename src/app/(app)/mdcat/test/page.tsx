@@ -1,9 +1,9 @@
 
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
+import { generateCustomQuiz } from "@/ai/flows/generate-custom-quiz";
 import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
 import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -24,45 +24,49 @@ function MdcatTestFlow() {
     const difficulty = searchParams.get('difficulty') || 'hard';
     const questionStyles = searchParams.get('questionStyles')?.split(',') || ['Past Paper Style'];
 
-    useEffect(() => {
+    const generateTest = useCallback(async () => {
         if (!topic || !subject) {
             setError("No topic specified for the test.");
             setIsLoading(false);
             return;
         }
-        
+
         const fullTopicForAI = `MDCAT ${subject} - ${topic}`;
+        setIsLoading(true);
+        setError(null);
 
-        const generateTest = async () => {
-            try {
-                const result = await generateCustomQuiz({
-                    topic: fullTopicForAI,
-                    difficulty: difficulty as any,
-                    numberOfQuestions: Number(numQuestions) || 20,
-                    questionTypes: ["Multiple Choice"],
-                    questionStyles: questionStyles,
-                    timeLimit: Number(numQuestions) || 20,
-                    userAge: null,
-                    userClass: "MDCAT Student",
-                    specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
-                });
-                if (!result.quiz || result.quiz.length === 0) {
-                    throw new Error("The AI returned an empty quiz. Please try again.");
-                }
-                setQuiz(result.quiz);
-            } catch (err: any) {
-                let errorMessage = "An unexpected error occurred while generating the test.";
-                 if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
-                    errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-                }
-                setError(errorMessage);
-            } finally {
-                setIsLoading(false);
+        try {
+            const result = await generateCustomQuiz({
+                topic: fullTopicForAI,
+                difficulty: difficulty as any,
+                numberOfQuestions: Number(numQuestions) || 20,
+                questionTypes: ["Multiple Choice"],
+                questionStyles: questionStyles,
+                timeLimit: Number(numQuestions) || 20,
+                userAge: null,
+                userClass: "MDCAT Student",
+                specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
+            });
+            if (!result.quiz || result.quiz.length === 0) {
+                throw new Error("The AI returned an empty quiz. Please try again.");
             }
-        };
+            setQuiz(result.quiz);
+        } catch (err: any) {
+            let errorMessage = "An unexpected error occurred while generating the test.";
+             if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
+                errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+            } else if (err?.message) {
+                errorMessage = err.message;
+            }
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [topic, subject, difficulty, numQuestions, questionStyles]);
 
+    useEffect(() => {
         generateTest();
-    }, [topic, subject, difficulty, questionStyles, numQuestions]);
+    }, [generateTest]);
 
     if (isLoading) {
         return (
