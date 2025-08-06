@@ -113,7 +113,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
      *   Formulate a question that requires a written explanation or description (e.g., "Describe the process of...", "Compare and contrast...").
      *   The 'answers' and 'correctAnswer' fields for descriptive questions should be omitted or left as empty arrays/null.
 
-**4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}'{{/if}}**
+**4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}'{{else}}Knowledge-based, Conceptual{{/if}}**
    - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
@@ -134,51 +134,3 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 ---
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.
-
-`;
-
-const prompt15Flash = ai.definePrompt({
-  name: 'generateCustomQuizPrompt15Flash',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateCustomQuizInputSchema},
-  output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: promptText,
-});
-
-const prompt15Pro = ai.definePrompt({
-  name: 'generateCustomQuizPrompt15Pro',
-  model: 'googleai/gemini-1.5-pro',
-  input: {schema: GenerateCustomQuizInputSchema},
-  output: {schema: GenerateCustomQuizOutputSchema},
-  prompt: promptText,
-});
-
-const generateCustomQuizFlow = ai.defineFlow(
-  {
-    name: 'generateCustomQuizFlow',
-    inputSchema: GenerateCustomQuizInputSchema,
-    outputSchema: GenerateCustomQuizOutputSchema,
-  },
-  async input => {
-    let output;
-    try {
-        const result = await prompt15Flash(input);
-        output = result.output;
-    } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
-            const result = await prompt15Pro(input);
-            output = result.output;
-        } else {
-            // Re-throw other errors
-            throw error;
-        }
-    }
-    
-    if (!output) {
-      throw new Error("The AI model failed to return a valid quiz. Please try again.");
-    }
-    return output;
-  }
-);
