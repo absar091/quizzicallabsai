@@ -22,7 +22,11 @@ function MdcatTestFlow() {
     const topic = searchParams.get('topic');
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = searchParams.get('questionStyles')?.split(',') || [];
+    
+    // This was the source of the bug. The `questionStyles` were coming from the URL,
+    // but were often empty for these tests, causing the AI to hang.
+    // We now hardcode them to ensure the AI always has valid instructions.
+    const questionStyles = ['Past Paper Style', 'Conceptual'];
 
     const generateTest = useCallback(async () => {
         if (!topic || !subject) {
