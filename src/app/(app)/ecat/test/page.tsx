@@ -23,7 +23,10 @@ function EcatTestFlow() {
     const topic = searchParams.get('topic');
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = searchParams.get('questionStyles')?.split(',') || [];
+    
+    // Fix: Use hardcoded styles appropriate for ECAT to prevent AI from stalling on empty array.
+    const questionStyles = ['Past Paper Style', 'Conceptual', 'Numerical'];
+    
     const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
 
     const generateTest = useCallback(async () => {
