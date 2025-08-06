@@ -5,70 +5,70 @@
 @layer base {
   :root {
     --background: 228 67% 98%; /* #F7F8FC */
-    --foreground: 200 15% 18%; /* #263238 */
+    --foreground: 222 18% 12%; /* #1A237E - Dark Blue for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 200 15% 18%;
+    --card-foreground: 222 18% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 200 15% 18%;
+    --popover-foreground: 222 18% 12%;
 
-    --primary: 176 81% 33%; /* Teal: #0d9488 */
+    --primary: 231 65% 30%; /* Deep Blue: #1A237E */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 176 43% 97%; /* Desaturated Teal: #f2f8f7 */
-    --secondary-foreground: 176 81% 33%;
+    --secondary: 231 60% 96%; /* Light muted blue: #f0f3fb */
+    --secondary-foreground: 231 65% 30%;
 
     --muted: 220 17% 95%; /* #f1f3f4 */
-    --muted-foreground: 202 18% 41%; /* #546E7A */
+    --muted-foreground: 220 10% 40%; /* #5c626e */
     
-    --accent: 217 91% 60%; /* Blue-green: #3B82F6 */
-    --accent-foreground: 0 0% 100%;
+    --accent: 34 91% 60%; /* Orange/Amber accent: #f6a23b */
+    --accent-foreground: 222 18% 12%;
 
     --destructive: 0 72% 51%; /* #D32F2F */
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 176 81% 33%;
+    --ring: 231 65% 30%;
     
     --radius: 1rem; /* 16px */
 
-    --chart-1: 176 81% 33%;
-    --chart-2: 217 91% 60%;
+    --chart-1: 231 65% 30%;
+    --chart-2: 34 91% 60%;
   }
  
   .dark {
-    --background: 222 18% 12%;
+    --background: 231 40% 10%; /* Very dark navy blue */
     --foreground: 210 40% 98%;
     
-    --card: 222 18% 15%;
+    --card: 231 40% 14%; /* Slightly lighter navy */
     --card-foreground: 210 40% 98%;
     
-    --popover: 222 18% 12%;
+    --popover: 231 40% 10%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 176 70% 55%; /* Lighter Teal */
+    --primary: 217 91% 60%; /* A vibrant lighter blue for dark mode primary */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 176 20% 18%;
+    --secondary: 222 47% 18%; /* Muted dark blue */
     --secondary-foreground: 210 40% 98%;
     
     --muted: 217 32% 19%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 217 80% 65%; /* Lighter Blue-green */
-    --accent-foreground: 0 0% 100%;
+    --accent: 34 85% 65%; /* Lighter Orange/Amber accent */
+    --accent-foreground: 231 40% 10%;
     
     --destructive: 0 63% 51%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217 32% 24%;
     --input: 217 32% 24%;
-    --ring: 176 70% 55%;
+    --ring: 217 91% 60%;
 
-    --chart-1: 176 70% 55%;
-    --chart-2: 217 80% 65%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 34 85% 65%;
   }
 }
  
