@@ -3,11 +3,15 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
+interface AppHeaderProps {
+  onSidebarToggle?: () => void;
+  isSidebarOpen?: boolean;
+}
 
-export function AppHeader() {
+export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const { user } = useAuth();
   
   if (!user) {
@@ -34,19 +38,27 @@ export function AppHeader() {
 
   // App Header for logged in users
   return (
-    <div className="w-full flex-1 flex items-center justify-between">
-        <div className="md:hidden">
-            <h1 className="font-semibold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
-        </div>
-        <div className="hidden md:block">
-            {/* The PageHeader component will now handle displaying the title on desktop */}
-        </div>
-         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5"/>
-                <span className="sr-only">Notifications</span>
-            </Button>
-         </div>
-    </div>
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hidden md:inline-flex"
+        onClick={onSidebarToggle}
+        aria-label="Toggle sidebar"
+      >
+        {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
+      <div className="w-full flex-1 flex items-center justify-between md:justify-end">
+          <div className="md:hidden">
+              <h1 className="font-semibold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
+          </div>
+           <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5"/>
+                  <span className="sr-only">Notifications</span>
+              </Button>
+           </div>
+      </div>
+    </>
   );
 }
