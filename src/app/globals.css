@@ -13,16 +13,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 200 15% 18%;
 
-    --primary: 233 64% 30%; /* #1A237E */
+    --primary: 176 81% 33%; /* Teal: #0d9488 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 228 60% 95%; /* Lighter shade of background for subtle contrast */
-    --secondary-foreground: 233 64% 30%;
+    --secondary: 176 43% 97%; /* Desaturated Teal: #f2f8f7 */
+    --secondary-foreground: 176 81% 33%;
 
     --muted: 220 17% 95%; /* #f1f3f4 */
     --muted-foreground: 202 18% 41%; /* #546E7A */
     
-    --accent: 145 100% 39%; /* #00C853 */
+    --accent: 217 91% 60%; /* Blue-green: #3B82F6 */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%; /* #D32F2F */
@@ -30,12 +30,12 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 233 64% 30%;
+    --ring: 176 81% 33%;
     
     --radius: 1rem; /* 16px */
 
-    --chart-1: 233 64% 30%;
-    --chart-2: 145 100% 39%;
+    --chart-1: 176 81% 33%;
+    --chart-2: 217 91% 60%;
   }
  
   .dark {
@@ -48,27 +48,27 @@
     --popover: 222 18% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 220 70% 75%; /* Lighter blue for dark mode */
-    --primary-foreground: 222 18% 12%;
+    --primary: 176 70% 55%; /* Lighter Teal */
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 217 32% 19%;
+    --secondary: 176 20% 18%;
     --secondary-foreground: 210 40% 98%;
     
     --muted: 217 32% 19%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 145 80% 45%; /* Slightly brighter green for dark mode */
-    --accent-foreground: 0 0% 0%;
+    --accent: 217 80% 65%; /* Lighter Blue-green */
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 63% 51%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217 32% 24%;
     --input: 217 32% 24%;
-    --ring: 220 70% 75%;
+    --ring: 176 70% 55%;
 
-    --chart-1: 220 70% 75%;
-    --chart-2: 145 80% 45%;
+    --chart-1: 176 70% 55%;
+    --chart-2: 217 80% 65%;
   }
 }
  
@@ -78,6 +78,12 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
   }
+}
+
+@layer components {
+    .quiz-option-label:has([data-state=checked]) {
+        @apply border-primary bg-primary/10;
+    }
 }

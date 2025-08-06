@@ -4,18 +4,15 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
-import { Loader2, BrainCircuit, Sparkles } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { generateNtsQuiz } from "@/ai/flows/generate-nts-quiz";
 import { motion } from "framer-motion";
 
 function NtsTestFlow() {
     const searchParams = useSearchParams();
-    const { toast } = useToast();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -61,18 +58,13 @@ function NtsTestFlow() {
                     errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
                 }
                 setError(errorMessage);
-                toast({
-                    title: "Failed to Generate Test",
-                    description: errorMessage,
-                    variant: "destructive",
-                });
             } finally {
                 setIsLoading(false);
             }
         };
 
         generateTest();
-    }, [category, subject, chapter, toast]);
+    }, [category, subject, chapter]);
 
     if (isLoading) {
         return (
@@ -95,7 +87,10 @@ function NtsTestFlow() {
 
     if (error) {
          return (
-            <div className="text-center">
+            <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+                <div className="p-4 bg-destructive/10 rounded-full mb-4">
+                    <AlertTriangle className="h-10 w-10 text-destructive"/>
+                </div>
                 <PageHeader title="Could Not Generate Test" description={error}/>
                 <Button asChild>
                     <Link href="/nts">Back to NTS Prep</Link>

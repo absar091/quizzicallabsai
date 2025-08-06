@@ -719,7 +719,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                       <FormControl>
                                           <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
                                       </FormControl>
-                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-xl border-2 border-transparent bg-card shadow-sm hover:bg-secondary has-[:checked]:border-accent has-[:checked]:bg-accent/10 cursor-pointer min-h-[60px] text-base transition-all">
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="quiz-option-label flex items-center p-4 rounded-xl border-2 bg-card shadow-sm hover:bg-secondary cursor-pointer min-h-[60px] text-base transition-all">
                                           <div className="flex-1 text-left"><RichContentRenderer content={answer} /></div>
                                       </Label>
                                   </FormItem>
