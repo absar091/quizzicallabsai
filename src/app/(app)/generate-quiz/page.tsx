@@ -612,6 +612,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         topic: `Retry: ${formValues.topic}`,
         numberOfQuestions: incorrectQuestions.length,
         timeLimit: Math.max(5, Math.ceil(incorrectQuestions.length * 0.75)), // Adjust time limit
+        questionStyles: [], // Use default styles for retry
     };
 
     setQuiz(incorrectQuestions);
@@ -809,8 +810,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                             {!isCorrect && q.type !== 'descriptive' && (
                                                 <div className="space-y-2 mt-4">
                                                     {explanationState?.explanation && (
-                                                        <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
-                                                            <AlertTitle className="text-accent flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
+                                                        <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
+                                                            <AlertTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
                                                             <AlertDescription>{explanationState.explanation}</AlertDescription>
                                                         </Alert>
                                                     )}
@@ -1005,7 +1006,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                                           checked={field.value?.includes(item.id)}
                                           onCheckedChange={(checked) => {
                                             return checked
-                                              ? field.onChange([...field.value, item.id])
+                                              ? field.onChange([...(field.value || []), item.id])
                                               : field.onChange(
                                                   field.value?.filter(
                                                     (value) => value !== item.id

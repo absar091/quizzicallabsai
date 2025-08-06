@@ -22,7 +22,7 @@ function MdcatTestFlow() {
     const topic = searchParams.get('topic');
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = searchParams.get('questionStyles')?.split(',') || ['Past Paper Style'];
+    const questionStyles = searchParams.get('questionStyles')?.split(',') || [];
 
     const generateTest = useCallback(async () => {
         if (!topic || !subject) {
@@ -105,7 +105,7 @@ function MdcatTestFlow() {
         return <GenerateQuizPage 
             initialQuiz={quiz} 
             initialFormValues={{
-                 topic: topic || "MDCAT Test",
+                 topic: `MDCAT: ${topic}` || "MDCAT Test",
                  difficulty: difficulty as any,
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
