@@ -127,13 +127,18 @@ const generateDashboardInsightsFlow = ai.defineFlow(
     
     let output;
     try {
-        const result = await prompt15Flash(recentHistory); // Prioritize flash as per earlier discussion
+        const result = await prompt15Flash(recentHistory);
         output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
- console.log('Gemini 1.5 Flash unavailable or rate limited, falling back to Gemini 1.5 Pro for dashboard insights.');
-            const result = await prompt15Pro(recentHistory);
-            output = result.output;
+           console.log('Gemini 1.5 Flash unavailable or rate limited, falling back to Gemini 1.5 Pro for dashboard insights.');
+            try {
+              const result = await prompt15Pro(recentHistory);
+              output = result.output;
+            } catch (proError: any) {
+              console.error('Gemini 1.5 Pro fallback also failed:', proError);
+              throw proError;
+            }
         } else {
             // Re-throw other errors
             throw error;
@@ -141,15 +146,11 @@ const generateDashboardInsightsFlow = ai.defineFlow(
     }
 
     // Add more robust validation for required output fields
- if (!output || !output.greeting || !output.observation || !output.suggestion) {
- // Log the problematic output for debugging
- console.error('AI model returned invalid insights structure:', output);
- throw new Error("The AI model failed to return valid insights (missing greeting, observation, or suggestion). Please try again.");
- }
-
- // Ensure the suggested action is present if the prompt intends to provide one based on logic.
- // This is harder to enforce strictly but we can check if the optional object is empty if present.
-
+    if (!output || !output.greeting || !output.observation || !output.suggestion) {
+      // Log the problematic output for debugging
+      console.error('AI model returned invalid insights structure:', output);
+      throw new Error("The AI model failed to return valid insights (missing greeting, observation, or suggestion). Please try again.");
+    }
     return output;
   }
 );

@@ -172,8 +172,13 @@ const generateCustomQuizFlow = ai.defineFlow(
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
             // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for custom quiz.');
-            const result = await prompt15Pro(input);
-            output = result.output;
+            try {
+              const result = await prompt15Pro(input);
+              output = result.output;
+            } catch (proError: any) {
+              console.error('Gemini 1.5 Pro fallback also failed:', proError);
+              throw proError;
+            }
         } else {
             // Re-throw other errors
             throw error;

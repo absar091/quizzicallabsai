@@ -76,26 +76,23 @@ const explainImageFlow = ai.defineFlow(
     let output;
     try {
       const result = await prompt15Flash(input);
-      // Attempt to parse the output and validate against the schema
- output = ExplainImageOutputSchema.parse(result.output);
-    } catch (error: any) {
- if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for image explanation.');
- try {
- const result = await prompt15Pro(input);
- // Attempt to parse the output and validate against the schema
- output = ExplainImageOutputSchema.parse(result.output);
- } catch (proError: any) {
- // If Pro also fails, log and re-throw
- console.error('Gemini 1.5 Pro fallback also failed:', proError);
       output = result.output;
- throw proError; // Re-throw the Pro model error
- }
- } else {
- // Re-throw other errors
- console.error('Gemini 1.5 Flash failed with unhandled error:', error);
- throw error; // Re-throw the original error
- }
+    } catch (error: any) {
+      if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+        console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for image explanation.');
+        try {
+          const result = await prompt15Pro(input);
+          output = result.output;
+        } catch (proError: any) {
+          // If Pro also fails, log and re-throw
+          console.error('Gemini 1.5 Pro fallback also failed:', proError);
+          throw proError; // Re-throw the Pro model error
+        }
+      } else {
+        // Re-throw other errors
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
+        throw error; // Re-throw the original error
+      }
     }
 
     // Add more specific validation after successful parsing
