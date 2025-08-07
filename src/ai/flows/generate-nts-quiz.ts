@@ -43,7 +43,7 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 **CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
 
 1.  **ABSOLUTE ACCURACY:** All questions and answers MUST be factually correct and relevant to the Pakistani curriculum where applicable.
-2.  **EXACT QUESTION COUNT:** You MUST generate the exact number of questions specified in 'numberOfQuestions': {{{numberOfQuestions}}}.
+2.  **FLEXIBLE QUESTION COUNT:** Your goal is to generate **up to** {{{numberOfQuestions}}} questions. It is better to return slightly fewer high-quality questions than to meet the exact count with irrelevant or low-quality ones. Do not exceed the requested number.
 3.  **QUESTION FORMAT:**
     *   All questions must be multiple-choice.
     *   The 'type' field MUST be "multiple-choice".
@@ -58,7 +58,7 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 
 *   **NTS/NAT Category:** '{{{category}}}'
 *   **Topic/Subject:** '{{{topic}}}'
-*   **Number of Questions:** {{{numberOfQuestions}}}
+*   **Number of Questions:** up to {{{numberOfQuestions}}}
 
 **CATEGORY-SPECIFIC INSTRUCTIONS:**
 
@@ -80,7 +80,8 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
     *   The difficulty should be appropriate for a university admission test (NAT level). Do not use content from outside this curriculum.
     *   For Physics and Chemistry questions, ensure all formulas and equations are rendered using LaTeX.
 
-Generate the quiz now. Your output must be a valid JSON object with exactly {{{numberOfQuestions}}} questions.`;
+Generate the quiz now.
+`;
 
 
 const prompt15Flash = ai.definePrompt({
@@ -128,3 +129,5 @@ const generateNtsQuizFlow = ai.defineFlow(
     return output;
   }
 );
+
+    
