@@ -101,8 +101,13 @@ const generateStudyGuideFlow = ai.defineFlow(
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
             // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
-            const result = await prompt15Pro(input);
-            output = result.output;
+            try {
+              const result = await prompt15Pro(input);
+              output = result.output;
+            } catch (proError: any) {
+              console.error('Gemini 1.5 Pro fallback also failed:', proError);
+              throw proError;
+            }
         } else {
             // Re-throw other errors
             throw error;
@@ -110,24 +115,24 @@ const generateStudyGuideFlow = ai.defineFlow(
     }
     
     if (!output) {
- throw new Error('The AI model failed to return any output for the study guide.');
+      throw new Error('The AI model failed to return any output for the study guide.');
     }
 
     // More robust checks for output structure and content
     if (
       !output.title ||
- !output.summary ||
+      !output.summary ||
       !output.keyConcepts ||
- output.keyConcepts.length === 0 ||
- !Array.isArray(output.keyConcepts) ||
- !output.analogies ||
- !Array.isArray(output.analogies) ||
- !output.quizYourself ||
- !Array.isArray(output.quizYourself)
+      output.keyConcepts.length === 0 ||
+      !Array.isArray(output.keyConcepts) ||
+      !output.analogies ||
+      !Array.isArray(output.analogies) ||
+      !output.quizYourself ||
+      !Array.isArray(output.quizYourself)
     ) {
- throw new Error(
- 'The AI model returned a study guide with missing or invalid structure. Please try again.'
- );
+      throw new Error(
+        'The AI model returned a study guide with missing or invalid structure. Please try again.'
+      );
     }
     return output;
   }

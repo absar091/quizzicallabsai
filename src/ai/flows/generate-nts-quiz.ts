@@ -123,8 +123,13 @@ const generateNtsQuizFlow = ai.defineFlow(
         // Catch specific API errors and fall back
         if (error.message?.includes('503') || error.message?.includes('overloaded') || error.message?.includes('429')) {
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for NTS quiz.');
-            const result = await prompt15Pro(input);
-            output = result.output;
+            try {
+              const result = await prompt15Pro(input);
+              output = result.output;
+            } catch (proError: any) {
+              console.error('Gemini 1.5 Pro fallback also failed:', proError);
+              throw proError;
+            }
         } else {
             // Re-throw other errors
             throw error;
@@ -137,5 +142,3 @@ const generateNtsQuizFlow = ai.defineFlow(
     return output;
   }
 );
-
-    

@@ -75,8 +75,13 @@ const generateSimpleExplanationFlow = ai.defineFlow(
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
             // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
-            const result = await prompt15Pro(input);
-            output = result.output;
+            try {
+              const result = await prompt15Pro(input);
+              output = result.output;
+            } catch (proError) {
+              console.error('Gemini 1.5 Pro fallback also failed:', proError);
+              throw proError;
+            }
         } else {
             // Log and re-throw other unexpected errors
             console.error('An unexpected error occurred during AI explanation generation:', error);
@@ -86,9 +91,6 @@ const generateSimpleExplanationFlow = ai.defineFlow(
 
     // Validate the output structure and content
     if (!output || !output.explanation || output.explanation.trim() === '') {
-      throw new Error("The AI model failed to return a valid simple explanation. Please try again.");
-    }
-    if (!output) {
       throw new Error("The AI model failed to return a valid simple explanation. Please try again.");
     }
     return output;
