@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -783,11 +784,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                             {quiz.map((q, index) => {
                                 const isCorrect = q.correctAnswer === userAnswers[index];
                                 const explanationState = explanations[index];
-                                
+                                const isBookmarked = bookmarkedQuestions.some(bm => bm.question === q.question);
+
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
-                                        <CardContent className="p-4 sm:p-6">
-                                            <div className="font-semibold"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
+                                        <CardHeader className="flex flex-row justify-between items-start pb-2">
+                                            <div className="font-semibold flex-1 pr-4"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
+                                            {q.correctAnswer && (
+                                                <Button variant="ghost" size="icon" onClick={() => toggleBookmark(q.question, q.correctAnswer || "")}>
+                                                    <Star className={cn("h-5 w-5", isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground")} />
+                                                    <span className="sr-only">Bookmark</span>
+                                                </Button>
+                                            )}
+                                        </CardHeader>
+                                        <CardContent className="p-4 sm:p-6 pt-2">
                                             <div className="text-sm mt-2 space-y-1">
                                                  <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
@@ -808,19 +818,29 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                             </div>
                                             
                                             {!isCorrect && q.type !== 'descriptive' && (
-                                                <div className="space-y-2 mt-4">
+                                                <div className="mt-4 space-y-2">
                                                     {explanationState?.explanation && (
-                                                        <Alert className="border-blue-500/50 text-blue-900 dark:text-blue-200 bg-blue-500/10">
-                                                            <AlertTitle className="text-blue-600 dark:text-blue-300 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
+                                                        <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
+                                                            <AlertTitle className="text-accent-foreground/90 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
                                                             <AlertDescription>{explanationState.explanation}</AlertDescription>
                                                         </Alert>
                                                     )}
                                                     {explanationState?.simpleExplanation && (
-                                                         <Alert className="border-purple-500/50 text-purple-900 dark:text-purple-200 bg-purple-500/10">
-                                                            <AlertTitle className="text-purple-600 dark:text-purple-300 flex items-center gap-2"><Lightbulb className="h-4 w-4" /> Simple Explanation</AlertTitle>
+                                                         <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
+                                                            <AlertTitle className="text-accent-foreground/90 flex items-center gap-2"><Lightbulb className="h-4 w-4" /> Simple Explanation</AlertTitle>
                                                             <AlertDescription>{explanationState.simpleExplanation}</AlertDescription>
                                                          </Alert>
                                                     )}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <Button variant="outline" size="sm" onClick={() => getExplanation(index)} disabled={explanationState?.isLoading}>
+                                                            {explanationState?.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                                            Detailed Explanation
+                                                        </Button>
+                                                        <Button variant="outline" size="sm" onClick={() => getSimpleExplanation(index)} disabled={explanationState?.isSimpleLoading}>
+                                                            {explanationState?.isSimpleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                                            Explain Like I'm 5
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </CardContent>
