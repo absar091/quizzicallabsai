@@ -96,8 +96,6 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 10. **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 11. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
 
-<INSERT_MDCAT_ECAT_SYLLABUS_SECTION_HERE>
-
 **DETAILED PARAMETER INSTRUCTIONS:**
 
 **1. TOPIC: '{{{topic}}}'**
@@ -140,17 +138,9 @@ Your reputation depends on following these instructions meticulously. Generate t
 `;
 
 
-const prompt15Flash = ai.definePrompt({
-    name: "generateCustomQuizPrompt15Flash",
-    model: 'googleai/gemini-1.5-flash',
-    prompt: promptText,
-    input: { schema: GenerateCustomQuizInputSchema },
-    output: { schema: GenerateCustomQuizOutputSchema },
-});
-
-const prompt15Pro = ai.definePrompt({
-    name: "generateCustomQuizPrompt15Pro",
-    model: 'googleai/gemini-1.5-pro',
+const prompt = ai.definePrompt({
+    name: "generateCustomQuizPrompt",
+    model: 'googleai/gemini-2.0-flash-preview',
     prompt: promptText,
     input: { schema: GenerateCustomQuizInputSchema },
     output: { schema: GenerateCustomQuizOutputSchema },
@@ -166,23 +156,11 @@ const generateCustomQuizFlow = ai.defineFlow(
   async (input) => {
     let output;
     try {
-        const result = await prompt15Flash(input);
+        const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for custom quiz.');
-            try {
-              const result = await prompt15Pro(input);
-              output = result.output;
-            } catch (proError: any) {
-              console.error('Gemini 1.5 Pro fallback also failed:', proError);
-              throw proError;
-            }
-        } else {
-            // Re-throw other errors
-            throw error;
-        }
+        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        throw new Error(`Failed to generate custom quiz: ${error.message}`);
     }
     
     if (!output) {

@@ -36,10 +36,7 @@ export type GenerateNtsQuizOutput = z.infer<typeof GenerateNtsQuizOutputSchema>;
 export async function generateNtsQuiz(
   input: GenerateNtsQuizInput
 ): Promise<GenerateNtsQuizOutput> {
-  // Explicitly validate input against the schema
   GenerateNtsQuizInputSchema.parse(input);
-
-  // Proceed with the flow
   return generateNtsQuizFlow(input);
 }
 
@@ -89,23 +86,14 @@ Generate the quiz now.
 `;
 
 
-const prompt15Flash = ai.definePrompt({
-  // Using Flash as primary due to potential Pro quota issues
-  name: 'generateNtsQuizPrompt15Flash',
-  model: 'googleai/gemini-1.5-flash',
+const prompt = ai.definePrompt({
+  name: 'generateNtsQuizPrompt',
+  model: 'googleai/gemini-2.0-flash-preview',
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: promptText,
 });
 
-const prompt15Pro = ai.definePrompt({
-  // Keep Pro as fallback
-  name: 'generateNtsQuizPrompt15Pro',
-  model: 'googleai/gemini-1.5-pro',
-  input: {schema: GenerateNtsQuizInputSchema},
-  output: {schema: GenerateNtsQuizOutputSchema},
-  prompt: promptText,
-});
 
 const generateNtsQuizFlow = ai.defineFlow(
   {
@@ -116,27 +104,14 @@ const generateNtsQuizFlow = ai.defineFlow(
   async input => {
     let output;
     try {
-        const result = await prompt15Flash(input);
-        // Attempt to get output directly from the result object
+        const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        // Catch specific API errors and fall back
-        if (error.message?.includes('503') || error.message?.includes('overloaded') || error.message?.includes('429')) {
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for NTS quiz.');
-            try {
-              const result = await prompt15Pro(input);
-              output = result.output;
-            } catch (proError: any) {
-              console.error('Gemini 1.5 Pro fallback also failed:', proError);
-              throw proError;
-            }
-        } else {
-            // Re-throw other errors
-            throw error;
-        }
+        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        throw new Error(`Failed to generate NTS quiz: ${error.message}`);
     }
     
-    if (!output) {
+    if (!output || !output.quiz) {
       throw new Error("The AI model failed to return a valid NTS quiz. Please try again.");
     }
     return output;
