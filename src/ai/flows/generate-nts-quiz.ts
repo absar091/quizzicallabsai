@@ -23,6 +23,7 @@ export type GenerateNtsQuizInput = z.infer<typeof GenerateNtsQuizInputSchema>;
 const GenerateNtsQuizOutputSchema = z.object({
   quiz: z.array(
     z.object({
+      // NTS/NAT requires multiple-choice format
       type: z.literal('multiple-choice'),
       question: z.string(),
       answers: z.array(z.string()),
@@ -35,6 +36,10 @@ export type GenerateNtsQuizOutput = z.infer<typeof GenerateNtsQuizOutputSchema>;
 export async function generateNtsQuiz(
   input: GenerateNtsQuizInput
 ): Promise<GenerateNtsQuizOutput> {
+  // Explicitly validate input against the schema
+  GenerateNtsQuizInputSchema.parse(input);
+
+  // Proceed with the flow
   return generateNtsQuizFlow(input);
 }
 
@@ -85,6 +90,7 @@ Generate the quiz now.
 
 
 const prompt15Flash = ai.definePrompt({
+  // Using Flash as primary due to potential Pro quota issues
   name: 'generateNtsQuizPrompt15Flash',
   model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateNtsQuizInputSchema},
@@ -93,6 +99,7 @@ const prompt15Flash = ai.definePrompt({
 });
 
 const prompt15Pro = ai.definePrompt({
+  // Keep Pro as fallback
   name: 'generateNtsQuizPrompt15Pro',
   model: 'googleai/gemini-1.5-pro',
   input: {schema: GenerateNtsQuizInputSchema},
@@ -110,10 +117,11 @@ const generateNtsQuizFlow = ai.defineFlow(
     let output;
     try {
         const result = await prompt15Flash(input);
+        // Attempt to get output directly from the result object
         output = result.output;
     } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
+        // Catch specific API errors and fall back
+        if (error.message?.includes('503') || error.message?.includes('overloaded') || error.message?.includes('429')) {
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for NTS quiz.');
             const result = await prompt15Pro(input);
             output = result.output;

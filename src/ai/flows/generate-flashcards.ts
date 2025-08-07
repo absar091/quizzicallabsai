@@ -31,6 +31,14 @@ export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSc
 export async function generateFlashcards(
   input: GenerateFlashcardsInput
 ): Promise<GenerateFlashcardsOutput> {
+  // Explicit input validation
+  if (input.count < 5 || input.count > 50) {
+    throw new Error("Invalid input: 'count' must be between 5 and 50.");
+  }
+  if (!input.topic || input.topic.trim().length === 0) {
+      throw new Error("Invalid input: 'topic' cannot be empty.");
+  }
+
   return generateFlashcardsFlow(input);
 }
 
@@ -67,11 +75,29 @@ const generateFlashcardsFlow = ai.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-
-    if (!output || !output.flashcards) {
-      throw new Error("The AI model failed to return valid flashcards. Please try again.");
+    let output;
+    try {
+      const result = await prompt(input);
+      output = result.output;
+    } catch (error: any) {
+        console.error('Error calling Gemini 1.5 Flash for flashcard generation:', error);
+        throw new Error(`Failed to generate flashcards: ${error.message || 'Unknown error'}`);
     }
+
+    // More robust output validation
+    if (!output || !output.flashcards || output.flashcards.length === 0) {
+      throw new Error("The AI model failed to return any flashcards. Please try again.");
+    }
+
+    // Check individual flashcard validity
+    for (const card of output.flashcards) {
+        if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
+            console.warn("Generated flashcard with empty term or definition:", card);
+            // Decide how to handle: throw error, filter out, or log warning
+            // For now, we'll allow but warn, as some minor imperfections might occur
+        }
+    }
+
     return output;
   }
 );

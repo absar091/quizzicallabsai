@@ -63,7 +63,15 @@ export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSc
 export async function generateCustomQuiz(
   input: GenerateCustomQuizInput
 ): Promise<GenerateCustomQuizOutput> {
-  return generateCustomQuizFlow(input);
+  // Explicit input validation (redundant with Zod but provides clearer error messages)
+  if (input.numberOfQuestions < 1 || input.numberOfQuestions > 55) {
+    throw new Error("Number of questions must be between 1 and 55.");
+  }
+  if (input.timeLimit < 1 || input.timeLimit > 120) {
+      throw new Error("Time limit must be between 1 and 120 minutes.");
+  }
+
+  return generateCustomQuizFlow(input); // Zod schema validation happens here
 }
 
 const promptText = `You are a world-class AI educator and subject matter expert. Your primary function is to create exceptionally high-quality, accurate, and engaging quizzes that strictly adhere to the user's specified parameters. Your reputation is built on precision, intellectual rigor, and reliability.
@@ -87,6 +95,8 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 9.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly, nonsensical, or obviously wrong options.
 10. **NO REPETITION:** Do not generate repetitive or stylistically similar questions. Each question must be unique in its wording, structure, and the specific concept it tests.
 11. **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+
+<INSERT_MDCAT_ECAT_SYLLABUS_SECTION_HERE>
 
 **DETAILED PARAMETER INSTRUCTIONS:**
 

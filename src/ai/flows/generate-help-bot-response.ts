@@ -11,7 +11,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { faqs } from '@/lib/faqs';
 
 const GenerateHelpBotResponseInputSchema = z.object({
   query: z.string().describe("The user's question about the Quizzicallabs AI application."),
@@ -64,7 +63,19 @@ const generateHelpBotResponseFlow = ai.defineFlow(
     outputSchema: GenerateHelpBotResponseOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    let output;
+    try {
+        // Validate faqContext is valid JSON before using it
+        try {
+          JSON.parse(input.faqContext);
+        } catch (e) {
+          throw new Error("Invalid faqContext: Must be a valid JSON string.");
+        }
+        const result = await prompt(input);
+        output = result.output;
+    } catch (error: any) {
+        throw new Error(`Failed to generate help bot response: ${error.message}`);
+    }
     
     if (!output) {
       throw new Error("The AI model failed to return a valid response. Please try again.");

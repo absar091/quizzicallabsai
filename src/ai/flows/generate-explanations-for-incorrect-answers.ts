@@ -75,20 +75,25 @@ const generateExplanationsFlow = ai.defineFlow(
     try {
         const result = await prompt15Flash(input);
         output = result.output;
-    } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
+    } catch (error) {
+        console.error('Error calling Gemini 1.5 Flash for explanation:', error);
+ if ((error as any).message && ((error as any).message.includes('503') || (error as any).message.includes('overloaded') || (error as any).message.includes('429'))) {
             // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
             const result = await prompt15Pro(input);
             output = result.output;
         } else {
-            // Re-throw other errors
+            // Re-throw other errors after logging
             throw error;
         }
     }
     
     if (!output) {
       throw new Error("The AI model failed to return a valid explanation. Please try again.");
+    }
+    // Add check for empty explanation
+    if (!output.explanation || output.explanation.trim().length === 0) {
+        throw new Error("The AI model returned an empty explanation. Please try again.");
     }
     return output;
   }

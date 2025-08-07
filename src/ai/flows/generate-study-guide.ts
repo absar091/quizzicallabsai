@@ -110,7 +110,24 @@ const generateStudyGuideFlow = ai.defineFlow(
     }
     
     if (!output) {
-      throw new Error("The AI model failed to return a valid study guide. Please try again.");
+ throw new Error('The AI model failed to return any output for the study guide.');
+    }
+
+    // More robust checks for output structure and content
+    if (
+      !output.title ||
+ !output.summary ||
+      !output.keyConcepts ||
+ output.keyConcepts.length === 0 ||
+ !Array.isArray(output.keyConcepts) ||
+ !output.analogies ||
+ !Array.isArray(output.analogies) ||
+ !output.quizYourself ||
+ !Array.isArray(output.quizYourself)
+    ) {
+ throw new Error(
+ 'The AI model returned a study guide with missing or invalid structure. Please try again.'
+ );
     }
     return output;
   }

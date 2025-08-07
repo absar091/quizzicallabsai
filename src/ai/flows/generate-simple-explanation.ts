@@ -67,20 +67,27 @@ const generateSimpleExplanationFlow = ai.defineFlow(
   async input => {
     let output;
     try {
+      // Try the flash model first
         const result = await prompt15Flash(input);
         output = result.output;
     } catch (error: any) {
+      // If flash model fails due to specific errors, try pro model
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
             // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
             console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
             const result = await prompt15Pro(input);
             output = result.output;
         } else {
-            // Re-throw other errors
+            // Log and re-throw other unexpected errors
+            console.error('An unexpected error occurred during AI explanation generation:', error);
             throw error;
         }
     }
-    
+
+    // Validate the output structure and content
+    if (!output || !output.explanation || output.explanation.trim() === '') {
+      throw new Error("The AI model failed to return a valid simple explanation. Please try again.");
+    }
     if (!output) {
       throw new Error("The AI model failed to return a valid simple explanation. Please try again.");
     }
