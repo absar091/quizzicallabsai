@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
@@ -23,55 +23,52 @@ function EcatTestFlow() {
     const topic = searchParams.get('topic');
     const numQuestions = searchParams.get('numQuestions');
     const difficulty = searchParams.get('difficulty') || 'hard';
-    
-    // Fix: Use hardcoded styles appropriate for ECAT to prevent AI from stalling on empty array.
     const questionStyles = ['Past Paper Style', 'Conceptual', 'Numerical'];
-    
     const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
 
-    const generateTest = useCallback(async () => {
-        if (!topic) {
-            setError("No topic specified for the test.");
-            setIsLoading(false);
-            return;
-        }
-
-        setIsLoading(true);
-        setError(null);
-        try {
-            const result = await generateCustomQuiz({
-                topic: `ECAT ${subject} - ${topic}`,
-                difficulty: difficulty as any,
-                numberOfQuestions: Number(numQuestions) || 20,
-                questionTypes: ["Multiple Choice"],
-                questionStyles: questionStyles,
-                timeLimit: Number(numQuestions) || 20,
-                userAge: null,
-                userClass: "ECAT Student",
-                specificInstructions: specificInstructions
-            });
-             if (!result.quiz || result.quiz.length === 0) {
-                throw new Error("The AI returned an empty quiz. Please try again.");
-            }
-            setQuiz(result.quiz);
-            setComprehensionText(result.comprehensionText || null);
-        } catch (err: any) {
-            let errorMessage = "An unexpected error occurred while generating the test.";
-             if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
-                errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-            } else if (err?.message) {
-                errorMessage = err.message;
-            }
-            setError(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [topic, subject, difficulty, questionStyles, numQuestions, specificInstructions]);
-    
-
     useEffect(() => {
+        const generateTest = async () => {
+            if (!topic) {
+                setError("No topic specified for the test.");
+                setIsLoading(false);
+                return;
+            }
+
+            setIsLoading(true);
+            setError(null);
+            try {
+                const result = await generateCustomQuiz({
+                    topic: `ECAT ${subject} - ${topic}`,
+                    difficulty: difficulty as any,
+                    numberOfQuestions: Number(numQuestions) || 20,
+                    questionTypes: ["Multiple Choice"],
+                    questionStyles: questionStyles,
+                    timeLimit: Number(numQuestions) || 20,
+                    userAge: null,
+                    userClass: "ECAT Student",
+                    specificInstructions: specificInstructions
+                });
+                 if (!result.quiz || result.quiz.length === 0) {
+                    throw new Error("The AI returned an empty quiz. Please try again.");
+                }
+                setQuiz(result.quiz);
+                setComprehensionText(result.comprehensionText || null);
+            } catch (err: any) {
+                let errorMessage = "An unexpected error occurred while generating the test.";
+                 if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
+                    errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+                } else if (err?.message) {
+                    errorMessage = err.message;
+                }
+                setError(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
         generateTest();
-    }, [generateTest]);
+    }, []); // Empty dependency array ensures this runs only once on mount
+    
 
     if (isLoading) {
         return (
