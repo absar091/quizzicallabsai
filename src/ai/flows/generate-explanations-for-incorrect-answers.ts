@@ -14,7 +14,7 @@ import {z} from 'genkit';
 
 const GenerateExplanationsInputSchema = z.object({
   question: z.string().describe('The question that was answered incorrectly.'),
-  studentAnswer: z.string().describe('The student\u2019s incorrect answer.'),
+  studentAnswer: z.string().describe('The student’s incorrect answer.'),
   correctAnswer: z.string().describe('The correct answer to the question.'),
   topic: z.string().describe('The topic of the question.'),
 });
