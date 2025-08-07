@@ -127,7 +127,7 @@ const generateDashboardInsightsFlow = ai.defineFlow(
     
     let output;
     try {
-        const result = await prompt15Flash(recentHistory);
+        const result = await prompt15Pro(recentHistory);
         output = result.output;
     } catch (error: any) {
         if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
