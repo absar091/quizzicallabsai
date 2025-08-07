@@ -14,8 +14,7 @@ import {z} from 'genkit';
 
 const GenerateQuizFromDocumentInputSchema = z.object({
   documentDataUri: z
-    .string()
-    .max(10000000, "The document is too large. Please upload a smaller document.")
+ .string()
     .describe(
       "A document or image to generate a quiz from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
@@ -40,7 +39,18 @@ export type GenerateQuizFromDocumentOutput = z.infer<typeof GenerateQuizFromDocu
 export async function generateQuizFromDocument(
   input: GenerateQuizFromDocumentInput
 ): Promise<GenerateQuizFromDocumentOutput> {
-  return generateQuizFromDocumentFlow(input);
+ // Explicit input validation
+ if (input.documentDataUri.length > 10000000) {
+ throw new Error("The document is too large. Please upload a smaller document (max 10MB).");
+  }
+ if (input.numberOfQuestions < 1 || input.numberOfQuestions > 55) {
+ throw new Error("Number of questions must be between 1 and 55.");
+  }
+ if (!["easy", "medium", "hard", "master"].includes(input.difficulty)) {
+ throw new Error(`Invalid difficulty level: ${input.difficulty}. Must be easy, medium, hard, or master.`);
+  }
+
+ return generateQuizFromDocumentFlow(input);
 }
 
 const promptText = `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
@@ -70,10 +80,29 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
     outputSchema: GenerateQuizFromDocumentOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    
+ let output;
+ try {
+ const result = await prompt(input);
+ output = result.output;
+ } catch (error: any) {
+ // Log the error and re-throw with a more general message
+ console.error("Error calling Gemini API for quiz from document:", error);
+ throw new Error("Failed to generate quiz from document. Please try again.");
+ }
+
     if (!output) {
       throw new Error("The AI model failed to return a valid quiz from the document. Please try again.");
+    }
+
+ // Validate the structure of the generated quiz
+ if (!Array.isArray(output.quiz) || output.quiz.length === 0) {
+ throw new Error("The AI model returned an empty or invalid quiz structure.");
+    }
+ // Basic check for expected fields in questions - more detailed checks could be added if needed
+ for (const question of output.quiz) {
+ if (!question.question || !question.type) {
+ throw new Error("The AI model returned questions with missing required fields.");
+      }
     }
     return output;
   }
