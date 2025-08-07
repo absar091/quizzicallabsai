@@ -50,7 +50,7 @@ You have been provided with a list of Frequently Asked Questions (FAQs) that con
 
 const prompt = ai.definePrompt({
     name: 'generateHelpBotResponsePrompt',
-    model: 'googleai/gemini-1.5-flash',
+    model: 'googleai/gemini-2.0-flash-preview',
     prompt: promptText,
     input: { schema: GenerateHelpBotResponseInputSchema },
     output: { schema: GenerateHelpBotResponseOutputSchema },
@@ -65,7 +65,6 @@ const generateHelpBotResponseFlow = ai.defineFlow(
   async (input) => {
     let output;
     try {
-        // Validate faqContext is valid JSON before using it
         try {
           JSON.parse(input.faqContext);
         } catch (e) {
@@ -77,7 +76,7 @@ const generateHelpBotResponseFlow = ai.defineFlow(
         throw new Error(`Failed to generate help bot response: ${error.message}`);
     }
     
-    if (!output) {
+    if (!output || !output.answer) {
       throw new Error("The AI model failed to return a valid response. Please try again.");
     }
     return output;

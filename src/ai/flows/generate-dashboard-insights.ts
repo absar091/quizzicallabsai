@@ -96,21 +96,14 @@ Analyze the student's quiz history and generate a response in the specified JSON
 
 Now, generate the output for the provided student data.`;
 
-const prompt15Flash = ai.definePrompt({
-    name: 'generateDashboardInsightsPrompt15Flash',
-    model: 'googleai/gemini-1.5-flash',
+const prompt = ai.definePrompt({
+    name: 'generateDashboardInsightsPrompt',
+    model: 'googleai/gemini-2.0-flash-preview',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
 });
 
-const prompt15Pro = ai.definePrompt({
-    name: 'generateDashboardInsightsPrompt15Pro',
-    model: 'googleai/gemini-1.5-pro',
-    prompt: promptText,
-    input: { schema: GenerateDashboardInsightsInputSchema },
-    output: { schema: GenerateDashboardInsightsOutputSchema },
-});
 
 const generateDashboardInsightsFlow = ai.defineFlow(
   {
@@ -127,27 +120,14 @@ const generateDashboardInsightsFlow = ai.defineFlow(
     
     let output;
     try {
-        const result = await prompt15Flash(recentHistory);
+        const result = await prompt(recentHistory);
         output = result.output;
     } catch (error: any) {
-        if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-           console.log('Gemini 1.5 Flash unavailable or rate limited, falling back to Gemini 1.5 Pro for dashboard insights.');
-            try {
-              const result = await prompt15Pro(recentHistory);
-              output = result.output;
-            } catch (proError: any) {
-              console.error('Gemini 1.5 Pro fallback also failed:', proError);
-              throw proError;
-            }
-        } else {
-            // Re-throw other errors
-            throw error;
-        }
+        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        throw new Error(`Failed to generate dashboard insights: ${error.message}`);
     }
 
-    // Add more robust validation for required output fields
     if (!output || !output.greeting || !output.observation || !output.suggestion) {
-      // Log the problematic output for debugging
       console.error('AI model returned invalid insights structure:', output);
       throw new Error("The AI model failed to return valid insights (missing greeting, observation, or suggestion). Please try again.");
     }

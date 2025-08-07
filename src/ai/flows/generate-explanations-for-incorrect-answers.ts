@@ -48,21 +48,14 @@ Generate an explanation that does the following, in this order:
 
 **Tone:** Be encouraging, clear, and educational. Avoid jargon where possible, or explain it if necessary. The output should be just the text of the explanation itself.`;
 
-const prompt15Flash = ai.definePrompt({
-  name: 'generateExplanationsPrompt15Flash',
-  model: 'googleai/gemini-1.5-flash',
+const prompt = ai.definePrompt({
+  name: 'generateExplanationsPrompt',
+  model: 'googleai/gemini-2.0-flash-preview',
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
   prompt: promptText,
 });
 
-const prompt15Pro = ai.definePrompt({
-  name: 'generateExplanationsPrompt15Pro',
-  model: 'googleai/gemini-1.5-pro',
-  input: {schema: GenerateExplanationsInputSchema},
-  output: {schema: GenerateExplanationsOutputSchema},
-  prompt: promptText,
-});
 
 const generateExplanationsFlow = ai.defineFlow(
   {
@@ -73,32 +66,15 @@ const generateExplanationsFlow = ai.defineFlow(
   async input => {
     let output;
     try {
-        const result = await prompt15Flash(input);
+        const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        if ((error as any).message && ((error as any).message.includes('503') || (error as any).message.includes('overloaded') || (error as any).message.includes('429'))) {
-            // Fallback to gemini-1.5-pro if 1.5-flash is overloaded or rate limited
-            console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro.');
-            try {
-              const result = await prompt15Pro(input);
-              output = result.output;
-            } catch (proError: any) {
-              console.error('Gemini 1.5 Pro fallback also failed:', proError);
-              throw proError;
-            }
-        } else {
-            // Re-throw other errors after logging
-            console.error('Error calling Gemini 1.5 Flash for explanation:', error);
-            throw error;
-        }
+        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        throw new Error(`Failed to generate explanations: ${error.message}`);
     }
     
-    if (!output) {
+    if (!output || !output.explanation || output.explanation.trim() === '') {
       throw new Error("The AI model failed to return a valid explanation. Please try again.");
-    }
-    // Add check for empty explanation
-    if (!output.explanation || output.explanation.trim().length === 0) {
-        throw new Error("The AI model returned an empty explanation. Please try again.");
     }
     return output;
   }

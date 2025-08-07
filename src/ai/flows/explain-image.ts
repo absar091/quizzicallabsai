@@ -50,17 +50,9 @@ const promptText = `You are an expert AI tutor and subject matter specialist. Yo
     *   Ensure your explanation is factually correct and easy to understand.
 4.  **Final Output:** Your response must be only the detailed explanation text, formatted for the JSON output.`;
 
-const prompt15Flash = ai.definePrompt({
-    name: 'explainImagePrompt15Flash',
-    model: 'googleai/gemini-1.5-flash',
-    prompt: promptText,
-    input: { schema: ExplainImageInputSchema },
-    output: { schema: ExplainImageOutputSchema },
-});
-
-const prompt15Pro = ai.definePrompt({
-    name: 'explainImagePrompt15Pro',
-    model: 'googleai/gemini-1.5-pro',
+const prompt = ai.definePrompt({
+    name: 'explainImagePrompt',
+    model: 'googleai/gemini-2.0-flash-preview',
     prompt: promptText,
     input: { schema: ExplainImageInputSchema },
     output: { schema: ExplainImageOutputSchema },
@@ -75,27 +67,13 @@ const explainImageFlow = ai.defineFlow(
   async (input) => {
     let output;
     try {
-      const result = await prompt15Flash(input);
+      const result = await prompt(input);
       output = result.output;
     } catch (error: any) {
-      if (error.message && (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('429'))) {
-        console.log('Gemini 1.5 Flash unavailable, falling back to Gemini 1.5 Pro for image explanation.');
-        try {
-          const result = await prompt15Pro(input);
-          output = result.output;
-        } catch (proError: any) {
-          // If Pro also fails, log and re-throw
-          console.error('Gemini 1.5 Pro fallback also failed:', proError);
-          throw proError; // Re-throw the Pro model error
-        }
-      } else {
-        // Re-throw other errors
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
-        throw error; // Re-throw the original error
-      }
+      console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+      throw new Error(`Failed to generate explanation: ${error.message}`);
     }
 
-    // Add more specific validation after successful parsing
     if (!output || !output.explanation || output.explanation.trim() === '') {
       throw new Error("The AI model failed to return a valid explanation. Please try again.");
     }
