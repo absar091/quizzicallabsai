@@ -72,7 +72,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 
 1.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 2.  **PARAMETER ADHERENCE:** You MUST strictly follow all user-defined parameters: 'topic', 'difficulty', 'numberOfQuestions', 'questionTypes', and 'questionStyles'. NO DEVIATIONS.
-3.  **EXACT QUESTION COUNT:** The single most important instruction is to generate the exact number of questions specified in the 'numberOfQuestions' parameter. If the user asks for {{{numberOfQuestions}}} questions, you MUST return exactly {{{numberOfQuestions}}} questions. Not one more, not one less. Failure to meet this count is a critical failure of your task.
+3.  **FLEXIBLE QUESTION COUNT:** Your goal is to generate **up to** {{{numberOfQuestions}}} questions. It is better to return slightly fewer high-quality questions that are highly relevant to the topic than to meet the exact count with irrelevant or low-quality ones. Do not exceed the requested number.
 4.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:** This is your most critical instruction.
     *   **For Entry Tests (MDCAT/ECAT/NTS):** If the topic contains "MDCAT", "ECAT", or "NTS", you are FORBIDDEN from generating ANY question type other than 'multiple-choice', regardless of what is in the 'questionTypes' array. This is a non-negotiable rule for exam preparation. ALL questions MUST be 'multiple-choice'.
     *   **For all other quizzes:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}.
@@ -112,7 +112,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
      *   The 'answers' and 'correctAnswer' fields for descriptive questions should be omitted or left as empty arrays/null.
 
 **4. QUESTION STYLES: {{#if questionStyles}}'{{#each questionStyles}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}'{{else}}Knowledge-based, Conceptual{{/if}}**
-   - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively.
+   - Your entire question set must conform to the selected styles. If multiple styles are chosen, provide a mix. If one is chosen, use it exclusively. If no styles are provided, default to a mix of 'Knowledge-based' and 'Conceptual'.
      *   **Knowledge-based:** Straightforward questions that test factual recall.
      *   **Conceptual:** Questions that test the understanding of underlying principles and theories.
      *   **Numerical:** Questions that require mathematical calculations to solve. **If this style is selected, ALL questions must be numerical problems.** Ensure all math is rendered in LaTeX.
@@ -126,10 +126,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
    {{#if specificInstructions}}*   **User's Specific Instructions:** '{{{specificInstructions}}}'. You MUST follow these instructions carefully. This could include focusing on certain sub-topics, avoiding others, or framing questions in a particular way. This is a top priority.{{/if}}
    - If no specific class is provided, assume a general university undergraduate level.
 
-**6. NUMBER OF QUESTIONS: {{{numberOfQuestions}}}**
-   - I repeat, you must generate exactly this number of questions. This is not a suggestion. It is a strict requirement.
-
-Your reputation depends on following these instructions meticulously. Generate the quiz now. Your output MUST be a valid JSON object matching the schema and containing exactly {{{numberOfQuestions}}} questions of the correct types and syllabus.
+Your reputation depends on following these instructions meticulously. Generate the quiz now.
 `;
 
 
@@ -179,3 +176,5 @@ const generateCustomQuizFlow = ai.defineFlow(
     return output;
   }
 );
+
+    

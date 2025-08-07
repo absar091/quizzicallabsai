@@ -39,10 +39,10 @@ const promptText = `You are an expert educator specializing in creating effectiv
 **CRITICAL DIRECTIVES:**
 1.  **ACCURACY IS PARAMOUNT:** All terms and definitions must be factually correct and directly relevant to the topic.
 2.  **CONCISENESS:** Keep the text for both the term and the definition brief and to the point. Flashcards should be easily digestible.
-3.  **EXACT COUNT:** You MUST generate exactly {{{count}}} flashcards.
+3.  **EXACT COUNT:** You MUST generate exactly {{{count}}} flashcards. This is a strict requirement.
 4.  **TERM (FRONT):** The 'term' should be a single key concept, a person, a date, or a short question.
 5.  **DEFINITION (BACK):** The 'definition' should be a clear, simple explanation or answer to the term.
-6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or commentary.
+6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text or commentary. The JSON must be perfectly parsable and valid.
 
 ---
 
@@ -69,9 +69,11 @@ const generateFlashcardsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await prompt(input);
 
-    if (!output) {
+    if (!output || !output.flashcards) {
       throw new Error("The AI model failed to return valid flashcards. Please try again.");
     }
     return output;
   }
 );
+
+    
