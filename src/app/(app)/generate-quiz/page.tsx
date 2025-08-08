@@ -717,14 +717,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                           >
                               {(currentQ.answers || []).map((answer, index) => {
                               return (
-                                  <FormItem key={index} className="rounded-xl border-2 border-transparent has-[:checked]:border-primary has-[:checked]:bg-primary/10 transition-all">
-                                      <FormControl>
-                                          <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only" />
-                                      </FormControl>
-                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-xl bg-card shadow-sm hover:bg-secondary cursor-pointer min-h-[60px] text-base transition-all">
+                                  <div key={index}>
+                                      <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-xl bg-card shadow-sm hover:bg-secondary cursor-pointer min-h-[60px] text-base transition-all border-2 border-transparent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10">
                                           <div className="flex-1 text-left"><RichContentRenderer content={answer} /></div>
                                       </Label>
-                                  </FormItem>
+                                  </div>
                               )
                               })}
                           </RadioGroup>
@@ -1117,3 +1115,5 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         </div>
     )
 }
+
+    
