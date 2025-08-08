@@ -61,7 +61,7 @@ Generate the flashcards now.`;
 
 const prompt = ai.definePrompt({
     name: "generateFlashcardsPrompt",
-    model: 'googleai/gemini-2.0-flash-preview',
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
@@ -79,7 +79,7 @@ const generateFlashcardsFlow = ai.defineFlow(
       const result = await prompt(input);
       output = result.output;
     } catch (error: any) {
-        console.error('Error calling Gemini 2.0 Flash for flashcard generation:', error);
+        console.error('Error calling Gemini 1.5 Flash for flashcard generation:', error);
         throw new Error(`Failed to generate flashcards: ${error.message || 'Unknown error'}`);
     }
 

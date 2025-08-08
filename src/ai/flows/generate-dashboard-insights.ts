@@ -98,7 +98,7 @@ Now, generate the output for the provided student data.`;
 
 const prompt = ai.definePrompt({
     name: 'generateDashboardInsightsPrompt',
-    model: 'googleai/gemini-2.0-flash-preview',
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
@@ -123,7 +123,7 @@ const generateDashboardInsightsFlow = ai.defineFlow(
         const result = await prompt(recentHistory);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate dashboard insights: ${error.message}`);
     }
 

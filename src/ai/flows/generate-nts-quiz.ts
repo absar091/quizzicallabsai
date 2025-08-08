@@ -88,7 +88,7 @@ Generate the quiz now.
 
 const prompt = ai.definePrompt({
   name: 'generateNtsQuizPrompt',
-  model: 'googleai/gemini-2.0-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: promptText,
@@ -107,7 +107,7 @@ const generateNtsQuizFlow = ai.defineFlow(
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate NTS quiz: ${error.message}`);
     }
     

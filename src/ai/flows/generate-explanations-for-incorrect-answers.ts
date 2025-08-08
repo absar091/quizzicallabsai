@@ -50,7 +50,7 @@ Generate an explanation that does the following, in this order:
 
 const prompt = ai.definePrompt({
   name: 'generateExplanationsPrompt',
-  model: 'googleai/gemini-2.0-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
   prompt: promptText,
@@ -69,7 +69,7 @@ const generateExplanationsFlow = ai.defineFlow(
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate explanations: ${error.message}`);
     }
     

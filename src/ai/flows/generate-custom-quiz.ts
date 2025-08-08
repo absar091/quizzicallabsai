@@ -140,7 +140,7 @@ Your reputation depends on following these instructions meticulously. Generate t
 
 const prompt = ai.definePrompt({
     name: "generateCustomQuizPrompt",
-    model: 'googleai/gemini-2.0-flash-preview',
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateCustomQuizInputSchema },
     output: { schema: GenerateCustomQuizOutputSchema },
@@ -159,7 +159,7 @@ const generateCustomQuizFlow = ai.defineFlow(
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate custom quiz: ${error.message}`);
     }
     

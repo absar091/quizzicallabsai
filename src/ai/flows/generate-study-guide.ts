@@ -72,7 +72,7 @@ const promptText = `You are an expert educator and content creator. Your task is
 
 const prompt = ai.definePrompt({
   name: 'generateStudyGuidePrompt',
-  model: 'googleai/gemini-2.0-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateStudyGuideInputSchema},
   output: {schema: GenerateStudyGuideOutputSchema},
   prompt: promptText,
@@ -91,7 +91,7 @@ const generateStudyGuideFlow = ai.defineFlow(
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate study guide: ${error.message}`);
     }
     
