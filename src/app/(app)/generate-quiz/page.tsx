@@ -203,12 +203,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
 
   useEffect(() => {
-    // This effect handles the one-time initialization from props or IndexedDB
     const initializeQuiz = async () => {
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
-        // Scenario 1: Mock test results are being displayed
         const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
         if (initialQuiz && initialFormValues && mockTestAnswers) {
             setQuiz(initialQuiz);
@@ -219,7 +217,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             return;
         }
 
-        // Scenario 2: A pre-generated quiz is starting (e.g., mock test section, chapter test)
         if (initialQuiz && initialFormValues) {
             setQuiz(initialQuiz);
             setComprehensionText(initialComprehensionText || null);
@@ -230,7 +227,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             return;
         }
 
-        // Scenario 3: Resuming a quiz from local storage
+        // If this is a standard custom quiz page load (not an exam),
+        // we should NOT resume state. This ensures a fresh form.
+        if (!initialQuiz && !initialFormValues) {
+            setQuiz(null);
+            setShowResults(false);
+            return;
+        }
+
         if (user) {
             const savedState = await getQuizState(user.uid);
             if (savedState && savedState.quiz && savedState.formValues) {
@@ -245,7 +249,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             }
         }
         
-        // Scenario 4: No quiz state, show the form
         setQuiz(null);
         setShowResults(false);
     };
@@ -268,7 +271,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   useEffect(() => {
     async function persistState() {
-        // Only persist if there's a quiz, not showing results, and it's not a pre-defined mock test
         if (user && quiz && !showResults && !initialQuiz) {
             await saveQuizState(user.uid, {
                 quiz,
@@ -717,12 +719,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                           >
                               {(currentQ.answers || []).map((answer, index) => {
                               return (
-                                  <div key={index}>
-                                      <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="sr-only peer" />
-                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex items-center p-4 rounded-xl bg-card shadow-sm hover:bg-secondary cursor-pointer min-h-[60px] text-base transition-all border-2 border-transparent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10">
-                                          <div className="flex-1 text-left"><RichContentRenderer content={answer} /></div>
+                                  <FormItem key={index} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
+                                      <FormControl>
+                                        <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} />
+                                      </FormControl>
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer">
+                                          <RichContentRenderer content={answer} />
                                       </Label>
-                                  </div>
+                                  </FormItem>
                               )
                               })}
                           </RadioGroup>
@@ -1117,3 +1121,5 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
 }
 
     
+
+  
