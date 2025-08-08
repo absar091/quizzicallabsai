@@ -50,7 +50,7 @@ You have been provided with a list of Frequently Asked Questions (FAQs) that con
 
 const prompt = ai.definePrompt({
     name: 'generateHelpBotResponsePrompt',
-    model: 'googleai/gemini-2.0-flash-preview',
+    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateHelpBotResponseInputSchema },
     output: { schema: GenerateHelpBotResponseOutputSchema },

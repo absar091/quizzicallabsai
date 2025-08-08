@@ -43,7 +43,7 @@ const promptText = `You are an AI assistant that is an expert at explaining comp
 
 const prompt = ai.definePrompt({
   name: 'generateSimpleExplanationPrompt',
-  model: 'googleai/gemini-2.0-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateSimpleExplanationInputSchema},
   output: {schema: GenerateSimpleExplanationOutputSchema},
   prompt: promptText,
@@ -62,7 +62,7 @@ const generateSimpleExplanationFlow = ai.defineFlow(
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
         throw new Error(`Failed to generate simple explanation: ${error.message}`);
     }
 
