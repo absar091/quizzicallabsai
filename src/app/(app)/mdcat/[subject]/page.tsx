@@ -64,7 +64,7 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
                     <h4 className="text-base font-semibold mb-4 text-muted-foreground">Subtopics</h4>
                     <div className="space-y-3">
                        {chapter.subtopics.map((subtopic) => (
-                         <Link href={generateTestLink(`${chapter.name} - ${subtopic.name}: ${subtopic.learningObjectives.map(lo => lo.text).join(', ')}`, 45)} key={subtopic.id}>
+                         <Link href={generateTestLink(`${chapter.name} - ${subtopic.name}: ${subtopic.learningObjectives.map(lo => lo.text).join(', ')}`, 55)} key={subtopic.id}>
                            <div className="flex items-center justify-between p-4 rounded-xl border bg-background hover:bg-secondary cursor-pointer transition-colors">
                                 <span className="font-medium text-foreground">{subtopic.name}</span>
                                 <ArrowRight className="h-5 w-5 text-muted-foreground"/>

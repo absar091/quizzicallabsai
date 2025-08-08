@@ -33,17 +33,8 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
   }
 
   const getNumQuestionsForTopic = () => {
-    switch (subject.slug) {
-        case 'physics':
-        case 'mathematics':
-            return 30;
-        case 'english':
-        case 'chemistry':
-        case 'computer-science':
-            return 10;
-        default:
-            return 20;
-    }
+    // Standardize to a higher number for more thorough practice
+    return 55;
   }
 
   const Icon = subject.icon;
