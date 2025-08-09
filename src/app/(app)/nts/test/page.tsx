@@ -17,14 +17,14 @@ function NtsTestFlow() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const category = searchParams.get('category');
-    const subject = searchParams.get('subject');
-    const chapter = searchParams.get('chapter');
-    const numQuestions = 25; // Subject portion has 25 MCQs
-
     useEffect(() => {
         const generateTest = async () => {
-             if (!category || !subject || !chapter) {
+            const category = searchParams.get('category');
+            const subject = searchParams.get('subject');
+            const chapter = searchParams.get('chapter');
+            const numQuestions = 25; // Subject portion has 25 MCQs
+
+            if (!category || !subject || !chapter) {
                 setError("Invalid test parameters. Please go back and select a category and topic.");
                 setIsLoading(false);
                 return;
@@ -68,6 +68,7 @@ function NtsTestFlow() {
             }
         };
         generateTest();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Empty dependency array ensures this runs only once on mount
 
     if (isLoading) {
@@ -83,7 +84,7 @@ function NtsTestFlow() {
                         <Sparkles className="h-8 w-8 text-accent animate-pulse" />
                     </motion.div>
                 </div>
-                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your NTS test for "{chapter}"...</h2>
+                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your NTS test for "{searchParams.get('chapter')}"...</h2>
                 <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
             </div>
         )
@@ -104,6 +105,11 @@ function NtsTestFlow() {
     }
 
     if (quiz) {
+        const category = searchParams.get('category') || "NTS";
+        const subject = searchParams.get('subject') || "";
+        const chapter = searchParams.get('chapter') || "";
+        const numQuestions = 25;
+
         return <GenerateQuizPage 
             initialQuiz={quiz} 
             initialFormValues={{

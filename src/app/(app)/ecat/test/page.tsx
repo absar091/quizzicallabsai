@@ -19,15 +19,15 @@ function EcatTestFlow() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const subject = searchParams.get('subject');
-    const topic = searchParams.get('topic');
-    const numQuestions = searchParams.get('numQuestions');
-    const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = ['Past Paper Style', 'Conceptual', 'Numerical'];
-    const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
-
     useEffect(() => {
         const generateTest = async () => {
+            const subject = searchParams.get('subject');
+            const topic = searchParams.get('topic');
+            const numQuestions = searchParams.get('numQuestions');
+            const difficulty = searchParams.get('difficulty') || 'hard';
+            const questionStyles = ['Past Paper Style', 'Conceptual', 'Numerical'];
+            const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
+
             if (!topic) {
                 setError("No topic specified for the test.");
                 setIsLoading(false);
@@ -40,10 +40,10 @@ function EcatTestFlow() {
                 const result = await generateCustomQuiz({
                     topic: `ECAT ${subject} - ${topic}`,
                     difficulty: difficulty as any,
-                    numberOfQuestions: Number(numQuestions) || 20,
+                    numberOfQuestions: Number(numQuestions) || 55,
                     questionTypes: ["Multiple Choice"],
                     questionStyles: questionStyles,
-                    timeLimit: Number(numQuestions) || 20,
+                    timeLimit: Number(numQuestions) || 55,
                     userAge: null,
                     userClass: "ECAT Student",
                     specificInstructions: specificInstructions
@@ -67,6 +67,7 @@ function EcatTestFlow() {
         };
         
         generateTest();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Empty dependency array ensures this runs only once on mount
     
 
@@ -83,7 +84,7 @@ function EcatTestFlow() {
                         <Sparkles className="h-8 w-8 text-accent animate-pulse" />
                     </motion.div>
                 </div>
-                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your ECAT test for "{topic}"...</h2>
+                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your ECAT test for "{searchParams.get('topic')}"...</h2>
                 <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
             </div>
         )
@@ -104,6 +105,11 @@ function EcatTestFlow() {
     }
 
     if (quiz) {
+        const topic = searchParams.get('topic');
+        const numQuestions = searchParams.get('numQuestions');
+        const difficulty = searchParams.get('difficulty') || 'hard';
+        const questionStyles = ['Past Paper Style', 'Conceptual', 'Numerical'];
+        const specificInstructions = searchParams.get('specificInstructions') || `Generate an ECAT-level test for the topic: ${topic}`;
         return <GenerateQuizPage 
             initialQuiz={quiz} 
             initialComprehensionText={comprehensionText || undefined}
@@ -113,7 +119,7 @@ function EcatTestFlow() {
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles,
-                 timeLimit: Number(numQuestions) || 20,
+                 timeLimit: Number(numQuestions) || 55,
                  specificInstructions: specificInstructions
             }}
          />
