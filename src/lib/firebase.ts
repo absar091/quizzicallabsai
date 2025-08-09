@@ -4,9 +4,7 @@ import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
-import type { Analytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -36,12 +34,10 @@ export const firestore = getFirestore(app);
 // Initialize Analytics and get a reference to the service, only if supported
 let analytics: Analytics | null = null;
 if (typeof window !== 'undefined') {
-    import("firebase/analytics").then(({ getAnalytics, isSupported }) => {
-        isSupported().then((supported) => {
-            if (supported) {
-                analytics = getAnalytics(app);
-            }
-        });
+    isSupported().then((supported) => {
+        if (supported) {
+            analytics = getAnalytics(app);
+        }
     });
 }
 
