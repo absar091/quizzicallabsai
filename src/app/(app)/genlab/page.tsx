@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp, FileText } from '@phosphor-icons/react';
+import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp, FileText, ClipboardText } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 
 const tools = [
@@ -37,6 +37,12 @@ const tools = [
     title: 'Flashcards',
     description: 'Generate a deck of flashcards for any topic to supercharge your study sessions.',
     href: '/flashcards',
+  },
+  {
+    icon: ClipboardText,
+    title: 'Exam Paper Generator',
+    description: 'A powerful tool for educators to create and format professional exam papers.',
+    href: '/generate-paper',
   },
 ];
 
