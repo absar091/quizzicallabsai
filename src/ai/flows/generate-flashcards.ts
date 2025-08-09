@@ -45,7 +45,7 @@ const promptText = `You are an expert educator specializing in creating effectiv
 
 **CRITICAL DIRECTIVES:**
 1.  **ACCURACY IS PARAMOUNT:** All terms and definitions must be factually correct and directly relevant to the topic.
-2.  **EXACT COUNT:** You MUST generate **exactly** {{{count}}} flashcards. Do not generate more or fewer. This is a strict requirement.
+2.  **FLEXIBLE COUNT:** Your goal is to generate **up to** {{{count}}} flashcards. It is better to return slightly fewer high-quality cards than to meet the exact count with irrelevant or low-quality ones. Do not exceed the requested number.
 3.  **CONCISENESS:** Keep the text for both the term and the definition brief and to the point. Flashcards should be easily digestible.
 4.  **TERM (FRONT):** The 'term' should be a single key concept, a person, a date, or a short question.
 5.  **DEFINITION (BACK):** The 'definition' should be a clear, simple explanation or answer to the term.
@@ -53,7 +53,7 @@ const promptText = `You are an expert educator specializing in creating effectiv
 
 ---
 
-**TASK: Generate exactly {{{count}}} flashcards for the following topic:**
+**TASK: Generate up to {{{count}}} flashcards for the following topic:**
 
 *   **Topic:** '{{{topic}}}'
 

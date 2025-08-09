@@ -62,8 +62,10 @@ export default function EcatMockTestPage() {
     setGeneratedQuiz(null);
     const section = dynamicMockTestConfig[sectionIndex];
     
+    const topicForAI = `ECAT Mock Test - ${section.subject}`;
+
     const quizParams: GenerateCustomQuizInput = {
-      topic: `ECAT Mock Test - ${section.subject}`,
+      topic: topicForAI,
       difficulty: 'hard', // ECAT is generally 'hard'
       numberOfQuestions: section.numQuestions,
       questionTypes: ['Multiple Choice'],
@@ -71,7 +73,7 @@ export default function EcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'ECAT Student',
-      specificInstructions: `Generate questions strictly based on the ECAT syllabus for ${section.subject}. Focus on a mix of conceptual and numerical problems typical for UET entrance exams.`
+      specificInstructions: `Generate questions for the ${section.subject} section of a full ECAT mock exam. Ensure questions are strictly based on the official ECAT syllabus and cover a wide range of topics.`
     };
 
     try {
