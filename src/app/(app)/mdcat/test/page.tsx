@@ -18,56 +18,55 @@ function MdcatTestFlow() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const generateTest = useCallback(async () => {
+        const subject = searchParams.get('subject');
+        const topic = searchParams.get('topic');
+        const numQuestions = searchParams.get('numQuestions');
+        const difficulty = searchParams.get('difficulty') || 'hard';
+        const questionStyles = ['Past Paper Style', 'Conceptual'];
+
+        if (!topic || !subject) {
+            setError("No topic specified for the test.");
+            setIsLoading(false);
+            return;
+        }
+
+        const fullTopicForAI = `MDCAT ${subject} - ${topic}`;
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const result = await generateCustomQuiz({
+                topic: fullTopicForAI,
+                difficulty: difficulty as any,
+                numberOfQuestions: Number(numQuestions) || 55,
+                questionTypes: ["Multiple Choice"],
+                questionStyles: questionStyles,
+                timeLimit: Number(numQuestions) || 55,
+                userAge: null,
+                userClass: "MDCAT Student",
+                specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
+            });
+            if (!result.quiz || result.quiz.length === 0) {
+                throw new Error("The AI returned an empty quiz. Please try again.");
+            }
+            setQuiz(result.quiz);
+        } catch (err: any) {
+            let errorMessage = "An unexpected error occurred while generating the test.";
+             if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
+                errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+            } else if (err?.message) {
+                errorMessage = err.message;
+            }
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchParams]);
+
     useEffect(() => {
-        const generateTest = async () => {
-            const subject = searchParams.get('subject');
-            const topic = searchParams.get('topic');
-            const numQuestions = searchParams.get('numQuestions');
-            const difficulty = searchParams.get('difficulty') || 'hard';
-            const questionStyles = ['Past Paper Style', 'Conceptual'];
-
-            if (!topic || !subject) {
-                setError("No topic specified for the test.");
-                setIsLoading(false);
-                return;
-            }
-
-            const fullTopicForAI = `MDCAT ${subject} - ${topic}`;
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                const result = await generateCustomQuiz({
-                    topic: fullTopicForAI,
-                    difficulty: difficulty as any,
-                    numberOfQuestions: Number(numQuestions) || 55,
-                    questionTypes: ["Multiple Choice"],
-                    questionStyles: questionStyles,
-                    timeLimit: Number(numQuestions) || 55,
-                    userAge: null,
-                    userClass: "MDCAT Student",
-                    specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
-                });
-                if (!result.quiz || result.quiz.length === 0) {
-                    throw new Error("The AI returned an empty quiz. Please try again.");
-                }
-                setQuiz(result.quiz);
-            } catch (err: any) {
-                let errorMessage = "An unexpected error occurred while generating the test.";
-                 if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
-                    errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-                } else if (err?.message) {
-                    errorMessage = err.message;
-                }
-                setError(errorMessage);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         generateTest();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, [generateTest]);
 
     if (isLoading) {
         return (
