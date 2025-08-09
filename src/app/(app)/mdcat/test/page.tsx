@@ -18,14 +18,14 @@ function MdcatTestFlow() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const subject = searchParams.get('subject');
-    const topic = searchParams.get('topic');
-    const numQuestions = searchParams.get('numQuestions');
-    const difficulty = searchParams.get('difficulty') || 'hard';
-    const questionStyles = ['Past Paper Style', 'Conceptual'];
-
     useEffect(() => {
         const generateTest = async () => {
+            const subject = searchParams.get('subject');
+            const topic = searchParams.get('topic');
+            const numQuestions = searchParams.get('numQuestions');
+            const difficulty = searchParams.get('difficulty') || 'hard';
+            const questionStyles = ['Past Paper Style', 'Conceptual'];
+
             if (!topic || !subject) {
                 setError("No topic specified for the test.");
                 setIsLoading(false);
@@ -40,10 +40,10 @@ function MdcatTestFlow() {
                 const result = await generateCustomQuiz({
                     topic: fullTopicForAI,
                     difficulty: difficulty as any,
-                    numberOfQuestions: Number(numQuestions) || 20,
+                    numberOfQuestions: Number(numQuestions) || 55,
                     questionTypes: ["Multiple Choice"],
                     questionStyles: questionStyles,
-                    timeLimit: Number(numQuestions) || 20,
+                    timeLimit: Number(numQuestions) || 55,
                     userAge: null,
                     userClass: "MDCAT Student",
                     specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
@@ -66,6 +66,7 @@ function MdcatTestFlow() {
         };
 
         generateTest();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Empty dependency array ensures this runs only once on mount
 
     if (isLoading) {
@@ -81,7 +82,7 @@ function MdcatTestFlow() {
                         <Sparkles className="h-8 w-8 text-accent animate-pulse" />
                     </motion.div>
                 </div>
-                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your MDCAT test for "{topic}"...</h2>
+                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your MDCAT test for "{searchParams.get('topic')}"...</h2>
                 <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
             </div>
         )
@@ -102,6 +103,10 @@ function MdcatTestFlow() {
     }
 
     if (quiz) {
+        const topic = searchParams.get('topic');
+        const numQuestions = searchParams.get('numQuestions');
+        const difficulty = searchParams.get('difficulty') || 'hard';
+        const questionStyles = ['Past Paper Style', 'Conceptual'];
         return <GenerateQuizPage 
             initialQuiz={quiz} 
             initialFormValues={{
@@ -110,7 +115,7 @@ function MdcatTestFlow() {
                  numberOfQuestions: quiz.length,
                  questionTypes: ["Multiple Choice"],
                  questionStyles: questionStyles,
-                 timeLimit: Number(numQuestions) || 20,
+                 timeLimit: Number(numQuestions) || 55,
                  specificInstructions: ""
             }}
          />
