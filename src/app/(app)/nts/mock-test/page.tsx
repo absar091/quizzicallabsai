@@ -58,15 +58,11 @@ export default function NtsMockTestPage() {
     setError(null);
     setGeneratedQuiz(null);
     const section = MOCK_TEST_SECTIONS[sectionIndex];
-    let topicForAI = section.name;
+    let topicForAI = `NTS Mock Test - ${section.name}`;
 
     if (section.name === 'Subject Portion') {
       const categoryData = ntsSyllabus[selectedCategory];
-      const subjectTopics = categoryData.subjects.map(s => {
-          const chapterNames = s.chapters.map(c => c.name).join(', ');
-          return `${s.name} (Chapters: ${chapterNames})`;
-      }).join('; ');
-      topicForAI = `NTS Subject Portion for ${categoryData.name} covering: ${subjectTopics}`;
+      topicForAI = `NTS Subject Portion for ${categoryData.name}`;
     }
 
     try {

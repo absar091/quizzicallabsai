@@ -47,14 +47,11 @@ export default function MdcatMockTestPage() {
     setGeneratedQuiz(null);
     const section = MOCK_TEST_CONFIG[sectionIndex];
     
-    // Generate a detailed topic from the syllabus to guide the AI
-    const subjectData = mdcatSyllabus[section.slug];
-    const detailedTopic = subjectData
-      ? `MDCAT ${section.subject} covering these chapters: ${subjectData.chapters.map(c => c.name).join(', ')}`
-      : `MDCAT Mock Test - ${section.subject}`;
+    // Simplified topic for better AI reliability
+    const topicForAI = `MDCAT Mock Test - ${section.subject}`;
 
     const quizParams: GenerateCustomQuizInput = {
-      topic: detailedTopic,
+      topic: topicForAI,
       difficulty: 'master',
       numberOfQuestions: section.numQuestions,
       questionTypes: ['Multiple Choice'],
@@ -62,7 +59,7 @@ export default function MdcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'MDCAT Student',
-      specificInstructions: `Generate questions strictly based on the official MDCAT syllabus for ${section.subject}. Ensure a good mix of questions from all chapters.`
+      specificInstructions: `Generate questions for the ${section.subject} section of a full MDCAT mock exam. Ensure questions are strictly based on the official MDCAT syllabus and cover a wide range of chapters within that subject.`
     };
 
     try {
