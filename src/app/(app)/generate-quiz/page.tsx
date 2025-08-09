@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -7,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell } from "lucide-react";
+import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell, Loader2 } from "lucide-react";
 import RichContentRenderer from '@/components/rich-content-renderer';
 
 
@@ -719,11 +718,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                           >
                               {(currentQ.answers || []).map((answer, index) => {
                               return (
-                                  <FormItem key={index} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
+                                  <FormItem key={index} className="flex flex-row items-center space-x-3 space-y-0">
                                       <FormControl>
-                                        <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} />
+                                        <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="hidden peer" />
                                       </FormControl>
-                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer">
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all">
                                           <RichContentRenderer content={answer} />
                                       </Label>
                                   </FormItem>
@@ -1123,7 +1122,3 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
         </div>
     )
 }
-
-    
-
-  
