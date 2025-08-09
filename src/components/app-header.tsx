@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bell, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { UserNav } from "./user-nav";
 
 interface AppHeaderProps {
   onSidebarToggle?: () => void;
@@ -57,6 +58,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
                   <Bell className="h-5 w-5"/>
                   <span className="sr-only">Notifications</span>
               </Button>
+              {user && <UserNav />}
            </div>
       </div>
     </>
