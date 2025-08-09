@@ -45,19 +45,20 @@ const promptText = `You are an expert educator specializing in creating effectiv
 
 **CRITICAL DIRECTIVES:**
 1.  **ACCURACY IS PARAMOUNT:** All terms and definitions must be factually correct and directly relevant to the topic.
-2.  **CONCISENESS:** Keep the text for both the term and the definition brief and to the point. Flashcards should be easily digestible.
-3.  **FLEXIBLE COUNT:** Your goal is to generate **up to** {{{count}}} flashcards. It is better to return slightly fewer high-quality cards than to meet the exact count with irrelevant ones. Do not exceed the requested number.
+2.  **EXACT COUNT:** You MUST generate **exactly** {{{count}}} flashcards. Do not generate more or fewer. This is a strict requirement.
+3.  **CONCISENESS:** Keep the text for both the term and the definition brief and to the point. Flashcards should be easily digestible.
 4.  **TERM (FRONT):** The 'term' should be a single key concept, a person, a date, or a short question.
 5.  **DEFINITION (BACK):** The 'definition' should be a clear, simple explanation or answer to the term.
 6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text or commentary. The JSON must be perfectly parsable and valid.
 
 ---
 
-**TASK: Generate up to {{{count}}} flashcards for the following topic:**
+**TASK: Generate exactly {{{count}}} flashcards for the following topic:**
 
 *   **Topic:** '{{{topic}}}'
 
-Generate the flashcards now.`;
+Generate the flashcards now.
+`;
 
 const prompt = ai.definePrompt({
     name: "generateFlashcardsPrompt",
@@ -84,12 +85,13 @@ const generateFlashcardsFlow = ai.defineFlow(
     }
 
     if (!output || !output.flashcards || output.flashcards.length === 0) {
-      throw new Error("The AI model failed to return any flashcards. Please try again.");
+      throw new Error("The AI model failed to return any flashcards. Please try again with a different topic.");
     }
 
+    // Additional validation to ensure data integrity
     for (const card of output.flashcards) {
         if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
-            console.warn("Generated flashcard with empty term or definition:", card);
+             throw new Error("The AI model returned incomplete flashcard data. Please try again.");
         }
     }
 
