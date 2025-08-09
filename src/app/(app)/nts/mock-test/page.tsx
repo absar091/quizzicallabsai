@@ -23,14 +23,14 @@ import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 
 const MOCK_TEST_SECTIONS = [
-  { name: 'Verbal Reasoning', numQuestions: 20 },
-  { name: 'Quantitative Reasoning', numQuestions: 35 },
-  { name: 'Analytical Reasoning', numQuestions: 20 },
-  { name: 'Subject Portion', numQuestions: 25 },
+  { name: 'Verbal Reasoning', numQuestions: 20, time: 25 },
+  { name: 'Quantitative Reasoning', numQuestions: 20, time: 25 },
+  { name: 'Analytical Reasoning', numQuestions: 20, time: 25 },
+  { name: 'Subject Portion', numQuestions: 30, time: 45 },
 ];
 
 const TOTAL_QUESTIONS = MOCK_TEST_SECTIONS.reduce((acc, curr) => acc + curr.numQuestions, 0);
-const TOTAL_TIME = 120; // 2 hours
+const TOTAL_TIME = MOCK_TEST_SECTIONS.reduce((acc, curr) => acc + curr.time, 0);
 
 export default function NtsMockTestPage() {
   const { user } = useAuth();
@@ -204,7 +204,7 @@ export default function NtsMockTestPage() {
         numberOfQuestions: section.numQuestions,
         questionTypes: ['Multiple Choice'],
         questionStyles: [],
-        timeLimit: TOTAL_TIME,
+        timeLimit: section.time,
         specificInstructions: ''
     };
 
