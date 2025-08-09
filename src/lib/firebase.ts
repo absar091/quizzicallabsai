@@ -4,17 +4,18 @@ import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
+import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCzRpRNFBAodjKhmmJAMvaBiDNH9-vK1Yg",
-  authDomain: "quizzical-ai.firebaseapp.com",
-  databaseURL: "https://quizzical-ai-default-rtdb.firebaseio.com",
-  projectId: "quizzical-ai",
-  storageBucket: "quizzical-ai.appspot.com",
-  messagingSenderId: "208281807503",
-  appId: "1:208281807503:web:8130ddca90c6068a7f1efa"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -33,12 +34,16 @@ export const firestore = getFirestore(app);
 
 // Initialize Analytics and get a reference to the service, only if supported
 let analytics: Analytics | null = null;
-if (typeof window !== 'undefined') {
-    isSupported().then((supported) => {
-        if (supported) {
+
+async function initializeAnalytics() {
+    if (typeof window !== 'undefined') {
+        const isAnalyticsSupported = await isSupported();
+        if (isAnalyticsSupported) {
             analytics = getAnalytics(app);
         }
-    });
+    }
 }
+
+initializeAnalytics();
 
 export { app, auth, analytics };
