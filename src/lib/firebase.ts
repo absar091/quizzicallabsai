@@ -37,9 +37,13 @@ let analytics: Analytics | null = null;
 
 async function initializeAnalytics() {
     if (typeof window !== 'undefined') {
-        const isAnalyticsSupported = await isSupported();
-        if (isAnalyticsSupported) {
-            analytics = getAnalytics(app);
+        try {
+            const isAnalyticsSupported = await isSupported();
+            if (isAnalyticsSupported) {
+                analytics = getAnalytics(app);
+            }
+        } catch(e) {
+            console.error("Firebase Analytics not supported:", e);
         }
     }
 }

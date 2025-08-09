@@ -17,11 +17,11 @@ import { motion } from 'framer-motion';
 type Quiz = GenerateCustomQuizOutput['quiz'];
 
 const MOCK_TEST_CONFIG = [
-  { subject: 'Biology', numQuestions: 68, time: 68, slug: 'biology' },
-  { subject: 'Chemistry', numQuestions: 54, time: 54, slug: 'chemistry' },
-  { subject: 'Physics', numQuestions: 54, time: 54, slug: 'physics' },
-  { subject: 'English', numQuestions: 18, time: 18, slug: 'english' },
-  { subject: 'Logical Reasoning', numQuestions: 6, time: 6, slug: 'logical-reasoning' },
+  { subject: 'Biology', numQuestions: 81, time: 81, slug: 'biology' },
+  { subject: 'Chemistry', numQuestions: 45, time: 45, slug: 'chemistry' },
+  { subject: 'Physics', numQuestions: 36, time: 36, slug: 'physics' },
+  { subject: 'English', numQuestions: 9, time: 9, slug: 'english' },
+  { subject: 'Logical Reasoning', numQuestions: 9, time: 9, slug: 'logical-reasoning' },
 ];
 
 const TOTAL_QUESTIONS = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.numQuestions, 0);
@@ -47,7 +47,6 @@ export default function MdcatMockTestPage() {
     setGeneratedQuiz(null);
     const section = MOCK_TEST_CONFIG[sectionIndex];
     
-    // Simplified topic for better AI reliability
     const topicForAI = `MDCAT Mock Test - ${section.subject}`;
 
     const quizParams: GenerateCustomQuizInput = {

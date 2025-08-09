@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import GenerateQuizPage, { Quiz } from "../../generate-quiz/page";
 import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
@@ -17,59 +17,59 @@ function NtsTestFlow() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const generateTest = useCallback(async () => {
+        const category = searchParams.get('category');
+        const subject = searchParams.get('subject');
+        const chapter = searchParams.get('chapter');
+        const numQuestions = 25; // Subject portion has 25 MCQs
+
+        if (!category || !subject || !chapter) {
+            setError("Invalid test parameters. Please go back and select a category and topic.");
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // Construct a more detailed topic for the AI
+            const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
+            
+            const result = await generateNtsQuiz({
+                category: category,
+                topic: topicForAI,
+                numberOfQuestions: numQuestions,
+            });
+             if (!result.quiz || result.quiz.length === 0) {
+                throw new Error("The AI returned an empty quiz. Please try again.");
+            }
+            
+            // The output of generateNtsQuiz is slightly different, so we format it for GenerateQuizPage
+            const formattedQuiz = result.quiz.map(q => ({
+                question: q.question,
+                answers: q.answers,
+                correctAnswer: q.correctAnswer,
+                type: 'multiple-choice' as const, // Explicitly set type
+            }));
+
+            setQuiz(formattedQuiz);
+        } catch (err: any) {
+            let errorMessage = "An unexpected error occurred while generating the test.";
+             if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
+                errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+            } else if (err?.message) {
+                errorMessage = err.message;
+            }
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchParams]);
+
     useEffect(() => {
-        const generateTest = async () => {
-            const category = searchParams.get('category');
-            const subject = searchParams.get('subject');
-            const chapter = searchParams.get('chapter');
-            const numQuestions = 25; // Subject portion has 25 MCQs
-
-            if (!category || !subject || !chapter) {
-                setError("Invalid test parameters. Please go back and select a category and topic.");
-                setIsLoading(false);
-                return;
-            }
-
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                // Construct a more detailed topic for the AI
-                const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
-                
-                const result = await generateNtsQuiz({
-                    category: category,
-                    topic: topicForAI,
-                    numberOfQuestions: numQuestions,
-                });
-                 if (!result.quiz || result.quiz.length === 0) {
-                    throw new Error("The AI returned an empty quiz. Please try again.");
-                }
-                
-                // The output of generateNtsQuiz is slightly different, so we format it for GenerateQuizPage
-                const formattedQuiz = result.quiz.map(q => ({
-                    question: q.question,
-                    answers: q.answers,
-                    correctAnswer: q.correctAnswer,
-                    type: 'multiple-choice' as const, // Explicitly set type
-                }));
-
-                setQuiz(formattedQuiz);
-            } catch (err: any) {
-                let errorMessage = "An unexpected error occurred while generating the test.";
-                 if (err?.message?.includes("429") || err?.message?.includes("overloaded")) {
-                    errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-                } else if (err?.message) {
-                    errorMessage = err.message;
-                }
-                setError(errorMessage);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         generateTest();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, [generateTest]);
 
     if (isLoading) {
         return (
