@@ -627,6 +627,17 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     window.scrollTo(0, 0);
   };
   
+    const formatExplanation = (text: string | null) => {
+        if (!text) return null;
+        return text
+            .split(/(\*\*.*?\*\*)/g) // Split by bold markdown
+            .map((part, index) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <strong key={index}>{part.slice(2, -2)}</strong>;
+                }
+                return part;
+            });
+    };
   
   // --- Conditional Rendering ---
 
@@ -827,13 +838,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                                     {explanationState?.explanation && (
                                                         <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
                                                             <AlertTitle className="text-accent-foreground/90 flex items-center gap-2"><Brain className="h-4 w-4" /> Detailed Explanation</AlertTitle>
-                                                            <AlertDescription>{explanationState.explanation}</AlertDescription>
+                                                            <AlertDescription className="prose prose-sm max-w-none">{formatExplanation(explanationState.explanation)}</AlertDescription>
                                                         </Alert>
                                                     )}
                                                     {explanationState?.simpleExplanation && (
                                                          <Alert className="border-accent/50 text-accent-foreground bg-accent/10">
                                                             <AlertTitle className="text-accent-foreground/90 flex items-center gap-2"><Lightbulb className="h-4 w-4" /> Simple Explanation</AlertTitle>
-                                                            <AlertDescription>{explanationState.simpleExplanation}</AlertDescription>
+                                                            <AlertDescription className="prose prose-sm max-w-none">{formatExplanation(explanationState.simpleExplanation)}</AlertDescription>
                                                          </Alert>
                                                     )}
                                                     <div className="flex flex-wrap gap-2">
