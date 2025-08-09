@@ -17,14 +17,15 @@ import { motion } from 'framer-motion';
 type Quiz = GenerateCustomQuizOutput['quiz'];
 
 const MOCK_TEST_CONFIG = [
-  { subject: 'Biology', numQuestions: 81, time: 81, slug: 'biology' },
-  { subject: 'Chemistry', numQuestions: 45, time: 45, slug: 'chemistry' },
-  { subject: 'Physics', numQuestions: 36, time: 36, slug: 'physics' },
-  { subject: 'English', numQuestions: 9, time: 9, slug: 'english' },
-  { subject: 'Logical Reasoning', numQuestions: 9, time: 9, slug: 'logical-reasoning' },
+  { subject: 'Biology', numQuestions: 68, time: 68, slug: 'biology' },
+  { subject: 'Chemistry', numQuestions: 54, time: 54, slug: 'chemistry' },
+  { subject: 'Physics', numQuestions: 54, time: 54, slug: 'physics' },
+  { subject: 'English', numQuestions: 18, time: 18, slug: 'english' },
+  { subject: 'Logical Reasoning', numQuestions: 6, time: 6, slug: 'logical-reasoning' },
 ];
 
 const TOTAL_QUESTIONS = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.numQuestions, 0);
+const TOTAL_TIME = MOCK_TEST_CONFIG.reduce((acc, curr) => acc + curr.time, 0);
 
 export default function MdcatMockTestPage() {
   const { user } = useAuth();
@@ -42,6 +43,7 @@ export default function MdcatMockTestPage() {
     }
 
     setTestState('generating');
+    setError(null);
     setGeneratedQuiz(null);
     const section = MOCK_TEST_CONFIG[sectionIndex];
     
@@ -120,17 +122,17 @@ export default function MdcatMockTestPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Important!</AlertTitle>
               <AlertDescription>
-                Generating all {TOTAL_QUESTIONS} questions at once can be slow. This mock test will be generated and taken **section by section** to ensure a smooth experience.
+                This mock test will be generated and taken **section by section** to ensure a smooth experience.
               </AlertDescription>
             </Alert>
             <div className="mt-6 space-y-3">
                 <p>The test will proceed in the following order:</p>
                 <ul className="list-decimal list-inside text-muted-foreground">
                     {MOCK_TEST_CONFIG.map(section => (
-                        <li key={section.subject}>{section.subject}: {section.numQuestions} MCQs</li>
+                        <li key={section.subject}>{section.subject}: {section.numQuestions} MCQs ({section.time} minutes)</li>
                     ))}
                 </ul>
-                 <p className="font-semibold">Your total time for all sections is 3 hours.</p>
+                 <p className="font-semibold">Your total time for all sections is {TOTAL_TIME} minutes.</p>
                  {error && <p className="text-sm text-destructive mt-2">{error}</p>}
             </div>
           </CardContent>
@@ -198,7 +200,7 @@ export default function MdcatMockTestPage() {
         numberOfQuestions: TOTAL_QUESTIONS,
         questionTypes: ['Multiple Choice'],
         questionStyles: ['Past Paper Style'],
-        timeLimit: 180,
+        timeLimit: TOTAL_TIME,
         specificInstructions: ''
     };
     

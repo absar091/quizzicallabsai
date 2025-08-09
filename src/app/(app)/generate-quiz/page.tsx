@@ -392,7 +392,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -736,8 +736,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               </motion.div>
           </AnimatePresence>
             
-          <div className="mt-8 flex justify-center w-full">
-            <Button onClick={handleNext} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full max-w-sm">
+          <div className="mt-8 flex justify-between w-full">
+            <Button onClick={handleBack} size="lg" variant="outline" disabled={currentQuestion === 0}>
+                <ArrowLeft className="mr-2 h-5 w-5" />
+                Back
+            </Button>
+            <Button onClick={handleNext} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
                 {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
                 {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-5 w-5" />}
             </Button>
