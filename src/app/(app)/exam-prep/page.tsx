@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -38,24 +37,6 @@ const tests = [
     totalTopics: Object.values(ntsSyllabus).reduce((acc, category) => acc + category.subjects.reduce((sAcc, s) => sAcc + s.chapters.length, 0), 0),
   },
 ];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
 
 export default function ExamPrepPage() {
     const { user } = useAuth();
@@ -115,16 +96,13 @@ export default function ExamPrepPage() {
         description="Structured paths for Pakistan's major university entrance exams."
       />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         {tests.map((test) => {
             const currentProgress = progress[test.name] || 0;
             return (
-              <motion.div key={test.name} variants={itemVariants}>
+              <div key={test.name}>
                 <Card className="flex flex-col h-full shadow-sm hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-center gap-4 mb-4">
@@ -153,10 +131,10 @@ export default function ExamPrepPage() {
                     </Button>
                   </CardFooter>
                 </Card>
-              </motion.div>
+              </div>
             )
         })}
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -7,32 +7,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BookUser } from "lucide-react";
 import { ntsSyllabus } from "@/lib/nts-syllabus";
-import { motion } from "framer-motion";
 
 const categories = Object.values(ntsSyllabus);
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
-
-const cardHover = {
-    hover: { y: -5, transition: { duration: 0.2 } },
-    tap: { scale: 0.98 }
-}
 
 export default function NtsPage() {
   return (
@@ -42,15 +18,12 @@ export default function NtsPage() {
         description="Select your test category to begin your preparation."
       />
 
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {categories.map(category => (
-            <motion.div key={category.id} variants={itemVariants} whileHover="hover" whileTap="tap">
-                <Card className="flex flex-col group h-full transition-all duration-300">
+            <div key={category.id}>
+                <Card className="flex flex-col group h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><BookUser className="h-5 w-5 text-primary"/> {category.name}</CardTitle>
                         <CardDescription>{category.description}</CardDescription>
@@ -61,9 +34,9 @@ export default function NtsPage() {
                         </Button>
                     </CardContent>
                 </Card>
-            </motion.div>
+            </div>
         ))}
-        <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 lg:col-span-3">
+        <div className="col-span-1 md:col-span-2 lg:col-span-3">
              <Card className="bg-primary text-primary-foreground flex flex-col md:flex-row items-center justify-between p-6">
                  <div className="mb-4 md:mb-0">
                     <CardTitle className="text-2xl">Full-Length NAT Mock Test</CardTitle>
@@ -73,8 +46,8 @@ export default function NtsPage() {
                     <Link href="/nts/mock-test">Start Mock Test <ArrowRight className="ml-2 h-4 w-4" /></Link>
                  </Button>
             </Card>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

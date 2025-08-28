@@ -5,7 +5,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, Download, FileText, School, User, Calendar, Clock, Sigma, Columns2, Square, Wand2, Replace, AlertTriangle, Minus, Plus } from "lucide-react";
+import { Loader2, Sparkles, Download, Replace, AlertTriangle } from "lucide-react";
+import { School, User, Calendar, Clock, Sigma, Columns, Square, FileText as FileTextIcon } from "@phosphor-icons/react";
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -311,7 +313,7 @@ export default function GeneratePaperPage() {
   if (isGenerating) {
     return (
        <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-        <Wand2 className="h-12 w-12 text-primary mb-4 animate-pulse" />
+        <Loader2 className="h-12 w-12 text-primary mb-4 animate-spin" />
         <h2 className="text-2xl font-semibold mb-2">Generating Your Paper...</h2>
         <p className="text-muted-foreground max-w-sm mb-6">
             {quizVariants ? `Generating variant ${quizVariants.length + 1} of ${formValues?.numberOfVariants}...` : 'Starting AI generation...'}
@@ -417,7 +419,7 @@ export default function GeneratePaperPage() {
                 name="subject"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel className="flex items-center gap-2"><FileText className="h-4 w-4"/> Subject / Topic</FormLabel>
+                    <FormLabel className="flex items-center gap-2"><FileTextIcon className="h-4 w-4"/> Subject / Topic</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Photosynthesis" {...field} />
                     </FormControl>
@@ -592,7 +594,7 @@ export default function GeneratePaperPage() {
                                   <RadioGroupItem value="two-column" id="two-column" className="sr-only peer" disabled={watchQuestionTypes.includes('Descriptive')} />
                                </FormControl>
                                <Label htmlFor="two-column" className="flex h-full flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize disabled:cursor-not-allowed disabled:opacity-50">
-                                  <Columns2 className="h-6 w-6 mb-2"/>
+                                  <Columns className="h-6 w-6 mb-2"/>
                                   Two Column
                                </Label>
                              </FormItem>

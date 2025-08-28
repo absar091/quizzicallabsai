@@ -6,7 +6,6 @@ import { AppHeader } from "@/components/app-header";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import HelpBot from "@/components/help-bot";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
@@ -44,17 +43,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <AppHeader onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-24 md:pb-6">
-           <AnimatePresence mode="wait">
-            <motion.div
-                key={pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-            >
+           <div>
                 {children}
-            </motion.div>
-            </AnimatePresence>
+            </div>
         </main>
         
          <div className="fixed bottom-20 right-4 z-50">

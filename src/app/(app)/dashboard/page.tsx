@@ -17,7 +17,6 @@ import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/page-header";
 import { getQuizResults, QuizResult, getBookmarks } from "@/lib/indexed-db";
-import { motion } from "framer-motion";
 import { generateDashboardInsights, GenerateDashboardInsightsOutput } from "@/ai/flows/generate-dashboard-insights";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -233,20 +232,14 @@ export default function DashboardPage() {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+          <div>
             <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
-            }}
+          <div 
             className="grid grid-cols-2 gap-4"
           >
-            <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}>
+            <div>
               <Card className="p-4 shadow-sm">
                 <CardHeader className="p-0 flex-row items-center gap-2">
                     <Flame className="h-4 w-4 text-muted-foreground"/>
@@ -256,8 +249,8 @@ export default function DashboardPage() {
                     <p className="text-2xl font-bold">{streak} <span className="text-base font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
                 </CardContent>
               </Card>
-            </motion.div>
-            <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}>
+            </div>
+            <div>
               <Card className="p-4 shadow-sm">
                 <CardHeader className="p-0 flex-row items-center gap-2">
                     <Target className="h-4 w-4 text-muted-foreground"/>
@@ -268,10 +261,10 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
                 </CardContent>
               </Card>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
           
-           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+           <div>
             <Card>
                 <CardHeader>
                     <CardTitle>Bookmarked Questions</CardTitle>
@@ -294,7 +287,7 @@ export default function DashboardPage() {
                     </Button>
                 </CardFooter>
             </Card>
-           </motion.div>
+           </div>
 
         </TabsContent>
 

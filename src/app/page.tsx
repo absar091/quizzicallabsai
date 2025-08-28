@@ -3,7 +3,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit, Quote, FilePlus, Brain, Star, Download } from "lucide-react";
 import Link from "next/link";
@@ -159,26 +158,17 @@ export default function Home() {
       <main className="flex-1">
         <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-24 text-center md:py-32">
           <div className="flex flex-col items-center space-y-6">
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+              <div 
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
                 Your Ultimate <br/> <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Study Partner</span>
-              </motion.h1>
-              <motion.p 
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.5, delay: 0.2 }}
+              </div>
+              <p 
                  className="max-w-xl text-muted-foreground md:text-xl"
               >
                 Generate custom quizzes, practice questions, and AI study guides to master any subject and ace your exams.
-              </motion.p>
-              <motion.div 
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.5, delay: 0.4 }}
+              </p>
+              <div 
                  className="flex flex-col gap-4 sm:flex-row"
               >
                 <Button size="lg" asChild>
@@ -187,7 +177,7 @@ export default function Home() {
                  <Button size="lg" asChild variant="outline">
                   <Link href="/how-to-use">View the Guides</Link>
                 </Button>
-              </motion.div>
+              </div>
             </div>
         </section>
 
@@ -195,25 +185,12 @@ export default function Home() {
             <div className="container mx-auto text-center">
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything you need to succeed</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">From quick practice sessions to full-length mock exams, our tools are designed to support every step of your learning journey.</p>
-                 <motion.div 
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ staggerChildren: 0.1 }}
-                    variants={{
-                        hidden: {},
-                        visible: {}
-                    }}
+                 <div 
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
                   >
                     {allFeatures.map((feature, index) => (
-                        <motion.div 
+                        <div
                           key={index} 
-                          variants={{
-                            hidden: { opacity: 0, y: 20 },
-                            visible: { opacity: 1, y: 0 }
-                          }}
-                           transition={{ duration: 0.5, delay: index * 0.1}}
                         >
                             <Card className="text-left h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                                 <CardHeader>
@@ -226,9 +203,9 @@ export default function Home() {
                                     <p className="text-muted-foreground">{feature.description}</p>
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </div>
                     ))}
-                 </motion.div>
+                 </div>
             </div>
         </section>
         
@@ -257,11 +234,7 @@ export default function Home() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Master any topic in three simple steps.</p>
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-4xl mx-auto">
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
+                    <div 
                         className="flex flex-col items-center gap-4"
                      >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
@@ -269,12 +242,8 @@ export default function Home() {
                         </div>
                         <h3 className="text-xl font-semibold">1. Generate</h3>
                         <p className="text-muted-foreground">Instantly create quizzes, practice questions, or study guides from any topic or document.</p>
-                    </motion.div>
-                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
+                    </div>
+                     <div 
                         className="flex flex-col items-center gap-4"
                     >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
@@ -282,12 +251,8 @@ export default function Home() {
                         </div>
                         <h3 className="text-xl font-semibold">2. Practice</h3>
                         <p className="text-muted-foreground">Take tailored tests, get instant feedback, and review AI-powered explanations to deepen your understanding.</p>
-                    </motion.div>
-                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                    </div>
+                     <div 
                         className="flex flex-col items-center gap-4"
                      >
                         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
@@ -295,17 +260,13 @@ export default function Home() {
                         </div>
                         <h3 className="text-xl font-semibold">3. Master</h3>
                         <p className="text-muted-foreground">Track your progress on the dashboard, identify weak spots, and conquer your exams with confidence.</p>
-                    </motion.div>
+                    </div>
                  </div>
             </div>
         </section>
 
         <section className="relative bg-background py-24 sm:py-32">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
+            <div 
               className="container mx-auto max-w-4xl text-center relative"
             >
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-12">A Note from the Creator</h2>
@@ -328,7 +289,7 @@ export default function Home() {
                         </div>
                     </CardContent>
                  </Card>
-            </motion.div>
+            </div>
         </section>
       </main>
       <Footer />
