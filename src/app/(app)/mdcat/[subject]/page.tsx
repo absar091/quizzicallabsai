@@ -2,7 +2,7 @@
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, ChevronsRight, Target, NotebookText, ArrowArcRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
