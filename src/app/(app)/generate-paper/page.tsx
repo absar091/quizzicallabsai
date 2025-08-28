@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Sparkles, Download, Replace, AlertTriangle } from "lucide-react";
-import { School, User, Calendar, Clock, Sigma, Columns, Square, FileText as FileTextIcon } from "@phosphor-icons/react";
+import { GraduationCap, User, Calendar, Clock, Exam, Columns, Square, FileText as FileTextIcon } from "@phosphor-icons/react";
 
 
 import { Button } from "@/components/ui/button";
@@ -389,7 +389,7 @@ export default function GeneratePaperPage() {
                 name="schoolName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2"><School className="h-4 w-4"/> School Name</FormLabel>
+                    <FormLabel className="flex items-center gap-2"><GraduationCap className="h-4 w-4"/> School Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Springfield High" {...field} />
                     </FormControl>
@@ -658,7 +658,7 @@ export default function GeneratePaperPage() {
                 name="totalMarks"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel className="flex items-center gap-2"><Sigma className="h-4 w-4"/> Total Marks</FormLabel>
+                    <FormLabel className="flex items-center gap-2"><Exam className="h-4 w-4"/> Total Marks</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="e.g., 50" {...field} value={field.value ?? ''} />
                     </FormControl>
