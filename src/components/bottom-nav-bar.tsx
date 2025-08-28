@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, Flask, Exam, User } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: House },
@@ -23,21 +22,15 @@ export function BottomNavBar() {
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           return (
-            <Link key={item.href} href={item.href} className="inline-flex flex-col items-center justify-center px-5 group relative">
+            <Link key={item.href} href={item.href} className="inline-flex flex-col items-center justify-center px-1 group relative">
               <div className="relative">
                 <item.icon weight={isActive ? 'fill' : 'regular'} className={cn(
                   "w-7 h-7 mb-1 text-muted-foreground transition-colors",
                   isActive && "text-primary"
                 )} />
-                 {isActive && (
-                    <motion.div
-                        layoutId="active-nav-indicator"
-                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 bg-primary rounded-full"
-                    />
-                )}
               </div>
               <span className={cn(
-                "text-xs text-muted-foreground",
+                "text-xs text-muted-foreground text-center",
                 isActive && "text-primary font-medium"
               )}>
                 {item.label}

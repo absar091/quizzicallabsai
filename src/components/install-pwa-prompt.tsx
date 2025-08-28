@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DownloadCloud, MoreVertical, PlusSquare, Share, X } from "lucide-react";
@@ -54,36 +53,30 @@ export default function InstallPwaPrompt() {
     }
   };
 
+  if (!showPrompt) {
+    return null;
+  }
+
   return (
-    <AnimatePresence>
-      {showPrompt && (
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md"
-        >
-          <Card className="bg-background/90 backdrop-blur-sm border-2 shadow-2xl">
-            <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-7 w-7" onClick={closePrompt}>
-              <X className="h-4 w-4"/>
-              <span className="sr-only">Close install prompt</span>
-            </Button>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DownloadCloud className="h-6 w-6 text-primary"/>
-                Install Quizzicallabs
-              </CardTitle>
-              <CardDescription>Get a better, full-screen experience by adding the app to your home screen.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">
-                    {getInstructions()}
-                </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="fixed bottom-24 md:bottom-4 left-1/2 -translate-x-1/2 z-[190] w-[calc(100%-2rem)] max-w-md">
+        <Card className="bg-background/90 backdrop-blur-sm border-2 shadow-2xl">
+        <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-7 w-7" onClick={closePrompt}>
+            <X className="h-4 w-4"/>
+            <span className="sr-only">Close install prompt</span>
+        </Button>
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+            <DownloadCloud className="h-6 w-6 text-primary"/>
+            Install Quizzicallabs
+            </CardTitle>
+            <CardDescription>Get a better, full-screen experience by adding the app to your home screen.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <p className="text-sm text-muted-foreground">
+                {getInstructions()}
+            </p>
+        </CardContent>
+        </Card>
+    </div>
   );
 }

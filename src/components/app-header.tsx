@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bell, Menu, X } from "lucide-react";
+import { Bell, Menu, X, BrainCircuit } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface AppHeaderProps {
@@ -18,6 +18,12 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
     return (
        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-16 items-center">
+              <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                      <BrainCircuit className="h-5 w-5" />
+                  </div>
+                  <span>Quizzicallabs</span>
+              </Link>
               <div className="flex-1" />
               <div className="flex items-center gap-2 sm:gap-4">
                   <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
