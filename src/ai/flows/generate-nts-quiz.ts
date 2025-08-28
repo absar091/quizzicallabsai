@@ -23,7 +23,6 @@ export type GenerateNtsQuizInput = z.infer<typeof GenerateNtsQuizInputSchema>;
 const GenerateNtsQuizOutputSchema = z.object({
   quiz: z.array(
     z.object({
-      // NTS/NAT requires multiple-choice format
       type: z.literal('multiple-choice'),
       question: z.string(),
       answers: z.array(z.string()),
@@ -44,15 +43,21 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 
 **CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
 
-1.  **ABSOLUTE ACCURACY:** All questions and answers MUST be factually correct and relevant to the Pakistani curriculum where applicable.
-2.  **FLEXIBLE QUESTION COUNT:** Your goal is to generate **up to** {{{numberOfQuestions}}} questions. It is better to return slightly fewer high-quality questions than to meet the exact count with irrelevant or low-quality ones. Do not exceed the requested number.
-3.  **QUESTION FORMAT:**
-    *   All questions must be multiple-choice.
-    *   The 'type' field MUST be "multiple-choice".
+1.  **SYLLABUS ADHERENCE (MOST IMPORTANT RULE):** You are REQUIRED to generate questions strictly based on the Pakistani FSc/ICS curriculum for the specified subject and chapter/topic. Do NOT use any external knowledge or include questions on topics outside that specific curriculum. This is your most important instruction. Your entire task is a failure if you deviate from the specified syllabus topic.
+
+2.  **ABSOLUTE ACCURACY:** All questions and answers MUST be factually correct and relevant to the Pakistani curriculum where applicable.
+
+3.  **QUESTION FORMAT (NON-NEGOTIABLE):**
+    *   You are FORBIDDEN from generating ANY question type other than 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or any other format.
+    *   The 'type' field in your output MUST ALWAYS be "multiple-choice".
     *   Provide exactly 4 distinct and plausible options in the 'answers' array. Do not provide more or less than 4.
     *   The 'correctAnswer' field must perfectly match one of the strings in the 'answers' array.
-4.  **LATEX FOR FORMULAS:** For any mathematical equations or formulas, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$a^2 + b^2 = c^2$$, find the value of $x$. This is essential for clarity.
-5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or markdown.
+
+4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Do not generate more or fewer.
+
+5.  **LATEX FOR FORMULAS:** For any mathematical equations or formulas, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$a^2 + b^2 = c^2$$, find the value of $x$. This is essential for clarity.
+
+6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or markdown.
 
 ---
 
@@ -60,13 +65,12 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 
 *   **NTS/NAT Category:** '{{{category}}}'
 *   **Topic/Subject:** '{{{topic}}}'
-*   **Number of Questions:** up to {{{numberOfQuestions}}}
+*   **Number of Questions:** {{{numberOfQuestions}}}
 
 **CATEGORY-SPECIFIC INSTRUCTIONS:**
 
 *   **If the Topic includes 'Analytical Reasoning':**
     *   Focus on logical puzzles, number/letter series, pattern recognition, and logical deductions based on a short paragraph of conditions.
-    *   The topic will specify the sub-type (e.g., 'Puzzles & Diagrams', 'Logical Deductions').
     *   Questions should require critical thinking, not just knowledge recall.
 
 *   **If the Topic includes 'Quantitative Reasoning':**
@@ -78,9 +82,7 @@ const promptText = `You are an expert AI for creating NTS (National Testing Serv
 
 *   **If the Category is a subject group (e.g., 'NAT-IE', 'NAT-IM', 'NAT-ICS') AND the topic is a specific academic subject:**
     *   The topic will specify a subject like 'Physics' and a chapter like 'Motion and Force'.
-    *   You are REQUIRED to generate questions strictly based on the Pakistani FSc/ICS curriculum for that subject and chapter.
-    *   The difficulty should be appropriate for a university admission test (NAT level). Do not use content from outside this curriculum.
-    *   For Physics and Chemistry questions, ensure all formulas and equations are rendered using LaTeX.
+    *   Generate questions strictly based on the Pakistani FSc/ICS curriculum for that subject and chapter. The difficulty should be appropriate for a university admission test (NAT level).
 
 Generate the quiz now.
 `;
