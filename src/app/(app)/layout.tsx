@@ -11,6 +11,7 @@ import HelpBot from "@/components/help-bot";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { MainSidebar } from "@/components/main-sidebar";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -43,9 +44,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <AppHeader onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-24 md:pb-6">
-           <div>
+           <AnimatePresence mode="wait">
+             <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+             >
                 {children}
-            </div>
+              </motion.div>
+           </AnimatePresence>
         </main>
         
          <div className="fixed bottom-20 right-4 z-50">
