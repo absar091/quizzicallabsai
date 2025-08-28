@@ -4,7 +4,8 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, TextT, Cards, FileArrowUp, FileText, ClipboardText } from '@phosphor-icons/react';
+import { ArrowRight, FilePlus, Lightbulb, FileArrowUp, FileText, Cards, ClipboardText } from '@phosphor-icons/react';
+import { motion } from 'framer-motion';
 
 const tools = [
   {
@@ -45,6 +46,21 @@ const tools = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 },
+};
+
 export default function GenLabPage() {
   return (
     <div>
@@ -52,11 +68,14 @@ export default function GenLabPage() {
         title="Generation Laboratory"
         description="Your suite of AI-powered study tools."
       />
-      <div
+      <motion.div
         className="space-y-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
       >
         {tools.map((tool) => (
-          <div key={tool.title}>
+          <motion.div key={tool.title} variants={itemVariants}>
             <Link href={tool.href} className="flex h-full group">
               <Card className="flex flex-row items-center w-full hover:bg-secondary transition-all duration-200 shadow-sm p-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mr-4">
@@ -69,9 +88,9 @@ export default function GenLabPage() {
                    <ArrowRight className="h-5 w-5 text-muted-foreground ml-4 group-hover:translate-x-1 transition-transform" />
               </Card>
             </Link>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

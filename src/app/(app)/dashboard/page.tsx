@@ -23,6 +23,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { BookMarked } from "lucide-react";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 },
+};
 
 function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResult[], userName: string }) {
   const [insights, setInsights] = useState<GenerateDashboardInsightsOutput | null>(null);
@@ -232,14 +248,17 @@ export default function DashboardPage() {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
-          <div>
+          <motion.div variants={itemVariants}>
             <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
-          </div>
+          </motion.div>
 
-          <div 
+          <motion.div 
             className="grid grid-cols-2 gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
           >
-            <div>
+            <motion.div variants={itemVariants}>
               <Card className="p-4 shadow-sm">
                 <CardHeader className="p-0 flex-row items-center gap-2">
                     <Flame className="h-4 w-4 text-muted-foreground"/>
@@ -249,8 +268,8 @@ export default function DashboardPage() {
                     <p className="text-2xl font-bold">{streak} <span className="text-base font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
                 </CardContent>
               </Card>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={itemVariants}>
               <Card className="p-4 shadow-sm">
                 <CardHeader className="p-0 flex-row items-center gap-2">
                     <Target className="h-4 w-4 text-muted-foreground"/>
@@ -261,10 +280,10 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
                 </CardContent>
               </Card>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
-           <div>
+           <motion.div variants={itemVariants}>
             <Card>
                 <CardHeader>
                     <CardTitle>Bookmarked Questions</CardTitle>
@@ -287,11 +306,12 @@ export default function DashboardPage() {
                     </Button>
                 </CardFooter>
             </Card>
-           </div>
+           </motion.div>
 
         </TabsContent>
 
         <TabsContent value="stats" className="space-y-6">
+            <motion.div variants={itemVariants}>
             <Card>
                 <CardHeader>
                     <CardTitle>Topic Performance</CardTitle>
@@ -301,6 +321,8 @@ export default function DashboardPage() {
                     <TopicPerformanceChart data={recentActivity} />
                 </CardContent>
             </Card>
+            </motion.div>
+             <motion.div variants={itemVariants}>
              <Card>
                 <CardHeader>
                     <CardTitle>Recent Activity</CardTitle>
@@ -324,9 +346,11 @@ export default function DashboardPage() {
                     )}
                 </CardContent>
             </Card>
+            </motion.div>
         </TabsContent>
         
         <TabsContent value="achievements">
+            <motion.div variants={itemVariants}>
             <Card>
                 <CardHeader>
                     <CardTitle>Your Achievements</CardTitle>
@@ -336,19 +360,29 @@ export default function DashboardPage() {
                     <AchievementsTab recentActivity={recentActivity} bookmarksCount={bookmarksCount} />
                 </CardContent>
             </Card>
+            </motion.div>
         </TabsContent>
       </Tabs>
 
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Jump Right In</h2>
-        <div className="grid grid-cols-1 gap-4">
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <motion.div 
+            className="grid grid-cols-1 gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+        >
+            <motion.div variants={itemVariants}>
+            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full">
                 <Link href="/generate-quiz"><PlusSquare className="mr-2 h-5 w-5"/> Start a Custom Quiz</Link>
             </Button>
-             <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/5 hover:text-primary">
+            </motion.div>
+             <motion.div variants={itemVariants}>
+             <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/5 hover:text-primary w-full">
                 <Link href="/exam-prep"><BookOpenText className="mr-2 h-5 w-5"/> Browse Exam Prep</Link>
             </Button>
-        </div>
+            </motion.div>
+        </motion.div>
       </div>
     </div>
   );
