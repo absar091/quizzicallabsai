@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, CheckCircle, Sparkles, BookOpen, User, BrainCircuit, Quote, FilePlus, Brain, Star, Download, ChalkboardTeacher, Student } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen, ChalkboardTeacher, Student } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const allFeatures = [
   {
@@ -75,24 +76,45 @@ export default function Home() {
       </div>
     );
   }
+  
+  const FADE_IN_ANIMATION_VARIANTS = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0, transition: { type: "spring" } },
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <main className="flex-1">
-        <section className="container mx-auto flex flex-col items-center justify-center gap-12 py-24 text-center md:py-32">
-          <div className="flex flex-col items-center space-y-6">
-              <div 
+        <section className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12 py-24 text-center md:text-left md:py-32">
+            <motion.div 
+              initial="hidden"
+              animate="show"
+              viewport={{ once: true }}
+              variants={{
+                hidden: {},
+                show: {
+                  transition: {
+                    staggerChildren: 0.15,
+                  },
+                },
+              }}
+              className="flex flex-col items-center md:items-start space-y-6"
+            >
+              <motion.h1 
+                variants={FADE_IN_ANIMATION_VARIANTS}
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
                 Your Ultimate <br/> <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Study Partner</span>
-              </div>
-              <p 
+              </motion.h1>
+              <motion.p 
+                 variants={FADE_IN_ANIMATION_VARIANTS}
                  className="max-w-xl text-muted-foreground md:text-xl"
               >
                 Generate custom quizzes, practice questions, and AI study guides to master any subject. Ace your exams with specialized prep for MDCAT, ECAT, and NTS.
-              </p>
-              <div 
+              </motion.p>
+              <motion.div 
+                 variants={FADE_IN_ANIMATION_VARIANTS}
                  className="flex flex-col gap-4 sm:flex-row"
               >
                 <Button size="lg" asChild>
@@ -101,8 +123,23 @@ export default function Home() {
                  <Button size="lg" asChild variant="outline">
                   <Link href="/how-to-use">View the Guides</Link>
                 </Button>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative w-full h-80 md:h-full rounded-2xl"
+            >
+                <Image 
+                    src="https://picsum.photos/800/600" 
+                    alt="An abstract representation of AI in education"
+                    data-ai-hint="futuristic learning technology"
+                    fill
+                    className="object-cover rounded-2xl shadow-xl"
+                    priority
+                />
+            </motion.div>
         </section>
         
         <section className="py-16 md:py-24">
@@ -150,8 +187,12 @@ export default function Home() {
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
                   >
                     {allFeatures.map((feature, index) => (
-                        <div
+                        <motion.div
                           key={index} 
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          viewport={{ once: true }}
                         >
                             <Card className="text-left h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                                 <CardHeader>
@@ -164,7 +205,7 @@ export default function Home() {
                                     <p className="text-muted-foreground">{feature.description}</p>
                                 </CardContent>
                             </Card>
-                        </div>
+                        </motion.div>
                     ))}
                  </div>
             </div>
@@ -178,8 +219,7 @@ export default function Home() {
                     {testimonials.map((testimonial, index) => (
                         <Card key={index} className="text-left p-6">
                             <CardContent className="p-0">
-                                <Quote className="h-8 w-8 text-primary/10 mb-4" />
-                                <p className="text-muted-foreground mb-6">{testimonial.text}</p>
+                                <p className="text-muted-foreground mb-6 italic">"{testimonial.text}"</p>
                                 <div className="flex items-center gap-4">
                                     <Avatar>
                                          <AvatarImage src={`https://i.pravatar.cc/150?u=${testimonial.name}`} alt={testimonial.name} />
