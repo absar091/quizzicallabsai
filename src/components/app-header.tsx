@@ -3,8 +3,9 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bell, Menu, X, BrainCircuit } from "lucide-react";
+import { Bell, Menu, X, BrainCircuit, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { usePathname, useRouter } from "next/navigation";
 
 interface AppHeaderProps {
   onSidebarToggle?: () => void;
@@ -13,6 +14,12 @@ interface AppHeaderProps {
 
 export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Pages where the back button should not be shown
+  const noBackPages = ["/dashboard", "/genlab", "/exam-prep", "/profile"];
+  const showBackButton = user && !noBackPages.includes(pathname);
   
   if (!user) {
     return (
@@ -45,15 +52,26 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   // App Header for logged in users
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="hidden md:inline-flex"
-        onClick={onSidebarToggle}
-        aria-label="Toggle sidebar"
-      >
-        {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
+      {showBackButton ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.back()}
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:inline-flex"
+          onClick={onSidebarToggle}
+          aria-label="Toggle sidebar"
+        >
+          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      )}
       <div className="w-full flex-1 flex items-center justify-between md:justify-end">
           <div className="md:hidden">
               <h1 className="font-semibold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
