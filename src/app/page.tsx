@@ -12,8 +12,30 @@ import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+
+const FADE_IN_ANIMATION_VARIANTS: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" } },
+};
+
+function AnimatedImage({ src, alt, "data-ai-hint": dataAiHint }: { src: string; alt: string; "data-ai-hint": string }) {
+    return (
+        <motion.div
+            className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl bg-muted"
+            variants={FADE_IN_ANIMATION_VARIANTS}
+        >
+            <Image 
+                src={src} 
+                alt={alt} 
+                data-ai-hint={dataAiHint} 
+                fill 
+                className="object-contain p-8"
+            />
+        </motion.div>
+    );
+}
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -32,11 +54,6 @@ export default function Home() {
       </div>
     );
   }
-  
-  const FADE_IN_ANIMATION_VARIANTS = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" } },
-  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -128,7 +145,17 @@ export default function Home() {
             </div>
         </section>
 
-        <section id="features" className="py-16 md:py-24 bg-background">
+        <motion.section 
+            id="features" 
+            className="py-16 md:py-24 bg-background"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.2 } },
+            }}
+        >
             <div className="container mx-auto">
                  <div className="text-center mb-12">
                      <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">The Ultimate Toolkit for Modern Learning</h2>
@@ -136,9 +163,9 @@ export default function Home() {
                  </div>
 
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
+                    <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
                         <div className="mb-4">
-                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><Student className="h-4 w-4" /> For Students</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><Student className="h-4 w-4" weight="fill" /> For Students</Badge>
                         </div>
                         <h3 className="text-2xl font-bold mb-4">Personalized Quizzes from Any Topic</h3>
                         <p className="text-muted-foreground mb-6">Stop searching for generic practice tests. Enter any subject, chapter, or concept and our AI will generate a high-quality quiz tailored to your specified difficulty and question style. It's perfect for targeted study sessions.</p>
@@ -147,19 +174,24 @@ export default function Home() {
                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Choose from MCQs, descriptive questions, and more.</span></li>
                              <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Get instant feedback and AI-powered explanations.</span></li>
                         </ul>
-                    </div>
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl bg-muted">
-                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Quiz+Generator)" alt="Screenshot of custom quiz generator interface" data-ai-hint="app interface quiz" fill className="object-contain p-8"/>
-                    </div>
+                    </motion.div>
+                     <AnimatedImage 
+                        src="https://placehold.co/800x600/e2e8f0/1A237E?text=Custom+Quiz" 
+                        alt="Screenshot of custom quiz generator interface" 
+                        data-ai-hint="app interface quiz"
+                     />
                  </div>
 
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl lg:order-last bg-muted">
-                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Exam+Paper+Generator)" alt="Screenshot of exam paper generator for educators" data-ai-hint="app interface paper" fill className="object-contain p-8"/>
-                    </div>
-                    <div>
+                     <AnimatedImage 
+                        src="https://placehold.co/800x600/e2e8f0/1A237E?text=Exam+Paper+Generator"
+                        alt="Screenshot of exam paper generator for educators" 
+                        data-ai-hint="app interface paper"
+                        className="lg:order-last"
+                     />
+                    <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
                         <div className="mb-4">
-                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><ChalkboardTeacher className="h-4 w-4" /> For Educators</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><ChalkboardTeacher className="h-4 w-4" weight="fill" /> For Educators</Badge>
                         </div>
                         <h3 className="text-2xl font-bold mb-4">Effortless Exam Paper Creation</h3>
                         <p className="text-muted-foreground mb-6">Save hours of administrative work. Our Exam Paper Generator lets you create professional, formatted test papers in minutes. Generate multiple variants to prevent cheating and get an answer key automatically.</p>
@@ -168,11 +200,11 @@ export default function Home() {
                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Customize headers, marks, and time limits.</span></li>
                              <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Download print-ready PDFs with answer keys.</span></li>
                         </ul>
-                    </div>
+                    </motion.div>
                  </div>
 
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
-                    <div>
+                    <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
                         <div className="mb-4">
                             <Badge variant="secondary">Syllabus-Based</Badge>
                         </div>
@@ -183,13 +215,15 @@ export default function Home() {
                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Practice with full-length, timed mock tests.</span></li>
                              <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Track your performance and identify weak areas.</span></li>
                         </ul>
-                    </div>
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl bg-muted">
-                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Exam+Prep+Module)" alt="Screenshot of exam prep module" data-ai-hint="app interface exam" fill className="object-contain p-8"/>
-                    </div>
+                    </motion.div>
+                    <AnimatedImage 
+                        src="https://placehold.co/800x600/e2e8f0/1A237E?text=Exam+Prep+Module"
+                        alt="Screenshot of exam prep module" 
+                        data-ai-hint="app interface exam"
+                    />
                  </div>
             </div>
-        </section>
+        </motion.section>
 
         <section className="py-16 md:py-24 bg-muted/30">
              <div className="container mx-auto text-center max-w-3xl">
