@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen, PenNib, StepForward, BrainCircuit } from "lucide-react";
 import { Student, ChalkboardTeacher } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 const allFeatures = [
   {
@@ -37,27 +38,6 @@ const allFeatures = [
     description: "Instantly generate questions on any topic, complete with answers and AI explanations.",
   },
 ];
-
-const testimonials = [
-  {
-    name: "Aisha Khan",
-    role: "MDCAT Student",
-    avatar: "/avatars/01.png",
-    text: "Quizzicallabs AI has been a game-changer for my MDCAT prep. The topic-specific quizzes are incredibly accurate and helped me identify my weak areas. The mock tests are just like the real thing!",
-  },
-  {
-    name: "Mr. Bilal Ahmed",
-    role: "Physics Teacher",
-    avatar: "/avatars/02.png",
-    text: "The Exam Paper Generator is a lifesaver. I can create multiple versions of a test in minutes, complete with an answer key. It has saved me hours of administrative work every week.",
-  },
-  {
-    name: "Fahad Ali",
-    role: "ECAT Aspirant",
-    avatar: "/avatars/03.png",
-    text: "Being able to upload my own notes and get a quiz generated from them is an incredible feature. It makes my study sessions so much more effective and targeted.",
-  },
-]
 
 
 export default function Home() {
@@ -130,95 +110,109 @@ export default function Home() {
         
         <section className="py-16 md:py-24">
             <div className="container mx-auto text-center">
-                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Built for Success</h2>
-                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Whether you're a student aiming for the top or an educator shaping minds, our tools are designed for you.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-                    <Card className="text-left overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                        <CardHeader>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                                <Student className="h-6 w-6 text-primary"/>
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
+                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Transform your study routine in three simple steps.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 text-left">
+                    <Card className="p-6 bg-muted/30 border-none">
+                        <CardHeader className="p-0">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <PenNib className="h-6 w-6 text-primary"/>
                             </div>
-                            <CardTitle>For Students</CardTitle>
-                             <CardDescription>Conquer your exams with personalized tools that adapt to your learning style and syllabus.</CardDescription>
+                            <p className="text-sm font-semibold text-primary">Step 1</p>
+                            <CardTitle className="text-xl">Create</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                             <div className="relative h-60 w-full">
-                                <Image src="https://placehold.co/600x400/1A237E/FFFFFF?text=Quiz+Interface" alt="App screenshot showing a quiz for a student" data-ai-hint="app quiz" fill className="object-cover rounded-lg"/>
-                            </div>
+                        <CardContent className="p-0 mt-4">
+                             <p className="text-muted-foreground">Choose a tool. Generate a custom quiz from any topic, upload your own notes to create a test, or build a comprehensive study guide.</p>
                         </CardContent>
                     </Card>
-                    <Card className="text-left overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                         <CardHeader>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                                <ChalkboardTeacher className="h-6 w-6 text-primary"/>
+                     <Card className="p-6 bg-muted/30 border-none">
+                        <CardHeader className="p-0">
+                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <BrainCircuit className="h-6 w-6 text-primary"/>
                             </div>
-                            <CardTitle>For Educators</CardTitle>
-                             <CardDescription>Save time and reduce your workload with automated tools for creating and formatting exam papers.</CardDescription>
+                            <p className="text-sm font-semibold text-primary">Step 2</p>
+                            <CardTitle className="text-xl">Learn & Practice</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                             <div className="relative h-60 w-full">
-                                <Image src="https://placehold.co/600x400/F6A23B/1A237E?text=Paper+Generator" alt="App screenshot showing the exam paper generator for teachers" data-ai-hint="app interface" fill className="object-cover rounded-lg"/>
+                        <CardContent className="p-0 mt-4">
+                             <p className="text-muted-foreground">Take the AI-generated quizzes, review detailed explanations for incorrect answers, and study with flashcards to reinforce your knowledge.</p>
+                        </CardContent>
+                    </Card>
+                     <Card className="p-6 bg-muted/30 border-none">
+                        <CardHeader className="p-0">
+                           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <GraduationCap className="h-6 w-6 text-primary"/>
                             </div>
+                            <p className="text-sm font-semibold text-primary">Step 3</p>
+                            <CardTitle className="text-xl">Master</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 mt-4">
+                             <p className="text-muted-foreground">Track your performance on the dashboard, review bookmarked questions, and tackle full-length mock exams to ace your tests.</p>
                         </CardContent>
                     </Card>
                 </div>
             </div>
         </section>
 
-        <section id="features" className="py-16 md:py-24 bg-muted/30">
-            <div className="container mx-auto text-center">
-                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Everything You Need to Succeed</h2>
-                 <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">From quick practice sessions to full-length mock exams, our tools are designed to support every step of your learning journey.</p>
-                 <div 
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
-                  >
-                    {allFeatures.map((feature, index) => (
-                        <motion.div
-                          key={index} 
-                          initial={{ opacity: 0, y: 20 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: index * 0.1 }}
-                          viewport={{ once: true }}
-                        >
-                            <Card className="text-left h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                                <CardHeader>
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-3">
-                                        <feature.icon className="h-6 w-6 text-primary"/>
-                                    </div>
-                                    <CardTitle>{feature.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-muted-foreground">{feature.description}</p>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    ))}
+        <section id="features" className="py-16 md:py-24 bg-background">
+            <div className="container mx-auto">
+                 <div className="text-center mb-12">
+                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">The Ultimate Toolkit for Modern Learning</h2>
+                     <p className="max-w-3xl text-muted-foreground mt-4 mx-auto">Quizzicallabs AI is more than just a quiz maker. It's a comprehensive suite of intelligent tools designed to support every aspect of your academic journey.</p>
                  </div>
-            </div>
-        </section>
 
-        <section className="py-16 md:py-24 bg-background">
-             <div className="container mx-auto text-center">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Students and Teachers</h2>
-                <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Don't just take our word for it. Here's what users are saying about Quizzicallabs AI.</p>
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-                    {testimonials.map((testimonial, index) => (
-                        <Card key={index} className="text-left p-6">
-                            <CardContent className="p-0">
-                                <p className="text-muted-foreground mb-6 italic">"{testimonial.text}"</p>
-                                <div className="flex items-center gap-4">
-                                    <Avatar>
-                                         <AvatarImage src={`https://i.pravatar.cc/150?u=${testimonial.name}`} alt={testimonial.name} />
-                                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-semibold">{testimonial.name}</p>
-                                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div className="mb-4">
+                            <Badge variant="secondary">For Students</Badge>
+                            <Badge variant="secondary" className="ml-2">AI-Powered</Badge>
+                        </div>
+                        <h3 className="text-2xl font-bold mb-4">Personalized Quizzes from Any Topic</h3>
+                        <p className="text-muted-foreground mb-6">Stop searching for generic practice tests. Enter any subject, chapter, or concept and our AI will generate a high-quality quiz tailored to your specified difficulty and question style. It's perfect for targeted study sessions.</p>
+                        <ul className="space-y-3 text-muted-foreground">
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Create quizzes from millions of topics.</span></li>
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Choose from MCQs, descriptive questions, and more.</span></li>
+                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Get instant feedback and AI-powered explanations.</span></li>
+                        </ul>
+                    </div>
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl">
+                        <Image src="https://picsum.photos/800/600" alt="Screenshot of custom quiz generator interface" data-ai-hint="app interface quiz" fill className="object-cover"/>
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl lg:order-last">
+                        <Image src="https://picsum.photos/800/600" alt="Screenshot of exam paper generator for educators" data-ai-hint="app interface paper" fill className="object-cover"/>
+                    </div>
+                    <div>
+                        <div className="mb-4">
+                            <Badge variant="secondary">For Educators</Badge>
+                        </div>
+                        <h3 className="text-2xl font-bold mb-4">Effortless Exam Paper Creation</h3>
+                        <p className="text-muted-foreground mb-6">Save hours of administrative work. Our Exam Paper Generator lets you create professional, formatted test papers in minutes. Generate multiple variants to prevent cheating and get an answer key automatically.</p>
+                         <ul className="space-y-3 text-muted-foreground">
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Generate multiple paper variants instantly.</span></li>
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Customize headers, marks, and time limits.</span></li>
+                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Download print-ready PDFs with answer keys.</span></li>
+                        </ul>
+                    </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
+                    <div>
+                        <div className="mb-4">
+                            <Badge variant="secondary">Syllabus-Based</Badge>
+                        </div>
+                        <h3 className="text-2xl font-bold mb-4">Specialized Entry Test Preparation</h3>
+                        <p className="text-muted-foreground mb-6">Ace your university admission tests with dedicated modules for MDCAT, ECAT, and NTS. Our AI generates chapter-wise and full-length mock tests that are strictly aligned with the official syllabus and past paper standards.</p>
+                          <ul className="space-y-3 text-muted-foreground">
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Content tailored to official Pakistani exam syllabi.</span></li>
+                            <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Practice with full-length, timed mock tests.</span></li>
+                             <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Track your performance and identify weak areas.</span></li>
+                        </ul>
+                    </div>
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl">
+                        <Image src="https://picsum.photos/800/600" alt="Screenshot of exam prep module" data-ai-hint="app interface exam" fill className="object-cover"/>
+                    </div>
                  </div>
             </div>
         </section>
