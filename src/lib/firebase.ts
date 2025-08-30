@@ -7,7 +7,8 @@ import {
     indexedDBLocalPersistence, 
     browserLocalPersistence, 
     browserSessionPersistence,
-    GoogleAuthProvider
+    GoogleAuthProvider,
+    connectAuthEmulator
 } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
@@ -27,15 +28,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
 
-// Initialize Auth with persistence
-// This helps prevent "auth/network-request-failed" errors and ensures a smoother user experience.
-const auth = typeof window !== 'undefined' 
-    ? initializeAuth(app, {
-        persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
-      })
-    : getAuth(app);
-    
 export const db = getDatabase(app);
 export const firestore = getFirestore(app);
 
