@@ -1,3 +1,4 @@
+
 {
   "name": "nextn",
   "version": "0.1.0",
@@ -72,7 +73,7 @@
   "devDependencies": {
     "@types/jspdf": "^2.0.0",
     "@types/katex": "^0.16.7",
-    "@types/node": "^2.0.14.12",
+    "@types/node": "^20.14.12",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
