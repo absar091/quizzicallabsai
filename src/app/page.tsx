@@ -4,8 +4,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, Check, GraduationCap, Loader2 } from "lucide-react";
-import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp, BrainCircuit } from "@phosphor-icons/react";
+import { ArrowRight, Check, GraduationCap, Loader2, BrainCircuit } from "lucide-react";
+import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
