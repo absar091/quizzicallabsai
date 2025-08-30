@@ -87,7 +87,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
       <main className="flex-1">
-        <section className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12 py-24 text-center md:text-left md:py-32">
+        <section className="container mx-auto flex flex-col items-center justify-center space-y-6 py-24 text-center md:py-32">
             <motion.div 
               initial="hidden"
               animate="show"
@@ -100,17 +100,17 @@ export default function Home() {
                   },
                 },
               }}
-              className="flex flex-col items-center md:items-start space-y-6"
+              className="flex flex-col items-center space-y-6"
             >
               <motion.h1 
                 variants={FADE_IN_ANIMATION_VARIANTS}
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl"
               >
-                Your Ultimate <br/> <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Study Partner</span>
+                Your Ultimate <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI Study Partner</span>
               </motion.h1>
               <motion.p 
                  variants={FADE_IN_ANIMATION_VARIANTS}
-                 className="max-w-xl text-muted-foreground md:text-xl"
+                 className="max-w-2xl text-muted-foreground md:text-xl"
               >
                 Generate custom quizzes, practice questions, and AI study guides to master any subject. Ace your exams with specialized prep for MDCAT, ECAT, and NTS.
               </motion.p>
@@ -125,21 +125,6 @@ export default function Home() {
                   <Link href="/how-to-use">View the Guides</Link>
                 </Button>
               </motion.div>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative w-full h-80 md:h-full rounded-2xl"
-            >
-                <Image 
-                    src="https://picsum.photos/800/600" 
-                    alt="An abstract representation of AI in education"
-                    data-ai-hint="futuristic learning technology"
-                    fill
-                    className="object-cover rounded-2xl shadow-xl"
-                    priority
-                />
             </motion.div>
         </section>
         
