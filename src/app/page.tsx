@@ -4,8 +4,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen, PenNib, StepForward, BrainCircuit, Check } from "lucide-react";
-import { Student, ChalkboardTeacher } from "@phosphor-icons/react";
+import { Loader2, ArrowRight, BrainCircuit, Check, GraduationCap } from "lucide-react";
+import { Student, ChalkboardTeacher, PenNib } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
@@ -213,3 +213,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
