@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen, PenNib, StepForward, BrainCircuit } from "lucide-react";
+import { Loader2, ArrowRight, BotMessageSquare, GraduationCap, FileText, BookOpen, PenNib, StepForward, BrainCircuit, Check } from "lucide-react";
 import { Student, ChalkboardTeacher } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,29 +15,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-
-const allFeatures = [
-  {
-    icon: BotMessageSquare,
-    title: "Custom Quiz Generator",
-    description: "Create highly tailored quizzes on any topic, difficulty, and format in seconds.",
-  },
-  {
-    icon: GraduationCap,
-    title: "Entry Test Prep",
-    description: "Practice with specialized modules for MDCAT, ECAT, and NTS, including mock exams.",
-  },
-  {
-    icon: FileText,
-    title: "AI Study Guides",
-    description: "Generate comprehensive study guides with key concepts, analogies, and self-quizzes.",
-  },
-  {
-    icon: BookOpen,
-    title: "Practice Questions",
-    description: "Instantly generate questions on any topic, complete with answers and AI explanations.",
-  },
-];
 
 
 export default function Home() {
