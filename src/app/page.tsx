@@ -143,7 +143,7 @@ export default function Home() {
                         </CardHeader>
                         <CardContent>
                              <div className="relative h-60 w-full">
-                                <Image src="https://picsum.photos/600/400" alt="Student studying with a laptop" data-ai-hint="student studying" fill className="object-cover rounded-lg"/>
+                                <Image src="https://placehold.co/600x400/1A237E/FFFFFF?text=Quiz+Interface" alt="App screenshot showing a quiz for a student" data-ai-hint="app quiz" fill className="object-cover rounded-lg"/>
                             </div>
                         </CardContent>
                     </Card>
@@ -157,7 +157,7 @@ export default function Home() {
                         </CardHeader>
                         <CardContent>
                              <div className="relative h-60 w-full">
-                                <Image src="https://picsum.photos/600/400" alt="Teacher in a classroom" data-ai-hint="teacher classroom" fill className="object-cover rounded-lg"/>
+                                <Image src="https://placehold.co/600x400/F6A23B/1A237E?text=Paper+Generator" alt="App screenshot showing the exam paper generator for teachers" data-ai-hint="app interface" fill className="object-cover rounded-lg"/>
                             </div>
                         </CardContent>
                     </Card>
