@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, BrainCircuit, Check, GraduationCap, Loader2 } from "lucide-react";
+import { ArrowRight, BrainCircuit, Check, GraduationCap, Loader2, Lightbulb as LightbulbIcon } from "lucide-react";
 import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
