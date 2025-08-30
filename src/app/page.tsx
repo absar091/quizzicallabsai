@@ -4,18 +4,16 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ArrowRight, BrainCircuit, Check, GraduationCap } from "lucide-react";
-import { Student, ChalkboardTeacher, PenNib } from "@phosphor-icons/react";
+import { ArrowRight, BrainCircuit, Check, GraduationCap, Loader2 } from "lucide-react";
+import { PenNib, Student, ChalkboardTeacher } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -140,8 +138,7 @@ export default function Home() {
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
                         <div className="mb-4">
-                            <Badge variant="secondary">For Students</Badge>
-                            <Badge variant="secondary" className="ml-2">AI-Powered</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><Student className="h-4 w-4" /> For Students</Badge>
                         </div>
                         <h3 className="text-2xl font-bold mb-4">Personalized Quizzes from Any Topic</h3>
                         <p className="text-muted-foreground mb-6">Stop searching for generic practice tests. Enter any subject, chapter, or concept and our AI will generate a high-quality quiz tailored to your specified difficulty and question style. It's perfect for targeted study sessions.</p>
@@ -151,18 +148,18 @@ export default function Home() {
                              <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Get instant feedback and AI-powered explanations.</span></li>
                         </ul>
                     </div>
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl">
-                        <Image src="https://picsum.photos/800/600" alt="Screenshot of custom quiz generator interface" data-ai-hint="app interface quiz" fill className="object-cover"/>
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl bg-muted">
+                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Quiz+Generator)" alt="Screenshot of custom quiz generator interface" data-ai-hint="app interface quiz" fill className="object-contain p-8"/>
                     </div>
                  </div>
 
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl lg:order-last">
-                        <Image src="https://picsum.photos/800/600" alt="Screenshot of exam paper generator for educators" data-ai-hint="app interface paper" fill className="object-cover"/>
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl lg:order-last bg-muted">
+                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Exam+Paper+Generator)" alt="Screenshot of exam paper generator for educators" data-ai-hint="app interface paper" fill className="object-contain p-8"/>
                     </div>
                     <div>
                         <div className="mb-4">
-                            <Badge variant="secondary">For Educators</Badge>
+                            <Badge variant="secondary" className="flex items-center gap-2 w-fit"><ChalkboardTeacher className="h-4 w-4" /> For Educators</Badge>
                         </div>
                         <h3 className="text-2xl font-bold mb-4">Effortless Exam Paper Creation</h3>
                         <p className="text-muted-foreground mb-6">Save hours of administrative work. Our Exam Paper Generator lets you create professional, formatted test papers in minutes. Generate multiple variants to prevent cheating and get an answer key automatically.</p>
@@ -187,8 +184,8 @@ export default function Home() {
                              <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary"/><span>Track your performance and identify weak areas.</span></li>
                         </ul>
                     </div>
-                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl">
-                        <Image src="https://picsum.photos/800/600" alt="Screenshot of exam prep module" data-ai-hint="app interface exam" fill className="object-cover"/>
+                     <div className="relative h-80 w-full rounded-2xl overflow-hidden shadow-xl bg-muted">
+                        <Image src="https://placehold.co/800x600/e2e8f0/64748b?text=App+Screenshot\n(Exam+Prep+Module)" alt="Screenshot of exam prep module" data-ai-hint="app interface exam" fill className="object-contain p-8"/>
                     </div>
                  </div>
             </div>
@@ -213,5 +210,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

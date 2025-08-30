@@ -3,7 +3,14 @@
 
 import type { ReactNode } from "react";
 import { createContext, useState, useMemo, useEffect } from "react";
-import { onAuthStateChanged, signOut as firebaseSignOut, deleteUser, type User as FirebaseUser } from "firebase/auth";
+import { 
+    onAuthStateChanged, 
+    signOut as firebaseSignOut, 
+    deleteUser, 
+    type User as FirebaseUser,
+    GoogleAuthProvider,
+    signInWithPopup
+} from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
@@ -22,9 +29,12 @@ interface AuthContextType {
   loading: boolean;
   logout: () => void;
   deleteAccount: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const provider = new GoogleAuthProvider();
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -33,11 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-        if (firebaseUser && firebaseUser.emailVerified) {
+        if (firebaseUser) {
           let displayName = firebaseUser.displayName || "User";
           let className = "N/A";
           let age = null;
           
+          // This parsing logic is for users who signed up with email/password
           if (displayName && displayName.includes("__CLASS__")) {
             const parts = displayName.split("__CLASS__");
             displayName = parts[0];
@@ -90,13 +101,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("No user is currently signed in.");
     }
   }
+
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged will handle the user state update
+    } catch (error: any) {
+      console.error("Google Sign-In error", error);
+      // Let the calling component handle UI feedback
+      throw error;
+    }
+  };
   
   const value = useMemo(
     () => ({
       user,
       loading,
       logout,
-      deleteAccount
+      deleteAccount,
+      signInWithGoogle,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]
