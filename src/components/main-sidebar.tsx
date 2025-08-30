@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Lightbulb } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 const mainNav = [
   { href: "/dashboard", label: "Home", icon: House },
@@ -50,7 +50,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
        <div className="flex items-center p-4 h-16 lg:h-[64px]">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Lightbulb className="h-5 w-5" />
+                  <BrainCircuit className="h-5 w-5" />
               </div>
               <span>Quizzicallabs</span>
           </Link>

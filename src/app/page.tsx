@@ -4,16 +4,14 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, BrainCircuit, Check, GraduationCap, Loader2, Lightbulb as LightbulbIcon } from "lucide-react";
-import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp } from "@phosphor-icons/react";
+import { ArrowRight, Check, GraduationCap, Loader2 } from "lucide-react";
+import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp, BrainCircuit } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 
 const FADE_IN_ANIMATION_VARIANTS: Variants = {
   hidden: { opacity: 0, y: 10 },
@@ -23,12 +21,6 @@ const FADE_IN_ANIMATION_VARIANTS: Variants = {
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace("/dashboard");
-    }
-  }, [user, loading, router]);
 
   if (loading || user) {
     return (
@@ -175,7 +167,7 @@ export default function Home() {
                     </motion.div>
                 </div>
             </div>
-        </motion.section>
+        </section>
 
         <section className="py-16 md:py-24 bg-muted/30">
              <div className="container mx-auto text-center max-w-3xl">

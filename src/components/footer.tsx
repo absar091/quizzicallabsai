@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github, Lightbulb, AlertTriangle } from 'lucide-react';
+import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github, AlertTriangle, BrainCircuit } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from './ui/input';
@@ -59,7 +59,7 @@ export function Footer() {
                     <div className="col-span-2 md:col-span-4">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                                <Lightbulb className="h-5 w-5 text-primary-foreground" />
+                                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                             </div>
                             <span className="text-xl font-bold">Quizzicallabs AI</span>
                         </div>

@@ -44,61 +44,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const processAuth = async () => {
-        try {
-            // Check for redirect result from Google
-            await getRedirectResult(auth);
-        } catch (error) {
-            console.error("Error processing redirect result:", error);
-        }
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
+      if (firebaseUser) {
+          let displayName = firebaseUser.displayName || "User";
+          let className = "N/A";
+          let age = null;
+          
+          if (displayName && displayName.includes("__CLASS__")) {
+              const parts = displayName.split("__CLASS__");
+              displayName = parts[0];
+              const rest = parts[1];
+              if (rest.includes("__AGE__")) {
+                  const ageParts = rest.split("__AGE__");
+                  className = ageParts[0];
+                  age = parseInt(ageParts[1], 10) || null;
+              } else {
+                  className = rest;
+              }
+          }
 
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser) {
-                let displayName = firebaseUser.displayName || "User";
-                let className = "N/A";
-                let age = null;
-                
-                if (displayName && displayName.includes("__CLASS__")) {
-                    const parts = displayName.split("__CLASS__");
-                    displayName = parts[0];
-                    const rest = parts[1];
-                    if (rest.includes("__AGE__")) {
-                        const ageParts = rest.split("__AGE__");
-                        className = ageParts[0];
-                        age = parseInt(ageParts[1], 10) || null;
-                    } else {
-                        className = rest;
-                    }
-                }
-
-                const appUser: User = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    displayName: displayName,
-                    className: className,
-                    age: age,
-                    emailVerified: firebaseUser.emailVerified,
-                };
-                
-                setUser(appUser);
-                
-                // --- Centralized Redirect Logic ---
-                // If user is logged in, redirect them from public pages to the dashboard.
-                const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
-                if (isAuthPage) {
-                    router.replace('/dashboard');
-                }
-
-            } else {
-                setUser(null);
+          const appUser: User = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: displayName,
+              className: className,
+              age: age,
+              emailVerified: firebaseUser.emailVerified,
+          };
+          
+          setUser(appUser);
+          
+          const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
+          if (isAuthPage) {
+              router.replace('/dashboard');
+          }
+      } else {
+          setUser(null);
+          // Only handle redirect result if no user is found, to avoid race conditions.
+          try {
+            const result = await getRedirectResult(auth);
+            if (result) {
+              // This will trigger a re-run of onAuthStateChanged, which will then handle the redirect to dashboard.
+              // We don't need to do anything else here.
             }
-            setLoading(false);
-        });
+          } catch(error) {
+             console.error("Error processing Google redirect result:", error);
+          }
+      }
+      setLoading(false);
+    });
 
-        return () => unsubscribe();
-    };
-
-    processAuth();
+    return () => unsubscribe();
   }, [pathname, router]);
 
   const logout = async () => {
