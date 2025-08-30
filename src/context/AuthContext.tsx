@@ -13,7 +13,7 @@ import {
     getRedirectResult
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
 
 interface User {
@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -70,26 +71,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           age: age,
           emailVerified: firebaseUser.emailVerified,
         });
-        
-        // After setting user, check for redirect result
-        try {
-            const result = await getRedirectResult(auth);
-            if (result) {
-                // This means the user has just signed in via redirect.
-                router.push('/dashboard');
-            }
-        } catch (error) {
-            console.error("Error getting redirect result:", error);
-        }
 
+        // This is a sign-in or a page refresh with an active session.
+        // Redirect to dashboard if they are on an auth page.
+        if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
+            router.replace('/dashboard');
+        }
       } else {
         setUser(null);
       }
       setLoading(false);
     });
 
+    // Handle the redirect result from Google Sign-In
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // This will trigger the onAuthStateChanged listener above,
+          // which will then handle the redirect to the dashboard.
+          console.log("Google Sign-In successful.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error getting redirect result:", error);
+      }).finally(() => {
+          // In case onAuthStateChanged hasn't finished, we ensure loading is false.
+          setLoading(false);
+      });
+
     return () => unsubscribe();
-  }, [router]);
+  }, [pathname, router]);
 
   const logout = async () => {
     const userId = user?.uid;
@@ -115,10 +126,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
+    setLoading(true);
     try {
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
       console.error("Google Sign-In error", error);
+      setLoading(false);
       throw error;
     }
   };
@@ -131,7 +144,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       signInWithGoogle,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]
   );
 

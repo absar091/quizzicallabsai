@@ -76,7 +76,7 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       
       if (!userCredential.user.emailVerified) {
-        setShowVerificationAlert(true); // Don't sign out immediately, show the alert first
+        setShowVerificationAlert(true);
         return;
       }
 
