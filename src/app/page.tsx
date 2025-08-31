@@ -4,8 +4,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, GraduationCap, Loader2, BrainCircuit, PenNib, BookOpen, Lightbulb, FileArrowUp, Users } from "lucide-react";
-import { CheckSquare } from "@phosphor-icons/react";
+import { ArrowRight, GraduationCap, Loader2, BrainCircuit, BookOpen, Lightbulb, Users } from "lucide-react";
+import { CheckSquare, FileArrowUp, PenNib } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
@@ -85,10 +85,10 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       router.replace("/dashboard");
     }
-  }, [user, router]);
+  }, [user, loading, router]);
 
   if (loading || user) {
     return (
