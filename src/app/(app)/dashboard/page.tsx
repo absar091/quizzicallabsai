@@ -67,7 +67,7 @@ function UpgradeCard() {
             </CardFooter>
         </Card>
         </motion.div>
-    )
+    );
 }
 
 function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResult[], userName: string }) {
@@ -113,7 +113,7 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
       </CardDescription>
       {insights.suggestedAction && <Button variant="secondary" asChild className="bg-accent text-accent-foreground hover:bg-accent/90"><Link href={insights.suggestedAction.link}>{insights.suggestedAction.buttonText}</Link></Button>}
     </Card>
-  )
+  );
 }
 
 function TopicPerformanceChart({ data }: { data: QuizResult[] }) {
@@ -430,5 +430,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
