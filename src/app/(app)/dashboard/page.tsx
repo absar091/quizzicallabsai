@@ -264,6 +264,7 @@ export default function DashboardPage() {
     }
     return streak;
   };
+
   const streak = calculateStreak(recentActivity);
 
   return (
@@ -277,113 +278,122 @@ export default function DashboardPage() {
           <TabsTrigger value="achievements">Achievements</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="overview" className="space-y-6">
-          <motion.div variants={itemVariants}>
-            <UpgradeCard />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
-          </motion.div>
-
+        <TabsContent value="overview" asChild>
           <motion.div 
-            className="grid grid-cols-2 gap-4"
+            className="space-y-6"
             variants={containerVariants}
             initial="hidden"
             animate="show"
           >
+            <UpgradeCard />
             <motion.div variants={itemVariants}>
-              <Card className="p-4 shadow-sm">
-                <CardHeader className="p-0 flex-row items-center gap-2">
-                    <Flame className="h-4 w-4 text-muted-foreground"/>
-                    <CardTitle className="text-base font-semibold">Daily Streak</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 mt-2">
-                    <p className="text-2xl font-bold">{streak} <span className="text-base font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
-                </CardContent>
-              </Card>
+              <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
             </motion.div>
+
+            <motion.div 
+              className="grid grid-cols-2 gap-4"
+              variants={containerVariants}
+            >
+              <motion.div variants={itemVariants}>
+                <Card className="p-4 shadow-sm">
+                  <CardHeader className="p-0 flex-row items-center gap-2">
+                      <Flame className="h-4 w-4 text-muted-foreground"/>
+                      <CardTitle className="text-base font-semibold">Daily Streak</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 mt-2">
+                      <p className="text-2xl font-bold">{streak} <span className="text-base font-medium text-muted-foreground">day{streak !== 1 ? 's' : ''}</span></p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <Card className="p-4 shadow-sm">
+                  <CardHeader className="p-0 flex-row items-center gap-2">
+                      <Target className="h-4 w-4 text-muted-foreground"/>
+                      <CardTitle className="text-base font-semibold">Today's Goal</CardTitle>
+                  </Header>
+                  <CardContent className="p-0 mt-2">
+                    <Progress value={dailyGoalProgress} className="h-2 mb-1" />
+                    <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
+          
             <motion.div variants={itemVariants}>
-              <Card className="p-4 shadow-sm">
-                <CardHeader className="p-0 flex-row items-center gap-2">
-                    <Target className="h-4 w-4 text-muted-foreground"/>
-                    <CardTitle className="text-base font-semibold">Today's Goal</CardTitle>
-                </Header>
-                <CardContent className="p-0 mt-2">
-                  <Progress value={dailyGoalProgress} className="h-2 mb-1" />
-                  <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
-                </CardContent>
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Bookmarked Questions</CardTitle>
+                      <CardDescription>Questions you've saved to review later.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="flex items-center gap-4">
+                          <div className="p-3 bg-primary/10 rounded-full">
+                            <BookMarked className="h-8 w-8 text-primary"/>
+                          </div>
+                          <div>
+                              <p className="text-2xl font-bold">{bookmarksCount}</p>
+                              <p className="text-sm text-muted-foreground">questions bookmarked</p>
+                          </div>
+                      </div>
+                  </CardContent>
+                  <CardFooter>
+                      <Button asChild variant="outline">
+                          <Link href="/bookmarks">Review Bookmarks</Link>
+                      </Button>
+                  </CardFooter>
               </Card>
             </motion.div>
           </motion.div>
-          
-           <motion.div variants={itemVariants}>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Bookmarked Questions</CardTitle>
-                    <CardDescription>Questions you've saved to review later.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 rounded-full">
-                           <BookMarked className="h-8 w-8 text-primary"/>
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold">{bookmarksCount}</p>
-                            <p className="text-sm text-muted-foreground">questions bookmarked</p>
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter>
-                     <Button asChild variant="outline">
-                        <Link href="/bookmarks">Review Bookmarks</Link>
-                    </Button>
-                </CardFooter>
-            </Card>
-           </motion.div>
-
         </TabsContent>
 
-        <TabsContent value="stats" className="space-y-6">
-            <motion.div variants={itemVariants}>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Topic Performance</CardTitle>
-                    <CardDescription>Your average scores across different topics.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <TopicPerformanceChart data={recentActivity} />
-                </CardContent>
-            </Card>
-            </motion.div>
-             <motion.div variants={itemVariants}>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Recent Activity</CardTitle>
-                    <CardDescription>A log of your most recent quizzes.</CardDescription>
-                </Header>
-                <CardContent>
-                     {recentActivity.length > 0 ? (
-                        <ul className="space-y-3">
-                            {recentActivity.slice(0, 10).map(activity => (
-                                <li key={activity.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                                    <div>
-                                        <p className="font-semibold">{activity.topic}</p>
-                                        <p className="text-sm text-muted-foreground">{new Date(activity.date).toLocaleDateString()}</p>
-                                    </div>
-                                    <Badge variant={activity.percentage >= 50 ? 'default' : 'destructive'} className="bg-primary">{activity.percentage.toFixed(0)}%</Badge>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                         <p className="text-muted-foreground text-center py-8">No recent activity to display.</p>
-                    )}
-                </CardContent>
-            </Card>
-            </motion.div>
+        <TabsContent value="stats" asChild>
+          <motion.div 
+            className="space-y-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
+              <motion.div variants={itemVariants}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Topic Performance</CardTitle>
+                        <CardDescription>Your average scores across different topics.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <TopicPerformanceChart data={recentActivity} />
+                    </CardContent>
+                </Card>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Recent Activity</CardTitle>
+                      <CardDescription>A log of your most recent quizzes.</CardDescription>
+                  </Header>
+                  <CardContent>
+                      {recentActivity.length > 0 ? (
+                          <ul className="space-y-3">
+                              {recentActivity.slice(0, 10).map(activity => (
+                                  <li key={activity.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                      <div>
+                                          <p className="font-semibold">{activity.topic}</p>
+                                          <p className="text-sm text-muted-foreground">{new Date(activity.date).toLocaleDateString()}</p>
+                                      </div>
+                                      <Badge variant={activity.percentage >= 50 ? 'default' : 'destructive'} className="bg-primary">{activity.percentage.toFixed(0)}%</Badge>
+                                  </li>
+                              ))}
+                          </ul>
+                      ) : (
+                          <p className="text-muted-foreground text-center py-8">No recent activity to display.</p>
+                      )}
+                  </CardContent>
+              </Card>
+              </motion.div>
+          </motion.div>
         </TabsContent>
         
-        <TabsContent value="achievements">
-            <motion.div variants={itemVariants}>
+        <TabsContent value="achievements" asChild>
+          <motion.div variants={itemVariants} initial="hidden" animate="show">
             <Card>
                 <CardHeader>
                     <CardTitle>Your Achievements</CardTitle>
@@ -393,7 +403,7 @@ export default function DashboardPage() {
                     <AchievementsTab recentActivity={recentActivity} bookmarksCount={bookmarksCount} />
                 </CardContent>
             </Card>
-            </motion.div>
+          </motion.div>
         </TabsContent>
       </Tabs>
 
@@ -420,3 +430,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
