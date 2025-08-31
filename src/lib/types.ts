@@ -1,8 +1,10 @@
 
 export interface Question {
   question: string;
-  options: string[];
-  answer: string;
+  answers?: string[];
+  correctAnswer?: string;
+  type: 'multiple-choice' | 'descriptive';
+  smiles?: string;
   explanation?: string;
   userAnswer?: string;
 }

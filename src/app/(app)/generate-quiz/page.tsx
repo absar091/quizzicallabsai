@@ -1039,7 +1039,7 @@ const questionStyleOptions = [
 // --- Form Component ---
 function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void; }) {
     const form = useFormContext<QuizFormValues>();
-    const watchQuestionTypes = form.watch('questionTypes');
+    const watchQuestionStyles = form.watch('questionStyles');
     
     return (
         <div>
@@ -1159,7 +1159,7 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                       render={() => (
                         <FormItem>
                           <FormLabel>Question Styles</FormLabel>
-                           {watchQuestionTypes.includes('Comprehension-based MCQs') && (
+                           {watchQuestionStyles.includes('Comprehension-based MCQs') && (
                                <Alert className="mt-2 text-xs p-2">
                                 <AlertTriangle className="h-4 w-4"/>
                                 <AlertDescription>
