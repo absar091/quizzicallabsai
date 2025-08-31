@@ -23,24 +23,24 @@ const Avatar = React.forwardRef<
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
 const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    asChild
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  >
-     <Image
-      alt={props.alt || "User avatar"}
-      width={40}
-      height={40}
-      {...(props as any)}
-    />
-  </AvatarPrimitive.Image>
-))
-AvatarImage.displayName = AvatarPrimitive.Image.displayName
+  React.ElementRef<typeof Image>,
+  Omit<React.ComponentPropsWithoutRef<typeof Image>, 'alt'> & { alt?: string }
+>(({ className, src, alt, ...props }, ref) => {
+  return (
+    <AvatarPrimitive.Image asChild className={cn("aspect-square h-full w-full", className)}>
+        <Image
+          src={src || ''}
+          alt={alt || "User avatar"}
+          width={40}
+          height={40}
+          {...props}
+          ref={ref}
+        />
+    </AvatarPrimitive.Image>
+  );
+});
+AvatarImage.displayName = 'AvatarImage'
+
 
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
