@@ -20,7 +20,7 @@ export function BottomNavBar() {
     <div className="fixed bottom-0 left-0 z-40 w-full h-16 bg-card border-t shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
       <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           return (
             <Link key={item.href} href={item.href} className="inline-flex flex-col items-center justify-center px-1 group relative">
               <div className="relative">
