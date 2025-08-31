@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button } from "@/components/ui/button";
 import {

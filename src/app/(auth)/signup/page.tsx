@@ -9,6 +9,7 @@ import * as z from "zod";
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { ref, set } from "firebase/database";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +38,8 @@ const formSchema = z.object({
   age: z.coerce.number().min(5, "You must be at least 5 years old.").max(100, "Please enter a valid age."),
   agree: z.boolean().refine(val => val, {
     message: "You must accept the terms to continue."
-  })
+  }),
+  recaptcha: z.string().min(1, { message: "Please complete the reCAPTCHA challenge." }),
 });
 
 export default function SignupPage() {
@@ -57,6 +59,7 @@ export default function SignupPage() {
       className: "",
       age: '' as unknown as number, // Initialize with empty string to prevent uncontrolled input error
       agree: false,
+      recaptcha: "",
     },
   });
 
@@ -226,6 +229,21 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
+             <FormField
+                control={form.control}
+                name="recaptcha"
+                render={({ field }) => (
+                    <FormItem className="flex flex-col items-center">
+                    <FormControl>
+                        <ReCAPTCHA
+                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                            onChange={(value) => field.onChange(value || "")}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+             />
             <FormField
                 control={form.control}
                 name="agree"

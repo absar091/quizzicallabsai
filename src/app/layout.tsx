@@ -90,7 +90,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+      </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>
         <AppProviders>
           {children}
