@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { signInWithGoogle, loading: authLoading } = useAuth();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,6 +89,7 @@ export default function SignupPage() {
   }
 
   const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
     try {
       await signInWithGoogle();
       // The redirect will be handled by the AuthProvider
@@ -96,6 +99,7 @@ export default function SignupPage() {
         description: error.message,
         variant: "destructive",
       });
+      setIsGoogleLoading(false);
     }
   };
 
@@ -108,8 +112,8 @@ export default function SignupPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} type="button" disabled={authLoading}>
-                {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 
+             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} type="button" disabled={authLoading || isGoogleLoading}>
+                {authLoading || isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 
                   <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                     <path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 110.3 512 0 401.8 0 265.8 0 130.2 105.4 21.8 244 21.8c67.2 0 123 24.8 166.3 65.9l-67.5 64.9C258.5 122.1 223.5 101.8 182.8 101.8c-70.3 0-126.5 58.2-126.5 130.1s56.2 130.1 126.5 130.1c76.3 0 115.4-53.7 122.5-81.8H285V246.3h199.1c.3 15.2.7 30.2.7 45.5z"></path>
                   </svg>

@@ -4,18 +4,23 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, GraduationCap, Loader2, BrainCircuit } from "lucide-react";
-import { PenNib, Student, ChalkboardTeacher, BookOpen, Lightbulb, FileArrowUp } from "@phosphor-icons/react";
+import { ArrowRight, GraduationCap, Loader2, BrainCircuit, PenNib, BookOpen, Lightbulb, FileArrowUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { motion, type Variants } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const FADE_IN_ANIMATION_VARIANTS: Variants = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { type: "spring" } },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
 export default function Home() {
@@ -30,12 +35,12 @@ export default function Home() {
 
   if (loading || user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
-
+  
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader />
@@ -81,12 +86,12 @@ export default function Home() {
             </motion.div>
         </section>
         
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-24 bg-muted/50">
             <div className="container mx-auto text-center">
                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">How It Works</h2>
                  <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">Transform your study routine in three simple steps.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 text-left">
-                    <Card className="p-6 bg-muted/30 border-none">
+                    <Card className="p-6 bg-card border-border/50 shadow-sm">
                         <CardHeader className="p-0">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <PenNib className="h-6 w-6 text-primary"/>
@@ -98,7 +103,7 @@ export default function Home() {
                              <p className="text-muted-foreground">Choose a tool. Generate a custom quiz from any topic, upload your own notes to create a test, or build a comprehensive study guide.</p>
                         </CardContent>
                     </Card>
-                     <Card className="p-6 bg-muted/30 border-none">
+                     <Card className="p-6 bg-card border-border/50 shadow-sm">
                         <CardHeader className="p-0">
                              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <BrainCircuit className="h-6 w-6 text-primary"/>
@@ -110,7 +115,7 @@ export default function Home() {
                              <p className="text-muted-foreground">Take the AI-generated quizzes, review detailed explanations for incorrect answers, and study with flashcards to reinforce your knowledge.</p>
                         </CardContent>
                     </Card>
-                     <Card className="p-6 bg-muted/30 border-none">
+                     <Card className="p-6 bg-card border-border/50 shadow-sm">
                         <CardHeader className="p-0">
                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <GraduationCap className="h-6 w-6 text-primary"/>
@@ -134,7 +139,7 @@ export default function Home() {
             viewport={{ once: true }}
             variants={{
                 hidden: {},
-                show: { transition: { staggerChildren: 0.2 } },
+                show: { transition: { staggerChildren: 0.1 } },
             }}
         >
             <div className="container mx-auto">
@@ -144,7 +149,7 @@ export default function Home() {
                  </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
+                    <motion.div variants={cardVariants}>
                         <Card className="p-6 h-full hover:shadow-lg transition-shadow">
                              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <Lightbulb className="h-6 w-6 text-primary"/>
@@ -153,7 +158,7 @@ export default function Home() {
                             <p className="text-sm text-muted-foreground">Generate tailored tests on any topic with custom difficulty and question formats.</p>
                         </Card>
                     </motion.div>
-                     <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
+                     <motion.div variants={cardVariants}>
                         <Card className="p-6 h-full hover:shadow-lg transition-shadow">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <FileArrowUp className="h-6 w-6 text-primary"/>
@@ -162,7 +167,7 @@ export default function Home() {
                             <p className="text-sm text-muted-foreground">Upload your notes, PDFs, or images to create quizzes directly from your material.</p>
                         </Card>
                     </motion.div>
-                     <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
+                     <motion.div variants={cardVariants}>
                         <Card className="p-6 h-full hover:shadow-lg transition-shadow">
                              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
                                 <GraduationCap className="h-6 w-6 text-primary"/>
@@ -171,11 +176,100 @@ export default function Home() {
                             <p className="text-sm text-muted-foreground">Syllabus-specific preparation for MDCAT, ECAT, and NTS with mock exams.</p>
                         </Card>
                     </motion.div>
+                     <motion.div variants={cardVariants}>
+                        <Card className="p-6 h-full hover:shadow-lg transition-shadow">
+                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <BookOpen className="h-6 w-6 text-primary"/>
+                            </div>
+                            <h3 className="text-lg font-semibold mb-2">AI Study Guides</h3>
+                            <p className="text-sm text-muted-foreground">Generate comprehensive guides on any topic, complete with summaries, key concepts, and self-quizzes.</p>
+                        </Card>
+                    </motion.div>
+                     <motion.div variants={cardVariants}>
+                        <Card className="p-6 h-full hover:shadow-lg transition-shadow">
+                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <BrainCircuit className="h-6 w-6 text-primary"/>
+                            </div>
+                            <h3 className="text-lg font-semibold mb-2">AI Explanations</h3>
+                            <p className="text-sm text-muted-foreground">Get detailed, easy-to-understand explanations for any question you get wrong.</p>
+                        </Card>
+                    </motion.div>
+                     <motion.div variants={cardVariants}>
+                        <Card className="p-6 h-full hover:shadow-lg transition-shadow">
+                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
+                                <PenNib className="h-6 w-6 text-primary"/>
+                            </div>
+                            <h3 className="text-lg font-semibold mb-2">Exam Paper Generator</h3>
+                            <p className="text-sm text-muted-foreground">A tool for educators to create and format professional exam papers with multiple variants.</p>
+                        </Card>
+                    </motion.div>
                 </div>
             </div>
         </motion.section>
+        
+         <section className="py-16 md:py-24 bg-muted/50">
+          <div className="container mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Students and Teachers</h2>
+              <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">See what our users are saying about Quizzicallabs AI.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground italic">"This app is a game-changer for MDCAT prep. The chapter-wise tests are exactly what I needed to focus my study."</p>
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src="https://picsum.photos/50/50?student" alt="Student User" data-ai-hint="student headshot"/>
+                        <AvatarFallback>AU</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">Ali H.</p>
+                        <p className="text-sm text-muted-foreground">MDCAT Student</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+               <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground italic">"The Exam Paper Generator saved me hours of work. Creating multiple versions of a test with an answer key is brilliant!"</p>
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src="https://picsum.photos/50/50?teacher" alt="Teacher User" data-ai-hint="teacher headshot"/>
+                        <AvatarFallback>FK</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">Fatima K.</p>
+                        <p className="text-sm text-muted-foreground">Physics Teacher</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+               <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground italic">"Being able to upload my own notes and get a quiz from them is incredible. It makes my revision so much more effective."</p>
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src="https://picsum.photos/50/50?user" alt="University User" data-ai-hint="university student"/>
+                        <AvatarFallback>US</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">Usman S.</p>
+                        <p className="text-sm text-muted-foreground">University Student</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
 
-        <section className="py-16 md:py-24 bg-muted/30">
+        <section className="py-16 md:py-24 bg-background">
              <div className="container mx-auto text-center max-w-3xl">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Ready to Transform Your Learning?</h2>
                 <p className="text-muted-foreground mt-4 mx-auto">Create a free account and get instant access to the entire suite of AI-powered study tools. No credit card required.</p>

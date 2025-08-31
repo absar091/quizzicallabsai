@@ -45,7 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
       if (firebaseUser) {
           let displayName = firebaseUser.displayName || "User";
           let className = "N/A";
@@ -74,26 +73,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
           
           setUser(appUser);
-          
           const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
           if (isAuthPage) {
               router.replace('/dashboard');
           }
       } else {
           setUser(null);
-          // Only handle redirect result if no user is found, to avoid race conditions.
-          try {
-            const result = await getRedirectResult(auth);
-            if (result) {
-              // This will trigger a re-run of onAuthStateChanged, which will then handle the redirect to dashboard.
-              // We don't need to do anything else here.
-            }
-          } catch(error) {
-             console.error("Error processing Google redirect result:", error);
-          }
       }
       setLoading(false);
     });
+
+    // Handle the redirect result from Google
+    getRedirectResult(auth)
+      .then((result) => {
+        // This will trigger onAuthStateChanged if the user signed in successfully.
+        // No need to manually set the user here.
+      })
+      .catch((error) => {
+        console.error("Error processing Google redirect result:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     return () => unsubscribe();
   }, [pathname, router]);
