@@ -626,12 +626,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const resetQuiz = async () => {
     if(initialQuiz) {
-        if (window.location.pathname.includes('mdcat')) {
+        // Check which prep section this quiz came from and redirect accordingly
+        if (window.location.pathname.includes('/mdcat/')) {
            window.location.href = '/mdcat';
-        } else if (window.location.pathname.includes('ecat')) {
+        } else if (window.location.pathname.includes('/ecat/')) {
             window.location.href = '/ecat';
-        } else if (window.location.pathname.includes('nts')) {
+        } else if (window.location.pathname.includes('/nts/')) {
             window.location.href = '/nts';
+        } else {
+            // Fallback for other initial quizzes
+            window.location.href = '/exam-prep';
         }
         return;
     }
@@ -932,7 +936,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                             Generate Flashcards
                         </Button>
                     )}
-                    <Button variant="outline" asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
+                    <Button variant="outline" asChild><Link href="/"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>
        </div>

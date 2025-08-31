@@ -125,7 +125,7 @@ export default function ProfilePage() {
             </Card>
         </div>
 
-        <div className="space-y-4">
+         <div className="space-y-4">
              <h3 className="text-sm font-semibold text-muted-foreground px-4">APP SETTINGS</h3>
             <Card className="shadow-sm">
                  <CardContent className="divide-y p-0">

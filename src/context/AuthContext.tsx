@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
             if (isAuthPage) {
-                router.replace('/dashboard');
+                router.replace('/');
             }
         } else {
             setUser(null);

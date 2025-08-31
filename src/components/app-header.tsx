@@ -18,10 +18,10 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const pathname = usePathname();
 
   // Pages where the main logo should be shown instead of a back button on mobile
-  const topLevelAppPages = ["/dashboard", "/genlab", "/exam-prep", "/profile"];
+  const topLevelAppPages = ["/", "/genlab", "/exam-prep", "/profile"];
   const isTopLevelAppPage = topLevelAppPages.includes(pathname);
   const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
-  const isHomePage = pathname === '/';
+  const isLandingPage = pathname === '/';
 
   // Back button logic for logged-in users
   const showAppBackButton = user && !isTopLevelAppPage;
@@ -42,8 +42,8 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
                      <Link href="/#features" className="transition-colors hover:text-primary text-muted-foreground">Features</Link>
                      <Link href="/how-to-use" className="transition-colors hover:text-primary text-muted-foreground">Guides</Link>
                   </nav>
-                  {!isAuthPage && !isHomePage && <div className="md:hidden"/>}
-                  {isHomePage && (
+                  {!isAuthPage && !isLandingPage && <div className="md:hidden"/>}
+                  {isLandingPage && (
                     <>
                     <Button asChild variant="ghost">
                       <Link href="/login">Log In</Link>
@@ -87,7 +87,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
       )}
       <div className="w-full flex-1 flex items-center justify-between md:justify-end">
           <div className="md:hidden">
-              {!showAppBackButton && <h1 className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></h1>}
+              {!showAppBackButton && <Link href="/" className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></Link>}
           </div>
            <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon">

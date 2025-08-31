@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { BrainCircuit } from "lucide-react";
 
 const mainNav = [
-  { href: "/dashboard", label: "Home", icon: House },
+  { href: "/", label: "Home", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
   { href: "/profile", label: "Profile", icon: User },
@@ -30,7 +30,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
   const { user, logout } = useAuth();
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
-    const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+    const isActive = pathname === href;
     return (
       <Link 
           href={href} 
@@ -48,7 +48,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
   return (
     <div className="flex flex-col h-full bg-card">
        <div className="flex items-center p-4 h-16 lg:h-[64px]">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
+          <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>

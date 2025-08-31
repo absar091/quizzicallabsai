@@ -1,6 +1,6 @@
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import type { QuizFormValues, Quiz } from '@/app/(app)/generate-quiz/page';
+import type { QuizFormValues, Quiz } from '@/app/(protected)/generate-quiz/page';
 
 const DB_NAME = 'QuizzicallabsDB';
 const DB_VERSION = 2; // Version updated to handle new quizState structure

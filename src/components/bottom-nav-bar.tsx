@@ -7,7 +7,7 @@ import { House, Flask, Exam, User } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Home", icon: House },
+  { href: "/", label: "Home", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
   { href: "/profile", label: "Profile", icon: User },
@@ -20,7 +20,7 @@ export function BottomNavBar() {
     <div className="fixed bottom-0 left-0 z-40 w-full h-16 bg-card border-t shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
       <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const isActive = pathname === item.href;
           return (
             <Link key={item.href} href={item.href} className="inline-flex flex-col items-center justify-center px-1 group relative">
               <div className="relative">
