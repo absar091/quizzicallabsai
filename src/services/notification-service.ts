@@ -2,54 +2,40 @@
 'use server';
 
 import * as admin from 'firebase-admin';
-import { getFirestore } from 'firebase-admin/firestore';
-import { serviceAccountKey } from './serviceAccountKey-temp';
+import { getDatabase } from 'firebase-admin/database';
 
 // This function safely initializes the Firebase Admin SDK.
 function initializeFirebaseAdmin() {
   // Prevent re-initialization
   if (admin.apps.length > 0) {
-    return;
+    return admin.app();
   }
 
   // Use environment variables in production, which is the standard for Vercel/Firebase App Hosting
-  if (process.env.NODE_ENV === 'production' && process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
     try {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-      admin.initializeApp({
+      console.log('Initializing Firebase Admin SDK with environment variables...');
+      return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
+        databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
       });
-      console.log('Firebase Admin SDK initialized using environment variable.');
-      return;
     } catch (e) {
-      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:', e);
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Notifications will not work.', e);
+      return null;
     }
   }
 
-  // Fallback for local development using the temporary service account key file
-  // This check ensures we don't try to use placeholder credentials and crash.
-  if (serviceAccountKey.project_id && serviceAccountKey.project_id !== 'your-project-id') {
-     try {
-       admin.initializeApp({
-         credential: admin.credential.cert(serviceAccountKey as admin.ServiceAccount),
-       });
-       console.log('Firebase Admin SDK initialized using local service account file.');
-     } catch (e) {
-        console.error('Error initializing Firebase Admin with local key file:', e);
-     }
-  } else {
-    console.warn('Firebase Admin SDK not initialized. Push notifications will not work. Please provide service account credentials.');
-  }
+  console.warn('Firebase Admin SDK not initialized. Push notifications are disabled. Provide FIREBASE_SERVICE_ACCOUNT_KEY environment variable for production.');
+  return null;
 }
 
 // Initialize the SDK
-initializeFirebaseAdmin();
-
-
-const db = admin.apps.length ? getFirestore() : null;
+const firebaseApp = initializeFirebaseAdmin();
+const dbAdmin = firebaseApp ? getDatabase(firebaseApp) : null;
 
 export async function sendDailyReminderNotifications() {
-    if (!db) {
+    if (!dbAdmin) {
         const message = "Firebase Admin is not initialized. Skipping sending notifications.";
         console.log(message);
         return { successCount: 0, failureCount: 0, error: message };
@@ -57,23 +43,28 @@ export async function sendDailyReminderNotifications() {
 
     console.log("Running daily reminder job...");
 
-    const tokensSnapshot = await db.collection('fcmTokens').get();
+    const tokensRef = dbAdmin.ref('fcmTokens');
+    const tokensSnapshot = await tokensRef.once('value');
 
-    if (tokensSnapshot.empty) {
+    if (!tokensSnapshot.exists()) {
         console.log('No tokens found to send notifications.');
         return { successCount: 0, failureCount: 0 };
     }
 
-    const tokens: string[] = [];
-    tokensSnapshot.forEach(doc => {
-        tokens.push(doc.data().token);
-    });
+    const tokensData = tokensSnapshot.val();
+    const tokens: string[] = Object.values(tokensData).map((entry: any) => entry.token);
+    
+    if (tokens.length === 0) {
+        console.log('No tokens available to send notifications.');
+        return { successCount: 0, failureCount: 0 };
+    }
 
     const payload = {
         notification: {
             title: '🎯 Daily Goal Reminder',
             body: 'You haven’t completed a quiz today. Hop back in to keep your streak going!',
-            icon: '/icon-192x192.svg',
+            icon: '/icon.svg',
+            click_action: 'https://quizzicallabs.com/dashboard'
         },
     };
 
@@ -92,11 +83,15 @@ export async function sendDailyReminderNotifications() {
                     error.code === 'messaging/registration-token-not-registered'
                 ) {
                     const failedToken = tokens[index];
-                    const tokenDocRef = db.collection('fcmTokens').where('token', '==', failedToken);
-                    const docToDelete = await tokenDocRef.get();
-                    if (!docToDelete.empty) {
-                        docToDelete.forEach(doc => doc.ref.delete());
-                        console.log('Deleted invalid token from Firestore.');
+                    // Find the user ID by the token value to delete it
+                    const snapshotVal = tokensSnapshot.val();
+                    for (const uid in snapshotVal) {
+                        if (snapshotVal[uid].token === failedToken) {
+                            const tokenToDeleteRef = dbAdmin.ref(`fcmTokens/${uid}`);
+                            await tokenToDeleteRef.remove();
+                            console.log(`Deleted invalid token for UID: ${uid}`);
+                            break;
+                        }
                     }
                 }
             }
