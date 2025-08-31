@@ -1,20 +1,4 @@
-<svg width="256" height="256" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
-    <rect width="100" height="100" rx="22" ry="22" fill="#1A237E"/>
-
-    <g transform="translate(5, 5)">
-        <path d="M 45,15
-                 C 25,15 15,30 15,50
-                 C 15,70 25,85 45,85
-                 C 55,85 65,80 70,70
-                 C 75,60 75,50 75,40
-                 C 75,20 65,15 45,15 Z
-                 M 45,25
-                 C 55,25 65,30 65,40
-                 C 65,50 60,60 50,65
-                 C 40,70 30,65 25,55
-                 C 20,45 25,30 45,25 Z" fill="#FFFFFF"/>
-    </g>
-    
-    <path d="M 60 65 L 80 85" stroke="#00C853" stroke-width="10" stroke-linecap="round"/>
-
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="50" r="50" fill="#1A237E"/>
+<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Poppins, sans-serif" font-size="60" font-weight="600" fill="white">Q</text>
 </svg>
