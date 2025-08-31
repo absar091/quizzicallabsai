@@ -44,63 +44,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleAuthChange = (firebaseUser: FirebaseUser | null) => {
-        if (firebaseUser) {
-            let displayName = firebaseUser.displayName || "User";
-            let className = "N/A";
-            let age = null;
-            
-            if (displayName && displayName.includes("__CLASS__")) {
-                const parts = displayName.split("__CLASS__");
-                displayName = parts[0];
-                const rest = parts[1];
-                if (rest.includes("__AGE__")) {
-                    const ageParts = rest.split("__AGE__");
-                    className = ageParts[0];
-                    age = parseInt(ageParts[1], 10) || null;
-                } else {
-                    className = rest;
-                }
+    // This effect runs only once on mount to set up the auth listener.
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        let displayName = firebaseUser.displayName || "User";
+        let className = "N/A";
+        let age = null;
+        
+        if (displayName && displayName.includes("__CLASS__")) {
+            const parts = displayName.split("__CLASS__");
+            displayName = parts[0];
+            const rest = parts[1];
+            if (rest.includes("__AGE__")) {
+                const ageParts = rest.split("__AGE__");
+                className = ageParts[0];
+                age = parseInt(ageParts[1], 10) || null;
+            } else {
+                className = rest;
             }
-
-            const appUser: User = {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                displayName: displayName,
-                className: className,
-                age: age,
-                emailVerified: firebaseUser.emailVerified,
-            };
-            
-            setUser(appUser);
-            // This is the key redirect logic.
-            const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
-            if (isAuthPage) {
-                router.replace('/dashboard');
-            }
-        } else {
-            setUser(null);
         }
-        setLoading(false);
-    };
 
-    // This handles redirect results from Google Sign-In
+        const appUser: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: displayName,
+            className: className,
+            age: age,
+            emailVerified: firebaseUser.emailVerified,
+        };
+        
+        setUser(appUser);
+        
+        // Key navigation logic: If user is logged in, redirect them from public pages.
+        const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
+        if (isAuthPage) {
+            router.replace('/dashboard');
+        }
+
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Handle the redirect result from Google Sign-In
     getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User is signed in. The onAuthStateChanged listener below will handle the rest.
-        }
-      })
       .catch((error) => {
         console.error("Error processing Google redirect result:", error);
       })
       .finally(() => {
-        // Set up the primary auth state listener.
-        const unsubscribe = onAuthStateChanged(auth, handleAuthChange);
-        return () => unsubscribe();
+        // This ensures loading is false only after redirect is handled AND listener is set up.
+        setLoading(false);
       });
 
-  }, [pathname, router]);
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const logout = async () => {
     const userId = user?.uid;
@@ -144,7 +144,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       signInWithGoogle,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]
   );
 
