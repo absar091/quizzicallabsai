@@ -4,7 +4,7 @@ import { ModelReference } from 'genkit/model';
 
 // Centralized model names read from environment variables
 const FREE_MODEL = process.env.NEXT_PUBLIC_FREE_MODEL_NAME || 'gemini-1.5-flash';
-const PRO_MODEL = process.env.NEXT_PUBLIC_PRO_MODEL_NAME || 'gemini-1.5-pro';
+const PRO_MODEL = process.env.NEXT_PUBLIC_PRO_MODEL_NAME || 'gemini-2.5-pro';
 
 /**
  * Returns the appropriate Genkit model based on the user's plan.

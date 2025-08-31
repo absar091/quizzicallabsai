@@ -11,6 +11,7 @@ import { SplashScreen } from "@/components/splash-screen";
 import InstallPwaPrompt from "./install-pwa-prompt";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import NotificationHandler from "./notification-handler";
 
 const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
 
@@ -18,7 +19,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();
 
-    const showHelpBot = !loading && (!!user || ['/', '/login', '/signup', '/forgot-password'].includes(pathname));
+    const showHelpBot = !loading; // Show for all users, logged in or not
 
     return (
         <>
@@ -31,6 +32,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
                     <HelpBot />
                 </div>
             )}
+            {user && <NotificationHandler />}
         </>
     );
 }
@@ -46,6 +48,11 @@ export default function AppProviders({
     const splashShown = sessionStorage.getItem('splashShown');
     if (splashShown) {
       setIsSplashLoading(false);
+    } else {
+        const timer = setTimeout(() => {
+            handleAnimationComplete();
+        }, 3000); // Failsafe timer
+        return () => clearTimeout(timer);
     }
   }, []);
   
