@@ -25,6 +25,7 @@ import { generateStudyGuide, GenerateStudyGuideOutput } from "@/ai/flows/generat
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import { usePlan } from "@/hooks/usePlan";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
@@ -72,6 +73,7 @@ export default function GenerateStudyGuidePage() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [studyGuide, setStudyGuide] = useState<GenerateStudyGuideOutput | null>(null);
+  const { isPro } = usePlan();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,7 +88,7 @@ export default function GenerateStudyGuidePage() {
     setIsGenerating(true);
     setStudyGuide(null);
     try {
-      const result = await generateStudyGuide(values);
+      const result = await generateStudyGuide({ ...values, isPro });
       setStudyGuide(result);
     } catch (error) {
       toast({
