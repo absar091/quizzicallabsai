@@ -6,7 +6,7 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell, Loader2 } from "lucide-react";
+import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell, Loader2, RefreshCw } from "lucide-react";
 import RichContentRenderer from '@/components/rich-content-renderer';
 
 
@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import { generateExplanationsForIncorrectAnswers } from "@/ai/flows/generate-explanations-for-incorrect-answers";
 import { generateSimpleExplanation } from "@/ai/flows/generate-simple-explanation";
+import { generateFlashcards, GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,6 +47,7 @@ import {
     saveBookmark, 
     deleteBookmark, 
     saveQuizResult,
+    getQuizResults,
     BookmarkedQuestion
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,6 +68,7 @@ const formSchema = z.object({
 
 type QuizFormValues = z.infer<typeof formSchema>;
 export type Quiz = GenerateCustomQuizOutput["quiz"];
+type Flashcard = GenerateFlashcardsOutput["flashcards"][0];
 
 interface ExplanationState {
   [questionIndex: number]: {
@@ -138,6 +141,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
+
+  const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
+  const [generatedFlashcards, setGeneratedFlashcards] = useState<Flashcard[] | null>(null);
+  const [showFlashcardViewer, setShowFlashcardViewer] = useState(false);
+
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef(false);
@@ -222,14 +230,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             setUserAnswers(new Array(initialQuiz.length).fill(null));
             setTimeLeft(initialFormValues.timeLimit * 60);
             setFormValues(initialFormValues);
-            setShowResults(false);
-            return;
-        }
-
-        // If this is a standard custom quiz page load (not an exam),
-        // we should NOT resume state. This ensures a fresh form.
-        if (!initialQuiz && !initialFormValues) {
-            setQuiz(null);
             setShowResults(false);
             return;
         }
@@ -331,12 +331,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setUserAnswers([]);
     setShowResults(false);
     setExplanations({});
-    
+
     try {
+      const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
+      const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
+
       const result = await generateCustomQuiz({
         ...values,
         userAge: user?.age,
         userClass: user?.className,
+        recentQuizHistory: historyForAI,
       });
       clearInterval(interval);
       setGenerationProgress(100);
@@ -458,6 +462,44 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }));
     }
   }
+
+  const handleGenerateFlashcards = async () => {
+    if (!quiz || !formValues) return;
+    const incorrectQuestions = quiz
+        .map((q, i) => ({ ...q, userAnswer: userAnswers[i] }))
+        .filter(q => q.correctAnswer !== q.userAnswer && q.type !== 'descriptive');
+
+    if (incorrectQuestions.length === 0) {
+        toast({ title: "Nothing to review!", description: "You answered all questions correctly." });
+        return;
+    }
+    
+    setIsGeneratingFlashcards(true);
+    setGeneratedFlashcards(null);
+
+    try {
+        const flashcardInput = {
+            topic: formValues.topic,
+            incorrectQuestions: incorrectQuestions.map(q => ({
+                question: q.question,
+                userAnswer: q.userAnswer || null,
+                correctAnswer: q.correctAnswer || '',
+            }))
+        };
+        const result = await generateFlashcards(flashcardInput);
+        if (result.flashcards.length === 0) {
+            toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
+        } else {
+            setGeneratedFlashcards(result.flashcards);
+            setShowFlashcardViewer(true);
+        }
+    } catch (error) {
+        toast({ title: "Error Generating Flashcards", description: "Could not generate flashcards at this time.", variant: "destructive" });
+    } finally {
+        setIsGeneratingFlashcards(false);
+    }
+  }
+
 
   const downloadQuestions = async () => {
     if (!quiz || !formValues) return;
@@ -640,6 +682,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     };
   
   // --- Conditional Rendering ---
+
+  if (showFlashcardViewer) {
+    return <FlashcardViewer flashcards={generatedFlashcards || []} onBack={() => setShowFlashcardViewer(false)} />;
+  }
+
 
   if (isGenerating) {
     return (
@@ -869,7 +916,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                  <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
                     <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'Go to Prep Home' : 'Take Another Quiz'}</Button>
                     {incorrectAnswers.length > 0 && (
-                        <Button onClick={retryIncorrect} variant="outline"><Redo className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
+                        <Button onClick={retryIncorrect} variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
+                    )}
+                    {incorrectAnswers.length > 0 && (
+                        <Button onClick={handleGenerateFlashcards} variant="outline" disabled={isGeneratingFlashcards}>
+                            {isGeneratingFlashcards ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Generate Flashcards
+                        </Button>
                     )}
                     <Button variant="outline" asChild><Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
@@ -883,6 +936,84 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
     </FormProvider>
   );
+}
+
+// --- Flashcard Viewer Component ---
+function FlashcardViewer({ flashcards, onBack }: { flashcards: Flashcard[], onBack: () => void }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [direction, setDirection] = useState(0);
+
+    const activeCard = flashcards[currentIndex];
+
+    const handleNext = () => {
+        if (currentIndex < flashcards.length - 1) {
+            setDirection(1);
+            setIsFlipped(false);
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentIndex > 0) {
+            setDirection(-1);
+            setIsFlipped(false);
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+    return (
+        <div className="max-w-xl mx-auto flex flex-col items-center gap-6">
+            <PageHeader title="Flashcards Review" description="Review the concepts you got wrong." />
+            <div className="w-full h-72 perspective-[1000px]">
+                <AnimatePresence initial={false} custom={direction}>
+                    <motion.div
+                        key={currentIndex}
+                        className="relative w-full h-full cursor-pointer"
+                        onClick={() => setIsFlipped(!isFlipped)}
+                        initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ transformStyle: 'preserve-3d' }}
+                    >
+                        {/* Front */}
+                        <motion.div
+                            className="absolute w-full h-full flex items-center justify-center p-8 text-center bg-card border rounded-2xl shadow-lg"
+                            style={{ backfaceVisibility: 'hidden' }}
+                            animate={{ rotateY: isFlipped ? 180 : 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <h3 className="text-2xl md:text-3xl font-bold">{activeCard.term}</h3>
+                        </motion.div>
+                        {/* Back */}
+                        <motion.div
+                             className="absolute w-full h-full flex items-center justify-center p-8 text-center bg-card border rounded-2xl shadow-lg"
+                            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                            animate={{ rotateY: isFlipped ? 0 : -180 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <p className="text-lg md:text-xl text-muted-foreground">{activeCard.definition}</p>
+                        </motion.div>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+            
+            <div className="text-center text-muted-foreground font-medium">
+                Card {currentIndex + 1} of {flashcards.length}
+            </div>
+
+            <div className="flex items-center gap-4">
+                <Button variant="outline" onClick={handlePrev} disabled={currentIndex === 0}>
+                    <ArrowLeft className="mr-2 h-4 w-4"/> Previous
+                </Button>
+                <Button onClick={handleNext} disabled={currentIndex === flashcards.length - 1}>
+                    Next <ArrowRight className="ml-2 h-4 w-4"/>
+                </Button>
+            </div>
+             <Button variant="link" onClick={onBack}>Back to Results</Button>
+        </div>
+    );
 }
 
 const questionTypeOptions = [

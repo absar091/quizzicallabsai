@@ -14,6 +14,11 @@ import {ai} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
+const QuizHistoryItemSchema = z.object({
+  topic: z.string(),
+  percentage: z.number(),
+});
+
 const GenerateCustomQuizInputSchema = z.object({
   topic: z.string().describe('The topic of the quiz. This can be very specific, including chapter, subtopic, and learning objectives.'),
   difficulty: z
@@ -31,6 +36,7 @@ const GenerateCustomQuizInputSchema = z.object({
   userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz (e.g., '10th Grade', 'MDCAT Student', 'ECAT Student'). This is critical for syllabus adherence."),
   specificInstructions: z.string().optional().describe('Any specific instructions from the user, like sub-topics to focus on, concepts to include, or other detailed requests.'),
   isPro: z.boolean().default(false),
+  recentQuizHistory: z.array(QuizHistoryItemSchema).optional().describe("A list of the user's recent quiz results to identify weak areas."),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -112,6 +118,15 @@ const promptText = `You are a world-class AI educator and subject matter expert.
    - You MUST tailor the complexity and scope to the user's context.
    {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic.{{/if}}
    {{#if specificInstructions}}*   **User's Specific Instructions:** '{{{specificInstructions}}}'. You MUST follow these instructions carefully.{{/if}}
+
+**5. ADAPTIVE LEARNING (IF HISTORY PROVIDED):**
+   {{#if recentQuizHistory}}
+   - **User's Recent Performance:**
+     {{#each recentQuizHistory}}
+       - Topic: '{{this.topic}}', Score: {{this.percentage}}%
+     {{/each}}
+   - **YOUR ADAPTIVE TASK:** Analyze this history. If the user is creating a quiz on a topic they have previously scored poorly on (e.g., below 60%), you MUST prioritize generating questions that target the specific sub-topics or concepts they likely struggled with. Re-test those weak areas. If their scores are high, you can introduce more complex or adjacent concepts within the requested topic.
+   {{/if}}
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now.
 `;

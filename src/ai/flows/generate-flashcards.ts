@@ -12,15 +12,21 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const IncorrectQuestionSchema = z.object({
+    question: z.string(),
+    userAnswer: z.string().nullable(),
+    correctAnswer: z.string(),
+});
+
 export const GenerateFlashcardsInputSchema = z.object({
-  topic: z.string().describe('The topic for which to generate the flashcards.'),
-  count: z.number().min(5).max(50).describe("The number of flashcards to generate."),
+  topic: z.string().describe("The general topic of the quiz these questions are from."),
+  incorrectQuestions: z.array(IncorrectQuestionSchema).describe('A list of questions the user answered incorrectly.'),
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
 const FlashcardSchema = z.object({
-    term: z.string().describe("The key term, concept, or question for the front of the flashcard."),
-    definition: z.string().describe("The concise definition, answer, or explanation for the back of the flashcard.")
+    term: z.string().describe("The key term, concept, or a simplified version of the question for the front of the flashcard."),
+    definition: z.string().describe("The concise and correct definition, answer, or explanation for the back of the flashcard.")
 });
 
 export const GenerateFlashcardsOutputSchema = z.object({
@@ -31,31 +37,35 @@ export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSc
 export async function generateFlashcards(
   input: GenerateFlashcardsInput
 ): Promise<GenerateFlashcardsOutput> {
-  if (input.count < 5 || input.count > 50) {
-    throw new Error("Invalid input: 'count' must be between 5 and 50.");
-  }
   if (!input.topic || input.topic.trim().length === 0) {
       throw new Error("Invalid input: 'topic' cannot be empty.");
+  }
+  if (!input.incorrectQuestions || input.incorrectQuestions.length === 0) {
+      return { flashcards: [] }; // Return empty if there's nothing to process
   }
 
   return generateFlashcardsFlow(input);
 }
 
-const promptText = `You are an expert educator specializing in creating effective study materials. Your task is to generate a set of high-quality, concise, and accurate flashcards for the given topic.
+const promptText = `You are an expert educator specializing in creating effective study materials. Your task is to generate a set of high-quality, concise, and accurate flashcards based on the questions a user answered incorrectly in a quiz.
 
 **CRITICAL DIRECTIVES:**
-1.  **ACCURACY IS PARAMOUNT:** All terms and definitions must be factually correct and directly relevant to the topic.
-2.  **FLEXIBLE COUNT:** Your goal is to generate **up to** {{{count}}} flashcards. It is better to return slightly fewer high-quality cards than to meet the exact count with irrelevant or low-quality ones. Do not exceed the requested number.
-3.  **CONCISENESS:** Keep the text for both the term and the definition brief and to the point. Flashcards should be easily digestible.
-4.  **TERM (FRONT):** The 'term' should be a single key concept, a person, a date, or a short question.
-5.  **DEFINITION (BACK):** The 'definition' should be a clear, simple explanation or answer to the term.
-6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text or commentary. The JSON must be perfectly parsable and valid.
+1.  **ACCURACY IS PARAMOUNT:** The 'definition' side of the flashcard MUST be factually correct and directly answer the question or define the term.
+2.  **FOCUS ON THE CORE CONCEPT:** For each incorrect question, identify the core concept being tested. The flashcard should be about this core concept.
+3.  **TERM (FRONT OF CARD):** The 'term' should be a simplified version of the question or the key concept it's about. Make it a short, digestible phrase or question.
+4.  **DEFINITION (BACK OF CARD):** The 'definition' should be the clear, correct answer or explanation for the term. It should be concise.
+5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text or commentary. The JSON must be perfectly parsable and valid.
 
 ---
 
-**TASK: Generate up to {{{count}}} flashcards for the following topic:**
+**TASK: Generate one flashcard for each of the following incorrectly answered questions on the topic of '{{{topic}}}':**
 
-*   **Topic:** '{{{topic}}}'
+{{#each incorrectQuestions}}
+- **Question:** "{{this.question}}"
+  - **User's Incorrect Answer:** "{{this.userAnswer}}"
+  - **Correct Answer:** "{{this.correctAnswer}}"
+
+{{/each}}
 
 Generate the flashcards now.
 `;
@@ -84,8 +94,10 @@ const generateFlashcardsFlow = ai.defineFlow(
         throw new Error(`Failed to generate flashcards: ${error.message || 'Unknown error'}`);
     }
 
-    if (!output || !output.flashcards || output.flashcards.length === 0) {
-      throw new Error("The AI model failed to return any flashcards. Please try again with a different topic.");
+    if (!output || !output.flashcards) {
+        // It's possible the AI returns no flashcards if it deems none are necessary.
+        // We will return an empty array instead of throwing an error.
+        return { flashcards: [] };
     }
 
     // Additional validation to ensure data integrity

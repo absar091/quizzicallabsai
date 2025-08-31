@@ -33,12 +33,6 @@ const tools = [
     href: '/generate-study-guide',
   },
   {
-    icon: Cards,
-    title: 'Flashcards',
-    description: 'Generate a deck of flashcards for any topic to supercharge your study sessions.',
-    href: '/flashcards',
-  },
-  {
     icon: ClipboardText,
     title: 'Exam Paper Generator',
     description: 'A powerful tool for educators to create and format professional exam papers.',
