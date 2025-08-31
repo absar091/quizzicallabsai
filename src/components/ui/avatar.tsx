@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
-import Image from "next/image"
+import Image, { type ImageProps } from "next/image"
 
 import { cn } from "@/lib/utils"
 
@@ -23,23 +23,31 @@ const Avatar = React.forwardRef<
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
 const AvatarImage = React.forwardRef<
-  React.ElementRef<typeof Image>,
-  Omit<React.ComponentPropsWithoutRef<typeof Image>, 'alt'> & { alt?: string }
+  React.ElementRef<typeof AvatarPrimitive.Image>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & {
+    src?: ImageProps['src'];
+  }
 >(({ className, src, alt, ...props }, ref) => {
+  if (!src) {
+    return null;
+  }
   return (
-    <AvatarPrimitive.Image asChild className={cn("aspect-square h-full w-full", className)}>
-        <Image
-          src={src || ''}
-          alt={alt || "User avatar"}
-          width={40}
-          height={40}
-          {...props}
-          ref={ref}
-        />
+    <AvatarPrimitive.Image
+      ref={ref}
+      asChild
+      className={cn("aspect-square h-full w-full", className)}
+      {...props}
+    >
+      <Image
+        src={src}
+        alt={alt || "User avatar"}
+        width={40}
+        height={40}
+      />
     </AvatarPrimitive.Image>
   );
 });
-AvatarImage.displayName = 'AvatarImage'
+AvatarImage.displayName = AvatarPrimitive.Image.displayName;
 
 
 const AvatarFallback = React.forwardRef<
