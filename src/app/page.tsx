@@ -22,6 +22,12 @@ export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    if (user) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
+
   if (loading || user) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -167,7 +173,7 @@ export default function Home() {
                     </motion.div>
                 </div>
             </div>
-        </section>
+        </motion.section>
 
         <section className="py-16 md:py-24 bg-muted/30">
              <div className="container mx-auto text-center max-w-3xl">
