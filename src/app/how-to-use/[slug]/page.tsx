@@ -1,11 +1,14 @@
 
-import { notFound } from 'next/navigation';
+'use client';
+
+import { notFound, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, UserCheck, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, GraduationCap, MessageCircle, Mail } from 'lucide-react';
+import { AlertTriangle, UserCheck, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, GraduationCap, MessageCircle, Mail, ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 type GuideContent = {
     title: string;
@@ -173,7 +176,7 @@ const guideData: Record<string, GuideContent> = {
                 </div>
                  <div className="space-y-2">
                     <h3 className="font-semibold text-lg text-foreground">NTS Preparation</h3>
-                    <p>Prepare for various NAT categories (Pre-Engineering, Pre-Medical, etc.). The module provides tests for the subject portions based on your selected field. You can also take a comprehensive mock test covering all sections (Analytical, Quantitative, Verbal, and Subject).</p>
+                    <p>Prepare for various NAT categories (e.g., Pre-Engineering, Pre-Medical). The module provides tests for the subject portions based on your selected field. You can also take a comprehensive mock test covering all sections (Analytical, Quantitative, Verbal, and Subject).</p>
                 </div>
             </div>
         )
@@ -201,18 +204,20 @@ const guideData: Record<string, GuideContent> = {
     },
 };
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const guide = guideData[params.slug];
-  if (!guide) {
-    return {};
-  }
-  return {
-    title: guide.title,
-    description: guide.description,
-  };
-}
+// This function can only be used in server components, but we need router access client-side
+// export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+//   const guide = guideData[params.slug];
+//   if (!guide) {
+//     return {};
+//   }
+//   return {
+//     title: guide.title,
+//     description: guide.description,
+//   };
+// }
 
 export default function GuideDetailPage({ params }: { params: { slug: string } }) {
+  const router = useRouter();
   const guide = guideData[params.slug];
 
   if (!guide) {
@@ -223,6 +228,10 @@ export default function GuideDetailPage({ params }: { params: { slug: string } }
 
   return (
     <div className="container py-8 max-w-4xl mx-auto">
+       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+        <ArrowLeft className="mr-2 h-4 w-4"/>
+        Back to Guides
+      </Button>
       <div className="flex items-center gap-4 mb-8">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 shrink-0">
           <Icon className="h-8 w-8 text-primary" />

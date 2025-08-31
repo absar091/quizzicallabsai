@@ -1,4 +1,6 @@
 
+'use client';
+
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -11,15 +13,18 @@ import {
     FileText, 
     UserCheck,
     MessageCircle,
-    HelpCircle
+    HelpCircle,
+    ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-    title: "How to Use Quizzicallabs AI",
-    description: "Your complete guide to mastering the features of Quizzicallabs AI, from custom quizzes to exam preparation.",
-};
+// export const metadata: Metadata = {
+//     title: "How to Use Quizzicallabs AI",
+//     description: "Your complete guide to mastering the features of Quizzicallabs AI, from custom quizzes to exam preparation.",
+// };
 
 const guideTopics = [
   {
@@ -73,8 +78,14 @@ const guideTopics = [
 ];
 
 export default function HowToUsePage() {
+  const router = useRouter();
+
   return (
     <div className="container py-8 max-w-5xl mx-auto">
+       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+        <ArrowLeft className="mr-2 h-4 w-4"/>
+        Go Back
+      </Button>
       <PageHeader
         title="How to Use Quizzicallabs™"
         description="Your complete guide to mastering the features of the ultimate AI study tool."

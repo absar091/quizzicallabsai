@@ -7,7 +7,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import HelpBot from "@/components/help-bot";
 import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { MainSidebar } from "@/components/main-sidebar";
 import { cn } from "@/lib/utils";
@@ -56,10 +55,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </motion.div>
            </AnimatePresence>
         </main>
-        
-         <div className="fixed bottom-20 right-4 z-50">
-           <HelpBot />
-        </div>
         
         <div className="md:hidden">
           <BottomNavBar />
