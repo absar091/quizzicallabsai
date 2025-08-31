@@ -25,6 +25,7 @@ export interface User {
   displayName: string | null;
   className: string | null;
   age: number | null;
+  fatherName: string | null;
   emailVerified: boolean;
   plan: UserPlan;
 }
@@ -66,13 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     emailVerified: firebaseUser.emailVerified,
                     className: dbUser.className || 'N/A',
                     age: dbUser.age || null,
+                    fatherName: dbUser.fatherName || 'N/A',
                     plan: dbUser.plan || 'Free',
                 };
             } else {
                 // New user (e.g., from Google Sign-In), create DB entry
+                // Note: We can't ask for fatherName/class/age in Google flow, so set defaults
                 const newUserInfo = {
+                    uid: firebaseUser.uid,
                     fullName: firebaseUser.displayName || 'Google User',
                     email: firebaseUser.email,
+                    fatherName: 'N/A',
                     className: 'Not set',
                     age: null,
                     plan: 'Free',
@@ -86,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     emailVerified: firebaseUser.emailVerified,
                     className: newUserInfo.className,
                     age: newUserInfo.age,
+                    fatherName: newUserInfo.fatherName,
                     plan: newUserInfo.plan,
                 };
             }
@@ -176,7 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithGoogle,
       updateUserPlan,
     }),
-    [user, loading]
+    [user, loading, logout, deleteAccount, signInWithGoogle, updateUserPlan]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -118,6 +118,7 @@ export default function ProfilePage() {
             <h3 className="text-sm font-semibold text-muted-foreground px-4">ACCOUNT</h3>
             <Card className="shadow-sm">
                 <CardContent className="divide-y p-0">
+                    <DetailRow label="Father's Name" value={user?.fatherName} icon={User} />
                     <DetailRow label="Class / Level" value={user?.className} icon={Student} />
                     <DetailRow label="Age" value={user?.age} icon={Cake}/>
                 </CardContent>

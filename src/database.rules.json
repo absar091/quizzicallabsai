@@ -1,11 +1,10 @@
 
 {
   "rules": {
-    ".read": "auth != null",
     "users": {
       "$uid": {
-        ".read": "auth.uid === $uid",
-        ".write": "auth.uid === $uid"
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
       }
     },
     "quizResults": {
@@ -16,6 +15,12 @@
       }
     },
     "bookmarks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "fcmTokens": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid"

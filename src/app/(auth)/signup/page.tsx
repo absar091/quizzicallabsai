@@ -30,6 +30,7 @@ import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   fullName: z.string().min(1, { message: "Full name is required." }),
+  fatherName: z.string().min(1, { message: "Father's name is required." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   className: z.string().min(1, { message: "Class is required." }),
@@ -50,6 +51,7 @@ export default function SignupPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
+      fatherName: "",
       email: "",
       password: "",
       className: "",
@@ -70,7 +72,9 @@ export default function SignupPage() {
       // Store additional user info in Realtime Database
       const userRef = ref(db, 'users/' + userCredential.user.uid);
       await set(userRef, {
+        uid: userCredential.user.uid,
         fullName: values.fullName,
+        fatherName: values.fatherName,
         email: values.email,
         className: values.className,
         age: values.age,
@@ -140,19 +144,34 @@ export default function SignupPage() {
               <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">OR SIGN UP WITH EMAIL</span>
             </div>
 
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+             <div className="grid grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <FormField
+                control={form.control}
+                name="fatherName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Father's Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="Richard Roe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <FormField
               control={form.control}
               name="email"
