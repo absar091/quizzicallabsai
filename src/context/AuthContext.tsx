@@ -19,7 +19,7 @@ import { ref, get, set } from "firebase/database";
 
 export type UserPlan = "Free" | "Pro";
 
-interface User {
+export interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
@@ -48,54 +48,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleRedirect = useCallback(() => {
-    getRedirectResult(auth).catch((error) => {
-        console.error("Error processing Google redirect result:", error);
-    });
-  }, []);
-  
   useEffect(() => {
-    handleRedirect();
-  }, [handleRedirect]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const handleAuth = async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
-            let displayName = firebaseUser.displayName || "User";
-            let className = "N/A";
-            let age = null;
+            const userRef = ref(db, `users/${firebaseUser.uid}`);
+            const snapshot = await get(userRef);
 
-            if (displayName.includes("__CLASS__")) {
-                const parts = displayName.split("__CLASS__");
-                displayName = parts[0];
-                const rest = parts[1];
-                if (rest.includes("__AGE__")) {
-                    const ageParts = rest.split("__AGE__");
-                    className = ageParts[0];
-                    age = parseInt(ageParts[1], 10) || null;
-                } else {
-                    className = rest;
-                }
+            let appUser: User;
+
+            if (snapshot.exists()) {
+                // User exists in DB, use that data
+                const dbUser = snapshot.val();
+                appUser = {
+                    uid: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    displayName: firebaseUser.displayName,
+                    emailVerified: firebaseUser.emailVerified,
+                    className: dbUser.className || 'N/A',
+                    age: dbUser.age || null,
+                    plan: dbUser.plan || 'Free',
+                };
+            } else {
+                // New user (e.g., from Google Sign-In), create DB entry
+                const newUserInfo = {
+                    fullName: firebaseUser.displayName || 'Google User',
+                    email: firebaseUser.email,
+                    className: 'Not set',
+                    age: null,
+                    plan: 'Free',
+                };
+                await set(userRef, newUserInfo);
+                
+                appUser = {
+                    uid: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    displayName: firebaseUser.displayName,
+                    emailVerified: firebaseUser.emailVerified,
+                    className: newUserInfo.className,
+                    age: newUserInfo.age,
+                    plan: newUserInfo.plan,
+                };
             }
-
-            const planRef = ref(db, `users/${firebaseUser.uid}/plan`);
-            const snapshot = await get(planRef);
-            let plan: UserPlan = snapshot.val() || 'Free';
-            
-            if (!snapshot.exists()) {
-                await set(planRef, 'Free');
-                plan = 'Free';
-            }
-
-            const appUser: User = {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                displayName: displayName,
-                className: className,
-                age: age,
-                emailVerified: firebaseUser.emailVerified,
-                plan: plan,
-            };
             
             setUser(appUser);
             
@@ -107,8 +100,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(null);
         }
         setLoading(false);
-    });
+    };
 
+    // First, process any pending redirect from Google Sign-In
+    getRedirectResult(auth)
+      .then((result) => {
+        // This will trigger onAuthStateChanged if the user is new or signs in
+        if (result) {
+            // User just signed in. The listener below will handle the update.
+        } else {
+            // No redirect result, just set up the regular listener
+            const unsubscribe = onAuthStateChanged(auth, handleAuth);
+            return unsubscribe;
+        }
+      })
+      .catch((error) => {
+        console.error("Error processing Google redirect result:", error);
+        setLoading(false);
+      });
+      
+    // Set up the primary listener for auth state changes
+    const unsubscribe = onAuthStateChanged(auth, handleAuth);
+    
     return () => unsubscribe();
   }, [router, pathname]);
 

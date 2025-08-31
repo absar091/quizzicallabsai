@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { useState } from "react";
+import { ref, set } from "firebase/database";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -62,11 +63,20 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
-      const displayName = `${values.fullName}__CLASS__${values.className}__AGE__${values.age}`;
-      
       await updateProfile(userCredential.user, {
-        displayName: displayName,
+        displayName: values.fullName,
       });
+
+      // Store additional user info in Realtime Database
+      const userRef = ref(db, 'users/' + userCredential.user.uid);
+      await set(userRef, {
+        fullName: values.fullName,
+        email: values.email,
+        className: values.className,
+        age: values.age,
+        plan: 'Free' // Default plan
+      });
+
       await sendEmailVerification(userCredential.user);
 
       toast({
