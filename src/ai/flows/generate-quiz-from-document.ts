@@ -67,7 +67,7 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
 const prompt = ai.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
-    model: 'googleai/gemini-1.5-flash',
+    model: 'googleai/gemini-2.5-pro',
     prompt: promptText,
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },
@@ -87,7 +87,7 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
  } catch (error: any) {
  // Log the error and re-throw with a more general message
  console.error("Error calling Gemini API for quiz from document:", error);
- throw new Error("Failed to generate quiz from document. Please try again.");
+ throw new Error("Failed to generate quiz from document. The AI model may be overloaded or the file could not be processed. Please try again.");
  }
 
     if (!output) {
@@ -96,7 +96,7 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
 
  // Validate the structure of the generated quiz
  if (!Array.isArray(output.quiz) || output.quiz.length === 0) {
- throw new Error("The AI model returned an empty or invalid quiz structure.");
+ throw new Error("The AI model returned an empty or invalid quiz structure. The document might be empty, unreadable, or too complex.");
     }
  // Basic check for expected fields in questions - more detailed checks could be added if needed
  for (const question of output.quiz) {

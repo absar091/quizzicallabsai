@@ -51,6 +51,7 @@ import {
     BookmarkedQuestion
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
+import { usePlan } from "@/hooks/usePlan";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -79,7 +80,7 @@ interface ExplanationState {
   };
 }
 
-const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string) => {
+const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string, isPro: boolean) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -102,13 +103,15 @@ const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string) => {
         doc.setLineWidth(0.2);
         doc.line(20, 38, pageWidth - 20, 38);
         
-        // Watermark
-        doc.saveGraphicsState();
-        doc.setFontSize(60);
-        doc.setTextColor(230, 230, 230);
-        doc.setGState(new (doc as any).GState({opacity: 0.5}));
-        doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
-        doc.restoreGraphicsState();
+        // Watermark for free users
+        if (!isPro) {
+            doc.saveGraphicsState();
+            doc.setFontSize(60);
+            doc.setTextColor(230, 230, 230);
+            doc.setGState(new (doc as any).GState({opacity: 0.5}));
+            doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
+            doc.restoreGraphicsState();
+        }
 
         // Footer
         doc.setFont('helvetica', 'normal');
@@ -129,6 +132,7 @@ type GenerateQuizPageProps = {
 export default function GenerateQuizPage({ initialQuiz, initialFormValues, initialComprehensionText }: GenerateQuizPageProps) {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { isPro } = usePlan();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   
@@ -286,11 +290,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
 
   useEffect(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-
     if (quiz && !showResults && timeLeft > 0) {
+      // Clear any existing timer before starting a new one
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      
       timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
@@ -303,6 +308,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       }, 1000);
     }
 
+    // Cleanup function to clear the interval when the component unmounts
+    // or when the dependencies change.
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -338,6 +345,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
       const result = await generateCustomQuiz({
         ...values,
+        isPro: isPro,
         userAge: user?.age,
         userClass: user?.className,
         recentQuizHistory: historyForAI,
@@ -559,7 +567,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         });
     }
 
-    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty);
+    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty, isPro);
     doc.save(`${formValues.topic.replace(/\s+/g, '_')}_quiz.pdf`);
   };
 
@@ -569,7 +577,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     const { score, percentage, totalScorable } = calculateScore();
     const doc = new jsPDF();
     
-    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty);
+    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty, isPro);
 
     let y = 50;
 
@@ -757,7 +765,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               >
                 <div className="space-y-6">
                     <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                        <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} chartData={currentQ.chartData} placeholder={currentQ.placeholder} />
+                        <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} />
                     </div>
                     <div className="w-full max-w-md mx-auto">
                       {currentQ.type === 'descriptive' ? (
@@ -852,7 +860,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 return (
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardHeader className="flex flex-row justify-between items-start pb-2">
-                                            <div className="font-semibold flex-1 pr-4"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} chartData={q.chartData} placeholder={q.placeholder} /></div>
+                                            <div className="font-semibold flex-1 pr-4"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} /></div>
                                             {q.correctAnswer && (
                                                 <Button variant="ghost" size="icon" onClick={() => toggleBookmark(q.question, q.correctAnswer || "")}>
                                                     <Star className={cn("h-5 w-5", isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground")} />

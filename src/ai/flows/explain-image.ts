@@ -52,7 +52,7 @@ const promptText = `You are an expert AI tutor and subject matter specialist. Yo
 
 const prompt = ai.definePrompt({
     name: 'explainImagePrompt',
-    model: 'googleai/gemini-2.0-flash-preview',
+    model: 'googleai/gemini-2.5-pro',
     prompt: promptText,
     input: { schema: ExplainImageInputSchema },
     output: { schema: ExplainImageOutputSchema },
@@ -70,7 +70,7 @@ const explainImageFlow = ai.defineFlow(
       const result = await prompt(input);
       output = result.output;
     } catch (error: any) {
-      console.error('Gemini 2.0 Flash failed with unhandled error:', error);
+      console.error('Gemini 2.5 Pro failed with unhandled error:', error);
       throw new Error(`Failed to generate explanation: ${error.message}`);
     }
 

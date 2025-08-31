@@ -158,8 +158,8 @@ const generateCustomQuizFlow = ai.defineFlow(
         throw new Error(`Failed to generate custom quiz: ${error.message}`);
     }
     
-    if (!output) {
-      throw new Error("The AI model failed to return a valid quiz. Please try again.");
+    if (!output || !output.quiz || output.quiz.length === 0) {
+      throw new Error("The AI model returned an empty or invalid quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
     }
     return output;
   }

@@ -90,10 +90,15 @@ export default function GenerateFromFilePage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
-        const result = await generateQuizFromDocument({
+        // Create a plain object to pass to the server action
+        const plainInput = {
           documentDataUri: dataUri,
-          ...values,
-        });
+          numberOfQuestions: values.numberOfQuestions,
+          difficulty: values.difficulty,
+          questionTypes: values.questionTypes,
+        };
+        
+        const result = await generateQuizFromDocument(plainInput);
 
         if (!result.quiz || result.quiz.length === 0) {
            throw new Error("The AI failed to generate questions from the provided file. It might be empty, unreadable, or too complex. Please try another file.");

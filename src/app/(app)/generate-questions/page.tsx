@@ -26,6 +26,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { usePlan } from "@/hooks/usePlan";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -35,7 +36,7 @@ const formSchema = z.object({
 
 type Question = GenerateCustomQuizOutput['quiz'][number] & { explanation?: string };
 
-const addPdfHeaderAndFooter = (doc: any, title: string) => {
+const addPdfHeaderAndFooter = (doc: any, title: string, isPro: boolean) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -52,12 +53,14 @@ const addPdfHeaderAndFooter = (doc: any, title: string) => {
         doc.setLineWidth(0.2);
         doc.line(20, 32, pageWidth - 20, 32);
         
-        doc.saveGraphicsState();
-        doc.setFontSize(60);
-        doc.setTextColor(230, 230, 230);
-        doc.setGState(new (doc as any).GState({opacity: 0.5}));
-        doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
-        doc.restoreGraphicsState();
+        if (!isPro) {
+            doc.saveGraphicsState();
+            doc.setFontSize(60);
+            doc.setTextColor(230, 230, 230);
+            doc.setGState(new (doc as any).GState({opacity: 0.5}));
+            doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
+            doc.restoreGraphicsState();
+        }
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
@@ -70,6 +73,7 @@ const addPdfHeaderAndFooter = (doc: any, title: string) => {
 
 export default function GenerateQuestionsPage() {
   const { toast } = useToast();
+  const { isPro } = usePlan();
   const [isGenerating, setIsGenerating] = useState(false);
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [visibleAnswers, setVisibleAnswers] = useState<Record<number, boolean>>({});
@@ -90,6 +94,7 @@ export default function GenerateQuestionsPage() {
     try {
       const result = await generateCustomQuiz({
         ...values,
+        isPro,
         questionTypes: ["Multiple Choice"],
         questionStyles: ["Knowledge-based", "Conceptual"],
         timeLimit: values.numberOfQuestions,
@@ -97,11 +102,14 @@ export default function GenerateQuestionsPage() {
         userClass: 'General Student',
         specificInstructions: "For each question, provide a detailed explanation for the correct answer."
       });
+      if (!result.quiz || result.quiz.length === 0) {
+        throw new Error("The AI failed to generate any questions. Please try refining your topic.");
+      }
       setQuestions(result.quiz as Question[]);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error Generating Questions",
-        description: "An error occurred while generating practice questions. The AI might be busy.",
+        description: error.message || "An error occurred while generating practice questions. The AI might be busy.",
         variant: "destructive",
       });
       console.error(error);
@@ -164,7 +172,7 @@ export default function GenerateQuestionsPage() {
         y += 10;
     });
     
-    addPdfHeaderAndFooter(doc, `Practice Questions: ${topic}`);
+    addPdfHeaderAndFooter(doc, `Practice Questions: ${topic}`, isPro);
 
     doc.save(`${form.getValues('topic').replace(/\s+/g, '_')}_practice_questions.pdf`);
   };
