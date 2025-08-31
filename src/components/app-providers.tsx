@@ -10,19 +10,27 @@ import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
 import InstallPwaPrompt from "./install-pwa-prompt";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
 
 function AppContent({ children }: { children: React.ReactNode }) {
+    const { user, loading } = useAuth();
+    const pathname = usePathname();
+
+    const showHelpBot = !loading && (!!user || ['/', '/login', '/signup', '/forgot-password'].includes(pathname));
+
     return (
         <>
             {children}
             <Toaster />
             <CookieConsentBanner />
             <InstallPwaPrompt />
-            <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
-                <HelpBot />
-            </div>
+            {showHelpBot && (
+                 <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
+                    <HelpBot />
+                </div>
+            )}
         </>
     );
 }

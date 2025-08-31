@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { GraduationCap, Loader2, BrainCircuit, Users } from "lucide-react";
+import { GraduationCap, Loader2, BrainCircuit, Users, Check } from "lucide-react";
 import { CheckSquare, FileArrowUp, PenNib, BookOpen, Lightbulb } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -79,6 +79,21 @@ const whoIsItFor = [
     ],
   },
 ];
+
+const freePlanFeatures = [
+    "Unlimited Quizzes & Guides",
+    "Standard AI Model",
+    "Full Prep Module Access",
+    "Contains Ads",
+]
+
+const proPlanFeatures = [
+    "All Free Features, plus:",
+    "Advanced AI Model (gemini-1.5-pro)",
+    "Higher Quality & Accuracy",
+    "Ad-Free Experience",
+    "Priority Support",
+]
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -238,42 +253,68 @@ export default function Home() {
             </div>
         </motion.section>
 
-        <section className="py-16 md:py-24 bg-muted/50">
-          <div className="container mx-auto">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5 }} className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Who is this for?</h2>
-              <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">
-                Whether you're a student preparing for exams or a teacher creating them, Quizzicallabsᴬᴵ has you covered.
-              </p>
-            </motion.div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {whoIsItFor.map((item, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: i === 0 ? -20 : 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5 }}>
-                    <Card className="p-6 h-full">
-                      <CardHeader className="p-0 flex-row items-center gap-4 mb-4">
-                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 shrink-0">
-                            <item.icon className="h-6 w-6 text-primary"/>
-                        </div>
-                        <CardTitle>{item.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-0">
-                        <ul className="space-y-3">
-                          {item.points.map((point, j) => (
-                            <li key={j} className="flex items-start">
-                              <CheckSquare className="h-5 w-5 text-green-500 mr-3 mt-0.5 shrink-0" weight="fill" />
-                              <span className="text-muted-foreground">{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
+        <section id="pricing" className="py-16 md:py-24 bg-muted/50">
+            <div className="container mx-auto">
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5 }} className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Choose Your Plan</h2>
+                <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">
+                    Start for free and upgrade to unlock the full potential of AI-powered learning.
+                </p>
                 </motion.div>
-              ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <motion.div variants={cardVariants}>
+                        <Card className="flex flex-col h-full">
+                            <CardHeader>
+                                <CardTitle className="text-2xl">Free</CardTitle>
+                                <CardDescription>Perfect for everyday study needs and trying out the platform.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow space-y-4">
+                                <p className="text-4xl font-bold">$0<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                <ul className="space-y-3">
+                                    {freePlanFeatures.map((feature, i) => (
+                                        <li key={i} className="flex items-center gap-3">
+                                            <Check className="h-5 w-5 text-primary"/>
+                                            <span className="text-muted-foreground">{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                            <CardContent>
+                                <Button asChild className="w-full" variant="outline">
+                                    <Link href="/signup">Get Started</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    <motion.div variants={cardVariants}>
+                        <Card className="flex flex-col h-full border-primary shadow-lg ring-2 ring-primary">
+                            <CardHeader>
+                                <CardTitle className="text-2xl">Pro</CardTitle>
+                                <CardDescription>For students and educators who demand the best quality and performance.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow space-y-4">
+                                <p className="text-4xl font-bold">$2<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                                <ul className="space-y-3">
+                                     {proPlanFeatures.map((feature, i) => (
+                                        <li key={i} className="flex items-center gap-3">
+                                            <Check className="h-5 w-5 text-primary"/>
+                                            <span>{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                            <CardContent>
+                                <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Link href="/signup">Upgrade to Pro</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </div>
             </div>
-          </div>
         </section>
-        
-         <section className="py-16 md:py-24 bg-background">
+
+        <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5 }} className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Loved by Students and Teachers</h2>

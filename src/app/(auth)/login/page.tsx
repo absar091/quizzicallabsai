@@ -35,10 +35,11 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { signInWithGoogle, loading: authLoading } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const [showVerificationAlert, setShowVerificationAlert] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,8 +88,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
       });
-      // The AuthContext will handle the redirect, but we can push here as well.
-      router.push("/dashboard");
+      // The AuthContext will handle the redirect
     } catch (error: any) {
        let errorMessage = "An unknown error occurred.";
         if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
@@ -101,20 +101,23 @@ export default function LoginPage() {
         description: errorMessage,
         variant: "destructive",
       });
-      setIsSubmitting(false);
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
   const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
     try {
       await signInWithGoogle();
-      // The redirect is handled by the signInWithGoogle function
+      // Redirect is handled by the AuthContext after redirect result is processed
     } catch (error: any) {
       toast({
         title: "Google Sign-In Failed",
         description: error.message,
         variant: "destructive",
       });
+      setIsGoogleLoading(false);
     }
   };
 
@@ -182,7 +185,7 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
+              {isSubmitting && !showVerificationAlert ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
             </Button>
             
             <div className="relative w-full">
@@ -190,8 +193,8 @@ export default function LoginPage() {
               <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">OR CONTINUE WITH</span>
             </div>
 
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={authLoading}>
-              {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>
+              {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 
                 <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                   <path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 110.3 512 0 401.8 0 265.8 0 130.2 105.4 21.8 244 21.8c67.2 0 123 24.8 166.3 65.9l-67.5 64.9C258.5 122.1 223.5 101.8 182.8 101.8c-70.3 0-126.5 58.2-126.5 130.1s56.2 130.1 126.5 130.1c76.3 0 115.4-53.7 122.5-81.8H285V246.3h199.1c.3 15.2.7 30.2.7 45.5z"></path>
                 </svg>

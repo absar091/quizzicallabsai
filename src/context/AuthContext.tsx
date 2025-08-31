@@ -10,8 +10,7 @@ import {
     type User as FirebaseUser,
     GoogleAuthProvider,
     signInWithRedirect,
-    getRedirectResult,
-    updateProfile
+    getRedirectResult
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
@@ -49,76 +48,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleUserUpdate = useCallback(async (firebaseUser: FirebaseUser | null) => {
-    if (firebaseUser && firebaseUser.emailVerified) {
-        let displayName = firebaseUser.displayName || "User";
-        let className = "N/A";
-        let age = null;
-        
-        if (displayName && displayName.includes("__CLASS__")) {
-            const parts = displayName.split("__CLASS__");
-            displayName = parts[0];
-            const rest = parts[1];
-            if (rest.includes("__AGE__")) {
-                const ageParts = rest.split("__AGE__");
-                className = ageParts[0];
-                age = parseInt(ageParts[1], 10) || null;
-            } else {
-                className = rest;
-            }
-        }
-        
-        // Fetch user plan from Realtime Database
-        const planRef = ref(db, `users/${firebaseUser.uid}/plan`);
-        const snapshot = await get(planRef);
-        const plan: UserPlan = snapshot.val() || 'Free';
-
-        const appUser: User = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: displayName,
-            className: className,
-            age: age,
-            emailVerified: firebaseUser.emailVerified,
-            plan: plan,
-        };
-        
-        setUser(appUser);
-        
-        const isAuthPage = ['/', '/login', '/signup', '/forgot-password', '/pricing'].includes(pathname);
-        if (isAuthPage) {
-            router.replace('/dashboard');
-        }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  }, [router, pathname]);
+  const handleRedirect = useCallback(() => {
+    getRedirectResult(auth).catch((error) => {
+        console.error("Error processing Google redirect result:", error);
+    });
+  }, []);
   
   useEffect(() => {
-    setLoading(true);
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User has just signed in via redirect.
-          // onAuthStateChanged will handle the user object creation.
-          // We can set their initial plan here if it's a new user.
-          const userRef = ref(db, `users/${result.user.uid}/plan`);
-          get(userRef).then(snapshot => {
-            if (!snapshot.exists()) {
-                set(userRef, 'Free');
+    handleRedirect();
+  }, [handleRedirect]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+            let displayName = firebaseUser.displayName || "User";
+            let className = "N/A";
+            let age = null;
+
+            if (displayName.includes("__CLASS__")) {
+                const parts = displayName.split("__CLASS__");
+                displayName = parts[0];
+                const rest = parts[1];
+                if (rest.includes("__AGE__")) {
+                    const ageParts = rest.split("__AGE__");
+                    className = ageParts[0];
+                    age = parseInt(ageParts[1], 10) || null;
+                } else {
+                    className = rest;
+                }
             }
-          });
+
+            const planRef = ref(db, `users/${firebaseUser.uid}/plan`);
+            const snapshot = await get(planRef);
+            let plan: UserPlan = snapshot.val() || 'Free';
+            
+            if (!snapshot.exists()) {
+                await set(planRef, 'Free');
+                plan = 'Free';
+            }
+
+            const appUser: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: displayName,
+                className: className,
+                age: age,
+                emailVerified: firebaseUser.emailVerified,
+                plan: plan,
+            };
+            
+            setUser(appUser);
+            
+            const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
+            if (isAuthPage) {
+                router.replace('/dashboard');
+            }
+        } else {
+            setUser(null);
         }
-      })
-      .catch((error) => {
-        console.error("Error processing Google redirect result:", error);
-      })
-      .finally(() => {
-        const unsubscribe = onAuthStateChanged(auth, handleUserUpdate);
-        return () => unsubscribe();
-      });
-  }, [handleUserUpdate]);
+        setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router, pathname]);
 
 
   const logout = async () => {
@@ -171,7 +163,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithGoogle,
       updateUserPlan,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]
   );
 

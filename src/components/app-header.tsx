@@ -17,10 +17,15 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Pages where the main hamburger/logo should be shown instead of a back button
-  const noBackPages = ["/dashboard", "/genlab", "/exam-prep", "/profile"];
-  const showBackButton = user && !noBackPages.includes(pathname);
-  
+  // Pages where the main logo should be shown instead of a back button on mobile
+  const topLevelAppPages = ["/dashboard", "/genlab", "/exam-prep", "/profile"];
+  const isTopLevelAppPage = topLevelAppPages.includes(pathname);
+  const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
+  const isHomePage = pathname === '/';
+
+  // Back button logic for logged-in users
+  const showAppBackButton = user && !isTopLevelAppPage;
+
   if (!user) {
     return (
        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,12 +42,17 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
                      <Link href="/#features" className="transition-colors hover:text-primary text-muted-foreground">Features</Link>
                      <Link href="/how-to-use" className="transition-colors hover:text-primary text-muted-foreground">Guides</Link>
                   </nav>
-                  <Button asChild variant="ghost">
+                  {!isAuthPage && !isHomePage && <div className="md:hidden"/>}
+                  {isHomePage && (
+                    <>
+                    <Button asChild variant="ghost">
                       <Link href="/login">Log In</Link>
-                  </Button>
-                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                      <Link href="/signup">Get Started Free</Link>
-                  </Button>
+                    </Button>
+                    <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Link href="/signup">Get Started Free</Link>
+                    </Button>
+                    </>
+                  )}
               </div>
           </div>
       </header>
@@ -52,17 +62,20 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   // App Header for logged in users
   return (
     <>
-      {showBackButton ? (
+      {showAppBackButton ? (
         <Button
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
           aria-label="Go back"
+          className="md:hidden"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
       ) : (
-        <Button
+        // Placeholder on mobile to keep layout consistent when there's no back button
+        // Or the hamburger button on desktop
+         <Button
           variant="ghost"
           size="icon"
           className="hidden md:inline-flex"
@@ -74,7 +87,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
       )}
       <div className="w-full flex-1 flex items-center justify-between md:justify-end">
           <div className="md:hidden">
-              <h1 className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
+              {!showAppBackButton && <h1 className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></h1>}
           </div>
            <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon">
