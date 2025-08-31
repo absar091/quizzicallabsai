@@ -17,7 +17,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Pages where the back button should not be shown
+  // Pages where the main hamburger/logo should be shown instead of a back button
   const noBackPages = ["/dashboard", "/genlab", "/exam-prep", "/profile"];
   const showBackButton = user && !noBackPages.includes(pathname);
   

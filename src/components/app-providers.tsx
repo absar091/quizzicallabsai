@@ -14,20 +14,15 @@ import { usePathname } from "next/navigation";
 const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
 
 function AppContent({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const showHelpBot = !pathname.startsWith('/login') && !pathname.startsWith('/signup') && !pathname.startsWith('/forgot-password') && pathname !== '/';
-
     return (
         <>
             {children}
             <Toaster />
             <CookieConsentBanner />
             <InstallPwaPrompt />
-            {showHelpBot && (
-                <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
-                    <HelpBot />
-                </div>
-            )}
+            <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
+                <HelpBot />
+            </div>
         </>
     );
 }

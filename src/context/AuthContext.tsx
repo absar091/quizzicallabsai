@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const processUser = (firebaseUser: FirebaseUser | null) => {
+    const handleAuthChange = (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
             let displayName = firebaseUser.displayName || "User";
             let className = "N/A";
@@ -73,7 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             
             setUser(appUser);
-            const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/forgot-password') || pathname === '/';
+            // This is the key redirect logic.
+            const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
             if (isAuthPage) {
                 router.replace('/dashboard');
             }
@@ -83,29 +84,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     };
 
-    const unsubscribe = onAuthStateChanged(auth, processUser);
-
-    // Handle the redirect result from Google
+    // This handles redirect results from Google Sign-In
     getRedirectResult(auth)
       .then((result) => {
-        if (result?.user) {
-            // A user has successfully signed in or linked.
-            // onAuthStateChanged will handle the user state update and redirect.
+        if (result) {
+          // User is signed in. The onAuthStateChanged listener below will handle the rest.
         }
       })
       .catch((error) => {
         console.error("Error processing Google redirect result:", error);
       })
       .finally(() => {
-        // If onAuthStateChanged hasn't already set loading to false,
-        // this ensures it happens after the redirect check.
-        if (loading) {
-            setLoading(false);
-        }
+        // Set up the primary auth state listener.
+        const unsubscribe = onAuthStateChanged(auth, handleAuthChange);
+        return () => unsubscribe();
       });
 
-    return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, router]);
 
   const logout = async () => {
