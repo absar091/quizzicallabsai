@@ -7,6 +7,7 @@ import { auth, db, app } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
+import { ref, set } from 'firebase/database';
 
 export default function NotificationHandler() {
   const { toast } = useToast();
@@ -15,7 +16,6 @@ export default function NotificationHandler() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       const messaging = getMessaging(app);
 
-      // Register the service worker
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
           console.log('Service Worker registered with scope:', registration.scope);
@@ -37,11 +37,10 @@ export default function NotificationHandler() {
             const fcmToken = await getToken(messaging, { vapidKey: vapidKey, serviceWorkerRegistration: await navigator.serviceWorker.ready });
             if (fcmToken) {
               console.log('FCM Token:', fcmToken);
-              // Save the token to your database (e.g., Firestore) associated with the user
               const currentUser = auth.currentUser;
               if (currentUser) {
-                  const firestore = getFirestore(app);
-                  await setDoc(doc(firestore, "fcmTokens", currentUser.uid), { token: fcmToken, timestamp: new Date() });
+                  const tokenRef = ref(db, `fcmTokens/${currentUser.uid}`);
+                  await set(tokenRef, { token: fcmToken, timestamp: new Date().toISOString() });
               }
             } else {
               console.log('No registration token available. Request permission to generate one.');
@@ -70,5 +69,5 @@ export default function NotificationHandler() {
     }
   }, [toast]);
 
-  return null; // This component does not render anything
+  return null;
 }
