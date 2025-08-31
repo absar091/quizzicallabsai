@@ -61,7 +61,7 @@ export function Footer() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                                 <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                             </div>
-                            <span className="text-xl font-bold">Quizzicallabs AI</span>
+                             <span className="text-xl font-bold">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">A product by <strong>QuizzicalLabs™</strong></p>
                         <p className="text-sm text-muted-foreground">The ultimate AI-powered study partner designed to revolutionize learning and assessment.</p>

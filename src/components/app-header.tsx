@@ -29,7 +29,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                       <BrainCircuit className="h-5 w-5" />
                   </div>
-                  <span>Quizzicallabs</span>
+                  <span>Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
               </Link>
               <div className="flex-1" />
               <div className="flex items-center gap-2 sm:gap-4">
@@ -74,7 +74,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
       )}
       <div className="w-full flex-1 flex items-center justify-between md:justify-end">
           <div className="md:hidden">
-              <h1 className="font-semibold text-lg">Quizzicallabs <sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
+              <h1 className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></h1>
           </div>
            <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon">
