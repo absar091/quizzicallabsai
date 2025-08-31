@@ -5,12 +5,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Question, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake } from "@phosphor-icons/react";
+import { Question, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake, ArrowRight, Sparkles } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { usePlan } from "@/hooks/usePlan";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: Question },
@@ -20,8 +24,29 @@ const supportLinks = [
 ];
 
 export default function ProfilePage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, updateUserPlan } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { plan } = usePlan();
+  const { toast } = useToast();
+  const [redeemCode, setRedeemCode] = useState('');
+  const [isRedeeming, setIsRedeeming] = useState(false);
+
+  const handleRedeemCode = async () => {
+    if (!redeemCode.trim()) {
+        toast({ title: "Please enter a code.", variant: "destructive"});
+        return;
+    }
+    setIsRedeeming(true);
+    const proCodes = process.env.NEXT_PUBLIC_PRO_ACCESS_CODES?.split(',') || [];
+    if (proCodes.includes(redeemCode.trim())) {
+        await updateUserPlan('Pro');
+        toast({ title: "Success!", description: "You've been upgraded to the Pro plan." });
+    } else {
+        toast({ title: "Invalid Code", description: "The code you entered is not valid.", variant: "destructive" });
+    }
+    setRedeemCode('');
+    setIsRedeeming(false);
+  }
 
   const DetailRow = ({ label, value, icon: Icon }: { label: string; value: string | number | null | undefined; icon: React.ElementType }) => (
     <div className="flex items-center justify-between p-4">
@@ -55,6 +80,39 @@ export default function ProfilePage() {
                 </div>
             </CardHeader>
         </Card>
+        
+        <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground px-4">SUBSCRIPTION</h3>
+            <Card className="shadow-sm">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                         <div>
+                            <CardTitle>Your Plan</CardTitle>
+                            <CardDescription className="flex items-center gap-1 mt-1">
+                                {plan === 'Pro' && <Sparkles weight="fill" className="text-accent h-4 w-4"/>}
+                                You are on the <span className="font-bold text-primary">{plan} Plan</span>
+                            </CardDescription>
+                        </div>
+                        <Button asChild variant="outline">
+                            <Link href="/pricing">Manage <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        </Button>
+                    </div>
+                </CardHeader>
+                 {plan === 'Free' && (
+                    <CardContent>
+                        <div className="space-y-2">
+                             <Label htmlFor="redeem-code">Redeem Access Code</Label>
+                             <div className="flex gap-2">
+                                <Input id="redeem-code" placeholder="Enter code..." value={redeemCode} onChange={(e) => setRedeemCode(e.target.value)} />
+                                <Button onClick={handleRedeemCode} disabled={isRedeeming}>
+                                    {isRedeeming ? 'Redeeming...' : 'Redeem'}
+                                </Button>
+                             </div>
+                        </div>
+                    </CardContent>
+                )}
+            </Card>
+        </div>
 
         <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground px-4">ACCOUNT</h3>
@@ -62,13 +120,6 @@ export default function ProfilePage() {
                 <CardContent className="divide-y p-0">
                     <DetailRow label="Class / Level" value={user?.className} icon={Student} />
                     <DetailRow label="Age" value={user?.age} icon={Cake}/>
-                    <div className="flex items-center justify-between p-4">
-                         <div className="flex items-center gap-2 text-muted-foreground">
-                            <User className="h-5 w-5"/>
-                            <p>Manage Subscription</p>
-                        </div>
-                        <p className="font-medium text-primary">Free Plan</p>
-                    </div>
                 </CardContent>
             </Card>
         </div>

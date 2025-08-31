@@ -2,6 +2,12 @@
 {
   "rules": {
     ".read": "auth != null",
+    "users": {
+      "$uid": {
+        ".read": "auth.uid === $uid",
+        ".write": "auth.uid === $uid"
+      }
+    },
     "quizResults": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",

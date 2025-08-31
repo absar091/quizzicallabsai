@@ -11,7 +11,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Flame, Target, BookOpenText, PlusSquare, Brain, BarChart, Trophy, Bookmark } from "lucide-react";
+import { Flame, Target, BookOpenText, PlusSquare, Brain, BarChart, Trophy, Bookmark, Sparkles, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
@@ -24,6 +24,7 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, T
 import { Badge } from "@/components/ui/badge";
 import { BookMarked } from "lucide-react";
 import { motion } from "framer-motion";
+import { usePlan } from "@/hooks/usePlan";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,6 +40,35 @@ const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   show: { y: 0, opacity: 1 },
 };
+
+function UpgradeCard() {
+    const { plan } = usePlan();
+
+    if (plan === 'Pro') {
+        return null;
+    }
+
+    return (
+        <motion.div variants={itemVariants}>
+        <Card className="bg-accent text-accent-foreground shadow-lg">
+             <CardHeader className="flex-row items-start gap-4">
+                <div className="p-2 bg-background/20 rounded-full">
+                    <Sparkles className="h-5 w-5"/>
+                </div>
+                <div>
+                    <CardTitle>Upgrade to Pro</CardTitle>
+                    <CardDescription className="text-accent-foreground/80 mt-1">Unlock higher quality answers, no ads, and priority support.</CardDescription>
+                </div>
+            </CardHeader>
+            <CardFooter>
+                 <Button asChild variant="secondary" className="bg-background text-foreground hover:bg-background/90">
+                    <Link href="/pricing">View Plans <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                </Button>
+            </CardFooter>
+        </Card>
+        </motion.div>
+    )
+}
 
 function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResult[], userName: string }) {
   const [insights, setInsights] = useState<GenerateDashboardInsightsOutput | null>(null);
@@ -249,6 +279,9 @@ export default function DashboardPage() {
         
         <TabsContent value="overview" className="space-y-6">
           <motion.div variants={itemVariants}>
+            <UpgradeCard />
+          </motion.div>
+          <motion.div variants={itemVariants}>
             <AiInsightsCard recentActivity={recentActivity} userName={user?.displayName?.split(' ')[0] || 'Student'} />
           </motion.div>
 
@@ -274,7 +307,7 @@ export default function DashboardPage() {
                 <CardHeader className="p-0 flex-row items-center gap-2">
                     <Target className="h-4 w-4 text-muted-foreground"/>
                     <CardTitle className="text-base font-semibold">Today's Goal</CardTitle>
-                </CardHeader>
+                </Header>
                 <CardContent className="p-0 mt-2">
                   <Progress value={dailyGoalProgress} className="h-2 mb-1" />
                   <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
@@ -327,7 +360,7 @@ export default function DashboardPage() {
                 <CardHeader>
                     <CardTitle>Recent Activity</CardTitle>
                     <CardDescription>A log of your most recent quizzes.</CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent>
                      {recentActivity.length > 0 ? (
                         <ul className="space-y-3">
@@ -355,7 +388,7 @@ export default function DashboardPage() {
                 <CardHeader>
                     <CardTitle>Your Achievements</CardTitle>
                     <CardDescription>Milestones you've unlocked on your learning journey.</CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent>
                     <AchievementsTab recentActivity={recentActivity} bookmarksCount={bookmarksCount} />
                 </CardContent>

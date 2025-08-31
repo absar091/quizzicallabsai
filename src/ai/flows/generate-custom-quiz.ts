@@ -11,6 +11,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 const GenerateCustomQuizInputSchema = z.object({
@@ -29,6 +30,7 @@ const GenerateCustomQuizInputSchema = z.object({
   userAge: z.number().optional().nullable().describe("The age of the user taking the quiz."),
   userClass: z.string().optional().nullable().describe("The grade/class of the user taking the quiz (e.g., '10th Grade', 'MDCAT Student', 'ECAT Student'). This is critical for syllabus adherence."),
   specificInstructions: z.string().optional().describe('Any specific instructions from the user, like sub-topics to focus on, concepts to include, or other detailed requests.'),
+  isPro: z.boolean().default(false),
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
@@ -69,7 +71,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
 2.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
 
 3.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:**
-    *   **For Entry Tests (MDCAT/ECAT):** If the topic or user class contains "MDCAT" or "ECAT", you are FORBIDDEN from generating ANY question type other than 'multiple-choice'. All questions MUST be 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or 'Descriptive' questions. Every question must have exactly 4 answer options. This is a non-negotiable rule.
+    *   **For Entry Tests (MDCAT/ECAT):** If the topic or userClass contains "MDCAT" or "ECAT", you are FORBIDDEN from generating ANY question type other than 'multiple-choice'. All questions MUST be 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or 'Descriptive' questions. Every question must have exactly 4 answer options. This is a non-negotiable rule.
     *   **For all other quizzes:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. If the user selects ONLY 'Multiple Choice', you are FORBIDDEN from generating ANY other type.
 
 4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Failure to meet this count is a critical failure. Do not generate more or fewer questions than requested.
@@ -115,15 +117,6 @@ Your reputation depends on following these instructions meticulously. Generate t
 `;
 
 
-const prompt = ai.definePrompt({
-    name: "generateCustomQuizPrompt",
-    model: 'googleai/gemini-1.5-flash',
-    prompt: promptText,
-    input: { schema: GenerateCustomQuizInputSchema },
-    output: { schema: GenerateCustomQuizOutputSchema },
-});
-
-
 const generateCustomQuizFlow = ai.defineFlow(
   {
     name: 'generateCustomQuizFlow',
@@ -131,12 +124,22 @@ const generateCustomQuizFlow = ai.defineFlow(
     outputSchema: GenerateCustomQuizOutputSchema,
   },
   async (input) => {
+    const model = getModel(input.isPro);
+    
+    const prompt = ai.definePrompt({
+      name: "generateCustomQuizPrompt",
+      model: model,
+      prompt: promptText,
+      input: { schema: GenerateCustomQuizInputSchema },
+      output: { schema: GenerateCustomQuizOutputSchema },
+    });
+    
     let output;
     try {
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
+        console.error(`Error with model ${model.name}:`, error);
         throw new Error(`Failed to generate custom quiz: ${error.message}`);
     }
     

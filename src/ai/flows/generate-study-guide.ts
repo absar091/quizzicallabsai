@@ -10,12 +10,14 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 const GenerateStudyGuideInputSchema = z.object({
   topic: z.string().describe('The topic for which to generate the study guide.'),
   learningDifficulties: z.string().optional().describe("The specific areas or concepts within the topic the user struggles with."),
   learningStyle: z.string().optional().describe("The user's preferred way of learning (e.g., 'visual with diagrams', 'simple analogies', 'step-by-step instructions')."),
+  isPro: z.boolean().default(false),
 });
 export type GenerateStudyGuideInput = z.infer<typeof GenerateStudyGuideInputSchema>;
 
@@ -70,14 +72,6 @@ const promptText = `You are an expert educator and content creator. Your task is
 
   Generate the personalized study guide now.`;
 
-const prompt = ai.definePrompt({
-  name: 'generateStudyGuidePrompt',
-  model: 'googleai/gemini-1.5-flash',
-  input: {schema: GenerateStudyGuideInputSchema},
-  output: {schema: GenerateStudyGuideOutputSchema},
-  prompt: promptText,
-});
-
 
 const generateStudyGuideFlow = ai.defineFlow(
   {
@@ -86,12 +80,21 @@ const generateStudyGuideFlow = ai.defineFlow(
     outputSchema: GenerateStudyGuideOutputSchema,
   },
   async input => {
+    const model = getModel(input.isPro);
+    const prompt = ai.definePrompt({
+      name: 'generateStudyGuidePrompt',
+      model: model,
+      input: {schema: GenerateStudyGuideInputSchema},
+      output: {schema: GenerateStudyGuideOutputSchema},
+      prompt: promptText,
+    });
+    
     let output;
     try {
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
+        console.error(`Error with model ${model.name}:`, error);
         throw new Error(`Failed to generate study guide: ${error.message}`);
     }
     
