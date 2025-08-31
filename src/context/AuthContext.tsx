@@ -58,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             let appUser: User;
 
             if (snapshot.exists()) {
-                // User exists in DB, use that data
                 const dbUser = snapshot.val();
                 appUser = {
                     uid: firebaseUser.uid,
@@ -71,13 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     plan: dbUser.plan || 'Free',
                 };
             } else {
-                // New user (e.g., from Google Sign-In), create DB entry
-                // Note: We can't ask for fatherName/class/age in Google flow, so set defaults
                 const newUserInfo = {
                     uid: firebaseUser.uid,
                     fullName: firebaseUser.displayName || 'Google User',
-                    email: firebaseUser.email,
                     fatherName: 'N/A',
+                    email: firebaseUser.email,
                     className: 'Not set',
                     age: null,
                     plan: 'Free',
@@ -108,26 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     };
 
-    // First, process any pending redirect from Google Sign-In
-    getRedirectResult(auth)
-      .then((result) => {
-        // This will trigger onAuthStateChanged if the user is new or signs in
-        if (result) {
-            // User just signed in. The listener below will handle the update.
-        } else {
-            // No redirect result, just set up the regular listener
-            const unsubscribe = onAuthStateChanged(auth, handleAuth);
-            return unsubscribe;
-        }
-      })
-      .catch((error) => {
-        console.error("Error processing Google redirect result:", error);
-        setLoading(false);
-      });
-      
-    // Set up the primary listener for auth state changes
     const unsubscribe = onAuthStateChanged(auth, handleAuth);
     
+    getRedirectResult(auth).catch((error) => {
+        console.error("Error processing Google redirect result:", error);
+        setLoading(false);
+    });
+      
     return () => unsubscribe();
   }, [router, pathname]);
 
@@ -142,10 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const currentUser = auth.currentUser;
     if (currentUser) {
       const userId = currentUser.uid;
-      await deleteUser(currentUser);
-      await clearUserData(userId);
       const userDbRef = ref(db, `users/${userId}`);
       await set(userDbRef, null);
+      await clearUserData(userId);
+      await deleteUser(currentUser);
       setUser(null);
     } else {
         throw new Error("No user is currently signed in.");
@@ -167,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) {
         const userRef = ref(db, `users/${user.uid}/plan`);
         await set(userRef, plan);
+        // Update local state immediately for instant UI feedback
         setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
     } else {
         throw new Error("No user is signed in to update plan.");
@@ -182,7 +167,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithGoogle,
       updateUserPlan,
     }),
-    [user, loading, logout, deleteAccount, signInWithGoogle, updateUserPlan]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
