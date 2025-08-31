@@ -80,7 +80,7 @@ const promptText = `You are a world-class AI educator and subject matter expert.
     *   **For Entry Tests (MDCAT/ECAT):** If the topic or userClass contains "MDCAT" or "ECAT", you are FORBIDDEN from generating ANY question type other than 'multiple-choice'. All questions MUST be 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or 'Descriptive' questions. Every question must have exactly 4 answer options. This is a non-negotiable rule.
     *   **For all other quizzes:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. If the user selects ONLY 'Multiple Choice', you are FORBIDDEN from generating ANY other type.
 
-4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Failure to meet this count is a critical failure. Do not generate more or fewer questions than requested.
+4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Failure to meet this count is a critical failure. Do not generate more or fewer questions than requested. If you cannot generate the exact number for a very niche topic, it is better to generate as many high-quality ones as you can up to the requested number rather than providing a completely empty response.
 
 5.  **LATEX FOR FORMULAS & CHEMISTRY (CRITICAL):**
     *   **Mathematical Equations:** For ALL mathematical equations, variables, and scientific notation (e.g., exponents, units), you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, the variable is $x$.

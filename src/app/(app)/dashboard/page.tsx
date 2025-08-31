@@ -217,6 +217,7 @@ function AchievementsTab({ recentActivity, bookmarksCount }: { recentActivity: Q
     );
 }
 
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
