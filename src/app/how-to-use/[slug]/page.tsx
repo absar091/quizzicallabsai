@@ -6,7 +6,6 @@ import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, UserCheck, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, GraduationCap, MessageCircle, Mail, ArrowLeft } from 'lucide-react';
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -204,18 +203,6 @@ const guideData: Record<string, GuideContent> = {
     },
 };
 
-// This function can only be used in server components, but we need router access client-side
-// export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-//   const guide = guideData[params.slug];
-//   if (!guide) {
-//     return {};
-//   }
-//   return {
-//     title: guide.title,
-//     description: guide.description,
-//   };
-// }
-
 export default function GuideDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const guide = guideData[params.slug];
@@ -228,7 +215,7 @@ export default function GuideDetailPage({ params }: { params: { slug: string } }
 
   return (
     <div className="container py-8 max-w-4xl mx-auto">
-       <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4">
         <ArrowLeft className="mr-2 h-4 w-4"/>
         Back to Guides
       </Button>

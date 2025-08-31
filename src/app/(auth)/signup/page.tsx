@@ -235,6 +235,11 @@ export default function SignupPage() {
                 Sign in
               </Link>
             </div>
+            <div className="text-center text-sm text-muted-foreground">
+                <Link href="/how-to-use" className="font-medium text-primary hover:underline">
+                    Need Help?
+                </Link>
+            </div>
           </CardFooter>
         </form>
       </Form>

@@ -44,59 +44,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-          let displayName = firebaseUser.displayName || "User";
-          let className = "N/A";
-          let age = null;
-          
-          if (displayName && displayName.includes("__CLASS__")) {
-              const parts = displayName.split("__CLASS__");
-              displayName = parts[0];
-              const rest = parts[1];
-              if (rest.includes("__AGE__")) {
-                  const ageParts = rest.split("__AGE__");
-                  className = ageParts[0];
-                  age = parseInt(ageParts[1], 10) || null;
-              } else {
-                  className = rest;
-              }
-          }
+    const processUser = (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+            let displayName = firebaseUser.displayName || "User";
+            let className = "N/A";
+            let age = null;
+            
+            if (displayName && displayName.includes("__CLASS__")) {
+                const parts = displayName.split("__CLASS__");
+                displayName = parts[0];
+                const rest = parts[1];
+                if (rest.includes("__AGE__")) {
+                    const ageParts = rest.split("__AGE__");
+                    className = ageParts[0];
+                    age = parseInt(ageParts[1], 10) || null;
+                } else {
+                    className = rest;
+                }
+            }
 
-          const appUser: User = {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              displayName: displayName,
-              className: className,
-              age: age,
-              emailVerified: firebaseUser.emailVerified,
-          };
-          
-          setUser(appUser);
-          const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
-          if (isAuthPage) {
-              router.replace('/dashboard');
-          }
-      } else {
-          setUser(null);
-      }
-      setLoading(false);
-    });
+            const appUser: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: displayName,
+                className: className,
+                age: age,
+                emailVerified: firebaseUser.emailVerified,
+            };
+            
+            setUser(appUser);
+            const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/forgot-password') || pathname === '/';
+            if (isAuthPage) {
+                router.replace('/dashboard');
+            }
+        } else {
+            setUser(null);
+        }
+        setLoading(false);
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, processUser);
 
     // Handle the redirect result from Google
     getRedirectResult(auth)
       .then((result) => {
-        // This will trigger onAuthStateChanged if the user signed in successfully.
-        // No need to manually set the user here.
+        if (result?.user) {
+            // A user has successfully signed in or linked.
+            // onAuthStateChanged will handle the user state update and redirect.
+        }
       })
       .catch((error) => {
         console.error("Error processing Google redirect result:", error);
       })
       .finally(() => {
-        setLoading(false);
+        // If onAuthStateChanged hasn't already set loading to false,
+        // this ensures it happens after the redirect check.
+        if (loading) {
+            setLoading(false);
+        }
       });
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, router]);
 
   const logout = async () => {
@@ -141,6 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       signInWithGoogle,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading]
   );
 
