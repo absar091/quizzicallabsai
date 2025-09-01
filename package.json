@@ -65,6 +65,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.52.1",
     "react-katex": "^3.0.1",
+    "react-recaptcha": "^2.3.10",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
