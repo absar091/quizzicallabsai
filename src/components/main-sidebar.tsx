@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { BrainCircuit } from "lucide-react";
 
 const mainNav = [
-  { href: "/", label: "Home", icon: House },
+  { href: "/dashboard", label: "Dashboard", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
   { href: "/profile", label: "Profile", icon: User },

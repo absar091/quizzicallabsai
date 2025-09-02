@@ -120,16 +120,22 @@ export default function Home() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/");
+      console.log('🏠 MAIN PAGE - REDIRECTING LOGGED IN USER TO DASHBOARD');
+      router.replace('/dashboard'); // Redirect to dashboard
     }
   }, [user, loading, router]);
 
-  if (loading || user) {
+  if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // If user exists, don't render landing page
+  if (user) {
+    return null; // Will redirect via useEffect
   }
   
   return (

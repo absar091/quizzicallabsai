@@ -57,10 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    console.log('🔥 AUTH CONTEXT EFFECT RUNNING');
+    
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      console.log('🔥 AUTH STATE CHANGED:', !!firebaseUser);
-      console.log('- Firebase user email:', firebaseUser?.email);
-      console.log('- Current pathname:', pathname);
+      console.log('🔥 AUTH STATE CHANGED - firebaseUser:', !!firebaseUser);
+      console.log('- email:', firebaseUser?.email);
       
       if (firebaseUser) {
         const appUser: User = {
@@ -76,19 +77,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         console.log('✅ SETTING USER:', appUser.email);
         setUser(appUser);
-        setLoading(false);
-        console.log('✅ LOADING SET TO FALSE');
         
         // Redirect from auth pages
         if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
-          console.log('🔄 REDIRECTING FROM AUTH PAGE TO /');
-          setTimeout(() => router.replace('/'), 100);
+          console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 100);
         }
       } else {
-        console.log('❌ NO FIREBASE USER');
+        console.log('❌ NO FIREBASE USER - SETTING NULL');
         setUser(null);
-        setLoading(false);
       }
+      
+      // CRITICAL: Always set loading to false after auth state is determined
+      console.log('✅ SETTING LOADING TO FALSE');
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -117,11 +121,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      // User will be handled by onAuthStateChanged
-      return result;
+      await signInWithPopup(auth, provider);
     } catch (error: any) {
-      console.error("Google Sign-In error", error);
       throw error;
     }
   };
