@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { ref, get, set } from "firebase/database";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle, Loader2 } from "lucide-react";
@@ -57,7 +58,7 @@ export default function LoginPage() {
             await sendEmailVerification(auth.currentUser);
             toast({
                 title: "Verification Email Sent!",
-                description: "A new verification link has been sent to your email address. Please check your inbox and spam folder.",
+                description: "Please check your email and click the verification link, then try logging in again.",
             });
         } catch (error: any) {
              toast({
@@ -67,7 +68,7 @@ export default function LoginPage() {
             });
         } finally {
             setIsResending(false);
-            setShowVerificationAlert(false); // Hide the alert after action
+            setShowVerificationAlert(false);
             await auth.signOut();
         }
     }
@@ -79,6 +80,24 @@ export default function LoginPage() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       
+      // Check if user has ever verified their email
+      if (!userCredential.user.emailVerified) {
+        // Check if this is a new user who hasn't verified yet
+        const userRef = ref(db, `users/${userCredential.user.uid}/emailVerified`);
+        const snapshot = await get(userRef);
+        
+        if (!snapshot.exists()) {
+          // First time login without verification
+          setShowVerificationAlert(true);
+          setIsSubmitting(false);
+          return;
+        }
+      } else {
+        // User is verified, update their verification status in database
+        const userRef = ref(db, `users/${userCredential.user.uid}/emailVerified`);
+        await set(userRef, true);
+      }
+
       toast({
         title: "Login Successful",
         description: "Welcome back! Redirecting...",

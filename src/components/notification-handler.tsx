@@ -34,16 +34,21 @@ export default function NotificationHandler() {
                 return;
             }
 
-            const fcmToken = await getToken(messaging, { vapidKey: vapidKey, serviceWorkerRegistration: await navigator.serviceWorker.ready });
-            if (fcmToken) {
-              console.log('FCM Token:', fcmToken);
-              const currentUser = auth.currentUser;
-              if (currentUser) {
-                  const tokenRef = ref(db, `fcmTokens/${currentUser.uid}`);
-                  await set(tokenRef, { token: fcmToken, timestamp: new Date().toISOString() });
+            try {
+              const fcmToken = await getToken(messaging, { vapidKey: vapidKey, serviceWorkerRegistration: await navigator.serviceWorker.ready });
+              if (fcmToken) {
+                console.log('FCM Token obtained successfully');
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    const tokenRef = ref(db, `fcmTokens/${currentUser.uid}`);
+                    await set(tokenRef, { token: fcmToken, timestamp: new Date().toISOString() });
+                }
+              } else {
+                console.log('No registration token available.');
               }
-            } else {
-              console.log('No registration token available. Request permission to generate one.');
+            } catch (tokenError) {
+              console.warn('FCM token generation failed:', tokenError);
+              // Continue without FCM - app still works
             }
           } else {
             console.log('Unable to get permission to notify.');

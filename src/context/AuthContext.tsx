@@ -58,58 +58,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleAuth = async (firebaseUser: FirebaseUser | null) => {
-        if (firebaseUser) {
-            const userRef = ref(db, `users/${firebaseUser.uid}`);
-            const snapshot = await get(userRef);
-
-            let appUser: User;
-
-            if (snapshot.exists()) {
-                const dbUser = snapshot.val();
-                appUser = {
+        try {
+            if (firebaseUser) {
+                // Create default user first to prevent loading state
+                const defaultUser: User = {
                     uid: firebaseUser.uid,
                     email: firebaseUser.email,
                     displayName: firebaseUser.displayName,
                     emailVerified: firebaseUser.emailVerified,
-                    className: dbUser.className || 'N/A',
-                    age: dbUser.age || null,
-                    fatherName: dbUser.fatherName || 'N/A',
-                    plan: dbUser.plan || 'Free',
-                };
-            } else {
-                const newUserInfo = {
-                    uid: firebaseUser.uid,
-                    fullName: firebaseUser.displayName || 'Google User',
-                    fatherName: 'N/A',
-                    email: firebaseUser.email,
                     className: 'Not set',
                     age: null,
+                    fatherName: 'N/A',
                     plan: 'Free',
                 };
-                await set(userRef, newUserInfo);
+
+                setUser(defaultUser);
+                setLoading(false);
+
+                // Try to get additional user data with timeout
+                try {
+                    const userRef = ref(db, `users/${firebaseUser.uid}`);
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Database timeout')), 5000)
+                    );
+                    
+                    const snapshot = await Promise.race([
+                        get(userRef),
+                        timeoutPromise
+                    ]) as any;
+
+                    if (snapshot && snapshot.exists()) {
+                        const dbUser = snapshot.val();
+                        const updatedUser: User = {
+                            uid: firebaseUser.uid,
+                            email: firebaseUser.email,
+                            displayName: firebaseUser.displayName,
+                            emailVerified: firebaseUser.emailVerified,
+                            className: dbUser.className || 'Not set',
+                            age: dbUser.age || null,
+                            fatherName: dbUser.fatherName || 'N/A',
+                            plan: dbUser.plan || 'Free',
+                        };
+                        setUser(updatedUser);
+                    } else if (snapshot) {
+                        // Create new user record
+                        const newUserInfo = {
+                            uid: firebaseUser.uid,
+                            fullName: firebaseUser.displayName || 'User',
+                            fatherName: 'N/A',
+                            email: firebaseUser.email,
+                            className: 'Not set',
+                            age: null,
+                            plan: 'Free',
+                        };
+                        await set(userRef, newUserInfo);
+                    }
+                } catch (dbError) {
+                    console.warn('Database error, using default user data:', dbError);
+                    // User is already set with default data, continue
+                }
                 
-                appUser = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    displayName: firebaseUser.displayName,
-                    emailVerified: firebaseUser.emailVerified,
-                    className: newUserInfo.className,
-                    age: newUserInfo.age,
-                    fatherName: newUserInfo.fatherName,
-                    plan: newUserInfo.plan,
-                };
+                const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
+                if (isAuthPage) {
+                    router.replace('/');
+                }
+            } else {
+                setUser(null);
+                setLoading(false);
             }
-            
-            setUser(appUser);
-            
-            const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
-            if (isAuthPage) {
-                router.replace('/');
-            }
-        } else {
+        } catch (error) {
+            console.error('Auth error:', error);
             setUser(null);
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const unsubscribe = onAuthStateChanged(auth, handleAuth);
