@@ -3,7 +3,8 @@
 
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
+// Dynamic import for AI function
+type GenerateCustomQuizOutput = any;
 import GenerateQuizPage, { Quiz } from "../../../(main)/generate-quiz/page";
 import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -11,8 +12,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
+import { GenerationAd } from "@/components/ads/ad-banner";
 
 function EcatTestFlow() {
+    const { user } = useAuth();
     const searchParams = useSearchParams();
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [comprehensionText, setComprehensionText] = useState<string | null>(null);
@@ -36,6 +40,7 @@ function EcatTestFlow() {
         setIsLoading(true);
         setError(null);
         try {
+            const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
             const result = await generateCustomQuiz({
                 topic: `ECAT ${subject} - ${topic}`,
                 difficulty: difficulty as any,
@@ -43,7 +48,8 @@ function EcatTestFlow() {
                 questionTypes: ["Multiple Choice"],
                 questionStyles: questionStyles,
                 timeLimit: Number(numQuestions) || 55,
-                userAge: null,
+                isPro: user?.plan === 'Pro',
+                userAge: user?.age,
                 userClass: "ECAT Student",
                 specificInstructions: specificInstructions
             });
@@ -85,6 +91,7 @@ function EcatTestFlow() {
                 </div>
                 <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your ECAT test for "{searchParams.get('topic')}"...</h2>
                 <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
+                <GenerationAd />
             </div>
         )
     }

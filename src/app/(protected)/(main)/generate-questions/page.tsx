@@ -19,13 +19,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
+// Dynamic import for AI function
+type GenerateCustomQuizOutput = any;
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
+import { useAuth } from "@/context/AuthContext";
+import { GenerationAd } from "@/components/ads/ad-banner";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -72,6 +75,7 @@ const addPdfHeaderAndFooter = (doc: any, title: string, isPro: boolean) => {
 
 export default function GenerateQuestionsPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const { isPro } = usePlan();
   const [isGenerating, setIsGenerating] = useState(false);
   const [questions, setQuestions] = useState<Question[] | null>(null);
@@ -91,14 +95,15 @@ export default function GenerateQuestionsPage() {
     setQuestions(null);
     setVisibleAnswers({});
     try {
+      const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
       const result = await generateCustomQuiz({
         ...values,
-        isPro,
+        isPro: user?.plan === 'Pro',
         questionTypes: ["Multiple Choice"],
         questionStyles: ["Knowledge-based", "Conceptual"],
         timeLimit: values.numberOfQuestions,
-        userAge: null,
-        userClass: 'General Student',
+        userAge: user?.age,
+        userClass: user?.className || 'General Student',
         specificInstructions: "For each question, provide a detailed explanation for the correct answer."
       });
       if (!result.quiz || result.quiz.length === 0) {
@@ -171,7 +176,7 @@ export default function GenerateQuestionsPage() {
         y += 10;
     });
     
-    addPdfHeaderAndFooter(doc, `Practice Questions: ${topic}`, isPro);
+    addPdfHeaderAndFooter(doc, `Practice Questions: ${topic}`, user?.plan === 'Pro');
 
     doc.save(`${form.getValues('topic').replace(/\s+/g, '_')}_practice_questions.pdf`);
   };
@@ -282,8 +287,10 @@ export default function GenerateQuestionsPage() {
                 </CardHeader>
                 <CardContent>
                 {isGenerating && (
-                    <div className="flex items-center justify-center h-64">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <div className="flex flex-col items-center justify-center h-64">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                    <p className="text-muted-foreground mb-4">Generating practice questions...</p>
+                    <GenerationAd />
                     </div>
                 )}
                 {questions && (

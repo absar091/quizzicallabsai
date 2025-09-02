@@ -22,7 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
+// Dynamic import for AI function
+type GenerateCustomQuizOutput = any;
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -109,6 +110,7 @@ export default function GeneratePaperPage() {
             const progress = ((i + 1) / values.numberOfVariants) * 100;
             setGenerationProgress(progress);
             
+            const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
             const result = await generateCustomQuiz({
                 topic: values.subject,
                 difficulty: values.difficulty,

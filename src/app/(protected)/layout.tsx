@@ -16,13 +16,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const handleSidebarNavigate = () => {
-    // Auto-close sidebar on mobile and desktop after navigation
+    // Auto-close sidebar after navigation
     setIsSidebarOpen(false);
-    // Auto-open after a short delay for better UX
-    setTimeout(() => setIsSidebarOpen(true), 300);
   };
 
   // DEBUG: Log every render
@@ -63,12 +61,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
+      {/* Desktop Sidebar Only */}
       <div className="hidden border-r bg-card md:block w-[240px]">
         <MainSidebar onNavigate={handleSidebarNavigate} />
       </div>
+      
       <div className="flex flex-col">
         <header className="flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 sticky top-0 z-30">
-            <AppHeader onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
+            <AppHeader />
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 pb-24 md:pb-6">
            <AnimatePresence mode="wait">

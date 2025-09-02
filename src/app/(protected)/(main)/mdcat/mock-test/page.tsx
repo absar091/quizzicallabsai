@@ -3,7 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { generateCustomQuiz, GenerateCustomQuizOutput, GenerateCustomQuizInput } from '@/ai/flows/generate-custom-quiz';
+// Dynamic import for AI function
+type GenerateCustomQuizOutput = any;
+type GenerateCustomQuizInput = any;
 import GenerateQuizPage from '@/app/(protected)/(main)/generate-quiz/page';
 import { Loader2, AlertTriangle, Sparkles, BrainCircuit } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
@@ -62,6 +64,7 @@ export default function MdcatMockTestPage() {
     };
 
     try {
+      const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
       const result = await generateCustomQuiz(quizParams);
       if (!result.quiz || result.quiz.length === 0) {
         throw new Error("The AI returned an empty quiz. Please try again.");

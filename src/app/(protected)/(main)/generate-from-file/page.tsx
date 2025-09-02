@@ -19,7 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateQuizFromDocument } from "@/ai/flows/generate-quiz-from-document";
+// Dynamic import for AI function
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +27,8 @@ import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
 import GenerateQuizPage from "../generate-quiz/page";
 import type { Quiz } from "../generate-quiz/page";
+import { useAuth } from "@/context/AuthContext";
+import { GenerationAd } from "@/components/ads/ad-banner";
 
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -62,6 +64,7 @@ const questionTypeOptions = [
 
 export default function GenerateFromFilePage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
@@ -96,8 +99,10 @@ export default function GenerateFromFilePage() {
           numberOfQuestions: values.numberOfQuestions,
           difficulty: values.difficulty,
           questionTypes: values.questionTypes,
+          isPro: user?.plan === 'Pro',
         };
         
+        const { generateQuizFromDocument } = await import('@/ai/flows/generate-quiz-from-document');
         const result = await generateQuizFromDocument(plainInput);
 
         if (!result.quiz || result.quiz.length === 0) {
@@ -135,6 +140,7 @@ export default function GenerateFromFilePage() {
             </div>
             <h2 className="text-2xl font-semibold mb-2 mt-6">Analyzing your file...</h2>
             <p className="text-muted-foreground max-w-sm mb-6">Our AI is reading your document and crafting questions. This may take a moment.</p>
+            <GenerationAd />
         </div>
     )
   }

@@ -24,10 +24,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateCustomQuiz, GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
-import { generateExplanationsForIncorrectAnswers } from "@/ai/flows/generate-explanations-for-incorrect-answers";
-import { generateSimpleExplanation } from "@/ai/flows/generate-simple-explanation";
-import { generateFlashcards, GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
+// Dynamic imports for AI functions to prevent SSR errors
+type GenerateCustomQuizOutput = any;
+type GenerateFlashcardsOutput = any;
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,6 +51,7 @@ import {
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
+import { GenerationAd } from "@/components/ads/ad-banner";
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -358,9 +358,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       }
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
+      const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
       const result = await generateCustomQuiz({
         ...values,
-        isPro: isPro,
+        isPro: user?.plan === 'Pro',
         userAge: user?.age,
         userClass: user?.className,
         recentQuizHistory: historyForAI,
@@ -431,11 +432,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
+      const { generateExplanationsForIncorrectAnswers } = await import('@/ai/flows/generate-explanations-for-incorrect-answers');
       const result = await generateExplanationsForIncorrectAnswers({
         question: question.question,
         studentAnswer: userAnswers[questionIndex] || "",
         correctAnswer: question.correctAnswer || "N/A",
         topic: formValues.topic,
+        isPro: user?.plan === 'Pro',
       });
       setExplanations((prev) => ({
         ...prev,
@@ -464,10 +467,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
     
     try {
+        const { generateSimpleExplanation } = await import('@/ai/flows/generate-simple-explanation');
         const result = await generateSimpleExplanation({
             question: question.question,
             correctAnswer: question.correctAnswer || "N/A",
             topic: formValues.topic,
+            isPro: user?.plan === 'Pro',
         });
         setExplanations((prev) => ({
             ...prev,
@@ -509,6 +514,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 correctAnswer: q.correctAnswer || '',
             }))
         };
+        const { generateFlashcards } = await import('@/ai/flows/generate-flashcards');
         const result = await generateFlashcards(flashcardInput);
         if (result.flashcards.length === 0) {
             toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
@@ -582,7 +588,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         });
     }
 
-    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty, isPro);
+    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty, user?.plan === 'Pro');
     doc.save(`${formValues.topic.replace(/\s+/g, '_')}_quiz.pdf`);
   };
 
@@ -592,7 +598,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     const { score, percentage, totalScorable } = calculateScore();
     const doc = new jsPDF();
     
-    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty, isPro);
+    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty, user?.plan === 'Pro');
 
     let y = 50;
 
@@ -633,7 +639,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           };
           const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
           await set(bookmarkRef, newBookmark);
-          await saveBookmark(newBookmark);
+          await saveBookmark(newBookmark, user.plan);
           setBookmarkedQuestions(prev => [...prev, newBookmark]);
       }
     } catch (error) {
@@ -744,6 +750,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
            <Progress value={generationProgress} />
            <p className="text-sm mt-2 text-primary font-medium">{generationProgress}%</p>
         </div>
+        <GenerationAd />
       </div>
     );
   }

@@ -97,8 +97,17 @@ export async function getQuizResults(userId: string): Promise<QuizResult[]> {
 
 // --- Bookmarks ---
 
-export async function saveBookmark(bookmark: BookmarkedQuestion): Promise<void> {
+export async function saveBookmark(bookmark: BookmarkedQuestion, userPlan: string = 'Free'): Promise<void> {
   const db = await getDb();
+  
+  // Check bookmark limit for free users
+  if (userPlan === 'Free') {
+    const existingBookmarks = await getBookmarks(bookmark.userId);
+    if (existingBookmarks.length >= 50) {
+      throw new Error('Free users can only bookmark up to 50 questions. Upgrade to Pro for unlimited bookmarks.');
+    }
+  }
+  
   await db.put('bookmarks', bookmark);
 }
 

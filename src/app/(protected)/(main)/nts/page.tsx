@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BookUser } from "lucide-react";
 import { ntsSyllabus } from "@/lib/nts-syllabus";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 const categories = Object.values(ntsSyllabus);
 
@@ -47,6 +48,9 @@ export default function NtsPage() {
                  </Button>
             </Card>
         </div>
+      </div>
+      <div className="mt-8">
+        <SidebarAd />
       </div>
     </div>
   );

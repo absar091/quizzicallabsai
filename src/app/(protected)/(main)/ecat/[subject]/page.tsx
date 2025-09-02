@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import Link from 'next/link';
 import { notFound } from "next/navigation";
 import { ecatSyllabus, Topic } from "@/lib/ecat-syllabus";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 type SubjectPageProps = {
   params: {
@@ -70,6 +71,9 @@ export default function EcatSubjectPage({ params }: SubjectPageProps) {
                 </div>
             </CardContent>
         </Card>
+        <div className="mt-8">
+          <SidebarAd />
+        </div>
       </div>
     </div>
   );

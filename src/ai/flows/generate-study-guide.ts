@@ -51,15 +51,45 @@ export async function generateStudyGuide(
 ): Promise<GenerateStudyGuideOutput> {
   // Check if AI is available
   if (!isAiAvailable() || !ai) {
-    throw new Error('AI service is not configured. Please contact support.');
+    throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
   
-  return generateStudyGuideFlow(input);
+  // Input validation
+  if (!input.topic || input.topic.trim().length < 3) {
+    throw new Error('Topic must be at least 3 characters long.');
+  }
+  
+  try {
+    return await generateStudyGuideFlow(input);
+  } catch (error: any) {
+    console.error('Study guide generation failed:', error?.message || error);
+    
+    if (error?.message?.includes('quota') || error?.message?.includes('rate limit')) {
+      throw new Error('AI service is busy. Please wait a moment and try again.');
+    }
+    if (error?.message?.includes('timeout') || error?.message?.includes('deadline')) {
+      throw new Error('Request timed out. Please try again.');
+    }
+    
+    throw new Error('Failed to generate study guide. Please try again.');
+  }
 }
 
-const promptText = `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
+const getPromptText = (isPro: boolean) => `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
 
-  The study guide MUST be personalized based on the user's learning preferences and difficulties.
+${isPro ? '**PRO USER - PREMIUM QUALITY:**
+- Provide more detailed explanations and advanced concepts
+- Include additional key concepts (7-10 instead of 5-7)
+- Create more sophisticated analogies
+- Generate more comprehensive quiz questions (5-6 instead of 3-4)
+- Focus on deeper understanding and critical thinking
+
+' : '**STANDARD USER:**
+- Focus on core concepts and fundamental understanding
+- Keep explanations clear and accessible
+- Provide essential knowledge for solid foundation
+
+'}The study guide MUST be personalized based on the user's learning preferences and difficulties.
 
   **Critical Instructions:**
   1.  **ACCURACY IS KEY:** All definitions, explanations, and facts must be 100% accurate and verified. Do not include speculative or incorrect information.
@@ -85,21 +115,23 @@ const generateStudyGuideFlow = ai!.defineFlow(
     outputSchema: GenerateStudyGuideOutputSchema,
   },
   async input => {
-    const model = getModel(input.isPro);
-    const prompt = ai!.definePrompt({
-      name: 'generateStudyGuidePrompt',
-      model: model,
-      input: {schema: GenerateStudyGuideInputSchema},
-      output: {schema: GenerateStudyGuideOutputSchema},
-      prompt: promptText,
-    });
-    
     let output;
     let retryCount = 0;
     const maxRetries = 2;
     
     while (retryCount <= maxRetries) {
       try {
+        // Use fallback model on retry
+        const model = getModel(input.isPro, retryCount > 0);
+        
+        const prompt = ai!.definePrompt({
+          name: 'generateStudyGuidePrompt',
+          model: model,
+          input: {schema: GenerateStudyGuideInputSchema},
+          output: {schema: GenerateStudyGuideOutputSchema},
+          prompt: getPromptText(input.isPro),
+        });
+        
         const result = await prompt(input);
         output = result.output;
         
@@ -122,7 +154,7 @@ const generateStudyGuideFlow = ai!.defineFlow(
       } catch (error: any) {
         retryCount++;
         const errorMsg = error?.message || 'Unknown error';
-        console.error(`Study guide generation attempt ${retryCount} failed with model ${model.name}:`, errorMsg);
+        console.error(`Study guide generation attempt ${retryCount} failed:`, errorMsg);
         
         if (retryCount > maxRetries) {
           if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {

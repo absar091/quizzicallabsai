@@ -10,6 +10,7 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 // Define the structure for a single quiz result to be passed in
@@ -23,6 +24,7 @@ const QuizResultSchema = z.object({
 const GenerateDashboardInsightsInputSchema = z.object({
   userName: z.string().describe("The user's first name."),
   quizHistory: z.array(QuizResultSchema).describe("An array of the user's recent quiz results."),
+  isPro: z.boolean().default(false),
 });
 export type GenerateDashboardInsightsInput = z.infer<typeof GenerateDashboardInsightsInputSchema>;
 
@@ -69,7 +71,20 @@ export async function generateDashboardInsights(
 }
 
 
-const promptText = `You are an AI-powered academic coach named 'Quizzical'. Your goal is to provide encouraging, insightful, and actionable feedback to a student based on their recent quiz performance. Be friendly, positive, and concise.
+const getPromptText = (isPro: boolean) => `You are an AI-powered academic coach named 'Quizzical'. Your goal is to provide encouraging, insightful, and actionable feedback to a student based on their recent quiz performance. Be friendly, positive, and concise.
+
+${isPro ? '**PRO USER - ENHANCED INSIGHTS:**
+- Provide more detailed performance analysis
+- Offer advanced study strategies
+- Include deeper learning recommendations
+- Focus on mastery and excellence
+
+' : '**STANDARD INSIGHTS:**
+- Focus on core performance feedback
+- Provide clear, actionable suggestions
+- Keep recommendations accessible
+
+'}
 
 **CONTEXT:**
 - Student Name: {{{userName}}}
@@ -107,10 +122,10 @@ Analyze the student's quiz history and generate a response in the specified JSON
 
 Now, generate the output for the provided student data.`;
 
-const prompt = ai!.definePrompt({
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
     name: 'generateDashboardInsightsPrompt',
-    model: 'googleai/gemini-1.5-flash',
-    prompt: promptText,
+    model: getModel(isPro, useFallback),
+    prompt: getPromptText(isPro),
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
 });
@@ -131,6 +146,7 @@ const generateDashboardInsightsFlow = ai!.defineFlow(
     
     let output;
     try {
+        const prompt = createPrompt(input.isPro, false);
         const result = await prompt(recentHistory);
         output = result.output;
     } catch (error: any) {

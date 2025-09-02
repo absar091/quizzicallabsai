@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
 import { ecatSyllabus } from "@/lib/ecat-syllabus";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 const subjects = Object.values(ecatSyllabus);
 
@@ -53,6 +54,9 @@ export default function EcatPage() {
                 </Button>
             </Card>
         </div>
+      </div>
+      <div className="mt-8">
+        <SidebarAd />
       </div>
     </div>
   );

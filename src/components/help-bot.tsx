@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { generateHelpBotResponse } from "@/ai/flows/generate-help-bot-response";
 import { sanitizeHtml, validateInput, sanitizeLogInput } from "@/lib/security";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useAuth } from "@/context/AuthContext";
 
 
 type ConversationMessage = {
@@ -23,6 +24,7 @@ type ConversationMessage = {
 };
 
 export default function HelpBot() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,11 @@ export default function HelpBot() {
         if (selectedFaq) {
             addBotAnswer(selectedFaq.answer, selectedFaq.related);
         } else {
-            generateHelpBotResponse({ query: validateInput(questionText, 500), faqContext: JSON.stringify(faqs) })
+            generateHelpBotResponse({ 
+                query: validateInput(questionText, 500), 
+                faqContext: JSON.stringify(faqs),
+                userPlan: user?.plan || 'Free'
+            })
                 .then(response => {
                     addBotAnswer(response.answer);
                 })

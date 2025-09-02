@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { generateNtsQuiz } from '@/ai/flows/generate-nts-quiz';
+// Dynamic import for AI function
 import GenerateQuizPage, { Quiz } from '@/app/(protected)/(main)/generate-quiz/page';
 import { Loader2, AlertTriangle, BookUser, BrainCircuit, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
@@ -66,6 +66,7 @@ export default function NtsMockTestPage() {
     }
 
     try {
+      const { generateNtsQuiz } = await import('@/ai/flows/generate-nts-quiz');
       const result = await generateNtsQuiz({
         category: selectedCategory,
         topic: topicForAI,

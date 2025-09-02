@@ -10,6 +10,7 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 const GenerateExplanationsInputSchema = z.object({
@@ -17,6 +18,7 @@ const GenerateExplanationsInputSchema = z.object({
   studentAnswer: z.string().describe('The student’s incorrect answer.'),
   correctAnswer: z.string().describe('The correct answer to the question.'),
   topic: z.string().describe('The topic of the question.'),
+  isPro: z.boolean().default(false),
 });
 export type GenerateExplanationsInput = z.infer<typeof GenerateExplanationsInputSchema>;
 
@@ -29,12 +31,30 @@ export async function generateExplanationsForIncorrectAnswers(
   input: GenerateExplanationsInput
 ): Promise<GenerateExplanationsOutput> {
   if (!isAiAvailable() || !ai) {
-    throw new Error('AI service is not configured. Please contact support.');
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
   }
-  return generateExplanationsFlow(input);
+  
+  try {
+    return await generateExplanationsFlow(input);
+  } catch (error: any) {
+    console.error('Explanation generation failed:', error?.message || error);
+    return { explanation: 'Unable to generate explanation at this time. Please try again.' };
+  }
 }
 
-const promptText = `You are an expert AI tutor. Your goal is to provide a clear, insightful, and helpful explanation for a quiz question that a student answered incorrectly.
+const getPromptText = (isPro: boolean) => `You are an expert AI tutor. Your goal is to provide a clear, insightful, and helpful explanation for a quiz question that a student answered incorrectly.
+
+${isPro ? '**PRO USER - ENHANCED EXPLANATION:**
+- Provide deeper conceptual understanding
+- Include advanced insights and connections
+- Offer additional context and real-world applications
+- Use more sophisticated pedagogical approaches
+
+' : '**STANDARD EXPLANATION:**
+- Focus on core concepts and clear understanding
+- Keep explanations accessible and straightforward
+
+'}
 
 **Context:**
 - **Topic:** {{topic}}
@@ -51,12 +71,13 @@ Generate an explanation that does the following, in this order:
 
 **Tone:** Be encouraging, clear, and educational. Avoid jargon where possible, or explain it if necessary. The output should be just the text of the explanation itself.`;
 
-const prompt = ai!.definePrompt({
+// Dynamic prompt creation based on user plan
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateExplanationsPrompt',
-  model: 'googleai/gemini-1.5-flash',
+  model: getModel(isPro, useFallback),
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
-  prompt: promptText,
+  prompt: getPromptText(isPro),
 });
 
 
@@ -69,6 +90,7 @@ const generateExplanationsFlow = ai!.defineFlow(
   async input => {
     let output;
     try {
+        const prompt = createPrompt(input.isPro, false);
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {

@@ -21,11 +21,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateStudyGuide, GenerateStudyGuideOutput } from "@/ai/flows/generate-study-guide";
+// Dynamic import for AI function
+type GenerateStudyGuideOutput = any;
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
+import { useAuth } from "@/context/AuthContext";
+import { GenerationAd } from "@/components/ads/ad-banner";
+import { shouldAddWatermark } from "@/lib/plan-restrictions";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
@@ -52,13 +56,15 @@ const addPdfHeaderAndFooter = (doc: any, title: string) => {
         doc.setLineWidth(0.2);
         doc.line(20, 32, pageWidth - 20, 32);
         
-        // Watermark
-        doc.saveGraphicsState();
-        doc.setFontSize(60);
-        doc.setTextColor(230, 230, 230);
-        doc.setGState(new (doc as any).GState({opacity: 0.5}));
-        doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
-        doc.restoreGraphicsState();
+        // Watermark for free users
+        if (shouldAddWatermark(user?.plan || 'Free')) {
+            doc.saveGraphicsState();
+            doc.setFontSize(60);
+            doc.setTextColor(230, 230, 230);
+            doc.setGState(new (doc as any).GState({opacity: 0.5}));
+            doc.text("Quizzicallabs AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' });
+            doc.restoreGraphicsState();
+        }
 
         // Footer
         doc.setFont('helvetica', 'normal');
@@ -71,6 +77,7 @@ const addPdfHeaderAndFooter = (doc: any, title: string) => {
 
 export default function GenerateStudyGuidePage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [studyGuide, setStudyGuide] = useState<GenerateStudyGuideOutput | null>(null);
   const { isPro } = usePlan();
@@ -88,7 +95,8 @@ export default function GenerateStudyGuidePage() {
     setIsGenerating(true);
     setStudyGuide(null);
     try {
-      const result = await generateStudyGuide({ ...values, isPro });
+      const { generateStudyGuide } = await import('@/ai/flows/generate-study-guide');
+      const result = await generateStudyGuide({ ...values, isPro: user?.plan === 'Pro' });
       setStudyGuide(result);
     } catch (error) {
       toast({
@@ -283,6 +291,7 @@ export default function GenerateStudyGuidePage() {
           <div className="flex flex-col items-center justify-center text-center mt-12">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
             <p className="text-xl text-muted-foreground">Our AI is building your personalized study guide...</p>
+            <GenerationAd />
           </div>
         )}
 

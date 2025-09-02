@@ -60,7 +60,21 @@ export async function generateQuizFromDocument(
  return generateQuizFromDocumentFlow(input);
 }
 
-const promptText = `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
+const getPromptText = (isPro: boolean) => `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
+
+${isPro ? '**PRO USER - PREMIUM DOCUMENT ANALYSIS:**
+- Provide more sophisticated question analysis
+- Create more nuanced and challenging questions
+- Include deeper comprehension and critical thinking questions
+- Generate more sophisticated distractors for MCQs
+- Focus on advanced document interpretation skills
+
+' : '**STANDARD DOCUMENT ANALYSIS:**
+- Focus on core document comprehension
+- Create clear, straightforward questions
+- Ensure accessibility and fundamental understanding
+
+'}
 
   **Critical Instructions - Follow these rules without exception:**
   1.  **STRICTLY ADHERE TO THE DOCUMENT:** Analyze the provided file: {{media url=documentDataUri}}. You MUST generate exactly {{{numberOfQuestions}}} questions and answers using ONLY the information found within it.
@@ -72,9 +86,9 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
   Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{numberOfQuestions}}} questions.`;
 
-const prompt = ai!.definePrompt({
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
-    prompt: promptText,
+    prompt: getPromptText(isPro),
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },
 });
@@ -92,6 +106,8 @@ const generateQuizFromDocumentFlow = ai!.defineFlow(
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
+        const model = getModel(input.isPro, attempt > 1);
+        const prompt = createPrompt(input.isPro, attempt > 1);
         const result = await prompt({ ...input, model });
         const output = result.output;
 

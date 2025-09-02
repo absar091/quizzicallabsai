@@ -20,7 +20,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { explainImage, ExplainImageOutput } from "@/ai/flows/explain-image";
+// Dynamic import for AI function
+type ExplainImageOutput = any;
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -78,7 +79,8 @@ export default function ExplainImagePage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
-        const result = await explainImage({
+        const { explainImage } = await import('@/ai/flows/explain-image');
+      const result = await explainImage({
           imageDataUri: dataUri,
           query: values.query,
         });

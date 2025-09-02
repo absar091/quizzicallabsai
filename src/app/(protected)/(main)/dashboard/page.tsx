@@ -9,7 +9,8 @@ import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/page-header";
 import { getQuizResults, QuizResult, getBookmarks } from "@/lib/indexed-db";
-import { generateDashboardInsights, GenerateDashboardInsightsOutput } from "@/ai/flows/generate-dashboard-insights";
+// Dynamic import for AI insights
+type GenerateDashboardInsightsOutput = any;
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
@@ -33,27 +34,28 @@ const itemVariants: Variants = {
   show: { y: 0, opacity: 1 },
 };
 
-function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResult[], userName: string }) {
+function AiInsightsCard({ recentActivity, userName, userPlan }: { recentActivity: QuizResult[], userName: string, userPlan: string }) {
   const [insights, setInsights] = useState<GenerateDashboardInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  useEffect(() => {
+    if (!isMounted) return;
+    
     async function fetchInsights() {
       setIsLoading(true);
       try {
-        // Only fetch insights on client side and if we have activity data
-        if (typeof window !== 'undefined' && recentActivity.length >= 0) {
-          const result = await generateDashboardInsights({ userName: userName, quizHistory: recentActivity });
-          setInsights(result);
-        } else {
-          // Fallback for server-side or no data
-          setInsights({ 
-            greeting: `Hi, ${userName}!`, 
-            observation: "Ready to boost your learning?", 
-            suggestion: "Start with a custom quiz to track your progress.", 
-            suggestedAction: { buttonText: "Create Quiz", link: "/generate-quiz" } 
-          });
-        }
+        const { generateDashboardInsights } = await import('@/ai/flows/generate-dashboard-insights');
+        const result = await generateDashboardInsights({ 
+          userName: userName, 
+          quizHistory: recentActivity,
+          isPro: userPlan === 'Pro'
+        });
+        setInsights(result);
       } catch (error) {
         console.error("Failed to fetch AI insights:", error);
         setInsights({ 
@@ -67,20 +69,25 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
       }
     }
     
-    // Only run on client side
-    if (typeof window !== 'undefined') {
-      fetchInsights();
-    } else {
-      // Server-side fallback
-      setInsights({ 
-        greeting: `Hi, ${userName}!`, 
-        observation: "Ready to boost your learning?", 
-        suggestion: "Start with a custom quiz to track your progress.", 
-        suggestedAction: { buttonText: "Create Quiz", link: "/generate-quiz" } 
-      });
-      setIsLoading(false);
-    }
-  }, [recentActivity, userName]);
+    fetchInsights();
+  }, [recentActivity, userName, isMounted]);
+  
+  if (!isMounted) {
+    return (
+      <Card className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-6">
+        <div className="flex items-center gap-3 mb-3">
+          <Brain className="h-5 w-5"/>
+          <CardTitle className="text-lg font-semibold">AI Study Assistant</CardTitle>
+        </div>
+        <CardDescription className="text-primary-foreground/90 text-base mb-6">
+          Ready to boost your learning? Start with a custom quiz to track your progress.
+        </CardDescription>
+        <Button variant="secondary" asChild className="bg-white/20 text-white hover:bg-white/30">
+          <Link href="/generate-quiz">Create Quiz</Link>
+        </Button>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -139,7 +146,7 @@ function PerformanceChart({ data }: { data: QuizResult[] }) {
     );
 }
 
-export default function DashboardPage() {
+export default function HomePage() {
   const { user } = useAuth();
   const { plan } = usePlan();
   const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
@@ -206,7 +213,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={`Welcome back, ${user?.displayName?.split(' ')[0]}!`} className="mb-0"/>
+      <PageHeader title="Home" description={`Welcome back, ${user?.displayName?.split(' ')[0]}! Here's your learning overview.`} className="mb-0"/>
       
       <motion.div 
         className="space-y-6"
@@ -235,9 +242,15 @@ export default function DashboardPage() {
           </motion.div>
         )}
         
-        <motion.div variants={itemVariants}>
-          <AiInsightsCard recentActivity={last14Days} userName={user?.displayName?.split(' ')[0] || 'Student'} />
-        </motion.div>
+        {typeof window !== 'undefined' && (
+          <motion.div variants={itemVariants}>
+            <AiInsightsCard 
+              recentActivity={last14Days} 
+              userName={user?.displayName?.split(' ')[0] || 'Student'}
+              userPlan={user?.plan || 'Free'}
+            />
+          </motion.div>
+        )}
 
         <motion.div 
           className="grid grid-cols-2 md:grid-cols-4 gap-4"

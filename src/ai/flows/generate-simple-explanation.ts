@@ -10,12 +10,14 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 const GenerateSimpleExplanationInputSchema = z.object({
   question: z.string().describe('The quiz question.'),
   correctAnswer: z.string().describe('The correct answer to the question.'),
   topic: z.string().describe('The topic of the question.'),
+  isPro: z.boolean().default(false),
 });
 export type GenerateSimpleExplanationInput = z.infer<typeof GenerateSimpleExplanationInputSchema>;
 
@@ -28,12 +30,29 @@ export async function generateSimpleExplanation(
   input: GenerateSimpleExplanationInput
 ): Promise<GenerateSimpleExplanationOutput> {
   if (!isAiAvailable() || !ai) {
-    throw new Error('AI service is not configured. Please contact support.');
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
   }
-  return generateSimpleExplanationFlow(input);
+  
+  try {
+    return await generateSimpleExplanationFlow(input);
+  } catch (error: any) {
+    console.error('Simple explanation generation failed:', error?.message || error);
+    return { explanation: 'Unable to generate simple explanation at this time. Please try again.' };
+  }
 }
 
-const promptText = `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
+const getPromptText = (isPro: boolean) => `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
+
+${isPro ? '**PRO USER - ENHANCED SIMPLE EXPLANATION:**
+- Provide more detailed analogies and examples
+- Include additional context for deeper understanding
+- Offer multiple ways to think about the concept
+
+' : '**STANDARD SIMPLE EXPLANATION:**
+- Focus on basic understanding with clear analogies
+- Keep explanations concise and accessible
+
+'}
 
   Explain the following concept like I'm 5 years old. Use simple words, short sentences, and a real-world analogy if possible.
 
@@ -44,12 +63,12 @@ const promptText = `You are an AI assistant that is an expert at explaining comp
   Focus on explaining why the correct answer is right in the simplest terms possible.`;
 
 
-const prompt = ai!.definePrompt({
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateSimpleExplanationPrompt',
-  model: 'googleai/gemini-1.5-flash',
+  model: getModel(isPro, useFallback),
   input: {schema: GenerateSimpleExplanationInputSchema},
   output: {schema: GenerateSimpleExplanationOutputSchema},
-  prompt: promptText,
+  prompt: getPromptText(isPro),
 });
 
 
@@ -62,6 +81,7 @@ const generateSimpleExplanationFlow = ai!.defineFlow(
   async input => {
     let output;
     try {
+        const prompt = createPrompt(input.isPro, false);
         const result = await prompt(input);
         output = result.output;
     } catch (error: any) {

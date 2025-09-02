@@ -18,9 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { usePlan } from "@/hooks/usePlan";
 import { useState, useEffect } from "react";
 import { getQuizResults, getBookmarks } from "@/lib/indexed-db";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 const mainNav = [
-  { href: "/dashboard", label: "Dashboard", icon: House },
+  { href: "/dashboard", label: "Home", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
   { href: "/bookmarks", label: "Bookmarks", icon: Star },
@@ -138,6 +139,9 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
           </div>
         )}
       </div>
+      
+      {/* Ad for free users */}
+      <SidebarAd />
     </div>
   )
 }

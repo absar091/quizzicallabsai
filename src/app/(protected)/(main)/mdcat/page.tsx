@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from "lucide-react";
 import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 const subjects = Object.values(mdcatSyllabus);
 
@@ -53,6 +54,9 @@ export default function MdcatPage() {
                 </Button>
             </Card>
         </div>
+      </div>
+      <div className="mt-8">
+        <SidebarAd />
       </div>
     </div>
   );

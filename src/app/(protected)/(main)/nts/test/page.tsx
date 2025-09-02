@@ -8,7 +8,7 @@ import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { generateNtsQuiz } from "@/ai/flows/generate-nts-quiz";
+// Dynamic import for AI function
 import { motion } from "framer-motion";
 
 function NtsTestFlow() {
@@ -36,6 +36,7 @@ function NtsTestFlow() {
             // Construct a more detailed topic for the AI
             const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
             
+            const { generateNtsQuiz } = await import('@/ai/flows/generate-nts-quiz');
             const result = await generateNtsQuiz({
                 category: category,
                 topic: topicForAI,

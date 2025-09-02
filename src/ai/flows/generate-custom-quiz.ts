@@ -60,28 +60,56 @@ export async function generateCustomQuiz(
 ): Promise<GenerateCustomQuizOutput> {
   // Check if AI is available
   if (!isAiAvailable() || !ai) {
-    throw new Error('AI service is not configured. Please contact support.');
+    throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
   
-  // Explicit input validation (redundant with Zod but provides clearer error messages)
+  // Explicit input validation
+  if (!input.topic || input.topic.trim().length === 0) {
+    throw new Error('Topic is required.');
+  }
   if (input.numberOfQuestions < 1 || input.numberOfQuestions > 55) {
-    throw new Error("Number of questions must be between 1 and 55.");
+    throw new Error('Number of questions must be between 1 and 55.');
   }
   if (input.timeLimit < 1 || input.timeLimit > 120) {
-      throw new Error("Time limit must be between 1 and 120 minutes.");
+    throw new Error('Time limit must be between 1 and 120 minutes.');
   }
 
   try {
     return await generateCustomQuizFlow(input);
   } catch (error: any) {
-    console.error('Quiz generation failed:', error);
-    throw new Error('Failed to generate quiz. Please try again or contact support.');
+    console.error('Quiz generation failed:', error?.message || error);
+    
+    // Provide specific error messages
+    if (error?.message?.includes('quota') || error?.message?.includes('rate limit')) {
+      throw new Error('AI service is busy. Please wait a moment and try again.');
+    }
+    if (error?.message?.includes('timeout') || error?.message?.includes('deadline')) {
+      throw new Error('Request timed out. Please try again.');
+    }
+    if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+    
+    throw new Error('Failed to generate quiz. Please try again.');
   }
 }
 
-const promptText = `You are an elite AI educator and curriculum expert with deep knowledge of Pakistani educational standards. Your mission is to create exceptional, syllabus-compliant quizzes that maintain the highest academic rigor and pedagogical value.
+const getPromptText = (isPro: boolean) => `You are an elite AI educator and curriculum expert with deep knowledge of Pakistani educational standards. Your mission is to create exceptional, syllabus-compliant quizzes that maintain the highest academic rigor and pedagogical value.
 
-**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
+${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**
+- Generate more sophisticated and nuanced questions
+- Provide deeper conceptual understanding
+- Include advanced problem-solving scenarios
+- Create more challenging distractors for MCQs
+- Focus on higher-order thinking skills
+- Ensure professional-grade academic rigor
+
+' : '**STANDARD USER - QUALITY EDUCATION:**
+- Focus on fundamental concepts and core understanding
+- Provide clear, straightforward questions
+- Ensure accessibility for all learning levels
+
+'}**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
 
 1.  **SYLLABUS ADHERENCE (SUPREME RULE):** 
     - For MDCAT/ECAT students: Generate questions EXCLUSIVELY from the official Pakistani FSc/ICS curriculum for the specified topic
@@ -169,22 +197,23 @@ const generateCustomQuizFlow = ai!.defineFlow(
     outputSchema: GenerateCustomQuizOutputSchema,
   },
   async (input) => {
-    const model = getModel(input.isPro);
-    
-    const prompt = ai!.definePrompt({
-      name: "generateCustomQuizPrompt",
-      model: model,
-      prompt: promptText,
-      input: { schema: GenerateCustomQuizInputSchema },
-      output: { schema: GenerateCustomQuizOutputSchema },
-    });
-    
     let output;
     let retryCount = 0;
     const maxRetries = 2;
     
     while (retryCount <= maxRetries) {
       try {
+        // Use fallback model on retry
+        const model = getModel(input.isPro, retryCount > 0);
+        
+        const prompt = ai!.definePrompt({
+          name: "generateCustomQuizPrompt",
+          model: model,
+          prompt: getPromptText(input.isPro),
+          input: { schema: GenerateCustomQuizInputSchema },
+          output: { schema: GenerateCustomQuizOutputSchema },
+        });
+        
         const result = await prompt(input);
         output = result.output;
         
@@ -196,7 +225,7 @@ const generateCustomQuizFlow = ai!.defineFlow(
       } catch (error: any) {
         retryCount++;
         const errorMsg = sanitizeLogInput(error?.message || 'Unknown error');
-        console.error(`Quiz generation attempt ${retryCount} failed with model ${model.name}:`, errorMsg);
+        console.error(`Quiz generation attempt ${retryCount} failed:`, errorMsg);
         
         if (retryCount > maxRetries) {
           // Provide specific error messages based on error type

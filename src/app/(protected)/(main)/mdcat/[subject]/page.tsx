@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { mdcatSyllabus } from "@/lib/mdcat-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { SidebarAd } from "@/components/ads/ad-banner";
 
 type SubjectPageProps = {
   params: {
@@ -78,6 +79,9 @@ export default function MdcatSubjectPage({ params }: SubjectPageProps) {
             </AccordionItem>
           ))}
         </Accordion>
+        <div className="mt-8">
+          <SidebarAd />
+        </div>
       </div>
     </div>
   );

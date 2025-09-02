@@ -11,12 +11,14 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
 const GenerateNtsQuizInputSchema = z.object({
   category: z.string().describe('The NTS/NAT category (e.g., NAT-IE, NAT-IM, Analytical Reasoning, Quantitative Reasoning, Verbal Reasoning).'),
   topic: z.string().describe('The specific topic or subject for the quiz. For reasoning sections, this will be the name of the section itself. For subject tests, it can be very detailed.'),
   numberOfQuestions: z.number().min(1).max(55).describe('The number of questions to generate.'),
+  isPro: z.boolean().default(false),
 });
 export type GenerateNtsQuizInput = z.infer<typeof GenerateNtsQuizInputSchema>;
 
@@ -42,7 +44,21 @@ export async function generateNtsQuiz(
   return generateNtsQuizFlow(input);
 }
 
-const promptText = `You are an elite NTS/NAT question architect with comprehensive expertise in Pakistani educational standards and testing methodologies. Your mission is to create authentic, high-caliber questions that mirror the actual NTS/NAT examination standards.
+const getPromptText = (isPro: boolean) => `You are an elite NTS/NAT question architect with comprehensive expertise in Pakistani educational standards and testing methodologies. Your mission is to create authentic, high-caliber questions that mirror the actual NTS/NAT examination standards.
+
+${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**
+- Generate more sophisticated and challenging questions
+- Include advanced problem-solving scenarios
+- Create more nuanced distractors that test deeper understanding
+- Focus on higher-order thinking and analytical skills
+- Provide university-level complexity and rigor
+
+' : '**STANDARD NTS PREPARATION:**
+- Focus on core NTS concepts and fundamental understanding
+- Provide clear, accessible questions aligned with standard difficulty
+- Ensure solid foundation for NTS success
+
+'}
 
 **SUPREME COMPLIANCE DIRECTIVES - ABSOLUTE ADHERENCE REQUIRED:**
 
@@ -114,12 +130,12 @@ Generate the quiz now.
 `;
 
 
-const prompt = ai!.definePrompt({
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateNtsQuizPrompt',
-  model: 'googleai/gemini-1.5-flash',
+  model: getModel(isPro, useFallback),
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
-  prompt: promptText,
+  prompt: getPromptText(isPro),
 });
 
 
@@ -136,6 +152,7 @@ const generateNtsQuizFlow = ai!.defineFlow(
     
     while (retryCount <= maxRetries) {
       try {
+        const prompt = createPrompt(input.isPro, retryCount > 0);
         const result = await prompt(input);
         output = result.output;
         
