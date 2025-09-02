@@ -19,15 +19,33 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
+    console.log('Protected Layout - Loading:', loading, 'User:', !!user);
     if (!loading && !user) {
+      console.log('Redirecting to login');
       router.replace("/login");
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
+  // Show loading only if actually loading, not if user exists
+  if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not loading but no user, redirect (this should be handled by useEffect)
+  if (!user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Redirecting...</p>
+        </div>
       </div>
     );
   }

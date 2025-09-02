@@ -74,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 setUser(defaultUser);
                 setLoading(false);
+                console.log('AuthContext - User set, loading false:', defaultUser.email);
 
                 // Try to get additional user data with timeout
                 try {
@@ -125,11 +126,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
                 setUser(null);
                 setLoading(false);
+                console.log('AuthContext - No user, loading false');
             }
         } catch (error) {
             console.error('Auth error:', error);
             setUser(null);
             setLoading(false);
+            console.log('AuthContext - Error occurred, loading false');
         }
     };
 
