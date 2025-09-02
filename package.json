@@ -75,14 +75,14 @@
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
-    "@types/jspdf": "^2.0.0",
-    "@types/katex": "^0.16.7",
+
+
     "@types/node": "^20.14.12",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-google-recaptcha": "^2.1.9",
-    "@types/react-katex": "^3.0.4",
+
     "@types/dompurify": "^3.0.5",
     "@types/crypto-js": "^4.2.2",
     "node-loader": "^2.0.0",
