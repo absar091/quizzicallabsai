@@ -90,30 +90,51 @@ const generateStudyGuideFlow = ai.defineFlow(
     });
     
     let output;
-    try {
+    let retryCount = 0;
+    const maxRetries = 2;
+    
+    while (retryCount <= maxRetries) {
+      try {
         const result = await prompt(input);
         output = result.output;
-    } catch (error: any) {
-        console.error(`Error with model ${model.name}:`, error);
-        throw new Error(`Failed to generate study guide: ${error.message}`);
+        
+        if (
+          output &&
+          output.title &&
+          output.summary &&
+          output.keyConcepts &&
+          Array.isArray(output.keyConcepts) &&
+          output.keyConcepts.length > 0 &&
+          output.analogies &&
+          Array.isArray(output.analogies) &&
+          output.quizYourself &&
+          Array.isArray(output.quizYourself)
+        ) {
+          return output;
+        } else {
+          throw new Error("AI returned incomplete study guide");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = error?.message || 'Unknown error';
+        console.error(`Study guide generation attempt ${retryCount} failed with model ${model.name}:`, errorMsg);
+        
+        if (retryCount > maxRetries) {
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            throw new Error('API quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else {
+            throw new Error(`Failed to generate study guide after ${maxRetries + 1} attempts. Please try again.`);
+          }
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
     
-    if (
-      !output ||
-      !output.title ||
-      !output.summary ||
-      !output.keyConcepts ||
-      output.keyConcepts.length === 0 ||
-      !Array.isArray(output.keyConcepts) ||
-      !output.analogies ||
-      !Array.isArray(output.analogies) ||
-      !output.quizYourself ||
-      !Array.isArray(output.quizYourself)
-    ) {
-      throw new Error(
-        'The AI model returned a study guide with missing or invalid structure. Please try again.'
-      );
-    }
-    return output;
+    throw new Error("Unexpected error in study guide generation flow.");
   }
 );

@@ -1,0 +1,18 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="40" fill="url(#gradient)"/>
+  <g transform="translate(30, 30)">
+    <path d="M60 20C74.912 20 87 32.088 87 47C87 52.5 85.5 57.612 82.65 61.65L78.5 57.5C81.1 54.25 82.5 50.125 82.5 47C82.5 34.85 72.15 25 60 25C47.85 25 37.5 34.85 37.5 47C37.5 50.125 38.9 54.25 41.5 57.5L37.35 61.65C34.5 57.612 33 52.5 33 47C33 32.088 45.088 20 60 20Z" fill="white"/>
+    <circle cx="48" cy="44" r="6" fill="white"/>
+    <circle cx="72" cy="44" r="6" fill="white"/>
+    <path d="M42 64H78C80.209 64 82 65.791 82 68V92C82 96.418 78.418 100 74 100H46C41.582 100 38 96.418 38 92V68C38 65.791 39.791 64 42 64Z" fill="white"/>
+    <rect x="46" y="72" width="28" height="4" rx="2" fill="url(#gradient)"/>
+    <rect x="46" y="80" width="20" height="4" rx="2" fill="url(#gradient)"/>
+    <rect x="46" y="88" width="24" height="4" rx="2" fill="url(#gradient)"/>
+  </g>
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+</svg>

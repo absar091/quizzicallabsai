@@ -87,7 +87,20 @@ export default function NtsMockTestPage() {
       setGeneratedQuiz(formattedQuiz);
       setTestState('taking');
     } catch (err: any) {
-      setError(`Failed to generate the ${section.name} section. The AI model may be overloaded. Please try again.`);
+      console.error(`NTS Mock Test Error for ${section.name}:`, err);
+      let errorMessage = `Failed to generate the ${section.name} section.`;
+      
+      if (err.message?.includes('quota') || err.message?.includes('rate limit')) {
+        errorMessage += ' API quota exceeded. Please try again in a few minutes.';
+      } else if (err.message?.includes('timeout') || err.message?.includes('overloaded')) {
+        errorMessage += ' The AI service is temporarily busy. Please try again.';
+      } else if (err.message?.includes('network') || err.message?.includes('fetch')) {
+        errorMessage += ' Network connection issue. Please check your internet and try again.';
+      } else {
+        errorMessage += ' Please try again or contact support if the issue persists.';
+      }
+      
+      setError(errorMessage);
       setTestState('idle');
     }
   };

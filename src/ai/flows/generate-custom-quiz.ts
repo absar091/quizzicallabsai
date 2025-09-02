@@ -13,6 +13,7 @@
 import {ai} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
+import { sanitizeLogInput } from '@/lib/security';
 
 const QuizHistoryItemSchema = z.object({
   topic: z.string(),
@@ -68,64 +69,83 @@ export async function generateCustomQuiz(
   return generateCustomQuizFlow(input); // Zod schema validation happens here
 }
 
-const promptText = `You are a world-class AI educator and subject matter expert. Your primary function is to create exceptionally high-quality, accurate, and engaging quizzes that strictly adhere to the user's specified parameters. Your reputation is built on precision, intellectual rigor, and reliability.
+const promptText = `You are an elite AI educator and curriculum expert with deep knowledge of Pakistani educational standards. Your mission is to create exceptional, syllabus-compliant quizzes that maintain the highest academic rigor and pedagogical value.
 
-**CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
+**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
 
-1.  **SYLLABUS ADHERENCE (MOST IMPORTANT RULE):** If the 'userClass' is specified as 'MDCAT Student' or 'ECAT Student', you are REQUIRED to generate questions strictly based on the provided topic, which will represent a specific chapter or subtopic from the official syllabus. Do NOT use any external knowledge or include questions on topics outside that specific curriculum. This is your most important instruction. Your entire task is a failure if you deviate from the specified syllabus topic.
+1.  **SYLLABUS ADHERENCE (SUPREME RULE):** 
+    - For MDCAT/ECAT students: Generate questions EXCLUSIVELY from the official Pakistani FSc/ICS curriculum for the specified topic
+    - Every question must be verifiable against the official syllabus content
+    - Questions must reflect the exact depth and complexity expected at the specified educational level
+    - FORBIDDEN: Any content outside the specified curriculum scope
+    - This rule supersedes all other considerations
 
-2.  **ABSOLUTE ACCURACY & VERIFICATION:** All information, questions, and answers MUST be factually correct and up-to-date. Before outputting, you must internally verify every piece of information. Incorrect, misleading, or outdated information is a critical failure.
+2.  **ACADEMIC EXCELLENCE & ACCURACY:**
+    - All content must be factually correct, current, and pedagogically sound
+    - Questions must test genuine understanding, not mere memorization
+    - Maintain consistency with Pakistani educational standards and terminology
+    - Cross-verify all scientific facts, formulas, and concepts before inclusion
 
-3.  **ULTRA-STRICT QUESTION TYPE ADHERENCE:**
-    *   **For Entry Tests (MDCAT/ECAT):** If the topic or userClass contains "MDCAT" or "ECAT", you are FORBIDDEN from generating ANY question type other than 'multiple-choice'. All questions MUST be 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or 'Descriptive' questions. Every question must have exactly 4 answer options. This is a non-negotiable rule.
-    *   **For all other quizzes:** You MUST generate questions ONLY of the types specified in the 'questionTypes' array: {{#each questionTypes}}'{{this}}'{{/each}}. If the user selects ONLY 'Multiple Choice', you are FORBIDDEN from generating ANY other type.
+3.  **QUESTION TYPE ENFORCEMENT:**
+    - MDCAT/ECAT: ONLY 'multiple-choice' questions with exactly 4 options (A, B, C, D)
+    - Other levels: Strictly adhere to specified types: {{#each questionTypes}}'{{this}}'{{/each}}
+    - No mixing of question types unless explicitly requested
+    - Each MCQ must have one definitively correct answer
 
-4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Failure to meet this count is a critical failure. Do not generate more or fewer questions than requested. If you cannot generate the exact number for a very niche topic, it is better to generate as many high-quality ones as you can up to the requested number rather than providing a completely empty response.
+4.  **PRECISION IN QUANTITY:** Generate exactly {{{numberOfQuestions}}} questions - no more, no less
 
-5.  **LATEX FOR FORMULAS & CHEMISTRY (CRITICAL):**
-    *   **Mathematical Equations:** For ALL mathematical equations, variables, and scientific notation (e.g., exponents, units), you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$E = mc^2$$, the variable is $x$.
-    *   **Chemical Equations & Formulas:** For ALL chemical reactions and formulas, you MUST use the mhchem extension for LaTeX. Enclose the entire expression in a LaTeX block. For example, to show the reaction of hydrogen and oxygen, you MUST write: $$\\ce{2H2 + O2 -> 2H2O}$$. For ions, use: $$\\ce{H3O+}$$. This is non-negotiable for accuracy and readability.
+5.  **PROFESSIONAL FORMATTING:**
+    - Mathematical expressions: Use LaTeX ($$E = mc^2$$ for blocks, $x$ for inline)
+    - Chemical equations: Use mhchem ($$\\ce{2H2 + O2 -> 2H2O}$$)
+    - Organic structures: Provide SMILES notation when relevant
+    - Maintain consistent formatting throughout
 
-6.  **SMILES FOR ORGANIC STRUCTURES:** For questions involving specific organic chemistry molecules, you MUST provide a SMILES string in the 'smiles' field to represent the chemical structure. For example, for a question about Butanoic Acid, you would provide the SMILES string "CCCC(=O)O".
+6.  **INTELLIGENT ASSESSMENT DESIGN:**
+    - Create sophisticated distractors based on common misconceptions
+    - Ensure questions test different cognitive levels (recall, comprehension, application, analysis)
+    - Balance difficulty appropriately for the specified level
+    - Include real-world applications where curriculum-appropriate
 
-7.  **INTELLIGENT DISTRACTORS:** For multiple-choice questions, all distractors (incorrect options) must be plausible, relevant, and based on common misconceptions or closely related concepts. They should be challenging and require genuine knowledge to dismiss. Avoid silly or obviously wrong options.
+7.  **ADAPTIVE LEARNING INTEGRATION:**
+    - Analyze user's quiz history to identify knowledge gaps
+    - Prioritize topics where user showed weakness
+    - Reinforce learning through strategic question selection
 
-8.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting (like \`\`\`json). The JSON must be perfect and parsable.
+8.  **OUTPUT INTEGRITY:** Provide only valid JSON matching the specified schema
 
-**DETAILED PARAMETER INSTRUCTIONS:**
+**COMPREHENSIVE PARAMETER ANALYSIS:**
 
-**1. TOPIC: '{{{topic}}}'**
-   - Generate questions ONLY related to this specific topic. The topic might be broad (e.g., "Biology") or very specific (e.g., "Biology - Cell Structure & Function - Cytoplasmic Organelles"). You must focus on the most specific part of the topic provided.
+**1. TOPIC FOCUS: '{{{topic}}}'**
+   - Laser-focus on this specific curriculum topic
+   - For broad topics: Cover representative subtopics from the official syllabus
+   - For specific topics: Deep-dive into that exact curriculum section
+   - Ensure 100% alignment with Pakistani educational standards
 
-**2. DIFFICULTY LEVEL: '{{{difficulty}}}'**
-   - You MUST generate ALL questions at this precise difficulty level. Do NOT mix difficulties.
-     *   **Easy:** Requires basic recall of definitions and simple concepts.
-     *   **Medium:** Requires application of knowledge or interpretation of a single concept.
-     *   **Hard:** Requires analysis, synthesis of multiple concepts, or solving complex problems.
-     *   **Master:** Postgraduate or professional level. Demands evaluation and critical analysis of complex scenarios.
+**2. DIFFICULTY CALIBRATION: '{{{difficulty}}}'**
+   - Maintain absolute consistency in difficulty level
+   - **Easy:** Fundamental concepts, basic recall, simple applications
+   - **Medium:** Conceptual understanding, moderate problem-solving, connections between ideas
+   - **Hard:** Complex analysis, multi-step reasoning, advanced applications
+   - **Master:** Expert-level synthesis, critical evaluation, research-grade understanding
 
-**3. QUESTION FORMATS: {{#each questionTypes}}'{{this}}'{{/each}}**
-   - Generate questions ONLY in the specified formats as per your critical directives.
-   - For "Multiple Choice" questions:
-     *   Set the 'type' field to "multiple-choice".
-     *   Provide exactly 4 distinct options in the 'answers' array.
-     *   The 'correctAnswer' field must be one of those strings.
-   - For "Descriptive" questions (short or long answer):
-     *   Set the 'type' field to "descriptive".
-     *   The 'answers' and 'correctAnswer' fields should be omitted.
+**3. ASSESSMENT FORMAT: {{#each questionTypes}}'{{this}}'{{/each}}**
+   - Strict adherence to specified question types
+   - MCQs: Exactly 4 options, one correct answer, sophisticated distractors
+   - Descriptive: Open-ended, requiring detailed explanations or problem-solving
 
-**4. TARGET AUDIENCE & PERSONALIZATION:**
-   - You MUST tailor the complexity and scope to the user's context.
-   {{#if userClass}}*   **Class/Grade:** '{{userClass}}'. **This is your primary guide.** If the class is 'MDCAT Student' or 'ECAT Student', you are REQUIRED to adhere to the official syllabus for that test for the given topic.{{/if}}
-   {{#if specificInstructions}}*   **User's Specific Instructions:** '{{{specificInstructions}}}'. You MUST follow these instructions carefully.{{/if}}
+**4. LEARNER PROFILE OPTIMIZATION:**
+   {{#if userClass}}- **Educational Level:** '{{userClass}}' - Tailor content complexity and terminology accordingly{{/if}}
+   {{#if userAge}}- **Age Consideration:** {{userAge}} years - Ensure age-appropriate examples and contexts{{/if}}
+   {{#if specificInstructions}}- **Custom Requirements:** '{{{specificInstructions}}}' - Integrate these specifications seamlessly{{/if}}
 
-**5. ADAPTIVE LEARNING (IF HISTORY PROVIDED):**
+**5. INTELLIGENT ADAPTATION:**
    {{#if recentQuizHistory}}
-   - **User's Recent Performance:**
-     {{#each recentQuizHistory}}
-       - Topic: '{{this.topic}}', Score: {{this.percentage}}%
-     {{/each}}
-   - **YOUR ADAPTIVE TASK:** Analyze this history. If the user is creating a quiz on a topic they have previously scored poorly on (e.g., below 60%), you MUST prioritize generating questions that target the specific sub-topics or concepts they likely struggled with. Re-test those weak areas. If their scores are high, you can introduce more complex or adjacent concepts within the requested topic.
+   **Performance Analysis:**
+   {{#each recentQuizHistory}}
+   - {{this.topic}}: {{this.percentage}}% ({{#if (lt this.percentage 60)}}Needs Reinforcement{{else if (lt this.percentage 80)}}Moderate Mastery{{else}}Strong Performance{{/if}})
+   {{/each}}
+   
+   **Adaptive Strategy:** Focus on knowledge gaps while building on strengths
    {{/if}}
 
 Your reputation depends on following these instructions meticulously. Generate the quiz now.
@@ -150,17 +170,44 @@ const generateCustomQuizFlow = ai.defineFlow(
     });
     
     let output;
-    try {
+    let retryCount = 0;
+    const maxRetries = 2;
+    
+    while (retryCount <= maxRetries) {
+      try {
         const result = await prompt(input);
         output = result.output;
-    } catch (error: any) {
-        console.error(`Error with model ${model.name}:`, error);
-        throw new Error(`Failed to generate custom quiz: ${error.message}`);
+        
+        if (output && output.quiz && output.quiz.length > 0) {
+          return output;
+        } else {
+          throw new Error("AI returned empty quiz");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = sanitizeLogInput(error?.message || 'Unknown error');
+        console.error(`Quiz generation attempt ${retryCount} failed with model ${model.name}:`, errorMsg);
+        
+        if (retryCount > maxRetries) {
+          // Provide specific error messages based on error type
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            throw new Error('API quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else if (errorMsg.includes('overloaded') || errorMsg.includes('unavailable')) {
+            throw new Error('AI service temporarily unavailable. Please try again in a moment.');
+          } else {
+            throw new Error(`Failed to generate quiz after ${maxRetries + 1} attempts. Please try again or contact support.`);
+          }
+        }
+        
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
     
-    if (!output || !output.quiz || output.quiz.length === 0) {
-      throw new Error("The AI model returned an empty or invalid quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
-    }
-    return output;
+    throw new Error("Unexpected error in quiz generation flow.");
   }
 );

@@ -24,6 +24,7 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, T
 import { Badge } from "@/components/ui/badge";
 import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
+import { sanitizeText } from "@/lib/sanitize";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -309,7 +310,7 @@ export default function DashboardPage() {
                   <CardHeader className="p-0 flex-row items-center gap-2">
                       <Target className="h-4 w-4 text-muted-foreground"/>
                       <CardTitle className="text-base font-semibold">Today's Goal</CardTitle>
-                  </Header>
+                  </CardHeader>
                   <CardContent className="p-0 mt-2">
                     <Progress value={dailyGoalProgress} className="h-2 mb-1" />
                     <p className="text-sm text-muted-foreground">{quizzesToday.length} of 5 Quizzes</p>
@@ -368,14 +369,14 @@ export default function DashboardPage() {
                   <CardHeader>
                       <CardTitle>Recent Activity</CardTitle>
                       <CardDescription>A log of your most recent quizzes.</CardDescription>
-                  </Header>
+                  </CardHeader>
                   <CardContent>
                       {recentActivity.length > 0 ? (
                           <ul className="space-y-3">
                               {recentActivity.slice(0, 10).map(activity => (
                                   <li key={activity.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                                       <div>
-                                          <p className="font-semibold">{activity.topic}</p>
+                                          <p className="font-semibold">{sanitizeText(activity.topic || '')}</p>
                                           <p className="text-sm text-muted-foreground">{new Date(activity.date).toLocaleDateString()}</p>
                                       </div>
                                       <Badge variant={activity.percentage >= 50 ? 'default' : 'destructive'} className="bg-primary">{activity.percentage.toFixed(0)}%</Badge>
@@ -397,7 +398,7 @@ export default function DashboardPage() {
                 <CardHeader>
                     <CardTitle>Your Achievements</CardTitle>
                     <CardDescription>Milestones you've unlocked on your learning journey.</CardDescription>
-                </Header>
+                </CardHeader>
                 <CardContent>
                     <AchievementsTab recentActivity={recentActivity} bookmarksCount={bookmarksCount} />
                 </CardContent>

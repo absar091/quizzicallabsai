@@ -113,13 +113,24 @@ export default function SignupPage() {
     setIsGoogleLoading(true);
     try {
       await signInWithGoogle();
-      // Redirect is handled by the AuthContext now
+      toast({
+        title: "Welcome!",
+        description: "Successfully signed in with Google.",
+      });
+      // Redirect is handled by the AuthContext
     } catch (error: any) {
+      let errorMessage = "Failed to sign in with Google. Please try again.";
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in was cancelled. Please try again.";
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = "Popup was blocked by your browser. Please allow popups and try again.";
+      }
       toast({
         title: "Google Sign-Up Failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
       setIsGoogleLoading(false);
     }
   };

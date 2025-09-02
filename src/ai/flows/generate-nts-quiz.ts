@@ -39,50 +39,73 @@ export async function generateNtsQuiz(
   return generateNtsQuizFlow(input);
 }
 
-const promptText = `You are an expert AI for creating NTS (National Testing Service) and NAT (National Aptitude Test) questions for Pakistani students. You MUST generate high-quality, multiple-choice questions that are relevant to the specified category and topic.
+const promptText = `You are an elite NTS/NAT question architect with comprehensive expertise in Pakistani educational standards and testing methodologies. Your mission is to create authentic, high-caliber questions that mirror the actual NTS/NAT examination standards.
 
-**CRITICAL DIRECTIVES - FOLLOW THESE RULES WITHOUT EXCEPTION:**
+**SUPREME COMPLIANCE DIRECTIVES - ABSOLUTE ADHERENCE REQUIRED:**
 
-1.  **SYLLABUS ADHERENCE (MOST IMPORTANT RULE):** You are REQUIRED to generate questions strictly based on the Pakistani FSc/ICS curriculum for the specified subject and chapter/topic. Do NOT use any external knowledge or include questions on topics outside that specific curriculum. This is your most important instruction. Your entire task is a failure if you deviate from the specified syllabus topic.
+1.  **CURRICULUM FIDELITY (PARAMOUNT RULE):**
+    - Generate questions exclusively from the official Pakistani FSc/ICS/Matric curriculum
+    - Every question must be traceable to specific syllabus content
+    - Maintain strict alignment with NTS/NAT examination patterns and difficulty levels
+    - Zero tolerance for content outside the specified curriculum scope
 
-2.  **ABSOLUTE ACCURACY:** All questions and answers MUST be factually correct and relevant to the Pakistani curriculum where applicable.
+2.  **EXAMINATION AUTHENTICITY:**
+    - Mirror the exact style, complexity, and format of actual NTS/NAT questions
+    - Ensure questions reflect the cognitive demands of university entrance examinations
+    - Maintain consistency with official NTS question banks and past papers
 
-3.  **QUESTION FORMAT (NON-NEGOTIABLE):**
-    *   You are FORBIDDEN from generating ANY question type other than 'multiple-choice'. Do not generate 'Fill in the Blanks', 'True/False', or any other format.
-    *   The 'type' field in your output MUST ALWAYS be "multiple-choice".
-    *   Provide exactly 4 distinct and plausible options in the 'answers' array. Do not provide more or less than 4.
-    *   The 'correctAnswer' field must perfectly match one of the strings in the 'answers' array.
+3.  **FORMAT PRECISION (IMMUTABLE):**
+    - ONLY multiple-choice questions with exactly 4 options (A, B, C, D)
+    - Each question must have one definitively correct answer
+    - Options must be sophisticated, plausible, and test genuine understanding
+    - Perfect JSON schema compliance required
 
-4.  **EXACT QUESTION COUNT:** You MUST generate **exactly** {{{numberOfQuestions}}} questions. Do not generate more or fewer.
+4.  **QUANTITATIVE EXACTNESS:** Generate precisely {{{numberOfQuestions}}} questions
 
-5.  **LATEX FOR FORMULAS:** For any mathematical equations or formulas, you MUST use LaTeX formatting. Use $$...$$ for block equations and $...$ for inline equations. For example: $$a^2 + b^2 = c^2$$, find the value of $x$. This is essential for clarity.
+5.  **PROFESSIONAL PRESENTATION:**
+    - Mathematical expressions: LaTeX format ($$formula$$ or $variable$)
+    - Chemical equations: mhchem notation ($$\\ce{equation}$$)
+    - Clear, unambiguous language appropriate for university-bound students
 
-6.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. No extra text or markdown.
+6.  **COGNITIVE RIGOR:**
+    - Test multiple cognitive levels: recall, comprehension, application, analysis
+    - Include real-world applications relevant to Pakistani context
+    - Ensure questions discriminate between different levels of student ability
 
 ---
 
-**TASK: Generate a quiz based on the following parameters:**
+**EXAMINATION PARAMETERS:**
 
-*   **NTS/NAT Category:** '{{{category}}}'
-*   **Topic/Subject:** '{{{topic}}}'
-*   **Number of Questions:** {{{numberOfQuestions}}}
+- **NTS/NAT Category:** '{{{category}}}'
+- **Subject/Topic:** '{{{topic}}}'
+- **Question Count:** {{{numberOfQuestions}}}
 
-**CATEGORY-SPECIFIC INSTRUCTIONS:**
+**SPECIALIZED CONTENT GUIDELINES:**
 
-*   **If the Topic includes 'Analytical Reasoning':**
-    *   Focus on logical puzzles, number/letter series, pattern recognition, and logical deductions based on a short paragraph of conditions.
-    *   Questions should require critical thinking, not just knowledge recall.
+**ANALYTICAL REASONING:**
+- Logical sequences, pattern recognition, spatial reasoning
+- Conditional logic problems with multiple constraints
+- Data interpretation and logical deduction scenarios
+- Abstract reasoning with symbols, shapes, and relationships
 
-*   **If the Topic includes 'Quantitative Reasoning':**
-    *   Focus on core math skills: algebra, ratios, percentages, arithmetic problems, and basic geometry. All mathematical expressions must use LaTeX.
-    *   Questions should be similar to those found in standardized aptitude tests, often presented as word problems.
+**QUANTITATIVE REASONING:**
+- Advanced arithmetic, algebra, and basic calculus concepts
+- Ratio, proportion, percentage, and statistical problems
+- Geometry, trigonometry, and coordinate geometry
+- Real-world mathematical applications and word problems
+- All mathematical content must use proper LaTeX formatting
 
-*   **If the Topic includes 'Verbal Reasoning':**
-    *   Focus on English grammar, vocabulary (synonyms/antonyms), sentence completion, and analogies.
+**VERBAL REASONING:**
+- Advanced English grammar and syntax
+- Vocabulary: synonyms, antonyms, analogies, and contextual usage
+- Reading comprehension with inference and critical analysis
+- Sentence completion and error identification
 
-*   **If the Category is a subject group (e.g., 'NAT-IE', 'NAT-IM', 'NAT-ICS') AND the topic is a specific academic subject:**
-    *   The topic will specify a subject like 'Physics' and a chapter like 'Motion and Force'.
-    *   Generate questions strictly based on the Pakistani FSc/ICS curriculum for that subject and chapter. The difficulty should be appropriate for a university admission test (NAT level).
+**SUBJECT-SPECIFIC CONTENT (NAT-IE/IM/ICS):**
+- Strict adherence to Pakistani FSc/ICS curriculum for the specified subject
+- University entrance-level difficulty and complexity
+- Integration of theoretical knowledge with practical applications
+- Questions that test deep conceptual understanding, not mere memorization
 
 Generate the quiz now.
 `;
@@ -105,17 +128,40 @@ const generateNtsQuizFlow = ai.defineFlow(
   },
   async input => {
     let output;
-    try {
+    let retryCount = 0;
+    const maxRetries = 2;
+    
+    while (retryCount <= maxRetries) {
+      try {
         const result = await prompt(input);
         output = result.output;
-    } catch (error: any) {
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
-        throw new Error(`Failed to generate NTS quiz: ${error.message}`);
+        
+        if (output && output.quiz && output.quiz.length > 0) {
+          return output;
+        } else {
+          throw new Error("AI returned empty NTS quiz");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = error?.message || 'Unknown error';
+        console.error(`NTS quiz generation attempt ${retryCount} failed:`, errorMsg);
+        
+        if (retryCount > maxRetries) {
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            throw new Error('API quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else {
+            throw new Error(`Failed to generate NTS quiz after ${maxRetries + 1} attempts. Please try again.`);
+          }
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
     
-    if (!output || !output.quiz) {
-      throw new Error("The AI model failed to return a valid NTS quiz. Please try again.");
-    }
-    return output;
+    throw new Error("Unexpected error in NTS quiz generation flow.");
   }
 );

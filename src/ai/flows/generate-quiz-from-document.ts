@@ -10,7 +10,9 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
+import { sanitizeLogInput } from '@/lib/security';
 
 const GenerateQuizFromDocumentInputSchema = z.object({
   documentDataUri: z
@@ -21,6 +23,7 @@ const GenerateQuizFromDocumentInputSchema = z.object({
   numberOfQuestions: z.number().min(1).max(55),
   difficulty: z.enum(["easy", "medium", "hard", "master"]),
   questionTypes: z.array(z.string()),
+  isPro: z.boolean().default(false),
 });
 export type GenerateQuizFromDocumentInput = z.infer<typeof GenerateQuizFromDocumentInputSchema>;
 
@@ -67,7 +70,6 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
 const prompt = ai.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
-    model: 'googleai/gemini-2.5-pro',
     prompt: promptText,
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },
@@ -80,30 +82,54 @@ const generateQuizFromDocumentFlow = ai.defineFlow(
     outputSchema: GenerateQuizFromDocumentOutputSchema,
   },
   async (input) => {
- let output;
- try {
- const result = await prompt(input);
- output = result.output;
- } catch (error: any) {
- // Log the error and re-throw with a more general message
- console.error("Error calling Gemini API for quiz from document:", error);
- throw new Error("Failed to generate quiz from document. The AI model may be overloaded or the file could not be processed. Please try again.");
- }
+    const model = getModel(input.isPro);
+    const maxRetries = 3;
+    let lastError: Error | null = null;
 
-    if (!output) {
-      throw new Error("The AI model failed to return a valid quiz from the document. Please try again.");
-    }
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await prompt({ ...input, model });
+        const output = result.output;
 
- // Validate the structure of the generated quiz
- if (!Array.isArray(output.quiz) || output.quiz.length === 0) {
- throw new Error("The AI model returned an empty or invalid quiz structure. The document might be empty, unreadable, or too complex.");
-    }
- // Basic check for expected fields in questions - more detailed checks could be added if needed
- for (const question of output.quiz) {
- if (!question.question || !question.type) {
- throw new Error("The AI model returned questions with missing required fields.");
+        if (!output) {
+          throw new Error("The AI model failed to return a valid quiz from the document.");
+        }
+
+        // Validate the structure of the generated quiz
+        if (!Array.isArray(output.quiz) || output.quiz.length === 0) {
+          throw new Error("The AI model returned an empty or invalid quiz structure. The document might be empty, unreadable, or too complex.");
+        }
+
+        // Basic check for expected fields in questions
+        for (const question of output.quiz) {
+          if (!question.question || !question.type) {
+            throw new Error("The AI model returned questions with missing required fields.");
+          }
+        }
+
+        return output;
+      } catch (error: any) {
+        lastError = error;
+        console.error(`Quiz from document generation attempt ${attempt} failed:`, sanitizeLogInput(error.message));
+
+        if (attempt === maxRetries) break;
+
+        // Exponential backoff
+        const delay = Math.pow(2, attempt) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
-    return output;
+
+    // Categorize the final error
+    const errorMessage = lastError?.message || 'Unknown error';
+    if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+      throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+    } else if (errorMessage.includes('timeout') || errorMessage.includes('deadline')) {
+      throw new Error('Request timed out. The document might be too large or complex. Please try with a smaller file.');
+    } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    } else {
+      throw new Error('Failed to generate quiz from document. Please try again or contact support if the issue persists.');
+    }
   }
 );

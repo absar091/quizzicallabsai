@@ -191,25 +191,35 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         return;
     }
 
-    setShowResults(true);
-    if(quiz && formValues && user) {
-        const { score, percentage } = calculateScore();
-        const resultId = `${user.uid}-${Date.now()}`;
-        const newResult = {
-            id: resultId,
-            userId: user.uid,
-            topic: formValues.topic,
-            score,
-            total: quiz.length,
-            percentage,
-            date: new Date().toISOString(),
-        };
-        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
-        await set(resultRef, newResult);
-        await saveQuizResult(newResult);
-        await deleteQuizState(user.uid);
+    try {
+      setShowResults(true);
+      if(quiz && formValues && user) {
+          const { score, percentage } = calculateScore();
+          const resultId = `${user.uid}-${Date.now()}`;
+          const newResult = {
+              id: resultId,
+              userId: user.uid,
+              topic: formValues.topic,
+              score,
+              total: quiz.length,
+              percentage,
+              date: new Date().toISOString(),
+          };
+          try {
+            const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
+            await set(resultRef, newResult);
+            await saveQuizResult(newResult);
+            await deleteQuizState(user.uid);
+          } catch (error) {
+            console.error('Error saving quiz result:', error);
+          }
+      }
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
     }
-    window.scrollTo(0, 0);
   }, [quiz, userAnswers, formValues, user, calculateScore]);
 
 
@@ -340,7 +350,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setExplanations({});
 
     try {
-      const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
+      let recentQuizHistory = [];
+      try {
+        recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
+      } catch (error) {
+        console.error('Error loading quiz history:', error);
+      }
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
       const result = await generateCustomQuiz({
@@ -600,56 +615,66 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const toggleBookmark = async (question: string, correctAnswer: string) => {
     if(!formValues || !user) return;
     
-    const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
-    const bookmarkId = btoa(question); // Use base64 encoded question as a safe key
-    
-    if (isCurrentlyBookmarked) {
-        // Remove from Firebase and local state
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-        await set(bookmarkRef, null);
-        await deleteBookmark(user.uid, question);
-        setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
-    } else {
-        const newBookmark: BookmarkedQuestion = { 
-            userId: user.uid,
-            question, 
-            correctAnswer, 
-            topic: formValues.topic 
-        };
-        // Save to Firebase and local state
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-        await set(bookmarkRef, newBookmark);
-        await saveBookmark(newBookmark);
-        setBookmarkedQuestions(prev => [...prev, newBookmark]);
+    try {
+      const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
+      const bookmarkId = btoa(question).replace(/[^a-zA-Z0-9]/g, '');
+      
+      if (isCurrentlyBookmarked) {
+          const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+          await set(bookmarkRef, null);
+          await deleteBookmark(user.uid, question);
+          setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
+      } else {
+          const newBookmark: BookmarkedQuestion = { 
+              userId: user.uid,
+              question, 
+              correctAnswer, 
+              topic: formValues.topic 
+          };
+          const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+          await set(bookmarkRef, newBookmark);
+          await saveBookmark(newBookmark);
+          setBookmarkedQuestions(prev => [...prev, newBookmark]);
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
     }
   };
 
   const resetQuiz = async () => {
-    if(initialQuiz) {
-        // Check which prep section this quiz came from and redirect accordingly
-        if (window.location.pathname.includes('/mdcat/')) {
-           window.location.href = '/mdcat';
-        } else if (window.location.pathname.includes('/ecat/')) {
-            window.location.href = '/ecat';
-        } else if (window.location.pathname.includes('/nts/')) {
-            window.location.href = '/nts';
-        } else {
-            // Fallback for other initial quizzes
-            window.location.href = '/exam-prep';
-        }
-        return;
+    try {
+      if(initialQuiz && typeof window !== 'undefined') {
+          if (window.location.pathname.includes('/mdcat/')) {
+             window.location.href = '/mdcat';
+          } else if (window.location.pathname.includes('/ecat/')) {
+              window.location.href = '/ecat';
+          } else if (window.location.pathname.includes('/nts/')) {
+              window.location.href = '/nts';
+          } else {
+              window.location.href = '/exam-prep';
+          }
+          return;
+      }
+      if (user) {
+          try {
+            await deleteQuizState(user.uid);
+          } catch (error) {
+            console.error('Error deleting quiz state:', error);
+          }
+      }
+      setQuiz(null);
+      setCurrentQuestion(0);
+      setUserAnswers([]);
+      setShowResults(false); 
+      setExplanations({});
+      setFormValues(null);
+      formMethods.reset();
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {
+      console.error('Error in resetQuiz:', error);
     }
-    if (user) {
-        await deleteQuizState(user.uid);
-    }
-    setQuiz(null);
-    setCurrentQuestion(0);
-    setUserAnswers([]);
-    setShowResults(false); 
-    setExplanations({});
-    setFormValues(null);
-    formMethods.reset();
-    window.scrollTo(0, 0);
   };
 
   const retryIncorrect = () => {

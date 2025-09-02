@@ -23,6 +23,27 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        handlebars: false,
+        'require-in-the-middle': false,
+      };
+    }
+    
+    // Suppress specific warnings
+    config.ignoreWarnings = [
+      /require.extensions is not supported by webpack/,
+      /Critical dependency: require function is used in a way/,
+    ];
+    
+    return config;
+  },
 };
 
 export default nextConfig;

@@ -2,15 +2,14 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { createContext, useState, useMemo, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useMemo, useEffect, useCallback } from "react";
 import { 
     onAuthStateChanged, 
     signOut as firebaseSignOut, 
     deleteUser, 
     type User as FirebaseUser,
     GoogleAuthProvider,
-    signInWithRedirect,
-    getRedirectResult
+    signInWithPopup
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
@@ -40,6 +39,14 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
 
 const provider = new GoogleAuthProvider();
 
@@ -95,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             setUser(appUser);
             
-            const isAuthPage = ['/', '/login', '/signup', '/forgot-password'].includes(pathname);
+            const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
             if (isAuthPage) {
                 router.replace('/');
             }
@@ -106,12 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const unsubscribe = onAuthStateChanged(auth, handleAuth);
-    
-    getRedirectResult(auth).catch((error) => {
-        console.error("Error processing Google redirect result:", error);
-        setLoading(false);
-    });
-      
     return () => unsubscribe();
   }, [router, pathname]);
 
@@ -137,12 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
-    setLoading(true);
     try {
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      // User will be handled by onAuthStateChanged
+      return result;
     } catch (error: any) {
       console.error("Google Sign-In error", error);
-      setLoading(false);
       throw error;
     }
   };

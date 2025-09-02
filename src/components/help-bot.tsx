@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { generateHelpBotResponse } from "@/ai/flows/generate-help-bot-response";
+import { sanitizeHtml, validateInput, sanitizeLogInput } from "@/lib/security";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 
@@ -83,12 +84,12 @@ export default function HelpBot() {
         if (selectedFaq) {
             addBotAnswer(selectedFaq.answer, selectedFaq.related);
         } else {
-            generateHelpBotResponse({ query: questionText, faqContext: JSON.stringify(faqs) })
+            generateHelpBotResponse({ query: validateInput(questionText, 500), faqContext: JSON.stringify(faqs) })
                 .then(response => {
                     addBotAnswer(response.answer);
                 })
                 .catch(error => {
-                    console.error("Help Bot AI error:", error);
+                    console.error("Help Bot AI error:", sanitizeLogInput((error as Error)?.message || 'Unknown error'));
                     addBotAnswer("I'm sorry, I'm having a little trouble connecting to my brain right now. Please try rephrasing or select a question from the list.");
                 });
         }
@@ -149,7 +150,7 @@ export default function HelpBot() {
                               "max-w-[85%] p-3 rounded-2xl text-sm flex-initial whitespace-pre-wrap", 
                               msg.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
                               )}>
-                                  {msg.text}
+                                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(msg.text) }} />
                               </div>
                           </div>
                         );

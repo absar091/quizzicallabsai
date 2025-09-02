@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import AppProviders from "@/components/app-providers";
+import { ErrorBoundary } from "@/components/error-boundary";
 import 'katex/dist/katex.min.css';
 
 const poppins = Poppins({ 
@@ -35,8 +36,12 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" }
+    ],
     shortcut: "/icon.svg",
-    apple: [{ url: "/icon.svg", sizes: "180x180" }],
+    apple: [{ url: "/apple-icon.svg", sizes: "180x180", type: "image/svg+xml" }],
   },
   metadataBase: new URL('https://quizzicallabs.com'),
   verification: {
@@ -80,7 +85,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: "#1A237E",
+  themeColor: "#3B82F6",
 };
 
 export default function RootLayout({
@@ -94,9 +99,11 @@ export default function RootLayout({
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>
-        <AppProviders>
-          {children}
-        </AppProviders>
+        <ErrorBoundary>
+          <AppProviders>
+            {children}
+          </AppProviders>
+        </ErrorBoundary>
       </body>
     </html>
   );

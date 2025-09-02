@@ -84,8 +84,21 @@ export default function EcatMockTestPage() {
       setGeneratedQuiz(result.quiz);
       setTestState('taking');
     } catch (err: any) {
-      setError(`Failed to generate the ${section.subject} section. The AI model may be overloaded. Please try again later.`);
-      setTestState('idle'); // Revert to allow re-selection
+      console.error(`ECAT Mock Test Error for ${section.subject}:`, err);
+      let errorMessage = `Failed to generate the ${section.subject} section.`;
+      
+      if (err.message?.includes('quota') || err.message?.includes('rate limit')) {
+        errorMessage += ' API quota exceeded. Please try again in a few minutes.';
+      } else if (err.message?.includes('timeout') || err.message?.includes('overloaded')) {
+        errorMessage += ' The AI service is temporarily busy. Please try again.';
+      } else if (err.message?.includes('network') || err.message?.includes('fetch')) {
+        errorMessage += ' Network connection issue. Please check your internet and try again.';
+      } else {
+        errorMessage += ' Please try again or contact support if the issue persists.';
+      }
+      
+      setError(errorMessage);
+      setTestState('idle');
     }
   };
 

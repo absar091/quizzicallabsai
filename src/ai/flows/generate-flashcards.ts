@@ -10,7 +10,9 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getModel } from '@/lib/models';
 import {z} from 'genkit';
+import { sanitizeLogInput } from '@/lib/security';
 
 const IncorrectQuestionSchema = z.object({
     question: z.string(),
@@ -21,6 +23,7 @@ const IncorrectQuestionSchema = z.object({
 export const GenerateFlashcardsInputSchema = z.object({
   topic: z.string().describe("The general topic of the quiz these questions are from."),
   incorrectQuestions: z.array(IncorrectQuestionSchema).describe('A list of questions the user answered incorrectly.'),
+  isPro: z.boolean().default(false),
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
@@ -72,7 +75,6 @@ Generate the flashcards now.
 
 const prompt = ai.definePrompt({
     name: "generateFlashcardsPrompt",
-    model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
@@ -85,28 +87,50 @@ const generateFlashcardsFlow = ai.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async (input) => {
-    let output;
-    try {
-      const result = await prompt(input);
-      output = result.output;
-    } catch (error: any) {
-        console.error('Error calling Gemini 1.5 Flash for flashcard generation:', error);
-        throw new Error(`Failed to generate flashcards: ${error.message || 'Unknown error'}`);
-    }
+    const model = getModel(input.isPro);
+    const maxRetries = 3;
+    let lastError: Error | null = null;
 
-    if (!output || !output.flashcards) {
-        // It's possible the AI returns no flashcards if it deems none are necessary.
-        // We will return an empty array instead of throwing an error.
-        return { flashcards: [] };
-    }
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await prompt({ ...input, model });
+        const output = result.output;
 
-    // Additional validation to ensure data integrity
-    for (const card of output.flashcards) {
-        if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
-             throw new Error("The AI model returned incomplete flashcard data. Please try again.");
+        if (!output || !output.flashcards) {
+          // Return empty array if no flashcards are generated
+          return { flashcards: [] };
         }
+
+        // Additional validation to ensure data integrity
+        for (const card of output.flashcards) {
+          if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
+            throw new Error("The AI model returned incomplete flashcard data.");
+          }
+        }
+
+        return output;
+      } catch (error: any) {
+        lastError = error;
+        console.error(`Flashcard generation attempt ${attempt} failed:`, sanitizeLogInput(error.message));
+
+        if (attempt === maxRetries) break;
+
+        // Exponential backoff
+        const delay = Math.pow(2, attempt) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
     }
 
-    return output;
+    // Categorize the final error
+    const errorMessage = lastError?.message || 'Unknown error';
+    if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+      throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+    } else if (errorMessage.includes('timeout') || errorMessage.includes('deadline')) {
+      throw new Error('Request timed out. Please try again with fewer questions.');
+    } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    } else {
+      throw new Error('Failed to generate flashcards. Please try again or contact support if the issue persists.');
+    }
   }
 );

@@ -20,8 +20,27 @@ const FADE_IN_ANIMATION_VARIANTS: Variants = {
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { 
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94]
+    } 
+  },
+};
+
+const hoverVariants = {
+  hover: {
+    y: -8,
+    scale: 1.02,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }
 };
 
 const features = [
@@ -171,48 +190,66 @@ export default function Home() {
                     viewport={{ once: true, amount: 0.3 }}
                     variants={{
                         hidden: {},
-                        show: { transition: { staggerChildren: 0.2 } },
+                        show: { transition: { staggerChildren: 0.15 } },
                     }}
                 >
-                    <motion.div variants={cardVariants}>
-                        <Card className="p-6 bg-card border-border/50 shadow-sm h-full">
-                            <CardHeader className="p-0">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                                    <PenNib className="h-6 w-6 text-primary"/>
+                    <motion.div variants={cardVariants} whileHover="hover" className="group">
+                        <Card className="relative p-8 h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/80 border border-border/20 shadow-lg hover:shadow-2xl transition-all duration-500 backdrop-blur-sm">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <CardHeader className="p-0 relative z-10">
+                                <motion.div 
+                                    className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300"
+                                    whileHover={{ rotate: 5 }}
+                                >
+                                    <PenNib className="h-8 w-8 text-primary"/>
+                                </motion.div>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-primary/80 tracking-wider uppercase">Step 1</p>
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Create</CardTitle>
                                 </div>
-                                <p className="text-sm font-semibold text-primary">Step 1</p>
-                                <CardTitle className="text-xl">Create</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-0 mt-4">
-                                 <p className="text-muted-foreground">Choose a tool. Generate a custom quiz from any topic, upload your own notes to create a test, or build a comprehensive study guide.</p>
+                            <CardContent className="p-0 mt-6 relative z-10">
+                                 <p className="text-muted-foreground leading-relaxed">Choose a tool. Generate a custom quiz from any topic, upload your own notes to create a test, or build a comprehensive study guide.</p>
                             </CardContent>
                         </Card>
                     </motion.div>
-                     <motion.div variants={cardVariants}>
-                        <Card className="p-6 bg-card border-border/50 shadow-sm h-full">
-                            <CardHeader className="p-0">
-                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                                    <BrainCircuit className="h-6 w-6 text-primary"/>
+                     <motion.div variants={cardVariants} whileHover="hover" className="group">
+                        <Card className="relative p-8 h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/80 border border-border/20 shadow-lg hover:shadow-2xl transition-all duration-500 backdrop-blur-sm">
+                            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <CardHeader className="p-0 relative z-10">
+                                 <motion.div 
+                                    className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 mb-6 group-hover:scale-110 transition-transform duration-300"
+                                    whileHover={{ rotate: -5 }}
+                                >
+                                    <BrainCircuit className="h-8 w-8 text-accent"/>
+                                </motion.div>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-accent/80 tracking-wider uppercase">Step 2</p>
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Learn & Practice</CardTitle>
                                 </div>
-                                <p className="text-sm font-semibold text-primary">Step 2</p>
-                                <CardTitle className="text-xl">Learn & Practice</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-0 mt-4">
-                                 <p className="text-muted-foreground">Take the AI-generated quizzes, review detailed explanations for incorrect answers, and study with flashcards to reinforce your knowledge.</p>
+                            <CardContent className="p-0 mt-6 relative z-10">
+                                 <p className="text-muted-foreground leading-relaxed">Take the AI-generated quizzes, review detailed explanations for incorrect answers, and study with flashcards to reinforce your knowledge.</p>
                             </CardContent>
                         </Card>
                      </motion.div>
-                     <motion.div variants={cardVariants}>
-                        <Card className="p-6 bg-card border-border/50 shadow-sm h-full">
-                            <CardHeader className="p-0">
-                               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                                    <GraduationCap className="h-6 w-6 text-primary"/>
+                     <motion.div variants={cardVariants} whileHover="hover" className="group">
+                        <Card className="relative p-8 h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/80 border border-border/20 shadow-lg hover:shadow-2xl transition-all duration-500 backdrop-blur-sm">
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <CardHeader className="p-0 relative z-10">
+                               <motion.div 
+                                    className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 mb-6 group-hover:scale-110 transition-transform duration-300"
+                                    whileHover={{ rotate: 5 }}
+                                >
+                                    <GraduationCap className="h-8 w-8 text-emerald-600"/>
+                                </motion.div>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-emerald-600/80 tracking-wider uppercase">Step 3</p>
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Master</CardTitle>
                                 </div>
-                                <p className="text-sm font-semibold text-primary">Step 3</p>
-                                <CardTitle className="text-xl">Master</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-0 mt-4">
-                                 <p className="text-muted-foreground">Track your performance on the dashboard, review bookmarked questions, and tackle full-length mock exams to ace your tests.</p>
+                            <CardContent className="p-0 mt-6 relative z-10">
+                                 <p className="text-muted-foreground leading-relaxed">Track your performance on the dashboard, review bookmarked questions, and tackle full-length mock exams to ace your tests.</p>
                             </CardContent>
                         </Card>
                      </motion.div>
@@ -237,18 +274,44 @@ export default function Home() {
                     <motion.p variants={FADE_IN_ANIMATION_VARIANTS} className="max-w-3xl text-muted-foreground mt-4 mx-auto">Quizzicallabsᴬᴵ is more than just a quiz maker. It's a comprehensive suite of intelligent tools designed to support every aspect of your academic journey.</motion.p>
                  </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {features.map((feature, i) => (
-                         <motion.div variants={cardVariants} key={i} whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                            <Card className="p-6 h-full shadow-sm">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                                    <feature.icon className="h-6 w-6 text-primary"/>
-                                </div>
-                                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                                <p className="text-sm text-muted-foreground">{feature.description}</p>
-                            </Card>
-                        </motion.div>
-                    ))}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {features.map((feature, i) => {
+                        const colors = [
+                            { bg: 'from-blue-500/20 to-cyan-500/20', icon: 'text-blue-600', accent: 'from-blue-500/5 to-cyan-500/5' },
+                            { bg: 'from-purple-500/20 to-pink-500/20', icon: 'text-purple-600', accent: 'from-purple-500/5 to-pink-500/5' },
+                            { bg: 'from-emerald-500/20 to-teal-500/20', icon: 'text-emerald-600', accent: 'from-emerald-500/5 to-teal-500/5' },
+                            { bg: 'from-orange-500/20 to-red-500/20', icon: 'text-orange-600', accent: 'from-orange-500/5 to-red-500/5' },
+                            { bg: 'from-indigo-500/20 to-blue-500/20', icon: 'text-indigo-600', accent: 'from-indigo-500/5 to-blue-500/5' },
+                            { bg: 'from-rose-500/20 to-pink-500/20', icon: 'text-rose-600', accent: 'from-rose-500/5 to-pink-500/5' }
+                        ];
+                        const colorScheme = colors[i % colors.length];
+                        
+                        return (
+                            <motion.div 
+                                variants={cardVariants} 
+                                key={i} 
+                                whileHover={hoverVariants.hover}
+                                className="group cursor-pointer"
+                            >
+                                <Card className="relative p-8 h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/90 border border-border/30 shadow-lg hover:shadow-2xl transition-all duration-500 backdrop-blur-sm">
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${colorScheme.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                                    <div className="relative z-10 space-y-6">
+                                        <motion.div 
+                                            className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${colorScheme.bg} group-hover:scale-110 transition-transform duration-300`}
+                                            whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
+                                        >
+                                            <feature.icon className={`h-8 w-8 ${colorScheme.icon}`}/>
+                                        </motion.div>
+                                        <div className="space-y-3">
+                                            <h3 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text group-hover:from-foreground group-hover:to-foreground transition-all duration-300">{feature.title}</h3>
+                                            <p className="text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">{feature.description}</p>
+                                        </div>
+                                    </div>
+                                    <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                </Card>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </div>
         </motion.section>
@@ -261,53 +324,93 @@ export default function Home() {
                     Start for free and upgrade to unlock the full potential of AI-powered learning.
                 </p>
                 </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <motion.div variants={cardVariants}>
-                        <Card className="flex flex-col h-full">
-                            <CardHeader>
-                                <CardTitle className="text-2xl">Free</CardTitle>
-                                <CardDescription>Perfect for everyday study needs and trying out the platform.</CardDescription>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <motion.div variants={cardVariants} whileHover={{ y: -5, scale: 1.02 }} className="group">
+                        <Card className="relative flex flex-col h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/90 border border-border/30 shadow-lg hover:shadow-xl transition-all duration-500">
+                            <div className="absolute inset-0 bg-gradient-to-br from-slate-500/5 via-transparent to-gray-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <CardHeader className="relative z-10 pb-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Free</CardTitle>
+                                    <div className="px-3 py-1 bg-muted rounded-full">
+                                        <span className="text-xs font-semibold text-muted-foreground">STARTER</span>
+                                    </div>
+                                </div>
+                                <CardDescription className="text-base leading-relaxed">Perfect for everyday study needs and trying out the platform.</CardDescription>
                             </CardHeader>
-                            <CardContent className="flex-grow space-y-4">
-                                <p className="text-4xl font-bold">$0<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                <ul className="space-y-3">
+                            <CardContent className="flex-grow space-y-6 relative z-10">
+                                <div className="space-y-2">
+                                    <p className="text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">$0</p>
+                                    <p className="text-muted-foreground">per month, forever</p>
+                                </div>
+                                <ul className="space-y-4">
                                     {freePlanFeatures.map((feature, i) => (
-                                        <li key={i} className="flex items-center gap-3">
-                                            <Check className="h-5 w-5 text-primary"/>
+                                        <motion.li 
+                                            key={i} 
+                                            className="flex items-center gap-4"
+                                            initial={{ opacity: 0, x: -10 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 }}
+                                        >
+                                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <Check className="h-4 w-4 text-primary"/>
+                                            </div>
                                             <span className="text-muted-foreground">{feature}</span>
-                                        </li>
+                                        </motion.li>
                                     ))}
                                 </ul>
                             </CardContent>
-                            <CardContent>
-                                <Button asChild className="w-full" variant="outline">
-                                    <Link href="/signup">Get Started</Link>
+                            <CardContent className="relative z-10 pt-0">
+                                <Button asChild className="w-full h-12 text-base font-semibold" variant="outline">
+                                    <Link href="/signup">Get Started Free</Link>
                                 </Button>
                             </CardContent>
                         </Card>
                     </motion.div>
-                    <motion.div variants={cardVariants}>
-                        <Card className="flex flex-col h-full border-primary shadow-lg ring-2 ring-primary">
-                            <CardHeader>
-                                <CardTitle className="text-2xl">Pro</CardTitle>
-                                <CardDescription>For students and educators who demand the best quality and performance.</CardDescription>
+                    <motion.div variants={cardVariants} whileHover={{ y: -8, scale: 1.02 }} className="group">
+                        <Card className="relative flex flex-col h-full overflow-hidden bg-gradient-to-br from-primary/5 via-card to-accent/5 border-2 border-primary/20 shadow-xl hover:shadow-2xl transition-all duration-500 ring-1 ring-primary/10">
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2">
+                                <div className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2 rounded-b-lg text-sm font-bold">
+                                    MOST POPULAR
+                                </div>
+                            </div>
+                            <CardHeader className="relative z-10 pb-8 pt-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Pro</CardTitle>
+                                    <div className="px-3 py-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full">
+                                        <span className="text-xs font-semibold text-primary">PREMIUM</span>
+                                    </div>
+                                </div>
+                                <CardDescription className="text-base leading-relaxed">For students and educators who demand the best quality and performance.</CardDescription>
                             </CardHeader>
-                            <CardContent className="flex-grow space-y-4">
-                                <p className="text-4xl font-bold">$2<span className="text-lg font-normal text-muted-foreground">/month</span></p>
-                                <ul className="space-y-3">
+                            <CardContent className="flex-grow space-y-6 relative z-10">
+                                <div className="space-y-2">
+                                    <p className="text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">$2</p>
+                                    <p className="text-muted-foreground">per month, cancel anytime</p>
+                                </div>
+                                <ul className="space-y-4">
                                      {proPlanFeatures.map((feature, i) => (
-                                        <li key={i} className="flex items-center gap-3">
-                                            <Check className="h-5 w-5 text-primary"/>
-                                            <span>{feature}</span>
-                                        </li>
+                                        <motion.li 
+                                            key={i} 
+                                            className="flex items-center gap-4"
+                                            initial={{ opacity: 0, x: -10 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 }}
+                                        >
+                                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 flex items-center justify-center">
+                                                <Check className="h-4 w-4 text-primary"/>
+                                            </div>
+                                            <span className="font-medium">{feature}</span>
+                                        </motion.li>
                                     ))}
                                 </ul>
                             </CardContent>
-                            <CardContent>
-                                <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                            <CardContent className="relative z-10 pt-0">
+                                <Button asChild className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg">
                                     <Link href="/signup">Upgrade to Pro</Link>
                                 </Button>
                             </CardContent>
+                            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-2xl opacity-50" />
                         </Card>
                     </motion.div>
                 </div>
@@ -321,27 +424,34 @@ export default function Home() {
               <p className="max-w-2xl text-muted-foreground mt-4 mx-auto">See what our users are saying about Quizzicallabsᴬᴵ.</p>
             </motion.div>
             <motion.div 
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+                className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, amount: 0.2 }}
                 variants={{
                     hidden: {},
-                    show: { transition: { staggerChildren: 0.2 } },
+                    show: { transition: { staggerChildren: 0.15 } },
                 }}
             >
-              <motion.div variants={cardVariants}>
-                  <Card className="h-full">
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <p className="text-muted-foreground italic">"This app is a game-changer for MDCAT prep. The chapter-wise tests are exactly what I needed to focus my study."</p>
-                        <div className="flex items-center gap-4">
-                          <Avatar>
-                            <AvatarImage src="https://picsum.photos/50/50?student" alt="Student User" data-ai-hint="student headshot"/>
-                            <AvatarFallback>AU</AvatarFallback>
-                          </Avatar>
+              <motion.div variants={cardVariants} whileHover={{ y: -5, scale: 1.02 }} className="group">
+                  <Card className="relative h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/90 border border-border/30 shadow-lg hover:shadow-xl transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="pt-8 pb-8 relative z-10">
+                      <div className="space-y-6">
+                        <div className="relative">
+                          <div className="absolute -top-2 -left-2 text-6xl text-primary/10 font-serif">"</div>
+                          <p className="text-foreground/90 italic text-lg leading-relaxed pl-6">This app is a game-changer for MDCAT prep. The chapter-wise tests are exactly what I needed to focus my study.</p>
+                        </div>
+                        <div className="flex items-center gap-4 pt-4 border-t border-border/20">
+                          <div className="relative">
+                            <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+                              <AvatarImage src="https://picsum.photos/50/50?student" alt="Student User" data-ai-hint="student headshot"/>
+                              <AvatarFallback className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-blue-600 font-semibold">AH</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-card" />
+                          </div>
                           <div>
-                            <p className="font-semibold">Ali H.</p>
+                            <p className="font-semibold text-foreground">Ali H.</p>
                             <p className="text-sm text-muted-foreground">MDCAT Student</p>
                           </div>
                         </div>
@@ -349,18 +459,25 @@ export default function Home() {
                     </CardContent>
                   </Card>
               </motion.div>
-               <motion.div variants={cardVariants}>
-                  <Card className="h-full">
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <p className="text-muted-foreground italic">"The Exam Paper Generator saved me hours of work. Creating multiple versions of a test with an answer key is brilliant!"</p>
-                        <div className="flex items-center gap-4">
-                          <Avatar>
-                            <AvatarImage src="https://picsum.photos/50/50?teacher" alt="Teacher User" data-ai-hint="teacher headshot"/>
-                            <AvatarFallback>FK</AvatarFallback>
-                          </Avatar>
+               <motion.div variants={cardVariants} whileHover={{ y: -5, scale: 1.02 }} className="group">
+                  <Card className="relative h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/90 border border-border/30 shadow-lg hover:shadow-xl transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="pt-8 pb-8 relative z-10">
+                      <div className="space-y-6">
+                        <div className="relative">
+                          <div className="absolute -top-2 -left-2 text-6xl text-primary/10 font-serif">"</div>
+                          <p className="text-foreground/90 italic text-lg leading-relaxed pl-6">The Exam Paper Generator saved me hours of work. Creating multiple versions of a test with an answer key is brilliant!</p>
+                        </div>
+                        <div className="flex items-center gap-4 pt-4 border-t border-border/20">
+                          <div className="relative">
+                            <Avatar className="h-12 w-12 ring-2 ring-purple-500/20">
+                              <AvatarImage src="https://picsum.photos/50/50?teacher" alt="Teacher User" data-ai-hint="teacher headshot"/>
+                              <AvatarFallback className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-600 font-semibold">FK</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-card" />
+                          </div>
                           <div>
-                            <p className="font-semibold">Fatima K.</p>
+                            <p className="font-semibold text-foreground">Fatima K.</p>
                             <p className="text-sm text-muted-foreground">Physics Teacher</p>
                           </div>
                         </div>
@@ -368,18 +485,25 @@ export default function Home() {
                     </CardContent>
                   </Card>
                 </motion.div>
-               <motion.div variants={cardVariants}>
-                  <Card className="h-full">
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <p className="text-muted-foreground italic">"Being able to upload my own notes and get a quiz from them is incredible. It makes my revision so much more effective."</p>
-                        <div className="flex items-center gap-4">
-                          <Avatar>
-                            <AvatarImage src="https://picsum.photos/50/50?user" alt="University User" data-ai-hint="university student"/>
-                            <AvatarFallback>US</AvatarFallback>
-                          </Avatar>
+               <motion.div variants={cardVariants} whileHover={{ y: -5, scale: 1.02 }} className="group">
+                  <Card className="relative h-full overflow-hidden bg-gradient-to-br from-card via-card to-card/90 border border-border/30 shadow-lg hover:shadow-xl transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="pt-8 pb-8 relative z-10">
+                      <div className="space-y-6">
+                        <div className="relative">
+                          <div className="absolute -top-2 -left-2 text-6xl text-primary/10 font-serif">"</div>
+                          <p className="text-foreground/90 italic text-lg leading-relaxed pl-6">Being able to upload my own notes and get a quiz from them is incredible. It makes my revision so much more effective.</p>
+                        </div>
+                        <div className="flex items-center gap-4 pt-4 border-t border-border/20">
+                          <div className="relative">
+                            <Avatar className="h-12 w-12 ring-2 ring-emerald-500/20">
+                              <AvatarImage src="https://picsum.photos/50/50?user" alt="University User" data-ai-hint="university student"/>
+                              <AvatarFallback className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-600 font-semibold">US</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-card" />
+                          </div>
                           <div>
-                            <p className="font-semibold">Usman S.</p>
+                            <p className="font-semibold text-foreground">Usman S.</p>
                             <p className="text-sm text-muted-foreground">University Student</p>
                           </div>
                         </div>
