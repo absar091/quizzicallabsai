@@ -41,8 +41,19 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
     async function fetchInsights() {
       setIsLoading(true);
       try {
-        const result = await generateDashboardInsights({ userName: userName, quizHistory: recentActivity });
-        setInsights(result);
+        // Only fetch insights on client side and if we have activity data
+        if (typeof window !== 'undefined' && recentActivity.length >= 0) {
+          const result = await generateDashboardInsights({ userName: userName, quizHistory: recentActivity });
+          setInsights(result);
+        } else {
+          // Fallback for server-side or no data
+          setInsights({ 
+            greeting: `Hi, ${userName}!`, 
+            observation: "Ready to boost your learning?", 
+            suggestion: "Start with a custom quiz to track your progress.", 
+            suggestedAction: { buttonText: "Create Quiz", link: "/generate-quiz" } 
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch AI insights:", error);
         setInsights({ 
@@ -55,7 +66,20 @@ function AiInsightsCard({ recentActivity, userName }: { recentActivity: QuizResu
         setIsLoading(false);
       }
     }
-    fetchInsights();
+    
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      fetchInsights();
+    } else {
+      // Server-side fallback
+      setInsights({ 
+        greeting: `Hi, ${userName}!`, 
+        observation: "Ready to boost your learning?", 
+        suggestion: "Start with a custom quiz to track your progress.", 
+        suggestedAction: { buttonText: "Create Quiz", link: "/generate-quiz" } 
+      });
+      setIsLoading(false);
+    }
   }, [recentActivity, userName]);
 
   if (isLoading) {

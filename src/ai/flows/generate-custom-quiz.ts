@@ -58,6 +58,11 @@ export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSc
 export async function generateCustomQuiz(
   input: GenerateCustomQuizInput
 ): Promise<GenerateCustomQuizOutput> {
+  // Check if API key is available
+  if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('Dummy')) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
   // Explicit input validation (redundant with Zod but provides clearer error messages)
   if (input.numberOfQuestions < 1 || input.numberOfQuestions > 55) {
     throw new Error("Number of questions must be between 1 and 55.");
@@ -66,7 +71,12 @@ export async function generateCustomQuiz(
       throw new Error("Time limit must be between 1 and 120 minutes.");
   }
 
-  return generateCustomQuizFlow(input); // Zod schema validation happens here
+  try {
+    return await generateCustomQuizFlow(input);
+  } catch (error: any) {
+    console.error('Quiz generation failed:', error);
+    throw new Error('Failed to generate quiz. Please try again or contact support.');
+  }
 }
 
 const promptText = `You are an elite AI educator and curriculum expert with deep knowledge of Pakistani educational standards. Your mission is to create exceptional, syllabus-compliant quizzes that maintain the highest academic rigor and pedagogical value.

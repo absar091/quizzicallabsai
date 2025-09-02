@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // DEBUG: Log every render
   console.log('🔍 PROTECTED LAYOUT RENDER:');
@@ -55,9 +55,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   console.log('✅ RENDERING APP FOR USER:', user.email);
 
   return (
-    <div className={cn("grid min-h-screen w-full transition-[grid-template-columns] duration-300 ease-in-out", 
-      isSidebarOpen ? "md:grid-cols-[240px_1fr]" : "md:grid-cols-[0px_1fr]")}>
-      <div className={cn("hidden border-r bg-card md:block transition-all duration-300", isSidebarOpen ? "w-[240px]" : "w-0")}>
+    <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
+      <div className="hidden border-r bg-card md:block w-[240px]">
         <MainSidebar />
       </div>
       <div className="flex flex-col">
