@@ -58,7 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      console.log('Auth state changed:', !!firebaseUser);
+      console.log('🔥 AUTH STATE CHANGED:', !!firebaseUser);
+      console.log('- Firebase user email:', firebaseUser?.email);
+      console.log('- Current pathname:', pathname);
       
       if (firebaseUser) {
         const appUser: User = {
@@ -72,14 +74,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           plan: 'Free',
         };
         
+        console.log('✅ SETTING USER:', appUser.email);
         setUser(appUser);
         setLoading(false);
+        console.log('✅ LOADING SET TO FALSE');
         
         // Redirect from auth pages
         if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
+          console.log('🔄 REDIRECTING FROM AUTH PAGE TO /');
           setTimeout(() => router.replace('/'), 100);
         }
       } else {
+        console.log('❌ NO FIREBASE USER');
         setUser(null);
         setLoading(false);
       }

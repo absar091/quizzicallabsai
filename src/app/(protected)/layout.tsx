@@ -26,29 +26,30 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, router]);
 
-  console.log('Protected Layout Render - Loading:', loading, 'User exists:', !!user);
+  console.log('🔍 PROTECTED LAYOUT DEBUG:');
+  console.log('- Loading:', loading);
+  console.log('- User exists:', !!user);
+  console.log('- User email:', user?.email);
+  console.log('- Pathname:', pathname);
 
-  // Only show loading if actually loading AND no user
-  if (loading && !user) {
+  // Force render if we have user, regardless of loading
+  if (user) {
+    console.log('✅ RENDERING APP FOR USER:', user.email);
+    // Continue to render the app below
+  } else if (loading) {
+    console.log('⏳ SHOWING LOADING - No user yet');
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">Loading user...</p>
         </div>
       </div>
     );
-  }
-
-  // If no user and not loading, redirect
-  if (!user && !loading) {
+  } else {
+    console.log('❌ NO USER - REDIRECTING TO LOGIN');
     router.replace("/login");
     return null;
-  }
-
-  // If we have a user, show the app
-  if (user) {
-    console.log('Rendering app for user:', user.email);
   }
 
   return (
