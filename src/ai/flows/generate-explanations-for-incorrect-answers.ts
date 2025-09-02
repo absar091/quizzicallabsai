@@ -9,7 +9,7 @@
  * - GenerateExplanationsOutput - The return type for the generateExplanationsForIncorrectAnswers function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateExplanationsInputSchema = z.object({
@@ -28,6 +28,9 @@ export type GenerateExplanationsOutput = z.infer<typeof GenerateExplanationsOutp
 export async function generateExplanationsForIncorrectAnswers(
   input: GenerateExplanationsInput
 ): Promise<GenerateExplanationsOutput> {
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
   return generateExplanationsFlow(input);
 }
 
@@ -48,7 +51,7 @@ Generate an explanation that does the following, in this order:
 
 **Tone:** Be encouraging, clear, and educational. Avoid jargon where possible, or explain it if necessary. The output should be just the text of the explanation itself.`;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
   name: 'generateExplanationsPrompt',
   model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateExplanationsInputSchema},
@@ -57,7 +60,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const generateExplanationsFlow = ai.defineFlow(
+const generateExplanationsFlow = ai!.defineFlow(
   {
     name: 'generateExplanationsFlow',
     inputSchema: GenerateExplanationsInputSchema,

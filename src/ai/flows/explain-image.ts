@@ -9,7 +9,7 @@
  * - ExplainImageOutput: The return type for the function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 export const ExplainImageInputSchema = z.object({
@@ -30,6 +30,11 @@ export type ExplainImageOutput = z.infer<typeof ExplainImageOutputSchema>;
 export async function explainImage(
   input: ExplainImageInput
 ): Promise<ExplainImageOutput> {
+  if (!isAiAvailable() || !ai) {
+    return {
+      explanation: "Image explanation service is currently unavailable. Please try again later or contact support."
+    };
+  }
   return explainImageFlow(input);
 }
 
@@ -50,7 +55,7 @@ const promptText = `You are an expert AI tutor and subject matter specialist. Yo
     *   Ensure your explanation is factually correct and easy to understand.
 4.  **Final Output:** Your response must be only the detailed explanation text, formatted for the JSON output.`;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
     name: 'explainImagePrompt',
     model: 'googleai/gemini-2.5-pro',
     prompt: promptText,
@@ -58,7 +63,7 @@ const prompt = ai.definePrompt({
     output: { schema: ExplainImageOutputSchema },
 });
 
-const explainImageFlow = ai.defineFlow(
+const explainImageFlow = ai!.defineFlow(
   {
     name: 'explainImageFlow',
     inputSchema: ExplainImageInputSchema,

@@ -10,7 +10,7 @@
  * - GenerateNtsQuizOutput: The output type for the generateNtsQuiz function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateNtsQuizInputSchema = z.object({
@@ -35,6 +35,9 @@ export type GenerateNtsQuizOutput = z.infer<typeof GenerateNtsQuizOutputSchema>;
 export async function generateNtsQuiz(
   input: GenerateNtsQuizInput
 ): Promise<GenerateNtsQuizOutput> {
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
   GenerateNtsQuizInputSchema.parse(input);
   return generateNtsQuizFlow(input);
 }
@@ -111,7 +114,7 @@ Generate the quiz now.
 `;
 
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
   name: 'generateNtsQuizPrompt',
   model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateNtsQuizInputSchema},
@@ -120,7 +123,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const generateNtsQuizFlow = ai.defineFlow(
+const generateNtsQuizFlow = ai!.defineFlow(
   {
     name: 'generateNtsQuizFlow',
     inputSchema: GenerateNtsQuizInputSchema,

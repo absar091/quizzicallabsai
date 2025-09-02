@@ -9,7 +9,7 @@
  * - GenerateDashboardInsightsOutput - The return type for the function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 // Define the structure for a single quiz result to be passed in
@@ -51,6 +51,17 @@ export async function generateDashboardInsights(
       suggestedAction: {
         buttonText: "Go to GenLab",
         link: "/genlab"
+      }
+    };
+  }
+  if (!isAiAvailable() || !ai) {
+    return {
+      greeting: `Welcome back, ${input.userName}!`,
+      observation: "AI insights are temporarily unavailable.",
+      suggestion: "Continue practicing with quizzes to improve your skills.",
+      suggestedAction: {
+        buttonText: "Create Quiz",
+        link: "/generate-quiz"
       }
     };
   }
@@ -96,7 +107,7 @@ Analyze the student's quiz history and generate a response in the specified JSON
 
 Now, generate the output for the provided student data.`;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
     name: 'generateDashboardInsightsPrompt',
     model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
@@ -105,7 +116,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const generateDashboardInsightsFlow = ai.defineFlow(
+const generateDashboardInsightsFlow = ai!.defineFlow(
   {
     name: 'generateDashboardInsightsFlow',
     inputSchema: GenerateDashboardInsightsInputSchema,

@@ -9,7 +9,7 @@
  * - GenerateQuizFromDocumentOutput - The return type for the function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
@@ -42,6 +42,10 @@ export type GenerateQuizFromDocumentOutput = z.infer<typeof GenerateQuizFromDocu
 export async function generateQuizFromDocument(
   input: GenerateQuizFromDocumentInput
 ): Promise<GenerateQuizFromDocumentOutput> {
+ if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
  // Explicit input validation
  if (input.documentDataUri.length > 10000000) {
  throw new Error("The document is too large. Please upload a smaller document (max 10MB).");
@@ -68,14 +72,14 @@ const promptText = `You are an expert quiz generator. Your task is to create a h
 
   Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{numberOfQuestions}}} questions.`;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
     prompt: promptText,
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },
 });
 
-const generateQuizFromDocumentFlow = ai.defineFlow(
+const generateQuizFromDocumentFlow = ai!.defineFlow(
   {
     name: 'generateQuizFromDocumentFlow',
     inputSchema: GenerateQuizFromDocumentInputSchema,

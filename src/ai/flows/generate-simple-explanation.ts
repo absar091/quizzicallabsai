@@ -9,7 +9,7 @@
  * - GenerateSimpleExplanationOutput - The return type for the function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateSimpleExplanationInputSchema = z.object({
@@ -27,6 +27,9 @@ export type GenerateSimpleExplanationOutput = z.infer<typeof GenerateSimpleExpla
 export async function generateSimpleExplanation(
   input: GenerateSimpleExplanationInput
 ): Promise<GenerateSimpleExplanationOutput> {
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
   return generateSimpleExplanationFlow(input);
 }
 
@@ -41,7 +44,7 @@ const promptText = `You are an AI assistant that is an expert at explaining comp
   Focus on explaining why the correct answer is right in the simplest terms possible.`;
 
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
   name: 'generateSimpleExplanationPrompt',
   model: 'googleai/gemini-1.5-flash',
   input: {schema: GenerateSimpleExplanationInputSchema},
@@ -50,7 +53,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const generateSimpleExplanationFlow = ai.defineFlow(
+const generateSimpleExplanationFlow = ai!.defineFlow(
   {
     name: 'generateSimpleExplanationFlow',
     inputSchema: GenerateSimpleExplanationInputSchema,

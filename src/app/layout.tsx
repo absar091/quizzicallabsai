@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Quizzicallabs AI",
   },
   description: APP_DESCRIPTION,
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',

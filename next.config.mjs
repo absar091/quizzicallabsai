@@ -40,7 +40,16 @@ const nextConfig = {
     config.ignoreWarnings = [
       /require.extensions is not supported by webpack/,
       /Critical dependency: require function is used in a way/,
+      /node-domexception/,
+      /@types\/handlebars/,
+      /deprecated/,
     ];
+    
+    // Suppress npm warnings during build
+    config.stats = {
+      ...config.stats,
+      warnings: false,
+    };
     
     return config;
   },

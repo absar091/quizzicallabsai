@@ -14,16 +14,22 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const splashShown = sessionStorage.getItem('splashShown');
+    // Check if we're on the client side
+    if (typeof window !== 'undefined') {
+      const splashShown = sessionStorage.getItem('splashShown');
 
-    if (!splashShown) {
-      setIsVisible(true);
-      const timer = setTimeout(() => {
+      if (!splashShown) {
+        setIsVisible(true);
+        const timer = setTimeout(() => {
+          onAnimationComplete();
+        }, 3000); // Animation duration
+
+        return () => clearTimeout(timer);
+      } else {
         onAnimationComplete();
-      }, 3000); // Animation duration
-
-      return () => clearTimeout(timer);
+      }
     } else {
+      // On server side, skip splash
       onAnimationComplete();
     }
   }, [onAnimationComplete]);

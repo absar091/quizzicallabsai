@@ -9,7 +9,7 @@
  * - GenerateFlashcardsOutput: The output type for the generateFlashcards function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
@@ -40,6 +40,9 @@ export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSc
 export async function generateFlashcards(
   input: GenerateFlashcardsInput
 ): Promise<GenerateFlashcardsOutput> {
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
   if (!input.topic || input.topic.trim().length === 0) {
       throw new Error("Invalid input: 'topic' cannot be empty.");
   }
@@ -73,14 +76,14 @@ const promptText = `You are an expert educator specializing in creating effectiv
 Generate the flashcards now.
 `;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
     name: "generateFlashcardsPrompt",
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
 });
 
-const generateFlashcardsFlow = ai.defineFlow(
+const generateFlashcardsFlow = ai!.defineFlow(
   {
     name: 'generateFlashcardsFlow',
     inputSchema: GenerateFlashcardsInputSchema,

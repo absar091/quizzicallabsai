@@ -5,7 +5,7 @@
  * This is the core feature that generates formal exam papers following official syllabi
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
@@ -89,6 +89,10 @@ export type GenerateExamPaperOutput = z.infer<typeof GenerateExamPaperOutputSche
 export async function generateExamPaper(
   input: GenerateExamPaperInput
 ): Promise<GenerateExamPaperOutput> {
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
   // Validate total marks calculation
   const calculatedMarks = 
     (input.questionDistribution.mcqs * input.marksDistribution.mcqMarks) +
@@ -164,7 +168,7 @@ const promptText = `You are a professional exam paper creator with expertise in 
 
 Generate a professional exam paper that meets these exact specifications and maintains the highest academic standards.`;
 
-const generateExamPaperFlow = ai.defineFlow(
+const generateExamPaperFlow = ai!.defineFlow(
   {
     name: 'generateExamPaperFlow',
     inputSchema: GenerateExamPaperInputSchema,
@@ -173,7 +177,7 @@ const generateExamPaperFlow = ai.defineFlow(
   async (input) => {
     const model = getModel(input.isPro);
     
-    const prompt = ai.definePrompt({
+    const prompt = ai!.definePrompt({
       name: "generateExamPaperPrompt",
       prompt: promptText,
       input: { schema: GenerateExamPaperInputSchema },
@@ -221,30 +225,5 @@ const generateExamPaperFlow = ai.defineFlow(
     } else {
       throw new Error('Failed to generate exam paper. Please try again or contact support if the issue persists.');
     }
-  }
-);ema: GenerateExamPaperInputSchema },
-      output: { schema: GenerateExamPaperOutputSchema },
-    });
-    
-    let output;
-    try {
-        const result = await prompt(input);
-        output = result.output;
-    } catch (error: any) {
-        console.error(`Error with model ${model.name}:`, sanitizeLogInput(error?.message || 'Unknown error'));
-        throw new Error(`Failed to generate exam paper: ${error.message}`);
-    }
-    
-    if (!output || !output.sections || output.sections.length === 0) {
-      throw new Error("The AI model returned an empty or invalid exam paper. Please try again with different parameters.");
-    }
-    
-    // Validate the generated paper
-    const totalGeneratedMarks = output.sections.reduce((sum, section) => sum + section.totalMarks, 0);
-    if (Math.abs(totalGeneratedMarks - input.totalMarks) > 5) {
-      throw new Error(`Generated exam paper marks (${totalGeneratedMarks}) don't match requested marks (${input.totalMarks})`);
-    }
-    
-    return output;
   }
 );

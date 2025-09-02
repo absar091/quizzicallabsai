@@ -45,19 +45,27 @@ export default function AppProviders({
   const [isSplashLoading, setIsSplashLoading] = useState(true);
 
   useEffect(() => {
-    const splashShown = sessionStorage.getItem('splashShown');
-    if (splashShown) {
-      setIsSplashLoading(false);
+    // Check if we're on the client side
+    if (typeof window !== 'undefined') {
+      const splashShown = sessionStorage.getItem('splashShown');
+      if (splashShown) {
+        setIsSplashLoading(false);
+      } else {
+          const timer = setTimeout(() => {
+              handleAnimationComplete();
+          }, 3000); // Failsafe timer
+          return () => clearTimeout(timer);
+      }
     } else {
-        const timer = setTimeout(() => {
-            handleAnimationComplete();
-        }, 3000); // Failsafe timer
-        return () => clearTimeout(timer);
+      // On server side, don't show splash
+      setIsSplashLoading(false);
     }
   }, []);
   
   const handleAnimationComplete = () => {
-    sessionStorage.setItem('splashShown', 'true');
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('splashShown', 'true');
+    }
     setIsSplashLoading(false);
   };
 

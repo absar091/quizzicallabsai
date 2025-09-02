@@ -9,7 +9,7 @@
  * - GenerateHelpBotResponseOutput: The return type for the function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateHelpBotResponseInputSchema = z.object({
@@ -26,6 +26,11 @@ export type GenerateHelpBotResponseOutput = z.infer<typeof GenerateHelpBotRespon
 export async function generateHelpBotResponse(
   input: GenerateHelpBotResponseInput
 ): Promise<GenerateHelpBotResponseOutput> {
+  if (!isAiAvailable() || !ai) {
+    return {
+      answer: "I'm sorry, but the AI help service is currently unavailable. Please check our documentation or contact support for assistance."
+    };
+  }
   return generateHelpBotResponseFlow(input);
 }
 
@@ -48,7 +53,7 @@ You have been provided with a list of Frequently Asked Questions (FAQs) that con
 4.  Keep your answers concise and easy to understand.
 5.  Your response MUST be just the answer text, formatted for the JSON output.`;
 
-const prompt = ai.definePrompt({
+const prompt = ai!.definePrompt({
     name: 'generateHelpBotResponsePrompt',
     model: 'googleai/gemini-1.5-flash',
     prompt: promptText,
@@ -56,7 +61,7 @@ const prompt = ai.definePrompt({
     output: { schema: GenerateHelpBotResponseOutputSchema },
 });
 
-const generateHelpBotResponseFlow = ai.defineFlow(
+const generateHelpBotResponseFlow = ai!.defineFlow(
   {
     name: 'generateHelpBotResponseFlow',
     inputSchema: GenerateHelpBotResponseInputSchema,

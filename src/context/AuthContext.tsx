@@ -59,31 +59,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('🔥 AUTH CONTEXT EFFECT RUNNING');
     
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('🔥 AUTH STATE CHANGED - firebaseUser:', !!firebaseUser);
       console.log('- email:', firebaseUser?.email);
       
       if (firebaseUser) {
-        const appUser: User = {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || 'User',
-          emailVerified: firebaseUser.emailVerified,
-          className: 'Not set',
-          age: null,
-          fatherName: 'N/A',
-          plan: 'Free',
-        };
-        
-        console.log('✅ SETTING USER:', appUser.email);
-        setUser(appUser);
-        
-        // Redirect from auth pages
-        if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
-          console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 100);
+        try {
+          // Load user data from Firebase Realtime Database
+          const userRef = ref(db, `users/${firebaseUser.uid}`);
+          const snapshot = await get(userRef);
+          const userData = snapshot.val();
+          
+          const appUser: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName || userData?.displayName || 'User',
+            emailVerified: firebaseUser.emailVerified,
+            className: userData?.className || 'Not set',
+            age: userData?.age || null,
+            fatherName: userData?.fatherName || 'N/A',
+            plan: userData?.plan || 'Free', // Load plan from Firebase
+          };
+          
+          console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
+          setUser(appUser);
+          
+          // Redirect from auth pages
+          if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
+            console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 100);
+          }
+        } catch (error) {
+          console.error('Error loading user data from Firebase:', error);
+          // Fallback to basic user data if Firebase fails
+          const appUser: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName || 'User',
+            emailVerified: firebaseUser.emailVerified,
+            className: 'Not set',
+            age: null,
+            fatherName: 'N/A',
+            plan: 'Free',
+          };
+          setUser(appUser);
         }
       } else {
         console.log('❌ NO FIREBASE USER - SETTING NULL');
@@ -129,10 +150,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUserPlan = async (plan: UserPlan) => {
     if (user) {
-        const userRef = ref(db, `users/${user.uid}/plan`);
-        await set(userRef, plan);
-        // Update local state immediately for instant UI feedback
-        setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
+        try {
+          // Save complete user data to Firebase
+          const userRef = ref(db, `users/${user.uid}`);
+          const updatedUserData = {
+            ...user,
+            plan,
+            updatedAt: new Date().toISOString()
+          };
+          
+          await set(userRef, updatedUserData);
+          
+          // Update local state immediately for instant UI feedback
+          setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
+          
+          console.log('✅ USER PLAN UPDATED:', plan);
+        } catch (error) {
+          console.error('Error updating user plan:', error);
+          throw new Error('Failed to update plan. Please try again.');
+        }
     } else {
         throw new Error("No user is signed in to update plan.");
     }

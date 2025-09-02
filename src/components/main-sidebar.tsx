@@ -7,16 +7,23 @@ import {
   House,
   Flask,
   Exam,
-  User
+  User,
+  Star,
+  Trophy
 } from "@phosphor-icons/react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { usePlan } from "@/hooks/usePlan";
+import { useState, useEffect } from "react";
+import { getQuizResults, getBookmarks } from "@/lib/indexed-db";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
+  { href: "/bookmarks", label: "Bookmarks", icon: Star },
   { href: "/profile", label: "Profile", icon: User },
 ];
 
@@ -28,6 +35,27 @@ type MainSidebarProps = {
 export function MainSidebar({ onNavigate }: MainSidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { plan } = usePlan();
+  const [stats, setStats] = useState({ totalQuizzes: 0, bookmarks: 0 });
+
+  useEffect(() => {
+    async function loadStats() {
+      if (!user) return;
+      try {
+        const [results, bookmarks] = await Promise.all([
+          getQuizResults(user.uid),
+          getBookmarks(user.uid)
+        ]);
+        setStats({ 
+          totalQuizzes: results.length, 
+          bookmarks: bookmarks.length 
+        });
+      } catch (error) {
+        console.error('Error loading sidebar stats:', error);
+      }
+    }
+    loadStats();
+  }, [user]);
 
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname === href;
@@ -55,10 +83,60 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
               <span>Quizzicallabs</span>
           </Link>
        </div>
-       <div className="flex-1 overflow-auto py-4">
+       
+       {/* User Info Section */}
+       {user && (
+         <div className="px-4 pb-4">
+           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+             <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-sm font-bold text-primary-foreground">
+               {user.displayName?.charAt(0)?.toUpperCase() || 'U'}
+             </div>
+             <div className="flex-1 min-w-0">
+               <p className="text-sm font-medium truncate">{user.displayName}</p>
+               <div className="flex items-center gap-1">
+                 <Badge variant={plan === 'Pro' ? 'default' : 'secondary'} className="text-xs px-2 py-0">
+                   {plan === 'Pro' && <Sparkles className="h-2 w-2 mr-1" />}
+                   {plan}
+                 </Badge>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
+       
+       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-2 text-sm font-medium gap-1">
-          {mainNav.map(item => <NavLink key={item.href} {...item} />)}
+          {mainNav.map(item => (
+            <div key={item.href} className="relative">
+              <NavLink {...item} />
+              {/* Show stats badges */}
+              {item.href === '/bookmarks' && stats.bookmarks > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs flex items-center justify-center">
+                  {stats.bookmarks > 99 ? '99+' : stats.bookmarks}
+                </Badge>
+              )}
+            </div>
+          ))}
         </nav>
+        
+        {/* Quick Stats */}
+        {user && stats.totalQuizzes > 0 && (
+          <div className="px-4 mt-6">
+            <div className="text-xs font-semibold text-muted-foreground mb-2 px-2">QUICK STATS</div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-2 py-1 text-xs text-muted-foreground">
+                <Trophy className="h-3 w-3" />
+                <span>{stats.totalQuizzes} Quizzes Taken</span>
+              </div>
+              {stats.bookmarks > 0 && (
+                <div className="flex items-center gap-2 px-2 py-1 text-xs text-muted-foreground">
+                  <Star className="h-3 w-3" />
+                  <span>{stats.bookmarks} Bookmarked</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

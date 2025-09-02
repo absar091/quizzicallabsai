@@ -9,7 +9,7 @@
  * - GenerateStudyGuideOutput: The output type for the generateStudyGuide function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 
@@ -49,6 +49,11 @@ export type GenerateStudyGuideOutput = z.infer<typeof GenerateStudyGuideOutputSc
 export async function generateStudyGuide(
   input: GenerateStudyGuideInput
 ): Promise<GenerateStudyGuideOutput> {
+  // Check if AI is available
+  if (!isAiAvailable() || !ai) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
   return generateStudyGuideFlow(input);
 }
 
@@ -73,7 +78,7 @@ const promptText = `You are an expert educator and content creator. Your task is
   Generate the personalized study guide now.`;
 
 
-const generateStudyGuideFlow = ai.defineFlow(
+const generateStudyGuideFlow = ai!.defineFlow(
   {
     name: 'generateStudyGuideFlow',
     inputSchema: GenerateStudyGuideInputSchema,
@@ -81,7 +86,7 @@ const generateStudyGuideFlow = ai.defineFlow(
   },
   async input => {
     const model = getModel(input.isPro);
-    const prompt = ai.definePrompt({
+    const prompt = ai!.definePrompt({
       name: 'generateStudyGuidePrompt',
       model: model,
       input: {schema: GenerateStudyGuideInputSchema},

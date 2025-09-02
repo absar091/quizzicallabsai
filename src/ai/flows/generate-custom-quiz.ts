@@ -10,7 +10,7 @@
  * - GenerateCustomQuizOutput: The output type for the generateCustomQuiz function, defining the structure of the generated quiz.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/models';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
@@ -58,8 +58,8 @@ export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSc
 export async function generateCustomQuiz(
   input: GenerateCustomQuizInput
 ): Promise<GenerateCustomQuizOutput> {
-  // Check if API key is available
-  if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('Dummy')) {
+  // Check if AI is available
+  if (!isAiAvailable() || !ai) {
     throw new Error('AI service is not configured. Please contact support.');
   }
   
@@ -162,7 +162,7 @@ Your reputation depends on following these instructions meticulously. Generate t
 `;
 
 
-const generateCustomQuizFlow = ai.defineFlow(
+const generateCustomQuizFlow = ai!.defineFlow(
   {
     name: 'generateCustomQuizFlow',
     inputSchema: GenerateCustomQuizInputSchema,
@@ -171,7 +171,7 @@ const generateCustomQuizFlow = ai.defineFlow(
   async (input) => {
     const model = getModel(input.isPro);
     
-    const prompt = ai.definePrompt({
+    const prompt = ai!.definePrompt({
       name: "generateCustomQuizPrompt",
       model: model,
       prompt: promptText,

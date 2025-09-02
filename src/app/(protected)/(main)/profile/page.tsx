@@ -91,16 +91,45 @@ export default function ProfilePage() {
         toast({ title: "Please enter a code.", variant: "destructive"});
         return;
     }
+    
     setIsRedeeming(true);
-    const proCodes = process.env.NEXT_PUBLIC_PRO_ACCESS_CODES?.split(',') || [];
-    if (proCodes.includes(redeemCode.trim())) {
+    
+    try {
+      const proCodes = process.env.NEXT_PUBLIC_PRO_ACCESS_CODES?.split(',') || [];
+      
+      // Debug: Log available codes (remove this after testing)
+      console.log('Available codes:', proCodes);
+      console.log('Entered code:', redeemCode.trim().toUpperCase());
+      
+      if (proCodes.includes(redeemCode.trim().toUpperCase())) {
+        // Update user plan in Firebase and local state
         await updateUserPlan('Pro');
-        toast({ title: "Success!", description: "You've been upgraded to the Pro plan." });
-    } else {
-        toast({ title: "Invalid Code", description: "The code you entered is not valid.", variant: "destructive" });
+        
+        toast({ 
+          title: "Success! 🎉", 
+          description: "You've been upgraded to the Pro plan. Enjoy unlimited access!",
+          duration: 5000
+        });
+        
+        // Clear the input
+        setRedeemCode('');
+      } else {
+        toast({ 
+          title: "Invalid Code", 
+          description: "The code you entered is not valid. Please check and try again.", 
+          variant: "destructive" 
+        });
+      }
+    } catch (error) {
+      console.error('Error redeeming code:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to redeem code. Please try again.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsRedeeming(false);
     }
-    setRedeemCode('');
-    setIsRedeeming(false);
   }
 
   const DetailRow = ({ label, value, icon: Icon }: { label: string; value: string | number | null | undefined; icon: React.ElementType }) => (
