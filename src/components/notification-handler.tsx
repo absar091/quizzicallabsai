@@ -14,7 +14,7 @@ export default function NotificationHandler() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      const messaging = getMessaging(app);
+      // const messaging = getMessaging(app); // Disabled
 
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
@@ -23,54 +23,11 @@ export default function NotificationHandler() {
           console.error('Service worker registration failed:', err);
         });
 
-      const requestPermission = async () => {
-        try {
-          const permission = await Notification.requestPermission();
-          if (permission === 'granted') {
-            console.log('Notification permission granted.');
-            const vapidKey = process.env.NEXT_PUBLIC_FCM_VAPID_KEY;
-            if (!vapidKey) {
-                console.error("VAPID key not found in environment variables.");
-                return;
-            }
+      // Disable FCM for now to prevent blocking
+      console.log('FCM disabled to prevent app blocking');
 
-            try {
-              const fcmToken = await getToken(messaging, { vapidKey: vapidKey, serviceWorkerRegistration: await navigator.serviceWorker.ready });
-              if (fcmToken) {
-                console.log('FCM Token obtained successfully');
-                const currentUser = auth.currentUser;
-                if (currentUser) {
-                    const tokenRef = ref(db, `fcmTokens/${currentUser.uid}`);
-                    await set(tokenRef, { token: fcmToken, timestamp: new Date().toISOString() });
-                }
-              } else {
-                console.log('No registration token available.');
-              }
-            } catch (tokenError) {
-              console.warn('FCM token generation failed:', tokenError);
-              // Continue without FCM - app still works
-            }
-          } else {
-            console.log('Unable to get permission to notify.');
-          }
-        } catch (error) {
-          console.error('An error occurred while retrieving token. ', error);
-        }
-      };
-
-      requestPermission();
-
-      const unsubscribe = onMessage(messaging, (payload) => {
-        console.log('Message received. ', payload);
-        toast({
-          title: payload.notification?.title,
-          description: payload.notification?.body,
-        });
-      });
-      
-      return () => {
-          unsubscribe();
-      }
+      // FCM messaging disabled
+      return () => {};
     }
   }, [toast]);
 

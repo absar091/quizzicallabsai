@@ -57,83 +57,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleAuth = async (firebaseUser: FirebaseUser | null) => {
-        try {
-            if (firebaseUser) {
-                // Create default user first to prevent loading state
-                const defaultUser: User = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    displayName: firebaseUser.displayName,
-                    emailVerified: firebaseUser.emailVerified,
-                    className: 'Not set',
-                    age: null,
-                    fatherName: 'N/A',
-                    plan: 'Free',
-                };
-
-                setUser(defaultUser);
-                setLoading(false);
-                console.log('AuthContext - User set, loading false:', defaultUser.email);
-
-                // Try to get additional user data with timeout
-                try {
-                    const userRef = ref(db, `users/${firebaseUser.uid}`);
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Database timeout')), 5000)
-                    );
-                    
-                    const snapshot = await Promise.race([
-                        get(userRef),
-                        timeoutPromise
-                    ]) as any;
-
-                    if (snapshot && snapshot.exists()) {
-                        const dbUser = snapshot.val();
-                        const updatedUser: User = {
-                            uid: firebaseUser.uid,
-                            email: firebaseUser.email,
-                            displayName: firebaseUser.displayName,
-                            emailVerified: firebaseUser.emailVerified,
-                            className: dbUser.className || 'Not set',
-                            age: dbUser.age || null,
-                            fatherName: dbUser.fatherName || 'N/A',
-                            plan: dbUser.plan || 'Free',
-                        };
-                        setUser(updatedUser);
-                    } else if (snapshot) {
-                        // Create new user record
-                        const newUserInfo = {
-                            uid: firebaseUser.uid,
-                            fullName: firebaseUser.displayName || 'User',
-                            fatherName: 'N/A',
-                            email: firebaseUser.email,
-                            className: 'Not set',
-                            age: null,
-                            plan: 'Free',
-                        };
-                        await set(userRef, newUserInfo);
-                    }
-                } catch (dbError) {
-                    console.warn('Database error, using default user data:', dbError);
-                    // User is already set with default data, continue
-                }
-                
-                const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
-                if (isAuthPage) {
-                    router.replace('/');
-                }
-            } else {
-                setUser(null);
-                setLoading(false);
-                console.log('AuthContext - No user, loading false');
+    const handleAuth = (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+            const appUser: User = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: firebaseUser.displayName,
+                emailVerified: firebaseUser.emailVerified,
+                className: 'Not set',
+                age: null,
+                fatherName: 'N/A',
+                plan: 'Free',
+            };
+            
+            setUser(appUser);
+            console.log('AuthContext - User set:', appUser.email);
+            
+            const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
+            if (isAuthPage) {
+                router.replace('/');
             }
-        } catch (error) {
-            console.error('Auth error:', error);
+        } else {
             setUser(null);
-            setLoading(false);
-            console.log('AuthContext - Error occurred, loading false');
+            console.log('AuthContext - No user');
         }
+        setLoading(false);
+        console.log('AuthContext - Loading set to false');
     };
 
     const unsubscribe = onAuthStateChanged(auth, handleAuth);
