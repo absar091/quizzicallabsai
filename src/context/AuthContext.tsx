@@ -57,36 +57,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleAuth = (firebaseUser: FirebaseUser | null) => {
-        if (firebaseUser) {
-            const appUser: User = {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                displayName: firebaseUser.displayName,
-                emailVerified: firebaseUser.emailVerified,
-                className: 'Not set',
-                age: null,
-                fatherName: 'N/A',
-                plan: 'Free',
-            };
-            
-            setUser(appUser);
-            console.log('AuthContext - User set:', appUser.email);
-            
-            const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
-            if (isAuthPage) {
-                router.replace('/');
-            }
-        } else {
-            setUser(null);
-            console.log('AuthContext - No user');
-        }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log('Auth state changed:', !!firebaseUser);
+      
+      if (firebaseUser) {
+        const appUser: User = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName || 'User',
+          emailVerified: firebaseUser.emailVerified,
+          className: 'Not set',
+          age: null,
+          fatherName: 'N/A',
+          plan: 'Free',
+        };
+        
+        setUser(appUser);
         setLoading(false);
-        console.log('AuthContext - Loading set to false');
-    };
+        
+        // Redirect from auth pages
+        if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
+          setTimeout(() => router.replace('/'), 100);
+        }
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
 
-    const unsubscribe = onAuthStateChanged(auth, handleAuth);
-    return () => unsubscribe();
+    return unsubscribe;
   }, [router, pathname]);
 
 

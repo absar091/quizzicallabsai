@@ -14,20 +14,66 @@ export default function NotificationHandler() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // const messaging = getMessaging(app); // Disabled
-
+      // Register service worker first
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
           console.log('Service Worker registered with scope:', registration.scope);
         }).catch((err) => {
-          console.error('Service worker registration failed:', err);
+          console.warn('Service worker registration failed:', err);
         });
 
-      // Disable FCM for now to prevent blocking
-      console.log('FCM disabled to prevent app blocking');
+      // Initialize FCM with proper error handling
+      const initializeFCM = async () => {
+        try {
+          const messaging = getMessaging(app);
+          const permission = await Notification.requestPermission();
+          
+          if (permission === 'granted') {
+            console.log('Notification permission granted.');
+            const vapidKey = process.env.NEXT_PUBLIC_FCM_VAPID_KEY;
+            
+            if (vapidKey) {
+              try {
+                const fcmToken = await getToken(messaging, { 
+                  vapidKey: vapidKey, 
+                  serviceWorkerRegistration: await navigator.serviceWorker.ready 
+                });
+                
+                if (fcmToken) {
+                  console.log('FCM Token obtained successfully');
+                  const currentUser = auth.currentUser;
+                  if (currentUser) {
+                    const tokenRef = ref(db, `fcmTokens/${currentUser.uid}`);
+                    await set(tokenRef, { token: fcmToken, timestamp: new Date().toISOString() });
+                  }
+                }
+              } catch (tokenError) {
+                console.warn('FCM token generation failed, continuing without notifications:', tokenError);
+              }
+            }
+          }
 
-      // FCM messaging disabled
-      return () => {};
+          // Set up message listener
+          const unsubscribe = onMessage(messaging, (payload) => {
+            console.log('Message received:', payload);
+            toast({
+              title: payload.notification?.title,
+              description: payload.notification?.body,
+            });
+          });
+          
+          return unsubscribe;
+        } catch (error) {
+          console.warn('FCM initialization failed, app will continue without notifications:', error);
+          return () => {};
+        }
+      };
+
+      // Initialize FCM without blocking the app
+      const cleanup = initializeFCM();
+      return () => {
+        cleanup.then(unsubscribe => unsubscribe?.());
+      };
     }
   }, [toast]);
 

@@ -26,8 +26,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }
   }, [user, loading, router]);
 
-  // Show loading only if actually loading, not if user exists
-  if (loading) {
+  console.log('Protected Layout Render - Loading:', loading, 'User exists:', !!user);
+
+  // Only show loading if actually loading AND no user
+  if (loading && !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="text-center">
@@ -38,16 +40,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  // If not loading but no user, redirect (this should be handled by useEffect)
-  if (!user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Redirecting...</p>
-        </div>
-      </div>
-    );
+  // If no user and not loading, redirect
+  if (!user && !loading) {
+    router.replace("/login");
+    return null;
+  }
+
+  // If we have a user, show the app
+  if (user) {
+    console.log('Rendering app for user:', user.email);
   }
 
   return (
