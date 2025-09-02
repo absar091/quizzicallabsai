@@ -79,12 +79,6 @@ export default function LoginPage() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       
-      if (!userCredential.user.emailVerified) {
-        setShowVerificationAlert(true);
-        setIsSubmitting(false); // Stop loading to show the alert
-        return;
-      }
-
       toast({
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
