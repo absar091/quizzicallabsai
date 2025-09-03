@@ -167,7 +167,7 @@ ${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**\r\n- Generate more sophistic
    {{#if recentQuizHistory}}
    **Performance Analysis:**
    {{#each recentQuizHistory}}
-   - {{this.topic}}: {{this.percentage}}% ({{#if (lt this.percentage 60)}}Needs Reinforcement{{else if (lt this.percentage 80)}}Moderate Mastery{{else}}Strong Performance{{/if}})
+   - {{this.topic}}: {{this.percentage}}% performance
    {{/each}}
    
    **Adaptive Strategy:** Focus on knowledge gaps while building on strengths
