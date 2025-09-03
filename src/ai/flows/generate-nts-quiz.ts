@@ -46,19 +46,7 @@ export async function generateNtsQuiz(
 
 const getPromptText = (isPro: boolean) => `You are an elite NTS/NAT question architect with comprehensive expertise in Pakistani educational standards and testing methodologies. Your mission is to create authentic, high-caliber questions that mirror the actual NTS/NAT examination standards.
 
-${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**
-- Generate more sophisticated and challenging questions
-- Include advanced problem-solving scenarios
-- Create more nuanced distractors that test deeper understanding
-- Focus on higher-order thinking and analytical skills
-- Provide university-level complexity and rigor
-
-' : '**STANDARD NTS PREPARATION:**
-- Focus on core NTS concepts and fundamental understanding
-- Provide clear, accessible questions aligned with standard difficulty
-- Ensure solid foundation for NTS success
-
-'}
+${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**\r\n- Generate more sophisticated and challenging questions\r\n- Include advanced problem-solving scenarios\r\n- Create more nuanced distractors that test deeper understanding\r\n- Focus on higher-order thinking and analytical skills\r\n- Provide university-level complexity and rigor\r\n\r\n' : '**STANDARD NTS PREPARATION:**\r\n- Focus on core NTS concepts and fundamental understanding\r\n- Provide clear, accessible questions aligned with standard difficulty\r\n- Ensure solid foundation for NTS success\r\n\r\n'}`
 
 **SUPREME COMPLIANCE DIRECTIVES - ABSOLUTE ADHERENCE REQUIRED:**
 

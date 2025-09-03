@@ -96,20 +96,7 @@ export async function generateCustomQuiz(
 
 const getPromptText = (isPro: boolean) => `You are an elite AI educator and curriculum expert with deep knowledge of Pakistani educational standards. Your mission is to create exceptional, syllabus-compliant quizzes that maintain the highest academic rigor and pedagogical value.
 
-${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**
-- Generate more sophisticated and nuanced questions
-- Provide deeper conceptual understanding
-- Include advanced problem-solving scenarios
-- Create more challenging distractors for MCQs
-- Focus on higher-order thinking skills
-- Ensure professional-grade academic rigor
-
-' : '**STANDARD USER - QUALITY EDUCATION:**
-- Focus on fundamental concepts and core understanding
-- Provide clear, straightforward questions
-- Ensure accessibility for all learning levels
-
-'}**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
+${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**\r\n- Generate more sophisticated and nuanced questions\r\n- Provide deeper conceptual understanding\r\n- Include advanced problem-solving scenarios\r\n- Create more challenging distractors for MCQs\r\n- Focus on higher-order thinking skills\r\n- Ensure professional-grade academic rigor\r\n\r\n' : '**STANDARD USER - QUALITY EDUCATION:**\r\n- Focus on fundamental concepts and core understanding\r\n- Provide clear, straightforward questions\r\n- Ensure accessibility for all learning levels\r\n\r\n'}**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
 
 1.  **SYLLABUS ADHERENCE (SUPREME RULE):** 
     - For MDCAT/ECAT students: Generate questions EXCLUSIVELY from the official Pakistani FSc/ICS curriculum for the specified topic

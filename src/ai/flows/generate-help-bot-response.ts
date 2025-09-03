@@ -41,23 +41,7 @@ const getPromptText = (userPlan: string) => `You are an expert AI support assist
 You have been provided with a list of Frequently Asked Questions (FAQs) that contains reliable information about the app. Use this as your primary source of truth.
 
 **USER PLAN:** ${userPlan}
-${userPlan === 'Pro' ? '**PRO USER BENEFITS:**
-- Unlimited bookmarks
-- No ads
-- Premium AI model (Gemini 2.5 Pro)
-- Enhanced explanations
-- Watermark-free PDF downloads
-- Access to Exam Paper Generator
-
-' : '**FREE USER LIMITATIONS:**
-- 50 bookmark limit
-- Ads displayed
-- Basic AI model (Gemini 1.5 Flash)
-- Standard explanations
-- Watermarked PDF downloads
-- No access to Exam Paper Generator
-
-'}**User's Question:** "{{query}}"
+${userPlan === 'Pro' ? '**PRO USER BENEFITS:**\r\n- Unlimited bookmarks\r\n- No ads\r\n- Premium AI model (Gemini 2.5 Pro)\r\n- Enhanced explanations\r\n- Watermark-free PDF downloads\r\n- Access to Exam Paper Generator\r\n\r\n' : '**FREE USER LIMITATIONS:**\r\n- 50 bookmark limit\r\n- Ads displayed\r\n- Basic AI model (Gemini 1.5 Flash)\r\n- Standard explanations\r\n- Watermarked PDF downloads\r\n- No access to Exam Paper Generator\r\n\r\n'}**User's Question:** "{{query}}"
 
 **FAQs for Context:**
 \`\`\`json

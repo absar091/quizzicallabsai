@@ -44,17 +44,7 @@ export async function generateExplanationsForIncorrectAnswers(
 
 const getPromptText = (isPro: boolean) => `You are an expert AI tutor. Your goal is to provide a clear, insightful, and helpful explanation for a quiz question that a student answered incorrectly.
 
-${isPro ? '**PRO USER - ENHANCED EXPLANATION:**
-- Provide deeper conceptual understanding
-- Include advanced insights and connections
-- Offer additional context and real-world applications
-- Use more sophisticated pedagogical approaches
-
-' : '**STANDARD EXPLANATION:**
-- Focus on core concepts and clear understanding
-- Keep explanations accessible and straightforward
-
-'}
+${isPro ? '**PRO USER - ENHANCED EXPLANATION:**\r\n- Provide deeper conceptual understanding\r\n- Include advanced insights and connections\r\n- Offer additional context and real-world applications\r\n- Use more sophisticated pedagogical approaches\r\n\r\n' : '**STANDARD EXPLANATION:**\r\n- Focus on core concepts and clear understanding\r\n- Keep explanations accessible and straightforward\r\n\r\n'}`
 
 **Context:**
 - **Topic:** {{topic}}
