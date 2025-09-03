@@ -52,6 +52,7 @@ const nextConfig = {
         'node:zlib': false,
         'node:events': false,
         'node:querystring': false,
+        'node:perf_hooks': false,
       };
     }
     
