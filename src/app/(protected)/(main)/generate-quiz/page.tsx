@@ -509,8 +509,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       }, 500);
       
       return; // Exit early since we handled everything
-        // This code should not be reached
-      });
+      
+    } catch (error: any) {
       clearInterval(interval);
       setGenerationProgress(100);
       
