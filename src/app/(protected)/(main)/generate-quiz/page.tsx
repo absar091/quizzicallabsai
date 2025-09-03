@@ -454,13 +454,62 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       }
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
-      const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
-      const result = await generateCustomQuiz({
-        ...values,
-        isPro: user?.plan === 'Pro',
-        userAge: user?.age,
-        userClass: user?.className,
-        recentQuizHistory: historyForAI,
+      const response = await fetch('/api/ai/custom-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...values,
+          isPro: user?.plan === 'Pro',
+          userAge: user?.age,
+          userClass: user?.className,
+          recentQuizHistory: historyForAI,
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate quiz');
+      }
+      
+      const result = await response.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      // Simulate the original structure
+      const finalResult = { quiz: result.quiz, comprehensionText: result.comprehensionText };
+      
+      if (!finalResult.quiz || finalResult.quiz.length === 0) {
+        throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
+      }
+      
+      // Process the result as before
+      setTimeout(async () => {
+        setQuiz(finalResult.quiz);
+        setComprehensionText(finalResult.comprehensionText || null);
+        setUserAnswers(new Array(finalResult.quiz.length).fill(null));
+        setTimeLeft(values.timeLimit * 60);
+        setIsGenerating(false);
+        setFormValues(values);
+        
+        // Cache quiz for offline use
+        try {
+          await cacheQuiz(finalResult.quiz, values.topic, values.difficulty);
+        } catch (error) {
+          console.error('Failed to cache quiz:', error);
+        }
+        
+        // Save questions to bank for future use
+        try {
+          const { QuestionBank } = await import('@/lib/question-bank');
+          await QuestionBank.saveQuestions(finalResult.quiz, values.topic, values.difficulty, user?.uid);
+        } catch (error) {
+          console.error('Failed to save questions to bank:', error);
+        }
+      }, 500);
+      
+      return; // Exit early since we handled everything
+        // This code should not be reached
       });
       clearInterval(interval);
       setGenerationProgress(100);
