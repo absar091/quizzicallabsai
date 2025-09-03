@@ -19,6 +19,8 @@ import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
 import { sanitizeString } from "@/lib/sanitize";
 import { StudyStreakWidget } from "@/components/study-streak-widget";
+import { QuizAccessDialog } from "@/components/quiz-sharing";
+import { AdminAccess } from "@/components/admin-access";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -338,7 +340,7 @@ export default function HomePage() {
               <CardDescription>Jump into your favorite study tools</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <Button asChild variant="outline" className="h-20 flex-col gap-2">
                   <Link href="/generate-quiz">
                     <PlusSquare className="h-6 w-6"/>
@@ -363,6 +365,8 @@ export default function HomePage() {
                     <span className="text-sm">Bookmarks</span>
                   </Link>
                 </Button>
+                <QuizAccessDialog />
+                <AdminAccess />
               </div>
             </CardContent>
           </Card>

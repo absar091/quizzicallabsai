@@ -46,3 +46,7 @@ async function initializeAnalytics() {
 initializeAnalytics();
 
 export { app, auth, analytics };
+
+// Re-export database functions for convenience
+export { ref, set, get, push, remove, update, query, orderByChild, equalTo, limitToFirst, limitToLast } from 'firebase/database';
+export const database = db; // For backward compatibility

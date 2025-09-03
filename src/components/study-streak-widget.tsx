@@ -17,8 +17,9 @@ export function StudyStreakWidget() {
 
     const loadStreak = async () => {
       try {
-        const { database, ref, get } = await import('@/lib/firebase');
-        const streakRef = ref(database, `users/${user.uid}/study_streak`);
+        const { db } = await import('@/lib/firebase');
+        const { ref, get } = await import('firebase/database');
+        const streakRef = ref(db, `users/${user.uid}/study_streak`);
         const snapshot = await get(streakRef);
         
         if (snapshot.exists()) {

@@ -51,19 +51,24 @@ export class QuizSharingManager {
     };
 
     // Save to Firebase
-    if (typeof window !== 'undefined') {
-      const { database, ref, set } = await import('@/lib/firebase');
-      const quizRef = ref(database, `shared_quizzes/${sharedQuiz.id}`);
+    try {
+      const { db } = await import('@/lib/firebase');
+      const { ref, set } = await import('firebase/database');
+      
+      const quizRef = ref(db, `shared_quizzes/${sharedQuiz.id}`);
       await set(quizRef, sharedQuiz);
       
       // Add to user's shared quizzes
-      const userQuizRef = ref(database, `users/${userId}/shared_quizzes/${sharedQuiz.id}`);
+      const userQuizRef = ref(db, `users/${userId}/shared_quizzes/${sharedQuiz.id}`);
       await set(userQuizRef, {
         id: sharedQuiz.id,
         title: sharedQuiz.title,
         shareCode: sharedQuiz.shareCode,
         createdAt: sharedQuiz.createdAt
       });
+    } catch (error) {
+      console.error('Error saving shared quiz:', error);
+      throw error;
     }
 
     return sharedQuiz;
@@ -72,8 +77,10 @@ export class QuizSharingManager {
   // Get quiz by share code
   static async getQuizByShareCode(shareCode: string): Promise<SharedQuiz | null> {
     try {
-      const { database, ref, query, orderByChild, equalTo, get } = await import('@/lib/firebase');
-      const quizzesRef = ref(database, 'shared_quizzes');
+      const { db } = await import('@/lib/firebase');
+      const { ref, query, orderByChild, equalTo, get } = await import('firebase/database');
+      
+      const quizzesRef = ref(db, 'shared_quizzes');
       const shareCodeQuery = query(quizzesRef, orderByChild('shareCode'), equalTo(shareCode));
       const snapshot = await get(shareCodeQuery);
       
@@ -117,8 +124,10 @@ export class QuizSharingManager {
   // Update quiz statistics after attempt
   static async updateQuizStats(quizId: string, score: number) {
     try {
-      const { database, ref, get, set } = await import('@/lib/firebase');
-      const quizRef = ref(database, `shared_quizzes/${quizId}`);
+      const { db } = await import('@/lib/firebase');
+      const { ref, get, set } = await import('firebase/database');
+      
+      const quizRef = ref(db, `shared_quizzes/${quizId}`);
       const snapshot = await get(quizRef);
       
       if (snapshot.exists()) {
@@ -140,9 +149,11 @@ export class QuizSharingManager {
   // Like/unlike quiz
   static async toggleQuizLike(quizId: string, userId: string): Promise<boolean> {
     try {
-      const { database, ref, get, set, remove } = await import('@/lib/firebase');
-      const likeRef = ref(database, `quiz_likes/${quizId}/${userId}`);
-      const quizRef = ref(database, `shared_quizzes/${quizId}`);
+      const { db } = await import('@/lib/firebase');
+      const { ref, get, set, remove } = await import('firebase/database');
+      
+      const likeRef = ref(db, `quiz_likes/${quizId}/${userId}`);
+      const quizRef = ref(db, `shared_quizzes/${quizId}`);
       
       const [likeSnapshot, quizSnapshot] = await Promise.all([
         get(likeRef),

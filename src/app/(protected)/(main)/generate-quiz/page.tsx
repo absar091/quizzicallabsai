@@ -234,8 +234,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           
           // Update study streak
           try {
-            const { database, ref: dbRef, get, set } = await import('@/lib/firebase');
-            const streakRef = dbRef(database, `users/${user.uid}/study_streak`);
+            const { db } = await import('@/lib/firebase');
+            const { ref: dbRef, get, set } = await import('firebase/database');
+            const streakRef = dbRef(db, `users/${user.uid}/study_streak`);
             const streakSnapshot = await get(streakRef);
             
             const currentStreak: StudyStreak = streakSnapshot.exists() ? streakSnapshot.val() : {
@@ -276,7 +277,25 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
+        // Check for shared quiz data
         if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isShared = urlParams.get('shared') === 'true';
+            
+            if (isShared) {
+                const sharedData = sessionStorage.getItem('sharedQuizData');
+                if (sharedData) {
+                    const { quiz: sharedQuiz, formValues: sharedFormValues } = JSON.parse(sharedData);
+                    setQuiz(sharedQuiz);
+                    setUserAnswers(new Array(sharedQuiz.length).fill(null));
+                    setTimeLeft(sharedFormValues.timeLimit * 60);
+                    setFormValues(sharedFormValues);
+                    setShowResults(false);
+                    sessionStorage.removeItem('sharedQuizData');
+                    return;
+                }
+            }
+            
             const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
             if (initialQuiz && initialFormValues && mockTestAnswers) {
                 setQuiz(initialQuiz);
@@ -400,6 +419,34 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setExplanations({});
 
     try {
+      // Check question bank first for mock tests and repeated topics
+      const { QuestionBank } = await import('@/lib/question-bank');
+      const isMockTest = values.topic.includes('Mock Test');
+      const hasEnoughInBank = await QuestionBank.hasEnoughQuestions(values.topic, values.difficulty, values.numberOfQuestions);
+      
+      if ((isMockTest || hasEnoughInBank) && values.numberOfQuestions <= 30) {
+        setGenerationProgress(50);
+        const bankQuestions = await QuestionBank.getQuestions(values.topic, values.difficulty, values.numberOfQuestions);
+        
+        if (bankQuestions.length >= Math.min(values.numberOfQuestions, 10)) {
+          clearInterval(interval);
+          setGenerationProgress(100);
+          
+          setTimeout(() => {
+            setQuiz(bankQuestions);
+            setUserAnswers(new Array(bankQuestions.length).fill(null));
+            setTimeLeft(values.timeLimit * 60);
+            setIsGenerating(false);
+            setFormValues(values);
+            
+            // Update usage count
+            QuestionBank.updateUsageCount(bankQuestions.map(q => q.id));
+          }, 500);
+          return;
+        }
+      }
+      
+      // Generate new quiz with AI
       let recentQuizHistory = [];
       try {
         recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
@@ -435,6 +482,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           await cacheQuiz(result.quiz, values.topic, values.difficulty);
         } catch (error) {
           console.error('Failed to cache quiz:', error);
+        }
+        
+        // Save questions to bank for future use
+        try {
+          const { QuestionBank } = await import('@/lib/question-bank');
+          await QuestionBank.saveQuestions(result.quiz, values.topic, values.difficulty, user?.uid);
+        } catch (error) {
+          console.error('Failed to save questions to bank:', error);
         }
       }, 500)
 

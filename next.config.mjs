@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
+  env: {
+    ADMIN_SECRET_CODE: process.env.ADMIN_SECRET_CODE,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -161,6 +161,40 @@ export function QuizAccessDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [quiz, setQuiz] = useState<SharedQuiz | null>(null);
   const { toast } = useToast();
+  
+  const startSharedQuiz = async (sharedQuiz: SharedQuiz) => {
+    try {
+      // Update quiz stats
+      await QuizSharingManager.updateQuizStats(sharedQuiz.id, 0);
+      
+      // Navigate to quiz page with shared quiz data
+      const quizData = {
+        quiz: sharedQuiz.questions,
+        formValues: {
+          topic: sharedQuiz.title,
+          difficulty: sharedQuiz.difficulty as any,
+          numberOfQuestions: sharedQuiz.questions.length,
+          questionTypes: ['Multiple Choice'],
+          questionStyles: ['Shared Quiz'],
+          timeLimit: Math.max(10, sharedQuiz.questions.length),
+          specificInstructions: sharedQuiz.description || ''
+        }
+      };
+      
+      // Store in sessionStorage for the quiz page
+      sessionStorage.setItem('sharedQuizData', JSON.stringify(quizData));
+      
+      // Navigate to quiz page
+      window.location.href = '/generate-quiz?shared=true';
+      
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Could not start quiz. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
 
   const handleAccess = async () => {
     if (!shareCode.trim()) return;
@@ -170,7 +204,6 @@ export function QuizAccessDialog() {
       const sharedQuiz = await QuizSharingManager.getQuizByShareCode(shareCode.toUpperCase());
       if (sharedQuiz) {
         setQuiz(sharedQuiz);
-        // Here you would navigate to take the quiz
         toast({
           title: 'Quiz Found!',
           description: `"${sharedQuiz.title}" by ${sharedQuiz.creatorName}`
@@ -196,9 +229,9 @@ export function QuizAccessDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Users className="mr-2 h-4 w-4" />
-          Access Shared Quiz
+        <Button variant="outline" className="h-20 flex-col gap-2">
+          <Users className="h-6 w-6" />
+          <span className="text-sm">Shared Quiz</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
@@ -249,7 +282,7 @@ export function QuizAccessDialog() {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-4">
+                <Button className="w-full mt-4" onClick={() => startSharedQuiz(quiz)}>
                   Start Quiz
                 </Button>
               </CardContent>

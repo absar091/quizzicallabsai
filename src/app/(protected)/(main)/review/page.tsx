@@ -30,8 +30,9 @@ export default function ReviewPage() {
     setIsLoading(true);
     try {
       // Load review cards from Firebase
-      const { database, ref, get } = await import('@/lib/firebase');
-      const cardsRef = ref(database, `users/${user.uid}/review_cards`);
+      const { db } = await import('@/lib/firebase');
+      const { ref, get } = await import('firebase/database');
+      const cardsRef = ref(db, `users/${user.uid}/review_cards`);
       const snapshot = await get(cardsRef);
       
       if (snapshot.exists()) {
@@ -55,8 +56,9 @@ export default function ReviewPage() {
     
     try {
       // Save updated card to Firebase
-      const { database, ref, set } = await import('@/lib/firebase');
-      const cardRef = ref(database, `users/${user.uid}/review_cards/${currentCard.id}`);
+      const { db } = await import('@/lib/firebase');
+      const { ref, set } = await import('firebase/database');
+      const cardRef = ref(db, `users/${user.uid}/review_cards/${currentCard.id}`);
       await set(cardRef, updatedCard);
     } catch (error) {
       console.error('Failed to save review card:', error);
