@@ -96,7 +96,7 @@ const generateQuizFromDocumentFlow = ai!.defineFlow(
       try {
         const model = getModel(input.isPro, attempt > 1);
         const prompt = createPrompt(input.isPro, attempt > 1);
-        const result = await prompt({ ...input, model });
+        const result = await prompt(input, { model });
         const output = result.output;
 
         if (!output) {

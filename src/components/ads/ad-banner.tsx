@@ -17,7 +17,7 @@ export function AdBanner({ position = 'bottom', className = '', showDuringGenera
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
 
-  if (!user || !shouldShowAds(user.plan) || !isVisible || !showDuringGeneration) {
+  if (!user || !shouldShowAds(user.plan) || !isVisible) {
     return null;
   }
 

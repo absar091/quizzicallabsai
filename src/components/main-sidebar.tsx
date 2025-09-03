@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { usePlan } from "@/hooks/usePlan";
 import { useState, useEffect } from "react";
 import { getQuizResults, getBookmarks } from "@/lib/indexed-db";
-import { SidebarAd } from "@/components/ads/ad-banner";
+
 
 const mainNav = [
   { href: "/dashboard", label: "Home", icon: House },
@@ -31,9 +31,10 @@ const mainNav = [
 
 type MainSidebarProps = {
   onNavigate?: () => void;
+  isCollapsed?: boolean;
 }
 
-export function MainSidebar({ onNavigate }: MainSidebarProps) {
+export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { plan } = usePlan();
@@ -65,11 +66,13 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
           href={href} 
           onClick={onNavigate}
           className={cn(
-            "flex items-center gap-4 rounded-lg px-4 py-3 text-muted-foreground transition-all hover:bg-secondary hover:text-primary",
+            "flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-all hover:bg-secondary hover:text-primary",
+            isCollapsed ? "gap-0 justify-center" : "gap-4",
             isActive && "bg-secondary text-primary font-semibold"
-      )}>
+      )}
+      title={isCollapsed ? label : undefined}>
         <Icon weight={isActive ? 'fill' : 'regular'} className="h-6 w-6" />
-        <span className="text-base">{label}</span>
+        {!isCollapsed && <span className="text-base">{label}</span>}
       </Link>
     )
   }
@@ -77,16 +80,16 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
   return (
     <div className="flex flex-col h-full bg-card">
        <div className="flex items-center p-4 h-16 lg:h-[64px]">
-          <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+          <Link href="/" className={cn("flex items-center font-semibold text-lg", isCollapsed ? "gap-0 justify-center" : "gap-2")}>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>
-              <span>Quizzicallabs</span>
+              {!isCollapsed && <span>Quizzicallabs</span>}
           </Link>
        </div>
        
        {/* User Info Section */}
-       {user && (
+       {user && !isCollapsed && (
          <div className="px-4 pb-4">
            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
              <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-sm font-bold text-primary-foreground">
@@ -112,7 +115,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
               <NavLink {...item} />
               {/* Show stats badges */}
               {item.href === '/bookmarks' && stats.bookmarks > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs flex items-center justify-center">
+                <Badge className="absolute top-2 right-2 h-5 w-5 p-0 text-xs flex items-center justify-center">
                   {stats.bookmarks > 99 ? '99+' : stats.bookmarks}
                 </Badge>
               )}
@@ -121,7 +124,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
         </nav>
         
         {/* Quick Stats */}
-        {user && stats.totalQuizzes > 0 && (
+        {user && stats.totalQuizzes > 0 && !isCollapsed && (
           <div className="px-4 mt-6">
             <div className="text-xs font-semibold text-muted-foreground mb-2 px-2">QUICK STATS</div>
             <div className="space-y-2">
@@ -140,8 +143,7 @@ export function MainSidebar({ onNavigate }: MainSidebarProps) {
         )}
       </div>
       
-      {/* Ad for free users */}
-      <SidebarAd />
+
     </div>
   )
 }

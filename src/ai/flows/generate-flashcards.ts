@@ -96,7 +96,7 @@ const generateFlashcardsFlow = ai!.defineFlow(
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const result = await prompt({ ...input, model });
+        const result = await prompt(input, { model });
         const output = result.output;
 
         if (!output || !output.flashcards) {

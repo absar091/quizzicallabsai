@@ -27,7 +27,8 @@ export const PLAN_LIMITS: Record<'free' | 'pro', PlanLimits> = {
 };
 
 export const getPlanLimits = (plan: string): PlanLimits => {
-  return PLAN_LIMITS[plan as 'free' | 'pro'] || PLAN_LIMITS.free;
+  const normalizedPlan = plan.toLowerCase() as 'free' | 'pro';
+  return PLAN_LIMITS[normalizedPlan] || PLAN_LIMITS.free;
 };
 
 export const canAddBookmark = (currentCount: number, plan: string): boolean => {

@@ -18,7 +18,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   const pathname = usePathname();
 
   // Pages where the main logo should be shown instead of a back button on mobile
-  const topLevelAppPages = ["/", "/genlab", "/exam-prep", "/profile"];
+  const topLevelAppPages = ["/dashboard", "/genlab", "/exam-prep", "/profile", "/bookmarks"];
   const isTopLevelAppPage = topLevelAppPages.includes(pathname);
   const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
   const isLandingPage = pathname === '/';
@@ -62,7 +62,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   // App Header for logged in users
   return (
     <>
-      {showAppBackButton ? (
+      {showAppBackButton && (
         <Button
           variant="ghost"
           size="icon"
@@ -72,19 +72,18 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-      ) : (
-        // Placeholder on mobile to keep layout consistent when there's no back button
-        // Or the hamburger button on desktop
-         <Button
-          variant="ghost"
-          size="icon"
-          className="hidden md:inline-flex"
-          onClick={onSidebarToggle}
-          aria-label="Toggle sidebar"
-        >
-          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
       )}
+      
+      {/* Desktop sidebar toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onSidebarToggle}
+        aria-label="Toggle sidebar"
+        className="hidden md:inline-flex"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
       <div className="w-full flex-1 flex items-center justify-between md:justify-end">
           <div className="md:hidden">
               {!showAppBackButton && <Link href="/" className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></Link>}

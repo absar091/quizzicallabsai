@@ -9,15 +9,17 @@ import { ThemeProvider } from "@/components/theme-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
 import InstallPwaPrompt from "./install-pwa-prompt";
-import { usePathname } from "next/navigation";
+
 import { useAuth } from "@/hooks/useAuth";
 import NotificationHandler from "./notification-handler";
 
-const HelpBot = dynamic(() => import("./help-bot"), { ssr: false });
+const HelpBot = dynamic(() => import("./help-bot"), { 
+  ssr: false,
+  loading: () => null
+});
 
 function AppContent({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
-    const pathname = usePathname();
 
     const showHelpBot = !loading; // Show for all users, logged in or not
 

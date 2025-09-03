@@ -14,6 +14,8 @@ import { generateHelpBotResponse } from "@/ai/flows/generate-help-bot-response";
 import { sanitizeHtml, validateInput, sanitizeLogInput } from "@/lib/security";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 
 type ConversationMessage = {
@@ -24,6 +26,12 @@ type ConversationMessage = {
 };
 
 export default function HelpBot() {
+  // Safety check to ensure AuthContext is available
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    return null;
+  }
+  
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);

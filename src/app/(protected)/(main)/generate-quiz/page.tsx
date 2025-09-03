@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -35,6 +35,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
 import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
 import { db } from "@/lib/firebase";
@@ -130,6 +131,12 @@ type GenerateQuizPageProps = {
 
 // --- Main Page Component ---
 export default function GenerateQuizPage({ initialQuiz, initialFormValues, initialComprehensionText }: GenerateQuizPageProps) {
+  // Safety check to ensure AuthContext is available
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    return null;
+  }
+  
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro } = usePlan();

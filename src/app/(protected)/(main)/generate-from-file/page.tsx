@@ -27,7 +27,8 @@ import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
 import GenerateQuizPage from "../generate-quiz/page";
 import type { Quiz } from "../generate-quiz/page";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, AuthContext } from "@/context/AuthContext";
+import { useContext } from "react";
 import { GenerationAd } from "@/components/ads/ad-banner";
 
 
@@ -63,6 +64,12 @@ const questionTypeOptions = [
 ]
 
 export default function GenerateFromFilePage() {
+  // Safety check to ensure AuthContext is available
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    return null;
+  }
+  
   const { toast } = useToast();
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
