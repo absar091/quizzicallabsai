@@ -11,6 +11,7 @@ import { BottomNavBar } from "@/components/bottom-nav-bar";
 import { MainSidebar } from "@/components/main-sidebar";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import ShareAppFAB from "@/components/share-app-fab";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -74,6 +75,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <div className="md:hidden">
           <BottomNavBar />
         </div>
+        
+        <ShareAppFAB />
       </div>
     </div>
   );

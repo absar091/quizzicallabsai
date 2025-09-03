@@ -147,6 +147,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro } = usePlan();
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const quizId = quiz ? `quiz_${Date.now()}` : '';
   const { saveProgress, loadProgress, clearProgress } = useProgressPersistence(quizId);
   const { cacheQuiz, isOffline } = useOfflineQuizzes();
@@ -154,8 +155,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const { speak, stop, isSupported: voiceSupported } = useVoiceQuestions();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [comprehensionText, setComprehensionText] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);

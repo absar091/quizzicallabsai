@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow for generating a study guide for a given topic.
  *
@@ -49,8 +47,12 @@ export type GenerateStudyGuideOutput = z.infer<typeof GenerateStudyGuideOutputSc
 export async function generateStudyGuide(
   input: GenerateStudyGuideInput
 ): Promise<GenerateStudyGuideOutput> {
-  // Check if AI is available
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
+    throw new Error('AI service is temporarily unavailable. Please try again later.');
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
   
@@ -60,7 +62,8 @@ export async function generateStudyGuide(
   }
   
   try {
-    return await generateStudyGuideFlow(input);
+    const flow = generateStudyGuideFlow(aiInstance);
+    return await flow(input);
   } catch (error: any) {
     console.error('Study guide generation failed:', error?.message || error);
     
@@ -98,7 +101,7 @@ The study guide MUST be personalized based on the user's learning preferences an
   Generate the personalized study guide now.`;
 
 
-const generateStudyGuideFlow = ai!.defineFlow(
+const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateStudyGuideFlow',
     inputSchema: GenerateStudyGuideInputSchema,
@@ -114,7 +117,7 @@ const generateStudyGuideFlow = ai!.defineFlow(
         // Use fallback model on retry
         const model = getModel(input.isPro, retryCount > 0);
         
-        const prompt = ai!.definePrompt({
+        const prompt = aiInstance.definePrompt({
           name: 'generateStudyGuidePrompt',
           input: {schema: GenerateStudyGuideInputSchema},
           output: {schema: GenerateStudyGuideOutputSchema},

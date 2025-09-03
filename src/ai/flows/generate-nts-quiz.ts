@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow for generating NTS/NAT quizzes.
  * It handles both subject-specific and reasoning-based questions.
@@ -37,11 +35,18 @@ export type GenerateNtsQuizOutput = z.infer<typeof GenerateNtsQuizOutputSchema>;
 export async function generateNtsQuiz(
   input: GenerateNtsQuizInput
 ): Promise<GenerateNtsQuizOutput> {
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
     throw new Error('AI service is not configured. Please contact support.');
   }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
   GenerateNtsQuizInputSchema.parse(input);
-  return generateNtsQuizFlow(input);
+  const flow = generateNtsQuizFlow(aiInstance);
+  return await flow(input);
 }
 
 const getPromptText = (isPro: boolean) => `You are an elite NTS/NAT question architect with comprehensive expertise in Pakistani educational standards and testing methodologies. Your mission is to create authentic, high-caliber questions that mirror the actual NTS/NAT examination standards.
@@ -118,7 +123,7 @@ Generate the quiz now.
 `;
 
 
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
+const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateNtsQuizPrompt',
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
@@ -126,7 +131,7 @@ const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.defin
 });
 
 
-const generateNtsQuizFlow = ai!.defineFlow(
+const generateNtsQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateNtsQuizFlow',
     inputSchema: GenerateNtsQuizInputSchema,
@@ -140,7 +145,7 @@ const generateNtsQuizFlow = ai!.defineFlow(
     while (retryCount <= maxRetries) {
       try {
         const model = getModel(input.isPro, retryCount > 0);
-        const prompt = createPrompt(input.isPro, retryCount > 0);
+        const prompt = createPrompt(aiInstance, input.isPro, retryCount > 0);
         const result = await prompt(input, { model });
         output = result.output;
         

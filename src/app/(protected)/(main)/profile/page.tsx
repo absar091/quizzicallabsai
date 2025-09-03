@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Question, FileText, Shield, Moon, Sun, SignOut, Bell, User, Student, Cake, ArrowRight, Phone, Envelope, ChatCircle, HelpCircle, BookOpen, Star, Trophy, ChartLineUp } from "@phosphor-icons/react";
-import { Sparkles, ExternalLink, Users, MessageSquare, FileQuestion, Headphones } from "lucide-react";
+import { Sparkles, ExternalLink, Users, MessageSquare, FileQuestion, Headphones, Share2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import Link from 'next/link';
@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { getQuizResults } from "@/lib/indexed-db";
+import ShareAppPopup from "@/components/share-app-popup";
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: Question, description: "Learn how to use all features" },
@@ -48,6 +49,7 @@ export default function ProfilePage() {
   const [redeemCode, setRedeemCode] = useState('');
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [stats, setStats] = useState({ totalQuizzes: 0, averageScore: 0, streak: 0 });
+  const [showSharePopup, setShowSharePopup] = useState(false);
 
   useEffect(() => {
     async function loadStats() {
@@ -372,6 +374,26 @@ export default function ProfilePage() {
           </Card>
         </div>
         
+        {/* Share App */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-muted-foreground px-4">SHARE WITH FRIENDS</h3>
+          <Card className="shadow-sm">
+            <CardContent className="p-4">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => setShowSharePopup(true)}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share Quizzicallabs AI
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Help your friends discover the ultimate AI study partner!
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        
         {/* Logout */}
         <div className="pt-4">
           <Button 
@@ -384,6 +406,11 @@ export default function ProfilePage() {
           </Button>
         </div>
       </div>
+      
+      <ShareAppPopup 
+        isOpen={showSharePopup} 
+        onClose={() => setShowSharePopup(false)} 
+      />
     </div>
   );
 }

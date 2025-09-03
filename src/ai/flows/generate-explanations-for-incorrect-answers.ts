@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview Generates AI explanations for incorrect quiz answers.
  *
@@ -30,12 +28,18 @@ export type GenerateExplanationsOutput = z.infer<typeof GenerateExplanationsOutp
 export async function generateExplanationsForIncorrectAnswers(
   input: GenerateExplanationsInput
 ): Promise<GenerateExplanationsOutput> {
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
   }
   
   try {
-    return await generateExplanationsFlow(input);
+    const flow = generateExplanationsFlow(aiInstance);
+    return await flow(input);
   } catch (error: any) {
     console.error('Explanation generation failed:', error?.message || error);
     return { explanation: 'Unable to generate explanation at this time. Please try again.' };
@@ -62,7 +66,7 @@ Generate an explanation that does the following, in this order:
 **Tone:** Be encouraging, clear, and educational. Avoid jargon where possible, or explain it if necessary. The output should be just the text of the explanation itself.`;
 
 // Dynamic prompt creation based on user plan
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
+const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateExplanationsPrompt',
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
@@ -70,7 +74,7 @@ const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.defin
 });
 
 
-const generateExplanationsFlow = ai!.defineFlow(
+const generateExplanationsFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateExplanationsFlow',
     inputSchema: GenerateExplanationsInputSchema,
@@ -80,7 +84,7 @@ const generateExplanationsFlow = ai!.defineFlow(
     let output;
     try {
         const model = getModel(input.isPro, false);
-        const prompt = createPrompt(input.isPro, false);
+        const prompt = createPrompt(aiInstance, input.isPro, false);
         const result = await prompt(input, { model });
         output = result.output;
     } catch (error: any) {

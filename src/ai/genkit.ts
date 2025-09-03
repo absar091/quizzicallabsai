@@ -2,31 +2,46 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
 // Check if we're in a server environment and API key is available
-const hasApiKey = process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('Dummy');
+const hasApiKey = typeof process !== 'undefined' && process.env?.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('Dummy');
 
-if (!hasApiKey) {
+if (!hasApiKey && typeof process !== 'undefined') {
   console.warn('GEMINI_API_KEY not found or invalid. AI features will be disabled.');
 }
 
-// Only initialize genkit if API key is available
-export const ai = hasApiKey ? genkit({
-  plugins: [
-    googleAI({
-      apiKey: process.env.GEMINI_API_KEY!,
-    }),
-  ],
-  enableTracingAndMetrics: false, // Disable for production
-}) : null;
+// Lazy initialization to prevent SSR issues
+let _ai: any = null;
+
+const initializeAI = () => {
+  if (!hasApiKey) return null;
+  if (_ai) return _ai;
+  
+  try {
+    _ai = genkit({
+      plugins: [
+        googleAI({
+          apiKey: process.env.GEMINI_API_KEY!,
+        }),
+      ],
+      enableTracingAndMetrics: false,
+    });
+    return _ai;
+  } catch (error) {
+    console.error('Failed to initialize AI:', error);
+    return null;
+  }
+};
+
+export const ai = typeof process !== 'undefined' ? initializeAI() : null;
 
 // Helper function to check if AI is available
 export const isAiAvailable = () => {
-  return ai !== null && hasApiKey;
+  if (typeof process === 'undefined') return false;
+  return hasApiKey && (ai !== null || initializeAI() !== null);
 };
 
 // Model selection based on user plan
 export const getModelForPlan = (isPro: boolean) => {
-  if (!hasApiKey) {
-    console.warn('AI not available, returning default model name');
+  if (typeof process === 'undefined' || !hasApiKey) {
     return isPro ? 'gemini-2.0-flash-exp' : 'gemini-1.5-flash';
   }
   return isPro ? 'gemini-2.0-flash-exp' : 'gemini-1.5-flash';
@@ -48,5 +63,6 @@ IMPORTANT: This is a PRO user request. Please provide:
 
 // Safe AI check for components
 export const canUseAI = () => {
-  return hasApiKey && ai !== null;
+  if (typeof process === 'undefined') return false;
+  return hasApiKey && (ai !== null || initializeAI() !== null);
 };

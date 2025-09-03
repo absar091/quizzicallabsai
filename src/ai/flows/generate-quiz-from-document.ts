@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview Generates a quiz from a document or image file.
  *
@@ -42,7 +40,12 @@ export type GenerateQuizFromDocumentOutput = z.infer<typeof GenerateQuizFromDocu
 export async function generateQuizFromDocument(
   input: GenerateQuizFromDocumentInput
 ): Promise<GenerateQuizFromDocumentOutput> {
- if (!isAiAvailable() || !ai) {
+ if (typeof process === 'undefined' || !isAiAvailable()) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     throw new Error('AI service is not configured. Please contact support.');
   }
   
@@ -57,7 +60,8 @@ export async function generateQuizFromDocument(
  throw new Error(`Invalid difficulty level: ${input.difficulty}. Must be easy, medium, hard, or master.`);
   }
 
- return generateQuizFromDocumentFlow(input);
+ const flow = generateQuizFromDocumentFlow(aiInstance);
+ return await flow(input);
 }
 
 const getPromptText = (isPro: boolean) => `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
@@ -74,14 +78,14 @@ ${isPro ? '**PRO USER - PREMIUM DOCUMENT ANALYSIS:**\r\n- Provide more sophistic
 
   Generate the quiz now. Your entire response must be based *only* on the provided document and must contain exactly {{{numberOfQuestions}}} questions.`;
 
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
+const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
     prompt: getPromptText(isPro),
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },
 });
 
-const generateQuizFromDocumentFlow = ai!.defineFlow(
+const generateQuizFromDocumentFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateQuizFromDocumentFlow',
     inputSchema: GenerateQuizFromDocumentInputSchema,
@@ -95,7 +99,7 @@ const generateQuizFromDocumentFlow = ai!.defineFlow(
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const model = getModel(input.isPro, attempt > 1);
-        const prompt = createPrompt(input.isPro, attempt > 1);
+        const prompt = createPrompt(aiInstance, input.isPro, attempt > 1);
         const result = await prompt(input, { model });
         const output = result.output;
 

@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview Professional exam paper generation with strict syllabus adherence
  * This is the core feature that generates formal exam papers following official syllabi
@@ -89,7 +87,12 @@ export type GenerateExamPaperOutput = z.infer<typeof GenerateExamPaperOutputSche
 export async function generateExamPaper(
   input: GenerateExamPaperInput
 ): Promise<GenerateExamPaperOutput> {
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
+    throw new Error('AI service is not configured. Please contact support.');
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     throw new Error('AI service is not configured. Please contact support.');
   }
   
@@ -103,7 +106,8 @@ export async function generateExamPaper(
     throw new Error(`Marks distribution doesn't match total marks. Calculated: ${calculatedMarks}, Expected: ${input.totalMarks}`);
   }
 
-  return generateExamPaperFlow(input);
+  const flow = generateExamPaperFlow(aiInstance);
+  return await flow(input);
 }
 
 const promptText = `You are a professional exam paper creator with expertise in Pakistani educational curricula. Your task is to generate a formal, high-quality exam paper that strictly follows the official syllabus and maintains academic standards.
@@ -168,7 +172,7 @@ const promptText = `You are a professional exam paper creator with expertise in 
 
 Generate a professional exam paper that meets these exact specifications and maintains the highest academic standards.`;
 
-const generateExamPaperFlow = ai!.defineFlow(
+const generateExamPaperFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateExamPaperFlow',
     inputSchema: GenerateExamPaperInputSchema,
@@ -177,7 +181,7 @@ const generateExamPaperFlow = ai!.defineFlow(
   async (input) => {
     const model = getModel(input.isPro);
     
-    const prompt = ai!.definePrompt({
+    const prompt = aiInstance.definePrompt({
       name: "generateExamPaperPrompt",
       prompt: promptText,
       input: { schema: GenerateExamPaperInputSchema },

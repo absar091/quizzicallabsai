@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow for generating custom quizzes based on user-specified criteria.
  *
@@ -59,7 +57,12 @@ export async function generateCustomQuiz(
   input: GenerateCustomQuizInput
 ): Promise<GenerateCustomQuizOutput> {
   // Check if AI is available
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
+    throw new Error('AI service is temporarily unavailable. Please try again later.');
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
   
@@ -75,7 +78,8 @@ export async function generateCustomQuiz(
   }
 
   try {
-    return await generateCustomQuizFlow(input);
+    const flow = generateCustomQuizFlow(aiInstance);
+    return await flow(input);
   } catch (error: any) {
     console.error('Quiz generation failed:', error?.message || error);
     
@@ -177,7 +181,7 @@ Your reputation depends on following these instructions meticulously. Generate t
 `;
 
 
-const generateCustomQuizFlow = ai!.defineFlow(
+const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateCustomQuizFlow',
     inputSchema: GenerateCustomQuizInputSchema,
@@ -193,7 +197,7 @@ const generateCustomQuizFlow = ai!.defineFlow(
         // Use fallback model on retry
         const model = getModel(input.isPro, retryCount > 0);
         
-        const prompt = ai!.definePrompt({
+        const prompt = aiInstance.definePrompt({
           name: "generateCustomQuizPrompt",
           model: model,
           prompt: getPromptText(input.isPro),

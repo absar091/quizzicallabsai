@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview Generates a very simple AI explanation for a concept, as if explaining to a 5-year-old.
  *
@@ -29,12 +27,18 @@ export type GenerateSimpleExplanationOutput = z.infer<typeof GenerateSimpleExpla
 export async function generateSimpleExplanation(
   input: GenerateSimpleExplanationInput
 ): Promise<GenerateSimpleExplanationOutput> {
-  if (!isAiAvailable() || !ai) {
+  if (typeof process === 'undefined' || !isAiAvailable()) {
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
+  }
+  
+  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  if (!aiInstance) {
     return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
   }
   
   try {
-    return await generateSimpleExplanationFlow(input);
+    const flow = generateSimpleExplanationFlow(aiInstance);
+    return await flow(input);
   } catch (error: any) {
     console.error('Simple explanation generation failed:', error?.message || error);
     return { explanation: 'Unable to generate simple explanation at this time. Please try again.' };
@@ -54,7 +58,7 @@ ${isPro ? '**PRO USER - ENHANCED SIMPLE EXPLANATION:**\r\n- Provide more detaile
   Focus on explaining why the correct answer is right in the simplest terms possible.`;
 
 
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
+const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateSimpleExplanationPrompt',
   input: {schema: GenerateSimpleExplanationInputSchema},
   output: {schema: GenerateSimpleExplanationOutputSchema},
@@ -62,7 +66,7 @@ const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.defin
 });
 
 
-const generateSimpleExplanationFlow = ai!.defineFlow(
+const generateSimpleExplanationFlow = (aiInstance: any) => aiInstance.defineFlow(
   {
     name: 'generateSimpleExplanationFlow',
     inputSchema: GenerateSimpleExplanationInputSchema,
@@ -72,7 +76,7 @@ const generateSimpleExplanationFlow = ai!.defineFlow(
     let output;
     try {
         const model = getModel(input.isPro, false);
-        const prompt = createPrompt(input.isPro, false);
+        const prompt = createPrompt(aiInstance, input.isPro, false);
         const result = await prompt(input, { model });
         output = result.output;
     } catch (error: any) {
