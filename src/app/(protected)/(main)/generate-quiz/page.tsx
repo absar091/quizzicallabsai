@@ -53,6 +53,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
 import { GenerationAd } from "@/components/ads/ad-banner";
+import { sanitizeString } from '@/lib/sanitize';
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -193,9 +194,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
 
   const handleSubmit = useCallback(async () => {
-    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
-        return;
+    if (typeof window !== 'undefined' && (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
+        try {
+            (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
+            return;
+        } catch (error) {
+            console.error('Mock test submit override failed:', error);
+            // Continue with normal submit if override fails
+        }
     }
 
     try {
@@ -235,14 +241,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
-        const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
-        if (initialQuiz && initialFormValues && mockTestAnswers) {
-            setQuiz(initialQuiz);
-            setFormValues(initialFormValues);
-            setUserAnswers(mockTestAnswers);
-            setShowResults(true);
-            delete (window as any).__MOCK_TEST_ANSWERS__;
-            return;
+        if (typeof window !== 'undefined') {
+            const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
+            if (initialQuiz && initialFormValues && mockTestAnswers) {
+                setQuiz(initialQuiz);
+                setFormValues(initialFormValues);
+                setUserAnswers(mockTestAnswers);
+                setShowResults(true);
+                delete (window as any).__MOCK_TEST_ANSWERS__;
+                return;
+            }
         }
 
         if (initialQuiz && initialFormValues) {
@@ -808,7 +816,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               >
                 <div className="space-y-6">
                     <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                        <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} />
+                        <RichContentRenderer content={sanitizeString(currentQ.question)} smiles={currentQ.smiles} />
                     </div>
                     <div className="w-full max-w-md mx-auto">
                       {currentQ.type === 'descriptive' ? (
@@ -832,7 +840,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                         <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="hidden peer" />
                                       </FormControl>
                                       <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all">
-                                          <RichContentRenderer content={answer} />
+                                          <RichContentRenderer content={sanitizeString(answer)} />
                                       </Label>
                                   </FormItem>
                               )

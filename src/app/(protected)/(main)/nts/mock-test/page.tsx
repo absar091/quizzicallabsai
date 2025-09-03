@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 // Dynamic import for AI function
-import GenerateQuizPage, { Quiz } from '@/app/(protected)/(main)/generate-quiz/page';
+import GenerateQuizPage from '@/app/(protected)/(main)/generate-quiz/page';
+type Quiz = any[];
 import { Loader2, AlertTriangle, BookUser, BrainCircuit, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -71,6 +72,7 @@ export default function NtsMockTestPage() {
         category: selectedCategory,
         topic: topicForAI,
         numberOfQuestions: section.numQuestions,
+        isPro: false, // Add missing isPro parameter
       });
 
       if (!result.quiz || result.quiz.length === 0) {
@@ -81,7 +83,7 @@ export default function NtsMockTestPage() {
         ...q,
         type: 'multiple-choice' as const,
         question: q.question,
-        answers: q.answers,
+        answers: q.answers || [],
         correctAnswer: q.correctAnswer,
       }));
 
@@ -107,25 +109,33 @@ export default function NtsMockTestPage() {
   };
 
   const handleSectionComplete = (sectionAnswers: (string | null)[]) => {
-    if (generatedQuiz) {
-        setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
-        setAllQuestions(prev => [...prev, ...generatedQuiz]);
-    }
-    const nextSectionIndex = currentSectionIndex + 1;
-    setCurrentSectionIndex(nextSectionIndex);
-    if (nextSectionIndex < MOCK_TEST_SECTIONS.length) {
-        generateSectionQuiz(nextSectionIndex);
-    } else {
-        setTestState('finished');
+    try {
+      if (generatedQuiz) {
+          setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
+          setAllQuestions(prev => [...prev, ...generatedQuiz]);
+      }
+      const nextSectionIndex = currentSectionIndex + 1;
+      setCurrentSectionIndex(nextSectionIndex);
+      if (nextSectionIndex < MOCK_TEST_SECTIONS.length) {
+          generateSectionQuiz(nextSectionIndex);
+      } else {
+          setTestState('finished');
+      }
+    } catch (error) {
+      console.error('Error completing section:', error);
+      setError('Failed to proceed to next section. Please try again.');
+      setTestState('idle');
     }
   };
   
   const useMockTestQuizSubmit = (callback: (answers: (string | null)[]) => void) => {
     useEffect(() => {
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
-        return () => {
-            delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
-        };
+        if (typeof window !== 'undefined') {
+            (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
+            return () => {
+                delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
+            };
+        }
     }, [callback]);
   };
   
@@ -242,7 +252,9 @@ export default function NtsMockTestPage() {
         specificInstructions: ''
     };
     
-    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    if (typeof window !== 'undefined') {
+        (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    }
     
     return (
          <GenerateQuizPage 

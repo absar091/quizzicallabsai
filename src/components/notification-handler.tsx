@@ -55,7 +55,14 @@ export default function NotificationHandler() {
 
           // Set up message listener
           const unsubscribe = onMessage(messaging, (payload) => {
-            console.log('Message received:', payload);
+            // Sanitize payload for logging
+            const sanitizedPayload = {
+              notification: {
+                title: payload.notification?.title?.replace(/[\r\n]/g, '') || 'No title',
+                body: payload.notification?.body?.replace(/[\r\n]/g, '') || 'No body'
+              }
+            };
+            console.log('Message received:', sanitizedPayload);
             toast({
               title: payload.notification?.title,
               description: payload.notification?.body,

@@ -19,7 +19,8 @@ import { motion } from 'framer-motion';
 type Quiz = GenerateCustomQuizOutput['quiz'];
 
 const MOCK_TEST_CONFIG = [
-  { subject: 'Biology', numQuestions: 81, time: 81, slug: 'biology' },
+  { subject: 'Biology Part 1', numQuestions: 41, time: 41, slug: 'biology-1' },
+  { subject: 'Biology Part 2', numQuestions: 40, time: 40, slug: 'biology-2' },
   { subject: 'Chemistry', numQuestions: 45, time: 45, slug: 'chemistry' },
   { subject: 'Physics', numQuestions: 36, time: 36, slug: 'physics' },
   { subject: 'English', numQuestions: 9, time: 9, slug: 'english' },
@@ -49,7 +50,7 @@ export default function MdcatMockTestPage() {
     setGeneratedQuiz(null);
     const section = MOCK_TEST_CONFIG[sectionIndex];
     
-    const topicForAI = `MDCAT Mock Test - ${section.subject}`;
+    const topicForAI = section.subject.includes('Biology') ? 'MDCAT Mock Test - Biology' : `MDCAT Mock Test - ${section.subject}`;
 
     const quizParams: GenerateCustomQuizInput = {
       topic: topicForAI,
@@ -91,27 +92,34 @@ export default function MdcatMockTestPage() {
   };
 
   const handleSectionComplete = (sectionAnswers: (string | null)[]) => {
-    if (generatedQuiz) {
-        setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
-        setAllQuestions(prev => [...prev, ...generatedQuiz]);
-    }
-    const nextSectionIndex = currentSectionIndex + 1;
-    setCurrentSectionIndex(nextSectionIndex);
-    if (nextSectionIndex < MOCK_TEST_CONFIG.length) {
-        generateSectionQuiz(nextSectionIndex);
-    } else {
-        setTestState('finished');
+    try {
+      if (generatedQuiz) {
+          setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
+          setAllQuestions(prev => [...prev, ...generatedQuiz]);
+      }
+      const nextSectionIndex = currentSectionIndex + 1;
+      setCurrentSectionIndex(nextSectionIndex);
+      if (nextSectionIndex < MOCK_TEST_CONFIG.length) {
+          generateSectionQuiz(nextSectionIndex);
+      } else {
+          setTestState('finished');
+      }
+    } catch (error) {
+      console.error('Error completing section:', error);
+      setError('Failed to proceed to next section. Please try again.');
+      setTestState('idle');
     }
   };
   
   // Custom hook to override the default submit behavior of GenerateQuizPage
   const useMockTestQuizSubmit = (callback: (answers: (string | null)[]) => void) => {
     useEffect(() => {
-        // This replaces the default implementation with our callback
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
-        return () => {
-            delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
-        };
+        if (typeof window !== 'undefined') {
+            (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
+            return () => {
+                delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
+            };
+        }
     }, [callback]);
   };
   
@@ -217,7 +225,9 @@ export default function MdcatMockTestPage() {
     };
     
     // We need to pass the user's answers to the results page.
-    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    if (typeof window !== 'undefined') {
+        (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    }
     
     return (
          <GenerateQuizPage 

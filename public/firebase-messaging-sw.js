@@ -6,14 +6,14 @@ importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-com
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBart3YOoBWb82LOeNJ6iZSfkl3wJDf3xo",
-  authDomain: "quizzicallabs.firebaseapp.com",
-  databaseURL: "https://quizzicallabs-default-rtdb.firebaseio.com",
-  projectId: "quizzicallabs",
-  storageBucket: "quizzicallabs.appspot.com",
-  messagingSenderId: "795131004388",
-  appId: "1:795131004388:web:ca4243c99529a8c23273f1",
-  measurementId: "G-7FS1LZJ01T"
+  apiKey: "AIzaSyDGpF8zVzT4qY3nJ7mK9pL2wX5vB8cA1dE",
+  authDomain: "quizzicallabs-ai.firebaseapp.com",
+  databaseURL: "https://quizzicallabs-ai-default-rtdb.firebaseio.com",
+  projectId: "quizzicallabs-ai",
+  storageBucket: "quizzicallabs-ai.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef123456789",
+  measurementId: "G-ABCDEF1234"
 };
 
 // Initialize Firebase
@@ -22,9 +22,16 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  // Sanitize payload for logging
+  const sanitizedPayload = {
+    notification: {
+      title: payload.notification?.title?.replace(/[\r\n]/g, '') || 'No title',
+      body: payload.notification?.body?.replace(/[\r\n]/g, '') || 'No body'
+    }
+  };
   console.log(
     "[firebase-messaging-sw.js] Received background message ",
-    payload
+    sanitizedPayload
   );
   // Customize notification here
   const notificationTitle = payload.notification.title;

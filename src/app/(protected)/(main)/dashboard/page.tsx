@@ -17,7 +17,7 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, T
 import { Badge } from "@/components/ui/badge";
 import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
-import { sanitizeText } from "@/lib/sanitize";
+import { sanitizeString } from "@/lib/sanitize";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -213,7 +213,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title="Home" description={`Welcome back, ${user?.displayName?.split(' ')[0]}! Here's your learning overview.`} className="mb-0"/>
+      <PageHeader title="Home" description={`Welcome back, ${sanitizeString(user?.displayName?.split(' ')[0] || 'Student')}! Here's your learning overview.`} className="mb-0"/>
       
       <motion.div 
         className="space-y-6"
@@ -246,7 +246,7 @@ export default function HomePage() {
           <motion.div variants={itemVariants}>
             <AiInsightsCard 
               recentActivity={last14Days} 
-              userName={user?.displayName?.split(' ')[0] || 'Student'}
+              userName={sanitizeString(user?.displayName?.split(' ')[0] || 'Student')}
               userPlan={user?.plan || 'Free'}
             />
           </motion.div>

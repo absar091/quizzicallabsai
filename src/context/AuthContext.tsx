@@ -92,7 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }, 100);
           }
         } catch (error) {
-          console.error('Error loading user data from Firebase:', error);
+          // Sanitize error before logging
+          const sanitizedError = error instanceof Error ? 
+            error.message.replace(/[\r\n]/g, ' ') : 'Unknown error';
+          console.error('Error loading user data from Firebase:', sanitizedError);
           // Fallback to basic user data if Firebase fails
           const appUser: User = {
             uid: firebaseUser.uid,

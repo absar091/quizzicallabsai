@@ -106,32 +106,39 @@ export default function EcatMockTestPage() {
   };
 
   const handleSectionComplete = (sectionAnswers: (string | null)[]) => {
-    if (generatedQuiz) {
-        setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
-        setAllQuestions(prev => [...prev, ...generatedQuiz]);
-    }
-    const nextSectionIndex = currentSectionIndex + 1;
-    setCurrentSectionIndex(nextSectionIndex);
+    try {
+      if (generatedQuiz) {
+          setAllUserAnswers(prev => [...prev, ...sectionAnswers]);
+          setAllQuestions(prev => [...prev, ...generatedQuiz]);
+      }
+      const nextSectionIndex = currentSectionIndex + 1;
+      setCurrentSectionIndex(nextSectionIndex);
 
-    const dynamicMockTestConfig = optionalSubject ? [
-        MOCK_TEST_CONFIG[0], MOCK_TEST_CONFIG[1], { subject: optionalSubject, numQuestions: 30, time: 30 }, MOCK_TEST_CONFIG[3]
-    ] : MOCK_TEST_CONFIG;
-    
-    if (nextSectionIndex < dynamicMockTestConfig.length) {
-        generateSectionQuiz(nextSectionIndex);
-    } else {
-        setTestState('finished');
+      const dynamicMockTestConfig = optionalSubject ? [
+          MOCK_TEST_CONFIG[0], MOCK_TEST_CONFIG[1], { subject: optionalSubject, numQuestions: 30, time: 30 }, MOCK_TEST_CONFIG[3]
+      ] : MOCK_TEST_CONFIG;
+      
+      if (nextSectionIndex < dynamicMockTestConfig.length) {
+          generateSectionQuiz(nextSectionIndex);
+      } else {
+          setTestState('finished');
+      }
+    } catch (error) {
+      console.error('Error completing section:', error);
+      setError('Failed to proceed to next section. Please try again.');
+      setTestState('idle');
     }
   };
   
   // Custom hook to override the default submit behavior of GenerateQuizPage
   const useMockTestQuizSubmit = (callback: (answers: (string | null)[]) => void) => {
     useEffect(() => {
-        // This replaces the default implementation with our callback
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
-        return () => {
-            delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
-        };
+        if (typeof window !== 'undefined') {
+            (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ = callback;
+            return () => {
+                delete (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__;
+            };
+        }
     }, [callback]);
   };
   
@@ -263,7 +270,9 @@ export default function EcatMockTestPage() {
     };
     
     // We need to pass the user's answers to the results page.
-    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    if (typeof window !== 'undefined') {
+        (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+    }
     
     return (
          <GenerateQuizPage 

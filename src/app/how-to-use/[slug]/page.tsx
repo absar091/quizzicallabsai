@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, UserCheck, BotMessageSquare, BookOpen, FileUp, FileText, ClipboardSignature, GraduationCap, MessageCircle, Mail, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { sanitizeSlug } from '@/lib/sanitize';
 
 type GuideContent = {
     title: string;
@@ -205,7 +206,8 @@ const guideData: Record<string, GuideContent> = {
 
 export default function GuideDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
-  const guide = guideData[params.slug];
+  const sanitizedSlug = sanitizeSlug(params.slug);
+  const guide = guideData[sanitizedSlug];
 
   if (!guide) {
     notFound();
