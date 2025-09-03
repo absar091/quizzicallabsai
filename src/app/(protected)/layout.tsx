@@ -23,29 +23,19 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     setIsSidebarOpen(false);
   };
 
-  // DEBUG: Log every render
-  console.log('🔍 PROTECTED LAYOUT RENDER:');
-  console.log('- loading:', loading);
-  console.log('- user:', user);
-  console.log('- user email:', user?.email);
-
   useEffect(() => {
-    console.log('🔄 PROTECTED LAYOUT EFFECT - loading:', loading, 'user:', !!user);
     if (!loading && !user) {
-      console.log('🔄 REDIRECTING TO LOGIN');
       router.replace("/login");
     }
   }, [user, loading, router]);
 
   // Show loading spinner only while actually loading
   if (loading) {
-    console.log('⏳ SHOWING LOADING SPINNER');
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Loading: {loading ? 'true' : 'false'}</p>
-          <p className="text-xs text-muted-foreground">User: {user ? 'exists' : 'null'}</p>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -53,11 +43,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   // If not loading but no user, redirect (handled by useEffect)
   if (!user) {
-    console.log('❌ NO USER - RETURNING NULL');
     return null;
   }
-
-  console.log('✅ RENDERING APP FOR USER:', user.email);
 
   return (
     <div className="min-h-screen w-full">
