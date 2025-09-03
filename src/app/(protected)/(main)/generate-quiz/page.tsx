@@ -432,7 +432,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           clearInterval(interval);
           setGenerationProgress(100);
           
-          setTimeout(() => {
+          setTimeout(async () => {
             setQuiz(bankQuestions);
             setUserAnswers(new Array(bankQuestions.length).fill(null));
             setTimeLeft(values.timeLimit * 60);
@@ -440,7 +440,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             setFormValues(values);
             
             // Update usage count
-            QuestionBank.updateUsageCount(bankQuestions.map(q => q.id));
+            await QuestionBank.updateUsageCount(bankQuestions.map(q => q.id));
           }, 500);
           return;
         }
@@ -466,7 +466,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       clearInterval(interval);
       setGenerationProgress(100);
       
-      setTimeout(() => {
+      setTimeout(async () => {
         if (!result.quiz || result.quiz.length === 0) {
            throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
         }
