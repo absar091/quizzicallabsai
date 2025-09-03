@@ -201,7 +201,7 @@ const generateCustomQuizFlow = ai!.defineFlow(
           output: { schema: GenerateCustomQuizOutputSchema },
         });
         
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
         
         if (output && output.quiz && output.quiz.length > 0) {

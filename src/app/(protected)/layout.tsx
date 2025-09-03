@@ -60,13 +60,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   console.log('✅ RENDERING APP FOR USER:', user.email);
 
   return (
-    <div className={cn("grid min-h-screen w-full", isSidebarOpen ? "md:grid-cols-[240px_1fr]" : "md:grid-cols-[60px_1fr]")}>
+    <div className="min-h-screen w-full">
       {/* Desktop Sidebar */}
-      <div className={cn("hidden border-r bg-card md:block transition-all duration-300", isSidebarOpen ? "w-[240px]" : "w-[60px]")}>
+      <div className={cn("hidden border-r bg-card md:block fixed left-0 top-0 h-full z-40 transition-all duration-300", isSidebarOpen ? "w-[240px]" : "w-[60px]")}>
         <MainSidebar onNavigate={handleSidebarNavigate} isCollapsed={!isSidebarOpen} />
       </div>
       
-      <div className="flex flex-col">
+      <div className={cn("flex flex-col transition-all duration-300", isSidebarOpen ? "md:ml-[240px]" : "md:ml-[60px]")}>
         <header className="flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 sticky top-0 z-30">
             <AppHeader onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
         </header>

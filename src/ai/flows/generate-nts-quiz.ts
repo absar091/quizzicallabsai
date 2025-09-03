@@ -120,7 +120,6 @@ Generate the quiz now.
 
 const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateNtsQuizPrompt',
-  model: getModel(isPro, useFallback),
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: getPromptText(isPro),
@@ -140,8 +139,9 @@ const generateNtsQuizFlow = ai!.defineFlow(
     
     while (retryCount <= maxRetries) {
       try {
+        const model = getModel(input.isPro, retryCount > 0);
         const prompt = createPrompt(input.isPro, retryCount > 0);
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
         
         if (output && output.quiz && output.quiz.length > 0) {

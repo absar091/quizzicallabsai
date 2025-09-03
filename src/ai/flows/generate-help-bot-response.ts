@@ -59,7 +59,6 @@ ${userPlan === 'Pro' ? '**PRO USER BENEFITS:**\r\n- Unlimited bookmarks\r\n- No 
 // Dynamic prompt creation based on user plan
 const createPrompt = (userPlan: string) => ai!.definePrompt({
     name: 'generateHelpBotResponsePrompt',
-    model: userPlan === 'Pro' ? 'googleai/gemini-2.5-pro' : 'googleai/gemini-1.5-flash',
     prompt: getPromptText(userPlan),
     input: { schema: GenerateHelpBotResponseInputSchema },
     output: { schema: GenerateHelpBotResponseOutputSchema },
@@ -79,8 +78,9 @@ const generateHelpBotResponseFlow = ai!.defineFlow(
         } catch (e) {
           throw new Error("Invalid faqContext: Must be a valid JSON string.");
         }
+        const model = input.userPlan === 'Pro' ? 'googleai/gemini-2.5-pro' : 'googleai/gemini-1.5-flash';
         const prompt = createPrompt(input.userPlan);
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
     } catch (error: any) {
         throw new Error(`Failed to generate help bot response: ${error.message}`);

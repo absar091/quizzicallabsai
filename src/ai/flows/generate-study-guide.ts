@@ -116,13 +116,12 @@ const generateStudyGuideFlow = ai!.defineFlow(
         
         const prompt = ai!.definePrompt({
           name: 'generateStudyGuidePrompt',
-          model: model,
           input: {schema: GenerateStudyGuideInputSchema},
           output: {schema: GenerateStudyGuideOutputSchema},
           prompt: getPromptText(input.isPro),
         });
         
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
         
         if (

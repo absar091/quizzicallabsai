@@ -2,7 +2,7 @@
 'use client';
 
 import 'katex/dist/katex.min.css';
-import Latex from 'react-katex';
+import { InlineMath, BlockMath } from 'react-katex';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -43,7 +43,9 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                 const isDisplay = part.startsWith('$$');
                 const latex = part.substring(isDisplay ? 2 : 1, part.length - (isDisplay ? 2 : 1));
                 try {
-                    return <Latex key={index} block={isDisplay}>{latex}</Latex>;
+                    return isDisplay ? 
+                        <BlockMath key={index}>{latex}</BlockMath> : 
+                        <InlineMath key={index}>{latex}</InlineMath>;
                 } catch (e) {
                     console.error("KaTeX parsing error:", e);
                     return <span key={index}>{part}</span>;

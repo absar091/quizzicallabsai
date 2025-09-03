@@ -64,7 +64,6 @@ Generate an explanation that does the following, in this order:
 // Dynamic prompt creation based on user plan
 const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateExplanationsPrompt',
-  model: getModel(isPro, useFallback),
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
   prompt: getPromptText(isPro),
@@ -80,8 +79,9 @@ const generateExplanationsFlow = ai!.defineFlow(
   async input => {
     let output;
     try {
+        const model = getModel(input.isPro, false);
         const prompt = createPrompt(input.isPro, false);
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
     } catch (error: any) {
         console.error('Gemini 1.5 Flash failed with unhandled error:', error);

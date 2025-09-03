@@ -56,7 +56,6 @@ ${isPro ? '**PRO USER - ENHANCED SIMPLE EXPLANATION:**\r\n- Provide more detaile
 
 const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
   name: 'generateSimpleExplanationPrompt',
-  model: getModel(isPro, useFallback),
   input: {schema: GenerateSimpleExplanationInputSchema},
   output: {schema: GenerateSimpleExplanationOutputSchema},
   prompt: getPromptText(isPro),
@@ -72,8 +71,9 @@ const generateSimpleExplanationFlow = ai!.defineFlow(
   async input => {
     let output;
     try {
+        const model = getModel(input.isPro, false);
         const prompt = createPrompt(input.isPro, false);
-        const result = await prompt(input);
+        const result = await prompt(input, { model });
         output = result.output;
     } catch (error: any) {
         console.error('Gemini 1.5 Flash failed with unhandled error:', error);
