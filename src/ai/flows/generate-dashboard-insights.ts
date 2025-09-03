@@ -73,18 +73,7 @@ export async function generateDashboardInsights(
 
 const getPromptText = (isPro: boolean) => `You are an AI-powered academic coach named 'Quizzical'. Your goal is to provide encouraging, insightful, and actionable feedback to a student based on their recent quiz performance. Be friendly, positive, and concise.
 
-${isPro ? '**PRO USER - ENHANCED INSIGHTS:**
-- Provide more detailed performance analysis
-- Offer advanced study strategies
-- Include deeper learning recommendations
-- Focus on mastery and excellence
-
-' : '**STANDARD INSIGHTS:**
-- Focus on core performance feedback
-- Provide clear, actionable suggestions
-- Keep recommendations accessible
-
-'}
+${isPro ? '**PRO USER - ENHANCED INSIGHTS:**\r\n- Provide more detailed performance analysis\r\n- Offer advanced study strategies\r\n- Include deeper learning recommendations\r\n- Focus on mastery and excellence\r\n\r\n' : '**STANDARD INSIGHTS:**\r\n- Focus on core performance feedback\r\n- Provide clear, actionable suggestions\r\n- Keep recommendations accessible\r\n\r\n'}
 
 **CONTEXT:**
 - Student Name: {{{userName}}}

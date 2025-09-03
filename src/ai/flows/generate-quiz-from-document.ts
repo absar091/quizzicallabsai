@@ -62,7 +62,7 @@ export async function generateQuizFromDocument(
 
 const getPromptText = (isPro: boolean) => `You are an expert quiz generator. Your task is to create a high-quality quiz based *exclusively* on the content of the provided document or image.
 
-${isPro ? '**PRO USER - PREMIUM DOCUMENT ANALYSIS:**\r\n- Provide more sophisticated question analysis\r\n- Create more nuanced and challenging questions\r\n- Include deeper comprehension and critical thinking questions\r\n- Generate more sophisticated distractors for MCQs\r\n- Focus on advanced document interpretation skills\r\n\r\n' : '**STANDARD DOCUMENT ANALYSIS:**\r\n- Focus on core document comprehension\r\n- Create clear, straightforward questions\r\n- Ensure accessibility and fundamental understanding\r\n\r\n'}`
+${isPro ? '**PRO USER - PREMIUM DOCUMENT ANALYSIS:**\r\n- Provide more sophisticated question analysis\r\n- Create more nuanced and challenging questions\r\n- Include deeper comprehension and critical thinking questions\r\n- Generate more sophisticated distractors for MCQs\r\n- Focus on advanced document interpretation skills\r\n\r\n' : '**STANDARD DOCUMENT ANALYSIS:**\r\n- Focus on core document comprehension\r\n- Create clear, straightforward questions\r\n- Ensure accessibility and fundamental understanding\r\n\r\n'}
 
   **Critical Instructions - Follow these rules without exception:**
   1.  **STRICTLY ADHERE TO THE DOCUMENT:** Analyze the provided file: {{media url=documentDataUri}}. You MUST generate exactly {{{numberOfQuestions}}} questions and answers using ONLY the information found within it.

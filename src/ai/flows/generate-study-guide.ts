@@ -77,19 +77,9 @@ export async function generateStudyGuide(
 
 const getPromptText = (isPro: boolean) => `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
 
-${isPro ? '**PRO USER - PREMIUM QUALITY:**
-- Provide more detailed explanations and advanced concepts
-- Include additional key concepts (7-10 instead of 5-7)
-- Create more sophisticated analogies
-- Generate more comprehensive quiz questions (5-6 instead of 3-4)
-- Focus on deeper understanding and critical thinking
+${isPro ? '**PRO USER - PREMIUM QUALITY:**\r\n- Provide more detailed explanations and advanced concepts\r\n- Include additional key concepts (7-10 instead of 5-7)\r\n- Create more sophisticated analogies\r\n- Generate more comprehensive quiz questions (5-6 instead of 3-4)\r\n- Focus on deeper understanding and critical thinking\r\n\r\n' : '**STANDARD USER:**\r\n- Focus on core concepts and fundamental understanding\r\n- Keep explanations clear and accessible\r\n- Provide essential knowledge for solid foundation\r\n\r\n'}
 
-' : '**STANDARD USER:**
-- Focus on core concepts and fundamental understanding
-- Keep explanations clear and accessible
-- Provide essential knowledge for solid foundation
-
-'}The study guide MUST be personalized based on the user's learning preferences and difficulties.
+The study guide MUST be personalized based on the user's learning preferences and difficulties.
 
   **Critical Instructions:**
   1.  **ACCURACY IS KEY:** All definitions, explanations, and facts must be 100% accurate and verified. Do not include speculative or incorrect information.

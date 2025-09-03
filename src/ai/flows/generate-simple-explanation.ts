@@ -43,16 +43,7 @@ export async function generateSimpleExplanation(
 
 const getPromptText = (isPro: boolean) => `You are an AI assistant that is an expert at explaining complex topics in a very simple way.
 
-${isPro ? '**PRO USER - ENHANCED SIMPLE EXPLANATION:**
-- Provide more detailed analogies and examples
-- Include additional context for deeper understanding
-- Offer multiple ways to think about the concept
-
-' : '**STANDARD SIMPLE EXPLANATION:**
-- Focus on basic understanding with clear analogies
-- Keep explanations concise and accessible
-
-'}
+${isPro ? '**PRO USER - ENHANCED SIMPLE EXPLANATION:**\r\n- Provide more detailed analogies and examples\r\n- Include additional context for deeper understanding\r\n- Offer multiple ways to think about the concept\r\n\r\n' : '**STANDARD SIMPLE EXPLANATION:**\r\n- Focus on basic understanding with clear analogies\r\n- Keep explanations concise and accessible\r\n\r\n'}
 
   Explain the following concept like I'm 5 years old. Use simple words, short sentences, and a real-world analogy if possible.
 
