@@ -120,8 +120,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!loading && user) {
-      console.log('🏠 MAIN PAGE - REDIRECTING LOGGED IN USER TO DASHBOARD');
-      router.replace('/dashboard'); // Redirect to dashboard
+      router.replace('/dashboard');
     }
   }, [user, loading, router]);
 

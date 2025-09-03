@@ -21,10 +21,9 @@ import { getQuizResults, getBookmarks } from "@/lib/indexed-db";
 
 
 const mainNav = [
-  { href: "/dashboard", label: "Home", icon: House },
+  { href: "/", label: "Home", icon: House },
   { href: "/genlab", label: "GenLab", icon: Flask },
   { href: "/exam-prep", label: "Exam Prep", icon: Exam },
-  { href: "/bookmarks", label: "Bookmarks", icon: Star },
   { href: "/profile", label: "Profile", icon: User },
 ];
 
@@ -38,19 +37,15 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { plan } = usePlan();
-  const [stats, setStats] = useState({ totalQuizzes: 0, bookmarks: 0 });
+  const [stats, setStats] = useState({ totalQuizzes: 0 });
 
   useEffect(() => {
     async function loadStats() {
       if (!user) return;
       try {
-        const [results, bookmarks] = await Promise.all([
-          getQuizResults(user.uid),
-          getBookmarks(user.uid)
-        ]);
+        const results = await getQuizResults(user.uid);
         setStats({ 
-          totalQuizzes: results.length, 
-          bookmarks: bookmarks.length 
+          totalQuizzes: results.length
         });
       } catch (error) {
         console.error('Error loading sidebar stats:', error);
@@ -113,12 +108,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
           {mainNav.map(item => (
             <div key={item.href} className="relative">
               <NavLink {...item} />
-              {/* Show stats badges */}
-              {item.href === '/bookmarks' && stats.bookmarks > 0 && (
-                <Badge className="absolute top-2 right-2 h-5 w-5 p-0 text-xs flex items-center justify-center">
-                  {stats.bookmarks > 99 ? '99+' : stats.bookmarks}
-                </Badge>
-              )}
+
             </div>
           ))}
         </nav>
@@ -132,12 +122,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
                 <Trophy className="h-3 w-3" />
                 <span>{stats.totalQuizzes} Quizzes Taken</span>
               </div>
-              {stats.bookmarks > 0 && (
-                <div className="flex items-center gap-2 px-2 py-1 text-xs text-muted-foreground">
-                  <Star className="h-3 w-3" />
-                  <span>{stats.bookmarks} Bookmarked</span>
-                </div>
-              )}
+
             </div>
           </div>
         )}

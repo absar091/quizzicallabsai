@@ -36,7 +36,18 @@ const nextConfig = {
         crypto: false,
         handlebars: false,
         'require-in-the-middle': false,
+        http2: false,
+        dns: false,
       };
+    }
+    
+    // Exclude problematic packages from client bundle
+    config.externals = config.externals || [];
+    if (!isServer) {
+      config.externals.push({
+        '@grpc/grpc-js': 'commonjs @grpc/grpc-js',
+        '@opentelemetry/sdk-node': 'commonjs @opentelemetry/sdk-node',
+      });
     }
     
     // Suppress specific warnings
