@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
 import { sanitizeString } from "@/lib/sanitize";
+import { StudyStreakWidget } from "@/components/study-streak-widget";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -253,18 +254,11 @@ export default function HomePage() {
         )}
 
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants}>
-            <Card className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Flame className="h-4 w-4 text-orange-500"/>
-                <span className="text-sm font-medium">Streak</span>
-              </div>
-              <p className="text-2xl font-bold">{streak}</p>
-              <p className="text-xs text-muted-foreground">day{streak !== 1 ? 's' : ''}</p>
-            </Card>
+          <motion.div variants={itemVariants} className="md:col-span-1">
+            <StudyStreakWidget />
           </motion.div>
           
           <motion.div variants={itemVariants}>

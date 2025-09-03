@@ -54,6 +54,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { sanitizeString } from '@/lib/sanitize';
+import { useProgressPersistence } from '@/hooks/useProgressPersistence';
+import { EnhancedLoading } from '@/components/enhanced-loading';
+import { StudyStreakManager, StudyStreak } from '@/lib/study-streaks';
+import { useOfflineQuizzes } from '@/lib/offline-support';
+import { useAccessibility, useVoiceQuestions } from '@/hooks/useAccessibility';
+import { QuizSharingDialog } from '@/components/quiz-sharing';
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -141,6 +147,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro } = usePlan();
+  const quizId = quiz ? `quiz_${Date.now()}` : '';
+  const { saveProgress, loadProgress, clearProgress } = useProgressPersistence(quizId);
+  const { cacheQuiz, isOffline } = useOfflineQuizzes();
+  const { announceToScreenReader, manageFocus } = useAccessibility();
+  const { speak, stop, isSupported: voiceSupported } = useVoiceQuestions();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   
@@ -206,6 +217,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
     try {
       setShowResults(true);
+      clearProgress(); // Clear progress when quiz is completed
+      
       if(quiz && formValues && user) {
           const { score, percentage } = calculateScore();
           const resultId = `${user.uid}-${Date.now()}`;
@@ -218,6 +231,28 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               percentage,
               date: new Date().toISOString(),
           };
+          
+          // Update study streak
+          try {
+            const { database, ref: dbRef, get, set } = await import('@/lib/firebase');
+            const streakRef = dbRef(database, `users/${user.uid}/study_streak`);
+            const streakSnapshot = await get(streakRef);
+            
+            const currentStreak: StudyStreak = streakSnapshot.exists() ? streakSnapshot.val() : {
+              userId: user.uid,
+              currentStreak: 0,
+              longestStreak: 0,
+              lastStudyDate: '',
+              totalStudyDays: 0,
+              streakMilestones: []
+            };
+            
+            const updatedStreak = StudyStreakManager.updateStreak(user.uid, currentStreak);
+            await set(streakRef, updatedStreak);
+          } catch (error) {
+            console.error('Error updating study streak:', error);
+          }
+          
           try {
             const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
             await set(resultRef, newResult);
@@ -233,7 +268,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     } catch (error) {
       console.error('Error in handleSubmit:', error);
     }
-  }, [quiz, userAnswers, formValues, user, calculateScore]);
+  }, [quiz, userAnswers, formValues, user, calculateScore, clearProgress]);
 
 
   useEffect(() => {
@@ -394,6 +429,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
         setFormValues(values);
+        
+        // Cache quiz for offline use
+        try {
+          await cacheQuiz(result.quiz, values.topic, values.difficulty);
+        } catch (error) {
+          console.error('Failed to cache quiz:', error);
+        }
       }, 500)
 
     } catch (error: any) {
@@ -422,11 +464,23 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     const newAnswers = [...userAnswers];
     newAnswers[currentQuestion] = answer;
     setUserAnswers(newAnswers);
+    
+    // Save progress in real-time
+    if (quiz && formValues) {
+      saveProgress({
+        answers: newAnswers,
+        currentQuestion,
+        timeSpent: (formValues.timeLimit * 60) - timeLeft
+      });
+    }
   };
   
   const handleNext = () => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      const nextQ = currentQuestion + 1;
+      setCurrentQuestion(nextQ);
+      announceToScreenReader(`Question ${nextQ + 1} of ${quiz?.length}`);
+      manageFocus('[data-question-content]');
     } else {
       handleSubmit();
     }
@@ -434,7 +488,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      const prevQ = currentQuestion - 1;
+      setCurrentQuestion(prevQ);
+      announceToScreenReader(`Question ${prevQ + 1} of ${quiz?.length}`);
+      manageFocus('[data-question-content]');
     }
   };
 
@@ -748,23 +805,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   if (isGenerating) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-        <div className="relative">
-            <BrainCircuit className="h-20 w-20 text-primary" />
-            <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
-            </motion.div>
-        </div>
-        <h2 className="text-2xl font-semibold mb-2 mt-6">Generating Your Quiz...</h2>
-        <p className="text-muted-foreground max-w-sm mb-6">Please wait while our AI crafts the perfect quiz for you.</p>
-        <div className="w-full max-w-sm">
-           <Progress value={generationProgress} />
-           <p className="text-sm mt-2 text-primary font-medium">{generationProgress}%</p>
-        </div>
+      <div>
+        <EnhancedLoading 
+          type="quiz" 
+          progress={generationProgress}
+        />
         <GenerationAd />
       </div>
     );
@@ -815,8 +860,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                   className="w-full"
               >
                 <div className="space-y-6">
-                    <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
-                        <RichContentRenderer content={sanitizeString(currentQ.question)} smiles={currentQ.smiles} />
+                    <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]" data-question-content>
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <RichContentRenderer content={sanitizeString(currentQ.question)} smiles={currentQ.smiles} />
+                          {voiceSupported && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => speak(currentQ.question)}
+                              className="ml-2"
+                              aria-label="Read question aloud"
+                            >
+                              🔊
+                            </Button>
+                          )}
+                        </div>
                     </div>
                     <div className="w-full max-w-md mx-auto">
                       {currentQ.type === 'descriptive' ? (
@@ -839,7 +897,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                       <FormControl>
                                         <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="hidden peer" />
                                       </FormControl>
-                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all">
+                                      <Label 
+                                        htmlFor={`q${currentQuestion}a${index}`} 
+                                        className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all"
+                                        data-option={index + 1}
+                                      >
                                           <RichContentRenderer content={sanitizeString(answer)} />
                                       </Label>
                                   </FormItem>
@@ -853,11 +915,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           </AnimatePresence>
             
           <div className="mt-8 flex justify-between w-full">
-            <Button onClick={handleBack} size="lg" variant="outline" disabled={currentQuestion === 0}>
+            <Button 
+              onClick={handleBack} 
+              size="lg" 
+              variant="outline" 
+              disabled={currentQuestion === 0}
+              data-action="previous"
+            >
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Back
             </Button>
-            <Button onClick={handleNext} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button 
+              onClick={handleNext} 
+              size="lg" 
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              data-action={currentQuestion === quiz.length - 1 ? "submit" : "next"}
+            >
                 {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
                 {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-5 w-5" />}
             </Button>
@@ -881,6 +954,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                          <div className="flex flex-wrap gap-2">
                             <Button variant="outline" onClick={downloadQuestions}><Download className="mr-2 h-4 w-4" /> Questions</Button>
                             <Button onClick={downloadResultCard}><Download className="mr-2 h-4 w-4" /> Result Card</Button>
+                            <QuizSharingDialog quiz={quiz} formValues={formValues} />
                          </div>
                     </div>
                 </CardHeader>
