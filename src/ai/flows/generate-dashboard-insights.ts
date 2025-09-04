@@ -1,6 +1,5 @@
 
-'use server';
-
+// Server-only flow: generate-dashboard-insights
 /**
  * @fileOverview Generates AI-powered insights and suggestions based on a user's quiz history.
  *

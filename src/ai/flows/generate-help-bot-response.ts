@@ -1,6 +1,5 @@
 
-'use server';
-
+// Server-only Genkit flow for help-bot response generation.
 /**
  * @fileOverview This file defines a Genkit flow for the AI Help Bot.
  *

@@ -1,6 +1,5 @@
 
-'use server';
-
+// Server-only flow: explain-image
 /**
  * @fileOverview This file defines a Genkit flow for explaining an image.
  *
