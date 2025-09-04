@@ -84,7 +84,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
           setUser(appUser);
-          
+
+          // Initialize cloud sync for cross-device data synchronization
+          try {
+            await syncUserData(firebaseUser.uid);
+            console.log('✅ CLOUD SYNC INITIALIZED FOR USER:', firebaseUser.uid);
+          } catch (error) {
+            console.error('Failed to initialize cloud sync:', error);
+          }
+
           // Redirect from auth pages
           if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
             console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
