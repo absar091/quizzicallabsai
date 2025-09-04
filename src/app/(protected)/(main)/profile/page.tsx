@@ -260,7 +260,7 @@ export default function ProfilePage() {
                   </CardDescription>
                 </div>
                 <Button asChild variant="outline">
-                  <Link href="/pricing">Manage <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                  <Link href="/billing">Manage <ArrowRight className="ml-2 h-4 w-4"/></Link>
                 </Button>
               </div>
             </CardHeader>

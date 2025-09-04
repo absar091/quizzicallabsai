@@ -244,7 +244,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent className="pt-0">
                 <Button asChild variant="default" size="sm">
-                  <Link href="/pricing">Upgrade Now <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                  <Link href="/billing">Upgrade Now <ArrowRight className="ml-2 h-4 w-4"/></Link>
                 </Button>
               </CardContent>
             </Card>
