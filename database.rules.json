@@ -26,5 +26,29 @@
         ".write": "auth != null && auth.uid == $uid"
       }
     }
+    ,
+    "sharedQuizzes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "shared_quizzes": {
+      ".indexOn": ["shareCode"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "quiz_likes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "questionBank": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+    ,
+    "question_bank": {
+      ".indexOn": ["topic", "userId"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
   }
 }

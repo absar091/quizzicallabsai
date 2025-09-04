@@ -19,10 +19,10 @@ export class QuestionBank {
   // Save questions to Firebase in real-time
   static async saveQuestions(questions: any[], topic: string, difficulty: string, userId?: string) {
     try {
+      console.log('DEBUG: Saving questions. userId:', userId);
       const { db } = await import('@/lib/firebase');
       const { ref, push } = await import('firebase/database');
       const bankRef = ref(db, 'question_bank');
-      
       const bankItems: QuestionBankItem[] = questions.map(q => ({
         id: `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
         question: q.question,
@@ -44,7 +44,7 @@ export class QuestionBank {
         await push(bankRef, item);
       }
       
-      console.log(`Saved ${bankItems.length} questions to bank`);
+  console.log(`Saved ${bankItems ? bankItems.length : 0} questions to bank`);
     } catch (error) {
       console.error('Failed to save questions to bank:', error);
     }
@@ -53,6 +53,7 @@ export class QuestionBank {
   // Get questions from Firebase bank
   static async getQuestions(topic: string, difficulty: string, count: number): Promise<QuestionBankItem[]> {
     try {
+      console.log('DEBUG: Fetching questions. topic:', topic, 'difficulty:', difficulty, 'count:', count);
       const { db } = await import('@/lib/firebase');
       const { ref, query, orderByChild, equalTo, limitToFirst, get } = await import('firebase/database');
       const bankRef = ref(db, 'question_bank');
@@ -74,7 +75,7 @@ export class QuestionBank {
       }
       
       // If not enough, try subject match
-      if (questions.length < count) {
+  if (questions && questions.length < count) {
         const subject = this.extractSubject(topic);
         const subjectRef = ref(db, 'question_bank');
         questionsQuery = query(

@@ -90,7 +90,7 @@ export function StudyStreakWidget() {
             </div>
           </div>
 
-          {streak.streakMilestones.length > 0 && (
+          {streak.streakMilestones && streak.streakMilestones.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {streak.streakMilestones.map(milestone => (
                 <Badge key={milestone} variant="secondary" className="text-xs">

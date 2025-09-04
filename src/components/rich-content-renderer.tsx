@@ -19,6 +19,7 @@ type RichContentRendererProps = {
     smiles?: string | null;
     chartData?: { name: string; value: number }[] | null;
     placeholder?: PlaceholderData | null;
+    inline?: boolean;
 };
 
 const chartConfig = {
@@ -30,7 +31,7 @@ const chartConfig = {
 
 // This component will find and render LaTeX expressions within a string,
 // and also display SMILES chemical structures and charts.
-export default function RichContentRenderer({ content, smiles, chartData, placeholder }: RichContentRendererProps) {
+export default function RichContentRenderer({ content, smiles, chartData, placeholder, inline = false }: RichContentRendererProps) {
     if (!content && !smiles && !chartData && !placeholder) return null;
 
     // Regex to find all occurrences of $...$ (inline) and $$...$$ (display)
@@ -54,7 +55,7 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
             return <span key={index}>{part}</span>;
         });
     };
-    
+
     const getAspectRatioClass = (ratio: string) => {
         switch (ratio) {
             case '1:1': return 'aspect-square';
@@ -62,6 +63,10 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
             case '16:9': return 'aspect-video';
             default: return 'aspect-video';
         }
+    }
+
+    if (inline) {
+        return <span>{renderLatex(content)}</span>;
     }
 
     return (

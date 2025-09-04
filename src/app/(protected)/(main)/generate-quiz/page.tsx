@@ -1,5 +1,15 @@
-
 "use client";
+
+// Utility to decode HTML entities
+function decodeHtml(html: string): string {
+  if (!html) return '';
+  const txt = typeof document !== 'undefined' ? document.createElement('textarea') : null;
+  if (txt) {
+    txt.innerHTML = html;
+    return txt.value;
+  }
+  return html;
+}
 
 import { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
@@ -953,7 +963,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 <div className="space-y-6">
                     <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]" data-question-content>
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <RichContentRenderer content={sanitizeString(currentQ.question)} smiles={currentQ.smiles} />
+                          <RichContentRenderer content={decodeHtml(sanitizeString(currentQ.question))} smiles={currentQ.smiles} inline />
                           {voiceSupported && (
                             <Button
                               variant="ghost"
@@ -993,7 +1003,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                         className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all"
                                         data-option={index + 1}
                                       >
-                                          <RichContentRenderer content={sanitizeString(answer)} />
+                                          <RichContentRenderer content={decodeHtml(sanitizeString(answer))} inline />
                                       </Label>
                                   </FormItem>
                               )
@@ -1086,21 +1096,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                         </CardHeader>
                                         <CardContent className="p-4 sm:p-6 pt-2">
                                             <div className="text-sm mt-2 space-y-1">
-                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
-                                                    {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
-                                                    <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
-                                                 </p>
-                                                 {!isCorrect && q.correctAnswer && (
-                                                     <p className="text-primary flex items-start gap-2">
-                                                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
-                                                     </p>
+                                 <div className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
+                                   {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
+                                   <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
+                                 </div>
+                                 {!isCorrect && q.correctAnswer && (
+                                    <div className="text-primary flex items-start gap-2">
+                                      <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                      <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
+                                    </div>
                                                  )}
-                                                 {q.type === 'descriptive' && !q.correctAnswer && (
-                                                    <p className="flex items-start gap-2 text-muted-foreground">
-                                                         <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
-                                                         <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
-                                                    </p>
+                      {q.type === 'descriptive' && !q.correctAnswer && (
+                      <div className="flex items-start gap-2 text-muted-foreground">
+                        <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
+                      </div>
                                                  )}
                                             </div>
                                             
