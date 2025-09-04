@@ -161,20 +161,112 @@ class CloudSyncManager {
     const resolutions: Record<string, any> = {};
 
     for (const conflict of conflicts) {
-      // Auto-resolve based on timestamp (newer wins)
-      if (conflict.lastModified.local > conflict.lastModified.remote) {
-        resolutions[conflict.field] = conflict.localValue;
-      } else if (conflict.lastModified.remote > conflict.lastModified.local) {
-        resolutions[conflict.field] = conflict.remoteValue;
-        await this.updateLocalData({ [conflict.field]: conflict.remoteValue });
-      } else {
-        // Same timestamp, merge data
-        resolutions[conflict.field] = await this.mergeData(conflict.localValue, conflict.remoteValue);
+      const resolution = await this.resolveConflict(conflict);
+      resolutions[conflict.field] = resolution.resolvedData;
+
+      if (resolution.updateLocal) {
+        await this.updateLocalData({ [conflict.field]: resolution.resolvedData });
       }
     }
 
     // Update remote with resolved data
     await this.updateRemoteData(resolutions);
+  }
+
+  private async resolveConflict(conflict: SyncConflict): Promise<{
+    resolvedData: any;
+    updateLocal: boolean;
+  }> {
+    const { field, localValue, remoteValue, lastModified } = conflict;
+
+    // Strategy 1: Timestamp-based resolution (newer wins)
+    if (lastModified.local > lastModified.remote) {
+      return { resolvedData: localValue, updateLocal: false };
+    } else if (lastModified.remote > lastModified.local) {
+      return { resolvedData: remoteValue, updateLocal: true };
+    }
+
+    // Strategy 2: Field-specific merging
+    switch (field) {
+      case 'quizResults':
+        return this.resolveQuizResultsConflict(localValue, remoteValue);
+      case 'bookmarks':
+        return this.resolveBookmarksConflict(localValue, remoteValue);
+      case 'studyStreaks':
+        return this.resolveStudyStreaksConflict(localValue, remoteValue);
+      case 'studyTime':
+        return this.resolveStudyTimeConflict(localValue, remoteValue);
+      default:
+        // Strategy 3: Default merge (remote wins for most cases)
+        return { resolvedData: remoteValue, updateLocal: true };
+    }
+  }
+
+  private resolveQuizResultsConflict(localResults: any[], remoteResults: any[]): Promise<{
+    resolvedData: any;
+    updateLocal: boolean;
+  }> {
+    // Merge quiz results by combining unique entries
+    const merged = [...localResults];
+    const existingIds = new Set(merged.map(r => r.id));
+
+    for (const remoteResult of remoteResults) {
+      if (!existingIds.has(remoteResult.id)) {
+        merged.push(remoteResult);
+      } else {
+        // If same quiz taken multiple times, keep the better score
+        const existingIndex = merged.findIndex(r => r.id === remoteResult.id);
+        if (existingIndex !== -1) {
+          const existing = merged[existingIndex];
+          if (remoteResult.percentage > existing.percentage) {
+            merged[existingIndex] = remoteResult;
+          }
+        }
+      }
+    }
+
+    return Promise.resolve({ resolvedData: merged, updateLocal: false });
+  }
+
+  private resolveBookmarksConflict(localBookmarks: any[], remoteBookmarks: any[]): Promise<{
+    resolvedData: any;
+    updateLocal: boolean;
+  }> {
+    // Combine unique bookmarks
+    const merged = [...localBookmarks];
+    const existingQuestions = new Set(merged.map(b => b.question));
+
+    for (const remoteBookmark of remoteBookmarks) {
+      if (!existingQuestions.has(remoteBookmark.question)) {
+        merged.push(remoteBookmark);
+      }
+    }
+
+    return Promise.resolve({ resolvedData: merged, updateLocal: false });
+  }
+
+  private resolveStudyStreaksConflict(localStreak: any, remoteStreak: any): Promise<{
+    resolvedData: any;
+    updateLocal: boolean;
+  }> {
+    // Keep the streak with higher current value
+    if (localStreak.currentStreak >= remoteStreak.currentStreak) {
+      return Promise.resolve({ resolvedData: localStreak, updateLocal: false });
+    } else {
+      return Promise.resolve({ resolvedData: remoteStreak, updateLocal: true });
+    }
+  }
+
+  private resolveStudyTimeConflict(localTime: number, remoteTime: number): Promise<{
+    resolvedData: any;
+    updateLocal: boolean;
+  }> {
+    // Take the maximum study time
+    const maxTime = Math.max(localTime, remoteTime);
+    return Promise.resolve({
+      resolvedData: maxTime,
+      updateLocal: maxTime === remoteTime
+    });
   }
 
   private async mergeData(localData: any, remoteData: any): Promise<any> {
