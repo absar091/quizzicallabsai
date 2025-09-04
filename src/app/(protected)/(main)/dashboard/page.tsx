@@ -174,6 +174,23 @@ export default function HomePage() {
     if (user) loadData();
   }, [user]);
 
+  // Listen for cloud sync updates
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = onCloudSyncUpdate((data) => {
+      // Update local data when cloud sync occurs
+      if (data.quizResults) {
+        setRecentActivity(data.quizResults);
+      }
+      if (data.bookmarks) {
+        setBookmarksCount(data.bookmarks.length);
+      }
+    });
+
+    return unsubscribe;
+  }, [user]);
+
   const last14Days = recentActivity.filter(activity => {
     const resultDate = new Date(activity.date);
     const fourteenDaysAgo = new Date();
