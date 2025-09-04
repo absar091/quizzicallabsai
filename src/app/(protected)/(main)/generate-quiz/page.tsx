@@ -491,8 +491,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              topic,
-              difficulty,
+              topic: values.topic,
+              difficulty: values.difficulty,
               numberOfQuestions: count,
               userId,
               ...values
@@ -506,7 +506,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             throw new Error(result.error);
           }
           questions = result.quiz;
-          await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
+          await QuestionBank.saveQuestions(questions, values.topic, values.difficulty, userId);
         }
         await push(historyRef, {
           topic,
