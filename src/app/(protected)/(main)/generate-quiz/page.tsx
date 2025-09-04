@@ -539,7 +539,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         } catch (error) {
           console.error('Failed to save questions to bank:', error);
         }
-      }, 500)
+      }, 500);
 
     } catch (error: any) {
         clearInterval(interval);
