@@ -576,14 +576,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
-      const { generateExplanationsForIncorrectAnswers } = await import('@/ai/flows/generate-explanations-for-incorrect-answers');
-      const result = await generateExplanationsForIncorrectAnswers({
-        question: question.question,
-        studentAnswer: userAnswers[questionIndex] || "",
-        correctAnswer: question.correctAnswer || "N/A",
-        topic: formValues.topic,
-        isPro: user?.plan === 'Pro',
+      const response = await fetch('/api/ai/explanation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: question.question,
+          studentAnswer: userAnswers[questionIndex] || "",
+          correctAnswer: question.correctAnswer || "N/A",
+          topic: formValues.topic,
+          isPro: user?.plan === 'Pro',
+        })
       });
+      
+      if (!response.ok) throw new Error('Failed to generate explanation');
+      const result = await response.json();
+      
       setExplanations((prev) => ({
         ...prev,
         [questionIndex]: { ...prev[questionIndex], isLoading: false, explanation: result.explanation },
@@ -611,13 +618,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
     
     try {
-        const { generateSimpleExplanation } = await import('@/ai/flows/generate-simple-explanation');
-        const result = await generateSimpleExplanation({
+        const response = await fetch('/api/ai/simple-explanation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             question: question.question,
             correctAnswer: question.correctAnswer || "N/A",
             topic: formValues.topic,
             isPro: user?.plan === 'Pro',
+          })
         });
+        
+        if (!response.ok) throw new Error('Failed to generate simple explanation');
+        const result = await response.json();
+        
         setExplanations((prev) => ({
             ...prev,
             [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: result.explanation },
@@ -650,16 +664,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setGeneratedFlashcards(null);
 
     try {
-        const flashcardInput = {
+        const response = await fetch('/api/ai/flashcards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             topic: formValues.topic,
             incorrectQuestions: incorrectQuestions.map(q => ({
                 question: q.question,
                 userAnswer: q.userAnswer || null,
                 correctAnswer: q.correctAnswer || '',
             }))
-        };
-        const { generateFlashcards } = await import('@/ai/flows/generate-flashcards');
-        const result = await generateFlashcards(flashcardInput);
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to generate flashcards');
+        const result = await response.json();
+        
         if (result.flashcards.length === 0) {
             toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
         } else {

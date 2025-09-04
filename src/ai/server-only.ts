@@ -35,3 +35,8 @@ export async function generateNtsQuizServer(input: any) {
   const { generateNtsQuiz } = await import('./flows/generate-nts-quiz');
   return generateNtsQuiz(input);
 }
+
+export async function generateFlashcardsServer(input: any) {
+  const { generateFlashcards } = await import('./flows/generate-flashcards');
+  return generateFlashcards(input);
+}
