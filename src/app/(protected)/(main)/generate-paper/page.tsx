@@ -74,6 +74,7 @@ const questionTypeOptions = [
 export default function GeneratePaperPage() {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [quizVariants, setQuizVariants] = useState<QuizVariant[] | null>(null);
   const [formValues, setFormValues] = useState<PaperFormValues | null>(null);
