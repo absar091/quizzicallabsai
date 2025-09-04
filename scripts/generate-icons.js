@@ -1,7 +1,6 @@
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-const pngToIco = require('png-to-ico');
 
 const input = path.join(__dirname, '..', 'public', 'favicon.svg');
 const out = path.join(__dirname, '..', 'public');
@@ -18,12 +17,13 @@ async function generate() {
     const buf192 = await sharp(input).resize(192, 192).png().toBuffer();
     const buf512 = await sharp(input).resize(512, 512).png().toBuffer();
 
-    fs.writeFileSync(path.join(out, 'favicon-32x32.png'), buf32);
-    fs.writeFileSync(path.join(out, 'icon-192.png'), buf192);
-    fs.writeFileSync(path.join(out, 'icon-512.png'), buf512);
+  fs.writeFileSync(path.join(out, 'favicon-32x32.png'), buf32);
+  fs.writeFileSync(path.join(out, 'icon-192.png'), buf192);
+  fs.writeFileSync(path.join(out, 'icon-512.png'), buf512);
 
-    const icoBuffer = await pngToIco([buf16, buf32]);
-    fs.writeFileSync(path.join(out, 'favicon.ico'), icoBuffer);
+  // Note: ICO generation was removed to avoid a devDependency that is unavailable
+  // in some environments (e.g., Vercel). If you need a favicon.ico, generate it
+  // locally using an ICO tool or convert the PNGs with an external utility.
 
     console.log('Icons generated successfully in', out);
   } catch (err) {
