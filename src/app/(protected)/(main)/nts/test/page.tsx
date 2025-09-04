@@ -46,17 +46,16 @@ function NtsTestFlow() {
             const result = await response.json();
             
             if (result.error) throw new Error(result.error);
-            const result = await generateNtsQuiz({
+            const aiResult = await generateNtsQuiz({
                 category: category,
                 topic: topicForAI,
                 numberOfQuestions: numQuestions,
             });
-             if (!result.quiz || result.quiz.length === 0) {
+            if (!aiResult.quiz || aiResult.quiz.length === 0) {
                 throw new Error("The AI returned an empty quiz. Please try again.");
             }
-            
             // The output of generateNtsQuiz is slightly different, so we format it for GenerateQuizPage
-            const formattedQuiz = result.quiz.map(q => ({
+            const formattedQuiz = aiResult.quiz.map(q => ({
                 question: q.question,
                 answers: q.answers,
                 correctAnswer: q.correctAnswer,
