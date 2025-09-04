@@ -1,6 +1,29 @@
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import type { QuizFormValues, Quiz } from '@/app/(protected)/generate-quiz/page';
+import { cloudSync } from './cloud-sync';
+
+// Define types locally to avoid import issues
+export interface QuizFormValues {
+  topic: string;
+  numberOfQuestions: number;
+  difficulty: string;
+  quizType: string;
+  includeComprehension?: boolean;
+  comprehensionText?: string;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation?: string;
+}
+
+export interface Quiz {
+  questions: QuizQuestion[];
+  topic: string;
+  difficulty: string;
+}
 
 const DB_NAME = 'QuizzicallabsDB';
 const DB_VERSION = 2; // Version updated to handle new quizState structure
@@ -87,6 +110,13 @@ function getDb(): Promise<IDBPDatabase<QuizzicalDB>> {
 export async function saveQuizResult(result: QuizResult): Promise<void> {
   const db = await getDb();
   await db.put('quizResults', result);
+
+  // Sync with cloud
+  try {
+    await cloudSync.syncData('quizResults', await getQuizResults(result.userId), false);
+  } catch (error) {
+    console.warn('Failed to sync quiz result to cloud:', error);
+  }
 }
 
 export async function getQuizResults(userId: string): Promise<QuizResult[]> {
@@ -99,7 +129,7 @@ export async function getQuizResults(userId: string): Promise<QuizResult[]> {
 
 export async function saveBookmark(bookmark: BookmarkedQuestion, userPlan: string = 'Free'): Promise<void> {
   const db = await getDb();
-  
+
   // Check bookmark limit for free users
   if (userPlan === 'Free') {
     const existingBookmarks = await getBookmarks(bookmark.userId);
@@ -107,13 +137,27 @@ export async function saveBookmark(bookmark: BookmarkedQuestion, userPlan: strin
       throw new Error('Free users can only bookmark up to 50 questions. Upgrade to Pro for unlimited bookmarks.');
     }
   }
-  
+
   await db.put('bookmarks', bookmark);
+
+  // Sync with cloud
+  try {
+    await cloudSync.syncData('bookmarks', await getBookmarks(bookmark.userId), false);
+  } catch (error) {
+    console.warn('Failed to sync bookmark to cloud:', error);
+  }
 }
 
 export async function deleteBookmark(userId: string, question: string): Promise<void> {
   const db = await getDb();
   await db.delete('bookmarks', [userId, question]);
+
+  // Sync with cloud
+  try {
+    await cloudSync.syncData('bookmarks', await getBookmarks(userId), false);
+  } catch (error) {
+    console.warn('Failed to sync bookmark deletion to cloud:', error);
+  }
 }
 
 export async function getBookmarks(userId: string): Promise<BookmarkedQuestion[]> {
