@@ -93,6 +93,7 @@ export function Footer() {
                         <nav className="flex flex-col gap-3 text-sm">
                             <Link href="/about-us" className="text-muted-foreground hover:text-primary">About Us</Link>
                             <Link href="/how-to-use/contact-support" className="text-muted-foreground hover:text-primary">Contact</Link>
+                            <Link href="/pricing" className="text-muted-foreground hover:text-primary">Pricing</Link>
                             <Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
                             <Link href="/terms-of-use" className="text-muted-foreground hover:text-primary">Terms of Use</Link>
                             <Link href="/cookies" className="text-muted-foreground hover:text-primary">Cookie Policy</Link>

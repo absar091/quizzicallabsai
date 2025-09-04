@@ -49,6 +49,11 @@ export function UserNav() {
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/pricing">
+                <span>Pricing</span>
+              </Link>
+            </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

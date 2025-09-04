@@ -1,31 +1,35 @@
+const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const pngToIco = require('png-to-ico');
 
-// Create a simple colored PNG
-function createMinimalPNG(width, height) {
-  // Create a simple 1x1 blue PNG and scale it
-  const pngData = Buffer.from([
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
-    0x00, 0x00, 0x00, 0x0D, // IHDR length
-    0x49, 0x48, 0x44, 0x52, // IHDR
-    0x00, 0x00, 0x00, 0x01, // Width: 1
-    0x00, 0x00, 0x00, 0x01, // Height: 1
-    0x08, 0x02, 0x00, 0x00, 0x00, // 8-bit RGB
-    0x90, 0x77, 0x53, 0xDE, // CRC
-    0x00, 0x00, 0x00, 0x0C, // IDAT length
-    0x49, 0x44, 0x41, 0x54, // IDAT
-    0x08, 0x99, 0x01, 0x01, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, // Blue pixel data
-    0x02, 0x00, 0x01, // CRC
-    0x00, 0x00, 0x00, 0x00, // IEND length
-    0x49, 0x45, 0x4E, 0x44, // IEND
-    0xAE, 0x42, 0x60, 0x82  // CRC
-  ]);
-  
-  return pngData;
+const input = path.join(__dirname, '..', 'public', 'favicon.svg');
+const out = path.join(__dirname, '..', 'public');
+
+if (!fs.existsSync(input)) {
+  console.error('Input SVG not found:', input);
+  process.exit(1);
 }
 
-const publicDir = path.join(__dirname, '..', 'public');
-fs.writeFileSync(path.join(publicDir, 'icon-192.png'), createMinimalPNG(192, 192));
-fs.writeFileSync(path.join(publicDir, 'icon-512.png'), createMinimalPNG(512, 512));
+async function generate() {
+  try {
+    const buf32 = await sharp(input).resize(32, 32).png().toBuffer();
+    const buf16 = await sharp(input).resize(16, 16).png().toBuffer();
+    const buf192 = await sharp(input).resize(192, 192).png().toBuffer();
+    const buf512 = await sharp(input).resize(512, 512).png().toBuffer();
 
-console.log('PNG icons created successfully!');
+    fs.writeFileSync(path.join(out, 'favicon-32x32.png'), buf32);
+    fs.writeFileSync(path.join(out, 'icon-192.png'), buf192);
+    fs.writeFileSync(path.join(out, 'icon-512.png'), buf512);
+
+    const icoBuffer = await pngToIco([buf16, buf32]);
+    fs.writeFileSync(path.join(out, 'favicon.ico'), icoBuffer);
+
+    console.log('Icons generated successfully in', out);
+  } catch (err) {
+    console.error('Icon generation failed:', err);
+    process.exit(1);
+  }
+}
+
+generate();

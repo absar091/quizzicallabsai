@@ -411,9 +411,9 @@ export default function Home() {
                                 </ul>
                             </CardContent>
                             <CardContent className="relative z-10 pt-0">
-                                <Button asChild className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg">
-                                    <Link href="/signup">Upgrade to Pro</Link>
-                                </Button>
+                  <Button asChild className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg">
+                  <Link href="/pricing">Upgrade to Pro</Link>
+                </Button>
                             </CardContent>
                             <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-2xl opacity-50" />
                         </Card>

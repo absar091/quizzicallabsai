@@ -20,8 +20,8 @@ export default function TermsOfUsePage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">2. Use of AI-Generated Content</h2>
-            <p>Our Service uses artificial intelligence to generate content, including quizzes, study guides, and explanations ("AI Content"). You acknowledge that AI Content is probabilistic and may contain inaccuracies, errors, or omissions. It is provided for educational and informational purposes only and is not a substitute for professional academic instruction or verified educational materials.</p>
-            <p>QuizzicalLabs™ does not guarantee the accuracy, completeness, or reliability of any AI Content. You are solely responsible for verifying the information before relying on it for academic, professional, or other critical purposes. You agree to use the AI Content at your own risk. Please see our <Link href="/disclaimer" className="text-primary hover:underline">Disclaimer</Link> for more information.</p>
+            <p>Our Service uses AI to generate content ("AI Content"), including quizzes and study guides. AI Content may contain inaccuracies, omissions, or biases. It is provided for educational use only and should not replace professional academic materials or verified sources.</p>
+            <p>You are responsible for verifying any AI Content before using it for academic or professional purposes. Please see our <Link href="/disclaimer" className="text-primary hover:underline">Disclaimer</Link> for additional guidance regarding AI limitations and risks.</p>
           </div>
           
            <div className="space-y-2">
@@ -42,8 +42,8 @@ export default function TermsOfUsePage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">5. Termination</h2>
-            <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.</p>
+            <h2 className="text-xl font-semibold text-foreground">5. Fees, Billing & Termination</h2>
+            <p>Some features of the Service are provided on a paid subscription basis ("Pro"). Subscription fees are billed in advance and are non-refundable except as required by law. You may cancel your subscription at any time. We reserve the right to suspend or terminate accounts for violations of these Terms or for non-payment.</p>
           </div>
 
           <div className="space-y-2">

@@ -39,6 +39,7 @@ type GenerateCustomQuizOutput = any;
 type GenerateFlashcardsOutput = any;
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { ref, get, push, query, orderByChild, equalTo } from '@/lib/firebase';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
@@ -47,7 +48,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
-import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
+import { getDatabase, serverTimestamp, set } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { 
     getQuizState, 
@@ -409,15 +410,15 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setIsGenerating(true);
     setFormValues(values);
     setGenerationProgress(0);
-    
+
     const interval = setInterval(() => {
-        setGenerationProgress(prev => {
-            if (prev >= 95) {
-                clearInterval(interval);
-                return prev;
-            }
-            return prev + 5;
-        });
+      setGenerationProgress(prev => {
+        if (prev >= 95) {
+          clearInterval(interval);
+          return prev;
+        }
+        return prev + 5;
+      });
     }, 500);
 
     setQuiz(null);
@@ -428,117 +429,94 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setExplanations({});
 
     try {
-      // Check question bank first for mock tests and repeated topics
-      const { QuestionBank } = await import('@/lib/question-bank');
-      const isMockTest = values.topic.includes('Mock Test');
-      const hasEnoughInBank = await QuestionBank.hasEnoughQuestions(values.topic, values.difficulty, values.numberOfQuestions);
-      
-      if ((isMockTest || hasEnoughInBank) && values.numberOfQuestions <= 30) {
-        setGenerationProgress(50);
-        const bankQuestions = await QuestionBank.getQuestions(values.topic, values.difficulty, values.numberOfQuestions);
-        
-        if (bankQuestions.length >= Math.min(values.numberOfQuestions, 10)) {
-          clearInterval(interval);
-          setGenerationProgress(100);
-          
-          setTimeout(async () => {
-            setQuiz(bankQuestions);
-            setUserAnswers(new Array(bankQuestions.length).fill(null));
-            setTimeLeft(values.timeLimit * 60);
-            setIsGenerating(false);
-            setFormValues(values);
-            
-            // Update usage count
-            await QuestionBank.updateUsageCount(bankQuestions.map(q => q.id));
-          }, 500);
-          return;
-        }
-      }
-      
-      // Generate new quiz with AI
-      let recentQuizHistory = [];
-      try {
-        recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
-      } catch (error) {
-        console.error('Error loading quiz history:', error);
-      }
-      const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
+      // Smart quiz generation with user quiz history
+  const db = (await import('@/lib/firebase')).db;
+  const { QuestionBank } = await import('@/lib/question-bank');
+  // Removed direct Genkit/AI import. Use API route instead.
+      const userId = user?.uid;
+      const topic = values.topic;
+      const difficulty = values.difficulty;
+      const count = values.numberOfQuestions;
 
-      const response = await fetch('/api/ai/custom-quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...values,
-          isPro: user?.plan === 'Pro',
-          userAge: user?.age,
-          userClass: user?.className,
-          recentQuizHistory: historyForAI,
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate quiz');
+      // 1. Check user quiz history for this topic/difficulty
+      const historyRef = ref(db, `user_quiz_history/${userId}`);
+      const historyQuery = query(historyRef, orderByChild('topic'), equalTo(topic));
+      const historySnap = await get(historyQuery);
+      let hasRecentQuiz = false;
+      if (historySnap.exists()) {
+        const sessions = Object.values(historySnap.val());
+        hasRecentQuiz = sessions.some((session: any) => session.difficulty === difficulty);
       }
-      
-      const result = await response.json();
-      
-      if (result.error) {
-        throw new Error(result.error);
+
+      let questions = [];
+
+      // 2. If user has recent quiz, generate fresh questions
+      if (hasRecentQuiz) {
+        // Call API route to generate quiz
+        const response = await fetch('/api/ai/custom-quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic,
+            difficulty,
+            numberOfQuestions: count,
+            userId,
+            // Add other needed fields from values
+            ...values
+          })
+        });
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz');
+        }
+        const result = await response.json();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        questions = result.quiz;
+        await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
+        await push(historyRef, {
+          topic,
+          difficulty,
+          timestamp: Date.now()
+        });
+      } else {
+        // 3. Otherwise, try to get questions from bank
+        questions = await QuestionBank.getQuestions(topic, difficulty, count);
+        // 4. If not enough, generate new questions and save to bank
+        if (!questions || questions.length < count) {
+          questions = await generateQuizQuestions(topic, difficulty, count);
+          await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
+        }
+        await push(historyRef, {
+          topic,
+          difficulty,
+          timestamp: Date.now()
+        });
       }
-      
-      // Simulate the original structure
-      const finalResult = { quiz: result.quiz, comprehensionText: result.comprehensionText };
-      
-      if (!finalResult.quiz || finalResult.quiz.length === 0) {
-        throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
-      }
-      
-      // Process the result as before
-      setTimeout(async () => {
-        setQuiz(finalResult.quiz);
-        setComprehensionText(finalResult.comprehensionText || null);
-        setUserAnswers(new Array(finalResult.quiz.length).fill(null));
+
+      clearInterval(interval);
+      setGenerationProgress(100);
+
+      setTimeout(() => {
+        setQuiz(questions);
+        setUserAnswers(new Array(questions.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
         setFormValues(values);
-        
-        // Cache quiz for offline use
-        try {
-          await cacheQuiz(finalResult.quiz, values.topic, values.difficulty);
-        } catch (error) {
-          console.error('Failed to cache quiz:', error);
-        }
-        
-        // Save questions to bank for future use
-        try {
-          const { QuestionBank } = await import('@/lib/question-bank');
-          await QuestionBank.saveQuestions(finalResult.quiz, values.topic, values.difficulty, user?.uid);
-        } catch (error) {
-          console.error('Failed to save questions to bank:', error);
-        }
       }, 500);
-      
-      return; // Exit early since we handled everything
-      
-    } catch (error: any) {
+
+    } catch (error) {
       clearInterval(interval);
       setIsGenerating(false);
-      setFormValues(null);
-      let errorMessage = "An unexpected response was received from the server.";
-      if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
-        errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-      } else if (error?.message?.includes("429")) {
-          errorMessage = "You have hit a rate limit. Please try again after some time.";
-      } else if (error.message && !error.message.includes('Unexpected')) {
-          errorMessage = error.message;
-      }
       toast({
-        title: "Error Generating Quiz",
-        description: errorMessage,
-        variant: "destructive",
+        title: "Quiz Generation Failed",
+        description: error?.message || "An error occurred while generating your quiz. Please try again.",
+        variant: "destructive"
       });
-      console.error(error);
+      console.error("Quiz generation error:", error);
     }
+      
+  // ...existing code...
   };
 
 

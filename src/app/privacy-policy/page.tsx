@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc list-inside pl-4 space-y-1">
                 <li><strong>Personal Identification Information:</strong> Name, email address, age, and class/grade information that you provide when you register an account. This information is used to personalize your experience and is never shared with third parties.</li>
                 <li><strong>Usage Data:</strong> Information on how you use the application, such as features used, quizzes taken, scores, performance analytics, and bookmarked questions. This is collected automatically to power your dashboard and help you track your progress.</li>
-                <li><strong>Content Data:</strong> Documents you upload for quiz generation. This data is transmitted to our AI provider for the sole purpose of generating the quiz and is not stored or logged on our servers after processing.</li>
+                <li><strong>Content Data:</strong> Documents you upload for quiz generation. These files are temporarily transmitted to our AI provider for processing and are not retained on our servers beyond the processing period unless you explicitly choose to save them.</li>
                 <li><strong>Device and Connection Information:</strong> We collect standard information such as your IP address, browser type, and operating system for security, debugging, and analytics purposes.</li>
             </ul>
           </div>
@@ -38,8 +38,8 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. Advertising, Cookies, and AdSense</h2>
-            <p>We use Google AdSense to serve ads. Our advertising partners, including Google, may use cookies to serve ads based on your prior visits to our website or other websites. This enables personalized advertising. For more detailed information on our use of cookies, please see our <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link>.</p>
+            <h2 className="text-xl font-semibold text-foreground">3. Advertising, Cookies, and Third-Party Services</h2>
+            <p>We may use third-party services (for example, Google AdSense) to serve advertisements and analytics. These partners may set cookies or use similar technologies to collect information about your use of the Service across websites. This enables personalized advertising and analytics. For more information about cookies and how to opt out of personalized ads, please see our <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link>.</p>
              <p>You can opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Ads Settings</a>.</p>
           </div>
 
@@ -51,7 +51,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">5. Children's Privacy</h2>
-            <p>Our service is available to users of all ages, including those under 13. We collect age information at signup to comply with relevant regulations and to tailor content appropriately. We do not knowingly collect more information than is reasonably necessary to provide the service. Parents or guardians can review or request deletion of their child's personal information by contacting us.</p>
+            <p>Our service may be used by learners of all ages. We collect age information at signup to comply with applicable regulations and to tailor content appropriately. If you are a parent or guardian and wish to review or request deletion of a minor's personal information, please contact us at privacy@quizzicallabs.com.</p>
           </div>
             
           <div className="space-y-2">
