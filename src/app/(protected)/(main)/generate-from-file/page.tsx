@@ -109,7 +109,22 @@ export default function GenerateFromFilePage() {
           isPro: user?.plan === 'Pro',
         };
         
-        const { generateQuizFromDocument } = await import('@/ai/flows/generate-quiz-from-document');
+        const response = await fetch('/api/ai/quiz-from-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...values,
+            documentContent: extractedText,
+            isPro: user?.plan === 'Pro',
+            userAge: user?.age,
+            userClass: user?.className
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to generate quiz');
+        const result = await response.json();
+        
+        if (result.error) throw new Error(result.error);
         const result = await generateQuizFromDocument(plainInput);
 
         if (!result.quiz || result.quiz.length === 0) {

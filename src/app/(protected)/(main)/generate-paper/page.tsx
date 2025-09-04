@@ -110,7 +110,21 @@ export default function GeneratePaperPage() {
             const progress = ((i + 1) / values.numberOfVariants) * 100;
             setGenerationProgress(progress);
             
-            const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
+            const response = await fetch('/api/ai/custom-quiz', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...values,
+                isPro: user?.plan === 'Pro',
+                userAge: user?.age,
+                userClass: user?.className
+              })
+            });
+            
+            if (!response.ok) throw new Error('Failed to generate quiz');
+            const result = await response.json();
+            
+            if (result.error) throw new Error(result.error);
             const result = await generateCustomQuiz({
                 topic: values.subject,
                 difficulty: values.difficulty,

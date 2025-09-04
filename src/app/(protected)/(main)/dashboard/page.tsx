@@ -52,12 +52,18 @@ function AiInsightsCard({ recentActivity, userName, userPlan }: { recentActivity
     async function fetchInsights() {
       setIsLoading(true);
       try {
-        const { generateDashboardInsights } = await import('@/ai/flows/generate-dashboard-insights');
-        const result = await generateDashboardInsights({ 
-          userName: userName, 
-          quizHistory: recentActivity,
-          isPro: userPlan === 'Pro'
+        const response = await fetch('/api/ai/dashboard-insights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userName: userName, 
+            quizHistory: recentActivity,
+            isPro: userPlan === 'Pro'
+          })
         });
+        
+        if (!response.ok) throw new Error('Failed to generate insights');
+        const result = await response.json();
         setInsights(result);
       } catch (error) {
         console.error("Failed to fetch AI insights:", error);

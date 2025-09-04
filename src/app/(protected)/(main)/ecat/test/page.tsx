@@ -40,7 +40,16 @@ function EcatTestFlow() {
         setIsLoading(true);
         setError(null);
         try {
-            const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
+            const response = await fetch('/api/ai/custom-quiz', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(quizInput)
+            });
+            
+            if (!response.ok) throw new Error('Failed to generate quiz');
+            const result = await response.json();
+            
+            if (result.error) throw new Error(result.error);
             const result = await generateCustomQuiz({
                 topic: `ECAT ${subject} - ${topic}`,
                 difficulty: difficulty as any,

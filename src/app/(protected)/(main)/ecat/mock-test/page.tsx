@@ -79,8 +79,16 @@ export default function EcatMockTestPage() {
     };
 
     try {
-      const { generateCustomQuiz } = await import('@/ai/flows/generate-custom-quiz');
-      const result = await generateCustomQuiz(quizParams);
+      const response = await fetch('/api/ai/custom-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quizParams)
+      });
+      
+      if (!response.ok) throw new Error('Failed to generate quiz');
+      const result = await response.json();
+      
+      if (result.error) throw new Error(result.error);
       if (!result.quiz || result.quiz.length === 0) {
         throw new Error("The AI returned an empty quiz. Please try again.");
       }

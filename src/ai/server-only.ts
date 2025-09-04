@@ -40,3 +40,18 @@ export async function generateFlashcardsServer(input: any) {
   const { generateFlashcards } = await import('./flows/generate-flashcards');
   return generateFlashcards(input);
 }
+
+export async function generateHelpBotResponseServer(input: any) {
+  const { generateHelpBotResponse } = await import('./flows/generate-help-bot-response');
+  return generateHelpBotResponse(input);
+}
+
+export async function generateDashboardInsightsServer(input: any) {
+  const { generateDashboardInsights } = await import('./flows/generate-dashboard-insights');
+  return generateDashboardInsights(input);
+}
+
+export async function explainImageServer(input: any) {
+  const { explainImage } = await import('./flows/explain-image');
+  return explainImage(input);
+}

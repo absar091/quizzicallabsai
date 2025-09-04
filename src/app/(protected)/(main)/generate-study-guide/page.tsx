@@ -95,7 +95,21 @@ export default function GenerateStudyGuidePage() {
     setIsGenerating(true);
     setStudyGuide(null);
     try {
-      const { generateStudyGuide } = await import('@/ai/flows/generate-study-guide');
+      const response = await fetch('/api/ai/study-guide', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...values,
+          isPro: user?.plan === 'Pro',
+          userAge: user?.age,
+          userClass: user?.className
+        })
+      });
+      
+      if (!response.ok) throw new Error('Failed to generate study guide');
+      const result = await response.json();
+      
+      if (result.error) throw new Error(result.error);
       const result = await generateStudyGuide({ ...values, isPro: user?.plan === 'Pro' });
       setStudyGuide(result);
     } catch (error) {

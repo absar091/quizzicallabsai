@@ -67,14 +67,21 @@ export default function NtsMockTestPage() {
     }
 
     try {
-      const { generateNtsQuiz } = await import('@/ai/flows/generate-nts-quiz');
-      const result = await generateNtsQuiz({
-        category: selectedCategory,
-        topic: topicForAI,
-        numberOfQuestions: section.numQuestions,
-        isPro: false, // Add missing isPro parameter
+      const response = await fetch('/api/ai/nts-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: selectedCategory,
+          topic: topicForAI,
+          numberOfQuestions: section.numQuestions,
+          isPro: false,
+        })
       });
-
+      
+      if (!response.ok) throw new Error('Failed to generate quiz');
+      const result = await response.json();
+      
+      if (result.error) throw new Error(result.error);
       if (!result.quiz || result.quiz.length === 0) {
         throw new Error("The AI returned an empty quiz for this section. Please try again.");
       }

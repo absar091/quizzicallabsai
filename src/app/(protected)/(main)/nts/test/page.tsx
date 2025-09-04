@@ -36,7 +36,16 @@ function NtsTestFlow() {
             // Construct a more detailed topic for the AI
             const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
             
-            const { generateNtsQuiz } = await import('@/ai/flows/generate-nts-quiz');
+            const response = await fetch('/api/ai/nts-quiz', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(quizInput)
+            });
+            
+            if (!response.ok) throw new Error('Failed to generate quiz');
+            const result = await response.json();
+            
+            if (result.error) throw new Error(result.error);
             const result = await generateNtsQuiz({
                 category: category,
                 topic: topicForAI,

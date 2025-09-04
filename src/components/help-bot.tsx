@@ -10,7 +10,7 @@ import { faqs, initialQuestions, FAQ } from "@/lib/faqs";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { generateHelpBotResponse } from "@/ai/flows/generate-help-bot-response";
+// Removed direct AI import - using API route instead
 import { sanitizeHtml, validateInput, sanitizeLogInput } from "@/lib/security";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
@@ -94,13 +94,18 @@ export default function HelpBot() {
         if (selectedFaq) {
             addBotAnswer(selectedFaq.answer, selectedFaq.related);
         } else {
-            generateHelpBotResponse({ 
-                query: validateInput(questionText, 500), 
-                faqContext: JSON.stringify(faqs),
-                userPlan: user?.plan || 'Free'
+            fetch('/api/ai/help-bot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: validateInput(questionText, 500), 
+                    faqContext: JSON.stringify(faqs),
+                    userPlan: user?.plan || 'Free'
+                })
             })
-                .then(response => {
-                    addBotAnswer(response.answer);
+                .then(response => response.json())
+                .then(data => {
+                    addBotAnswer(data.answer);
                 })
                 .catch(error => {
                     console.error("Help Bot AI error:", sanitizeLogInput((error as Error)?.message || 'Unknown error'));

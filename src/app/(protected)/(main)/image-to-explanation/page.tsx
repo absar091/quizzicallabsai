@@ -79,7 +79,19 @@ export default function ExplainImagePage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
-        const { explainImage } = await import('@/ai/flows/explain-image');
+        const response = await fetch('/api/ai/explain-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageData: base64Image,
+            isPro: user?.plan === 'Pro'
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to explain image');
+        const result = await response.json();
+        
+        if (result.error) throw new Error(result.error);
       const result = await explainImage({
           imageDataUri: dataUri,
           query: values.query,
