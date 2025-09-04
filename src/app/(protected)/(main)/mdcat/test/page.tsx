@@ -39,17 +39,7 @@ function MdcatTestFlow() {
         setError(null);
 
         try {
-            const response = await fetch('/api/ai/custom-quiz', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(quizInput)
-            });
-            
-            if (!response.ok) throw new Error('Failed to generate quiz');
-            const result = await response.json();
-            
-            if (result.error) throw new Error(result.error);
-            const result = await generateCustomQuiz({
+            const quizInput = {
                 topic: fullTopicForAI,
                 difficulty: difficulty as any,
                 numberOfQuestions: Number(numQuestions) || 55,
@@ -60,7 +50,18 @@ function MdcatTestFlow() {
                 userAge: user?.age,
                 userClass: "MDCAT Student",
                 specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
+            };
+            const response = await fetch('/api/ai/custom-quiz', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(quizInput)
             });
+            
+            if (!response.ok) throw new Error('Failed to generate quiz');
+            const result = await response.json();
+            
+            if (result.error) throw new Error(result.error);
+
             if (!result.quiz || result.quiz.length === 0) {
                 throw new Error("The AI returned an empty quiz. Please try again.");
             }
