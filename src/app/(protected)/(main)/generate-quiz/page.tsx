@@ -530,7 +530,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       console.error(error);
     }
   };
-  };
 
 
   const handleAnswer = (answer: string) => {
