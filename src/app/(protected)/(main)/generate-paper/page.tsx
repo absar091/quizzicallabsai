@@ -35,6 +35,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 
 
+import { useAuth } from "@/hooks/useAuth";
+
+
 type Quiz = GenerateCustomQuizOutput["quiz"];
 type QuizVariant = {
     variant: string;
@@ -70,6 +73,7 @@ const questionTypeOptions = [
 
 export default function GeneratePaperPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [quizVariants, setQuizVariants] = useState<QuizVariant[] | null>(null);
   const [formValues, setFormValues] = useState<PaperFormValues | null>(null);
@@ -125,17 +129,6 @@ export default function GeneratePaperPage() {
             const result = await response.json();
             
             if (result.error) throw new Error(result.error);
-            const result = await generateCustomQuiz({
-                topic: values.subject,
-                difficulty: values.difficulty,
-                numberOfQuestions: values.numberOfQuestions,
-                questionTypes: values.questionTypes as ("Multiple Choice" | "Descriptive")[],
-                questionStyles: ["Knowledge-based", "Conceptual", "Past Paper Style"],
-                timeLimit: values.timeLimit || values.numberOfQuestions,
-                userAge: values.age || null,
-                userClass: values.className,
-                specificInstructions: ""
-            });
 
             if (!result.quiz || result.quiz.length === 0) {
               throw new Error(`The AI failed to generate questions for Variant ${String.fromCharCode(65 + i)}. Please try adjusting the topic or difficulty.`);

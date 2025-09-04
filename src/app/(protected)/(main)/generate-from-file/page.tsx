@@ -100,21 +100,12 @@ export default function GenerateFromFilePage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
-        // Create a plain object to pass to the server action
-        const plainInput = {
-          documentDataUri: dataUri,
-          numberOfQuestions: values.numberOfQuestions,
-          difficulty: values.difficulty,
-          questionTypes: values.questionTypes,
-          isPro: user?.plan === 'Pro',
-        };
-        
         const response = await fetch('/api/ai/quiz-from-document', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...values,
-            documentContent: extractedText,
+            documentContent: dataUri,
             isPro: user?.plan === 'Pro',
             userAge: user?.age,
             userClass: user?.className
@@ -125,7 +116,6 @@ export default function GenerateFromFilePage() {
         const result = await response.json();
         
         if (result.error) throw new Error(result.error);
-        const result = await generateQuizFromDocument(plainInput);
 
         if (!result.quiz || result.quiz.length === 0) {
            throw new Error("The AI failed to generate questions from the provided file. It might be empty, unreadable, or too complex. Please try another file.");

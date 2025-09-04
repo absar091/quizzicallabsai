@@ -37,7 +37,7 @@ const formSchema = z.object({
   learningStyle: z.string().optional(),
 });
 
-const addPdfHeaderAndFooter = (doc: any, title: string) => {
+const addPdfHeaderAndFooter = (doc: any, title: string, user: any) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -110,7 +110,6 @@ export default function GenerateStudyGuidePage() {
       const result = await response.json();
       
       if (result.error) throw new Error(result.error);
-      const result = await generateStudyGuide({ ...values, isPro: user?.plan === 'Pro' });
       setStudyGuide(result);
     } catch (error) {
       toast({
@@ -221,7 +220,7 @@ export default function GenerateStudyGuidePage() {
         y += 10;
     });
 
-    addPdfHeaderAndFooter(doc, studyGuide.title);
+    addPdfHeaderAndFooter(doc, studyGuide.title, user);
     doc.save(`study_guide_${topic.replace(/\s+/g, '_').toLowerCase()}.pdf`);
   };
 

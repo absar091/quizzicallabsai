@@ -20,6 +20,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 // Dynamic import for AI function
 type ExplainImageOutput = any;
 import { motion } from "framer-motion";
@@ -42,6 +43,7 @@ const formSchema = z.object({
 
 export default function ExplainImagePage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [explanation, setExplanation] = useState<ExplainImageOutput | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -83,7 +85,8 @@ export default function ExplainImagePage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            imageData: base64Image,
+            imageData: dataUri,
+            query: values.query,
             isPro: user?.plan === 'Pro'
           })
         });
@@ -92,10 +95,6 @@ export default function ExplainImagePage() {
         const result = await response.json();
         
         if (result.error) throw new Error(result.error);
-      const result = await explainImage({
-          imageDataUri: dataUri,
-          query: values.query,
-        });
         setExplanation(result);
       } catch (error) {
         toast({
