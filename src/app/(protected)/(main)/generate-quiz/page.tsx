@@ -407,7 +407,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 return prev;
             }
             return prev + 5;
-        })
+        });
     }, 500);
 
     setQuiz(null);
@@ -874,7 +874,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   if (showFlashcardViewer) {
     return <FlashcardViewer flashcards={generatedFlashcards || []} onBack={() => setShowFlashcardViewer(false)} />;
   }
-
 
   if (isGenerating) {
     return (
