@@ -46,7 +46,7 @@
     }
     ,
     "question_bank": {
-      ".indexOn": ["topic", "userId"],
+      ".indexOn": ["topic", "userId", "subject"],
       ".read": "auth != null",
       ".write": "auth != null"
     }

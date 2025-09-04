@@ -36,7 +36,9 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
 
     // Regex to find all occurrences of $...$ (inline) and $$...$$ (display)
     const latexRegex = /(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g;
-    const parts = content ? content.split(latexRegex) : [];
+    // In inline mode, strip all line breaks and <br> tags
+    const cleanContent = inline && content ? content.replace(/\n|<br\s*\/?>/gi, ' ') : content;
+    const parts = cleanContent ? cleanContent.split(latexRegex) : [];
 
     const renderLatex = (text: string) => {
         return parts.map((part, index) => {
@@ -52,7 +54,8 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                     return <span key={index}>{part}</span>;
                 }
             }
-            return <span key={index}>{part}</span>;
+            // In inline mode, ensure all spans are inline
+            return <span key={index} style={inline ? { display: 'inline' } : {}}>{part}</span>;
         });
     };
 
