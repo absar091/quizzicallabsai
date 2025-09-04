@@ -15,6 +15,7 @@ import { auth, db } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
 import { ref, get, set } from "firebase/database";
+import { syncUserData } from "@/lib/cloud-sync";
 
 export type UserPlan = "Free" | "Pro";
 
