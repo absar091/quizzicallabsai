@@ -21,6 +21,8 @@ import { sanitizeString } from "@/lib/sanitize";
 import { StudyStreakWidget } from "@/components/study-streak-widget";
 import { QuizAccessDialog } from "@/components/quiz-sharing";
 import { AdminAccess } from "@/components/admin-access";
+import { SyncStatus, FloatingSyncIndicator, SyncStatusToast } from "@/components/sync-status";
+import { onCloudSyncUpdate } from "@/lib/cloud-sync";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -222,9 +224,15 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
+      {/* Floating sync indicator */}
+      <FloatingSyncIndicator />
+
+      {/* Sync status toast notifications */}
+      <SyncStatusToast />
+
       <PageHeader title="Home" description={`Welcome back, ${sanitizeString(user?.displayName?.split(' ')[0] || 'Student')}! Here's your learning overview.`} className="mb-0"/>
-      
-      <motion.div 
+
+      <motion.div
         className="space-y-6"
         variants={containerVariants}
         initial="hidden"
