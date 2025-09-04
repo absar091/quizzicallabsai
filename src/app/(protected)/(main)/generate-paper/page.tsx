@@ -103,7 +103,7 @@ export default function GeneratePaperPage() {
 
   const watchQuestionTypes = form.watch('questionTypes');
 
-  async function onSubmit(values: PaperFormValues) {
+    async function onSubmit(values: PaperFormValues) {
     setIsGenerating(true);
     setQuizVariants(null);
     setFormValues(values);
