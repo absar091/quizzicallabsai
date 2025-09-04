@@ -1,6 +1,4 @@
-
-'use server';
-
+// This module runs on the server and defines Genkit flows for flashcard generation.
 /**
  * @fileOverview This file defines a Genkit flow for generating flashcards for a given topic.
  *
