@@ -50,13 +50,13 @@ import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
 import { getDatabase, serverTimestamp, set } from "firebase/database";
 import { db } from "@/lib/firebase";
-import { 
-    getQuizState, 
-    saveQuizState, 
-    deleteQuizState, 
-    getBookmarks, 
-    saveBookmark, 
-    deleteBookmark, 
+import {
+    getQuizState,
+    saveQuizState,
+    deleteQuizState,
+    getBookmarks,
+    saveBookmark,
+    deleteBookmark,
     saveQuizResult,
     getQuizResults,
     BookmarkedQuestion
@@ -66,11 +66,14 @@ import { usePlan } from "@/hooks/usePlan";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { sanitizeString } from '@/lib/sanitize';
 import { useProgressPersistence } from '@/hooks/useProgressPersistence';
-import { EnhancedLoading } from '@/components/enhanced-loading';
+import { EnhancedLoading, QuizGenerationLoading, ExplanationLoading, FlashcardGenerationLoading } from '@/components/enhanced-loading';
 import { StudyStreakManager, StudyStreak } from '@/lib/study-streaks';
 import { useOfflineQuizzes } from '@/lib/offline-support';
 import { useAccessibility, useVoiceQuestions } from '@/hooks/useAccessibility';
 import { QuizSharingDialog } from '@/components/quiz-sharing';
+import { QuizGenerationError, ExplanationError } from '@/components/error-recovery';
+import { errorLogger } from '@/lib/error-logger';
+import { UserFeedback, QuickFeedback } from '@/components/user-feedback';
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -482,9 +485,27 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       } else {
         // 3. Otherwise, try to get questions from bank
         questions = await QuestionBank.getQuestions(topic, difficulty, count);
-        // 4. If not enough, generate new questions and save to bank
+        // 4. If not enough, generate new questions via API and save to bank
         if (!questions || questions.length < count) {
-          questions = await generateQuizQuestions(topic, difficulty, count);
+          const response = await fetch('/api/ai/custom-quiz', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              topic,
+              difficulty,
+              numberOfQuestions: count,
+              userId,
+              ...values
+            })
+          });
+          if (!response.ok) {
+            throw new Error('Failed to generate quiz');
+          }
+          const result = await response.json();
+          if (result.error) {
+            throw new Error(result.error);
+          }
+          questions = result.quiz;
           await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
         }
         await push(historyRef, {
@@ -885,9 +906,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   if (isGenerating) {
     return (
       <div>
-        <EnhancedLoading 
-          type="quiz" 
+        <QuizGenerationLoading
           progress={generationProgress}
+          onRetry={() => {
+            setIsGenerating(false);
+            setGenerationProgress(0);
+          }}
         />
         <GenerationAd />
       </div>
