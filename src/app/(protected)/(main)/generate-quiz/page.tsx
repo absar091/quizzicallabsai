@@ -512,47 +512,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       
     } catch (error: any) {
       clearInterval(interval);
-      setGenerationProgress(100);
-      
-      setTimeout(async () => {
-        if (!result.quiz || result.quiz.length === 0) {
-           throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
-        }
-        setQuiz(result.quiz);
-        setComprehensionText(result.comprehensionText || null);
-        setUserAnswers(new Array(result.quiz.length).fill(null));
-        setTimeLeft(values.timeLimit * 60);
-        setIsGenerating(false);
-        setFormValues(values);
-        
-        // Cache quiz for offline use
-        try {
-          await cacheQuiz(result.quiz, values.topic, values.difficulty);
-        } catch (error) {
-          console.error('Failed to cache quiz:', error);
-        }
-        
-        // Save questions to bank for future use
-        try {
-          const { QuestionBank } = await import('@/lib/question-bank');
-          await QuestionBank.saveQuestions(result.quiz, values.topic, values.difficulty, user?.uid);
-        } catch (error) {
-          console.error('Failed to save questions to bank:', error);
-        }
-      }, 500);
-
-    } catch (error: any) {
-        clearInterval(interval);
-        setIsGenerating(false);
-        setFormValues(null);
-        let errorMessage = "An unexpected response was received from the server.";
-        if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
-          errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-        } else if (error?.message?.includes("429")) {
-            errorMessage = "You have hit a rate limit. Please try again after some time.";
-        } else if (error.message && !error.message.includes('Unexpected')) {
-            errorMessage = error.message;
-        }
+      setIsGenerating(false);
+      setFormValues(null);
+      let errorMessage = "An unexpected response was received from the server.";
+      if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
+        errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+      } else if (error?.message?.includes("429")) {
+          errorMessage = "You have hit a rate limit. Please try again after some time.";
+      } else if (error.message && !error.message.includes('Unexpected')) {
+          errorMessage = error.message;
+      }
       toast({
         title: "Error Generating Quiz",
         description: errorMessage,
@@ -560,6 +529,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       });
       console.error(error);
     }
+  };
   };
 
 
