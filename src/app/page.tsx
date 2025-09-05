@@ -279,7 +279,7 @@ export default function Home() {
                     <motion.p variants={FADE_IN_ANIMATION_VARIANTS} className="max-w-3xl text-muted-foreground mt-4 mx-auto">Quizzicallabsᴬᴵ is more than just a quiz maker. It's a comprehensive suite of intelligent tools designed to support every aspect of your academic journey.</motion.p>
                  </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {features.map((feature, i) => {
                         const colors = [
                             { bg: 'from-blue-500/20 to-cyan-500/20', icon: 'text-blue-600', accent: 'from-blue-500/5 to-cyan-500/5' },

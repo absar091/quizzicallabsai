@@ -60,13 +60,56 @@ export default function NotificationHandler() {
               notification: {
                 title: payload.notification?.title?.replace(/[\r\n]/g, '') || 'No title',
                 body: payload.notification?.body?.replace(/[\r\n]/g, '') || 'No body'
-              }
+              },
+              data: payload.data
             };
             console.log('Message received:', sanitizedPayload);
-            toast({
+
+            // Handle different notification types
+            const notificationType = payload.data?.type;
+            let toastConfig: any = {
               title: payload.notification?.title,
               description: payload.notification?.body,
-            });
+            };
+
+            // Customize toast based on notification type
+            switch (notificationType) {
+              case 'welcome':
+                toastConfig.duration = 8000; // Longer duration for welcome messages
+                break;
+              case 'feature_intro':
+                toastConfig.duration = 6000;
+                break;
+              case 'daily_reminder':
+                toastConfig.action = {
+                  label: 'Take Quiz',
+                  onClick: () => window.location.href = payload.data?.click_action || '/generate-quiz'
+                };
+                break;
+              case 'streak_reminder':
+              case 'progress_check':
+              case 'new_features':
+                toastConfig.action = {
+                  label: 'View Dashboard',
+                  onClick: () => window.location.href = payload.data?.click_action || '/dashboard'
+                };
+                break;
+              case 'reengagement':
+                toastConfig.duration = 10000; // Extra long for reengagement
+                break;
+            }
+
+            toast(toastConfig);
+
+            // Handle click actions for background notifications
+            if (payload.data?.click_action && notificationType) {
+              // Store the action for when user clicks the notification
+              localStorage.setItem('pendingNotificationAction', JSON.stringify({
+                type: notificationType,
+                action: payload.data.action,
+                url: payload.data.click_action
+              }));
+            }
           });
           
           return unsubscribe;

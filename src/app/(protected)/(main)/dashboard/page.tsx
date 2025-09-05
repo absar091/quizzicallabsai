@@ -381,8 +381,8 @@ export default function HomePage() {
           </motion.div>
         )}
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
           variants={containerVariants}
         >
           <motion.div variants={itemVariants} className="md:col-span-1">

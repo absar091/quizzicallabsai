@@ -70,7 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userRef = ref(db, `users/${firebaseUser.uid}`);
           const snapshot = await get(userRef);
           const userData = snapshot.val();
-          
+
+          // Check if this is a new user (no existing data)
+          const isNewUser = !userData;
+
           const appUser: User = {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
@@ -81,9 +84,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             fatherName: userData?.fatherName || 'N/A',
             plan: userData?.plan || 'Free', // Load plan from Firebase
           };
-          
+
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
           setUser(appUser);
+
+          // Trigger welcome notifications for new users
+          if (isNewUser) {
+            console.log('🎉 NEW USER DETECTED - TRIGGERING WELCOME NOTIFICATIONS');
+            try {
+              const idToken = await firebaseUser.getIdToken();
+              const response = await fetch('/api/notifications/welcome', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({ userId: firebaseUser.uid })
+              });
+
+              if (response.ok) {
+                console.log('✅ Welcome notifications scheduled for new user');
+              } else {
+                console.warn('⚠️ Failed to schedule welcome notifications');
+              }
+            } catch (error) {
+              console.warn('⚠️ Error scheduling welcome notifications:', error);
+            }
+          }
 
           // Initialize cloud sync for cross-device data synchronization
           try {

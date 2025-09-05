@@ -891,10 +891,33 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   if (quiz && !showResults) {
     const currentQ = quiz[currentQuestion];
     const progress = ((currentQuestion + 1) / quiz.length) * 100;
-    
+
     return (
       <FormProvider {...formMethods}>
         <div className="flex flex-col">
+            {/* Quick Action Bar for Urgent Users */}
+            <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/20 p-4 mb-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button
+                            onClick={handleNext}
+                            size="sm"
+                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                        >
+                            {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
+                            {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-4 w-4" />}
+                        </Button>
+                        <span className="text-sm text-muted-foreground">
+                            Question {currentQuestion + 1} of {quiz.length}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                    </div>
+                </div>
+            </div>
+
             <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</p>
                 <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
