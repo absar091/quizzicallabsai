@@ -43,6 +43,8 @@ class CloudSyncManager {
   private syncInProgress: boolean = false;
   private pendingChanges: Map<string, any> = new Map();
   private realtimeListeners: Map<string, () => void> = new Map();
+  private offlineQueue: Array<{ type: string; data: any; timestamp: number }> = [];
+  private maxQueueSize: number = 100;
 
   private constructor() {
     this.deviceId = this.generateDeviceId();
