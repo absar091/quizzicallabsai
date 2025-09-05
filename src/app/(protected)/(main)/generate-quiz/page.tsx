@@ -441,79 +441,42 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const difficulty = values.difficulty;
       const count = values.numberOfQuestions;
 
-      // 1. Check user quiz history for this topic/difficulty
+      // 1. Always generate fresh questions for the requested topic
+      // This ensures users get questions specifically for their requested topic
+      const response = await fetch('/api/ai/custom-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic,
+          difficulty,
+          numberOfQuestions: count,
+          userId,
+          ...values
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate quiz');
+      }
+
+      const result = await response.json();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      let questions = result.quiz;
+
+      // 2. Save questions to bank for future use
+      await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
+
+      // 3. Record this quiz session in history
       const historyRef = ref(db, `user_quiz_history/${userId}`);
-      const historyQuery = query(historyRef, orderByChild('topic'), equalTo(topic));
-      const historySnap = await get(historyQuery);
-      let hasRecentQuiz = false;
-      if (historySnap.exists()) {
-        const sessions = Object.values(historySnap.val());
-        hasRecentQuiz = sessions.some((session: any) => session.difficulty === difficulty);
-      }
-
-      let questions = [];
-
-      // 2. If user has recent quiz, generate fresh questions
-      if (hasRecentQuiz) {
-        // Call API route to generate quiz
-        const response = await fetch('/api/ai/custom-quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            topic,
-            difficulty,
-            numberOfQuestions: count,
-            userId,
-            // Add other needed fields from values
-            ...values
-          })
-        });
-        if (!response.ok) {
-          throw new Error('Failed to generate quiz');
-        }
-        const result = await response.json();
-        if (result.error) {
-          throw new Error(result.error);
-        }
-        questions = result.quiz;
-        await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
-        await push(historyRef, {
-          topic,
-          difficulty,
-          timestamp: Date.now()
-        });
-      } else {
-        // 3. Otherwise, try to get questions from bank
-        questions = await QuestionBank.getQuestions(topic, difficulty, count);
-        // 4. If not enough, generate new questions via API and save to bank
-        if (!questions || questions.length < count) {
-          const response = await fetch('/api/ai/custom-quiz', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              topic: values.topic,
-              difficulty: values.difficulty,
-              numberOfQuestions: count,
-              userId,
-              ...values
-            })
-          });
-          if (!response.ok) {
-            throw new Error('Failed to generate quiz');
-          }
-          const result = await response.json();
-          if (result.error) {
-            throw new Error(result.error);
-          }
-          questions = result.quiz;
-          await QuestionBank.saveQuestions(questions, values.topic, values.difficulty, userId);
-        }
-        await push(historyRef, {
-          topic,
-          difficulty,
-          timestamp: Date.now()
-        });
-      }
+      await push(historyRef, {
+        topic,
+        difficulty,
+        timestamp: Date.now(),
+        questionCount: count
+      });
 
       clearInterval(interval);
       setGenerationProgress(100);
