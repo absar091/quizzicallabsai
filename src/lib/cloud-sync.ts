@@ -1,10 +1,11 @@
 // Cloud Synchronization System for Quizzicallabs AI
 // Enables seamless cross-device data synchronization
 
-import React from 'react';
+import * as React from 'react';
 import { ref, set, get, update, onValue, off, serverTimestamp } from 'firebase/database';
 import { db } from './firebase';
 import { errorLogger } from './error-logger';
+import { getQuizResults, saveQuizResult, getBookmarks, saveBookmark } from './indexed-db';
 
 export interface SyncMetadata {
   lastSync: number;
@@ -60,6 +61,11 @@ class CloudSyncManager {
   }
 
   private generateDeviceId(): string {
+    if (typeof window === 'undefined') {
+      // Server-side rendering fallback
+      return `server_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+
     const stored = localStorage.getItem('deviceId');
     if (stored) return stored;
 
@@ -390,6 +396,8 @@ class CloudSyncManager {
   }
 
   private loadOfflineQueue() {
+    if (typeof window === 'undefined') return;
+
     try {
       const stored = localStorage.getItem('offlineQueue');
       if (stored) {
@@ -431,16 +439,14 @@ class CloudSyncManager {
   private async getAllLocalData(): Promise<Partial<SyncableData>> {
     const data: Partial<SyncableData> = {};
 
-    // Import and get data from IndexedDB stores
+    // Get data from IndexedDB stores
     try {
-      const { getQuizResults } = await import('./indexed-db');
       data.quizResults = await getQuizResults(this.userId!);
     } catch (error) {
       console.error('Failed to get quiz results:', error);
     }
 
     try {
-      const { getBookmarks } = await import('./indexed-db');
       data.bookmarks = await getBookmarks(this.userId!);
     } catch (error) {
       console.error('Failed to get bookmarks:', error);
@@ -455,10 +461,8 @@ class CloudSyncManager {
     try {
       switch (field) {
         case 'quizResults':
-          const { getQuizResults } = await import('./indexed-db');
           return await getQuizResults(this.userId!);
         case 'bookmarks':
-          const { getBookmarks } = await import('./indexed-db');
           return await getBookmarks(this.userId!);
         // Add other fields...
         default:
@@ -474,21 +478,21 @@ class CloudSyncManager {
     try {
       // Update IndexedDB with remote data
       if (data.quizResults) {
-        const { saveQuizResult } = await import('./indexed-db');
         for (const result of data.quizResults) {
           await saveQuizResult(result);
         }
       }
 
       if (data.bookmarks) {
-        const { saveBookmark } = await import('./indexed-db');
         for (const bookmark of data.bookmarks) {
           await saveBookmark(bookmark, 'Free'); // Default plan
         }
       }
 
       // Dispatch custom event to notify components of data updates
-      window.dispatchEvent(new CustomEvent('cloudSyncUpdate', { detail: data }));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('cloudSyncUpdate', { detail: data }));
+      }
 
     } catch (error) {
       errorLogger.logError(error as Error, {
@@ -575,7 +579,7 @@ class CloudSyncManager {
       isOnline: this.isOnline,
       syncInProgress: this.syncInProgress,
       pendingChanges: this.pendingChanges.size,
-      lastSync: localStorage.getItem('lastSync')
+      lastSync: typeof window !== 'undefined' ? localStorage.getItem('lastSync') : null
     };
   }
 

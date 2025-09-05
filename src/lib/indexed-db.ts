@@ -1,6 +1,5 @@
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import { cloudSync } from './cloud-sync';
 
 // Define types locally to avoid import issues
 export interface QuizFormValues {
@@ -110,13 +109,6 @@ function getDb(): Promise<IDBPDatabase<QuizzicalDB>> {
 export async function saveQuizResult(result: QuizResult): Promise<void> {
   const db = await getDb();
   await db.put('quizResults', result);
-
-  // Sync with cloud
-  try {
-    await cloudSync.syncData('quizResults', await getQuizResults(result.userId), false);
-  } catch (error) {
-    console.warn('Failed to sync quiz result to cloud:', error);
-  }
 }
 
 export async function getQuizResults(userId: string): Promise<QuizResult[]> {
@@ -139,25 +131,11 @@ export async function saveBookmark(bookmark: BookmarkedQuestion, userPlan: strin
   }
 
   await db.put('bookmarks', bookmark);
-
-  // Sync with cloud
-  try {
-    await cloudSync.syncData('bookmarks', await getBookmarks(bookmark.userId), false);
-  } catch (error) {
-    console.warn('Failed to sync bookmark to cloud:', error);
-  }
 }
 
 export async function deleteBookmark(userId: string, question: string): Promise<void> {
   const db = await getDb();
   await db.delete('bookmarks', [userId, question]);
-
-  // Sync with cloud
-  try {
-    await cloudSync.syncData('bookmarks', await getBookmarks(userId), false);
-  } catch (error) {
-    console.warn('Failed to sync bookmark deletion to cloud:', error);
-  }
 }
 
 export async function getBookmarks(userId: string): Promise<BookmarkedQuestion[]> {

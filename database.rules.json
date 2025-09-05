@@ -56,6 +56,48 @@
         ".write": "auth != null && auth.uid == $uid",
         ".indexOn": ["topic"]
       }
+    },
+    "studyStreaks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "studyTime": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "quizStates": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "userPreferences": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "achievements": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "syncMetadata": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastSync"]
+      }
     }
   }
 }
