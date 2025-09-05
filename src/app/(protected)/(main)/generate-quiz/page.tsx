@@ -78,7 +78,7 @@ import { QuizWizard } from '@/components/quiz-wizard/quiz-wizard';
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
-  difficulty: z.enum(["easy", "medium", "hard", "master"]),
+  difficulty: z.string().min(1, "Difficulty is required."),
   numberOfQuestions: z.number().min(1).max(55),
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
