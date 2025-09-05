@@ -221,6 +221,14 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
         if (retryCount > maxRetries) {
           // Provide specific error messages based on error type
           if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            // Rotate to next API key for quota issues
+            try {
+              const { handleApiKeyError } = await import('@/lib/api-key-manager');
+              handleApiKeyError();
+              console.log('🔄 Rotated API key due to quota limit');
+            } catch (rotateError) {
+              console.warn('Failed to rotate API key:', rotateError);
+            }
             throw new Error('API quota exceeded. Please try again in a few minutes.');
           } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
             throw new Error('Request timeout. The AI service is busy. Please try again.');

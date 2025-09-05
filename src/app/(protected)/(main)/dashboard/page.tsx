@@ -162,29 +162,124 @@ export default function HomePage() {
   const { plan } = usePlan();
   const [recentActivity, setRecentActivity] = useState<QuizResult[]>([]);
   const [bookmarksCount, setBookmarksCount] = useState(0);
-  
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [studyTime, setStudyTime] = useState(0);
+  const [studyStreak, setStudyStreak] = useState(0);
+
+  // Load data from both local and cloud sources
   useEffect(() => {
-    async function loadData() {
+    async function loadUnifiedData() {
       if (!user) return;
-      const localActivity = await getQuizResults(user.uid);
-      setRecentActivity(localActivity);
-      const localBookmarks = await getBookmarks(user.uid);
-      setBookmarksCount(localBookmarks.length);
+
+      setIsLoadingData(true);
+
+      try {
+        // Load local data first for immediate display
+        const localActivity = await getQuizResults(user.uid);
+        const localBookmarks = await getBookmarks(user.uid);
+
+        // Set initial data
+        setRecentActivity(localActivity);
+        setBookmarksCount(localBookmarks.length);
+
+        // Calculate initial study time from local data
+        const totalTime = Math.round(localActivity.reduce((sum, quiz) => sum + (quiz.timeTaken || 0), 0) / 60);
+        setStudyTime(totalTime);
+
+        // Try to load cloud data for unified view
+        const { db } = await import('@/lib/firebase');
+        const { ref, get, query, orderByChild, limitToLast } = await import('firebase/database');
+
+        // Load quiz results from cloud
+        const quizResultsRef = ref(db, `quizResults/${user.uid}`);
+        const quizResultsSnap = await get(quizResultsRef);
+
+        if (quizResultsSnap.exists()) {
+          const cloudResults = Object.values(quizResultsSnap.val()) as QuizResult[];
+          // Merge local and cloud results, removing duplicates
+          const allResults = [...localActivity];
+          const existingIds = new Set(allResults.map(r => r.id));
+
+          for (const cloudResult of cloudResults) {
+            if (!existingIds.has(cloudResult.id)) {
+              allResults.push(cloudResult);
+            }
+          }
+
+          // Sort by date and update
+          allResults.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setRecentActivity(allResults);
+
+          // Recalculate study time with cloud data
+          const cloudTotalTime = Math.round(allResults.reduce((sum, quiz) => sum + (quiz.timeTaken || 0), 0) / 60);
+          setStudyTime(cloudTotalTime);
+        }
+
+        // Load bookmarks from cloud
+        const bookmarksRef = ref(db, `bookmarks/${user.uid}`);
+        const bookmarksSnap = await get(bookmarksRef);
+
+        if (bookmarksSnap.exists()) {
+          const cloudBookmarks = Object.values(bookmarksSnap.val());
+          setBookmarksCount(Math.max(localBookmarks.length, cloudBookmarks.length));
+        }
+
+        // Load study streak from cloud
+        const streakRef = ref(db, `users/${user.uid}/study_streak`);
+        const streakSnap = await get(streakRef);
+
+        if (streakSnap.exists()) {
+          const cloudStreak = streakSnap.val();
+          setStudyStreak(cloudStreak.currentStreak || 0);
+        }
+
+      } catch (error) {
+        console.error('Error loading unified data:', error);
+        // Fall back to local data only
+      } finally {
+        setIsLoadingData(false);
+      }
     }
-    if (user) loadData();
+
+    if (user) loadUnifiedData();
   }, [user]);
 
-  // Listen for cloud sync updates
+  // Listen for real-time cloud sync updates
   useEffect(() => {
     if (!user) return;
 
     const unsubscribe = onCloudSyncUpdate((data) => {
-      // Update local data when cloud sync occurs
+      // Update data when cloud sync occurs
       if (data.quizResults) {
-        setRecentActivity(data.quizResults);
+        setRecentActivity(prev => {
+          // Merge with existing data
+          const merged = [...prev];
+          const existingIds = new Set(merged.map(r => r.id));
+
+          for (const newResult of data.quizResults) {
+            if (!existingIds.has(newResult.id)) {
+              merged.push(newResult);
+            }
+          }
+
+          return merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        });
+
+        // Update study time
+        const newTotalTime = Math.round(data.quizResults.reduce((sum, quiz) => sum + (quiz.timeTaken || 0), 0) / 60);
+        setStudyTime(newTotalTime);
       }
+
       if (data.bookmarks) {
         setBookmarksCount(data.bookmarks.length);
+      }
+
+      if (data.studyStreak) {
+        setStudyStreak(data.studyStreak.currentStreak || 0);
+      }
+
+      if (data.studyTime) {
+        setStudyTime(data.studyTime);
       }
     });
 
@@ -300,8 +395,20 @@ export default function HomePage() {
                 <Target className="h-4 w-4 text-blue-500"/>
                 <span className="text-sm font-medium">Avg Score</span>
               </div>
-              <p className="text-2xl font-bold">{averageScore}%</p>
-              <p className="text-xs text-muted-foreground">{recentActivity.length} quizzes</p>
+              <p className="text-2xl font-bold">
+                {isLoadingData ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  `${averageScore}%`
+                )}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {isLoadingData ? (
+                  <span className="animate-pulse">Loading...</span>
+                ) : (
+                  `${recentActivity.length} quizzes`
+                )}
+              </p>
             </Card>
           </motion.div>
           
@@ -311,7 +418,13 @@ export default function HomePage() {
                 <Clock className="h-4 w-4 text-green-500"/>
                 <span className="text-sm font-medium">Study Time</span>
               </div>
-              <p className="text-2xl font-bold">{totalTime}</p>
+              <p className="text-2xl font-bold">
+                {isLoadingData ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  studyTime || totalTime
+                )}
+              </p>
               <p className="text-xs text-muted-foreground">minutes total</p>
             </Card>
           </motion.div>

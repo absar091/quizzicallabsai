@@ -82,16 +82,51 @@ const generateExplanationsFlow = (aiInstance: any) => aiInstance.defineFlow(
   },
   async input => {
     let output;
-    try {
-        const model = getModel(input.isPro, false);
-        const prompt = createPrompt(aiInstance, input.isPro, false);
+    let retryCount = 0;
+    const maxRetries = 2;
+
+    while (retryCount <= maxRetries) {
+      try {
+        const model = getModel(input.isPro, retryCount > 0);
+        const prompt = createPrompt(aiInstance, input.isPro, retryCount > 0);
         const result = await prompt(input, { model });
         output = result.output;
-    } catch (error: any) {
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
-        throw new Error(`Failed to generate explanations: ${error.message}`);
+
+        if (output && output.explanation && output.explanation.trim() !== '') {
+          return output;
+        } else {
+          throw new Error("AI returned empty explanation");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = error?.message || 'Unknown error';
+        console.error(`Explanation generation attempt ${retryCount} failed:`, errorMsg);
+
+        if (retryCount > maxRetries) {
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            // Rotate to next API key for quota issues
+            try {
+              const { handleApiKeyError } = await import('@/lib/api-key-manager');
+              handleApiKeyError();
+              console.log('🔄 Rotated API key due to quota limit (explanations)');
+            } catch (rotateError) {
+              console.warn('Failed to rotate API key:', rotateError);
+            }
+            throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else {
+            throw new Error('Failed to generate explanation. Please try again.');
+          }
+        }
+
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
-    
+
     if (!output || !output.explanation || output.explanation.trim() === '') {
       throw new Error("The AI model failed to return a valid explanation. Please try again.");
     }

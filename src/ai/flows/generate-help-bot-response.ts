@@ -71,20 +71,57 @@ const generateHelpBotResponseFlow = ai!.defineFlow(
   },
   async (input) => {
     let output;
-    try {
+    let retryCount = 0;
+    const maxRetries = 2;
+
+    while (retryCount <= maxRetries) {
+      try {
         try {
           JSON.parse(input.faqContext);
         } catch (e) {
           throw new Error("Invalid faqContext: Must be a valid JSON string.");
         }
+
         const model = input.userPlan === 'Pro' ? 'googleai/gemini-2.5-pro' : 'googleai/gemini-1.5-flash';
         const prompt = createPrompt(input.userPlan);
         const result = await prompt(input, { model });
         output = result.output;
-    } catch (error: any) {
-        throw new Error(`Failed to generate help bot response: ${error.message}`);
+
+        if (output && output.answer) {
+          return output;
+        } else {
+          throw new Error("AI returned empty response");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = error?.message || 'Unknown error';
+        console.error(`Help bot response generation attempt ${retryCount} failed:`, errorMsg);
+
+        if (retryCount > maxRetries) {
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            // Rotate to next API key for quota issues
+            try {
+              const { handleApiKeyError } = await import('@/lib/api-key-manager');
+              handleApiKeyError();
+              console.log('🔄 Rotated API key due to quota limit (help bot)');
+            } catch (rotateError) {
+              console.warn('Failed to rotate API key:', rotateError);
+            }
+            throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else {
+            throw new Error('Failed to generate help response. Please try again.');
+          }
+        }
+
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
-    
+
     if (!output || !output.answer) {
       throw new Error("The AI model failed to return a valid response. Please try again.");
     }

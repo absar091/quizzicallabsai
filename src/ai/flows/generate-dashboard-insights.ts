@@ -133,13 +133,48 @@ const generateDashboardInsightsFlow = ai!.defineFlow(
     };
     
     let output;
-    try {
-        const prompt = createPrompt(input.isPro, false);
+    let retryCount = 0;
+    const maxRetries = 2;
+
+    while (retryCount <= maxRetries) {
+      try {
+        const prompt = createPrompt(input.isPro, retryCount > 0);
         const result = await prompt(recentHistory);
         output = result.output;
-    } catch (error: any) {
-        console.error('Gemini 1.5 Flash failed with unhandled error:', error);
-        throw new Error(`Failed to generate dashboard insights: ${error.message}`);
+
+        if (output && output.greeting && output.observation && output.suggestion) {
+          return output;
+        } else {
+          throw new Error("AI returned invalid insights structure");
+        }
+      } catch (error: any) {
+        retryCount++;
+        const errorMsg = error?.message || 'Unknown error';
+        console.error(`Dashboard insights generation attempt ${retryCount} failed:`, errorMsg);
+
+        if (retryCount > maxRetries) {
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+            // Rotate to next API key for quota issues
+            try {
+              const { handleApiKeyError } = await import('@/lib/api-key-manager');
+              handleApiKeyError();
+              console.log('🔄 Rotated API key due to quota limit (dashboard insights)');
+            } catch (rotateError) {
+              console.warn('Failed to rotate API key:', rotateError);
+            }
+            throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+            throw new Error('Request timeout. The AI service is busy. Please try again.');
+          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            throw new Error('Network connection issue. Please check your internet connection.');
+          } else {
+            throw new Error('Failed to generate dashboard insights. Please try again.');
+          }
+        }
+
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+      }
     }
 
     if (!output || !output.greeting || !output.observation || !output.suggestion) {

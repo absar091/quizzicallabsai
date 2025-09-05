@@ -125,6 +125,14 @@ const generateFlashcardsFlow = ai!.defineFlow(
     // Categorize the final error
     const errorMessage = lastError?.message || 'Unknown error';
     if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+      // Rotate to next API key for quota issues
+      try {
+        const { handleApiKeyError } = await import('@/lib/api-key-manager');
+        handleApiKeyError();
+        console.log('🔄 Rotated API key due to quota limit (flashcards)');
+      } catch (rotateError) {
+        console.warn('Failed to rotate API key:', rotateError);
+      }
       throw new Error('AI service quota exceeded. Please try again in a few minutes.');
     } else if (errorMessage.includes('timeout') || errorMessage.includes('deadline')) {
       throw new Error('Request timed out. Please try again with fewer questions.');

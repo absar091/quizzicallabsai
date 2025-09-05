@@ -1,33 +1,62 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
+import { getNextApiKey, handleApiKeyError } from '@/lib/api-key-manager';
 
 // Check if we're in a server environment and API key is available
-const hasApiKey = typeof process !== 'undefined' && process.env?.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('Dummy');
+const isServer = typeof process !== 'undefined';
+const hasApiKey = isServer && process.env?.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('Dummy');
 
-if (!hasApiKey && typeof process !== 'undefined') {
+if (!isServer) {
+  console.warn('AI features are only available on the server side.');
+}
+
+if (!hasApiKey && isServer) {
   console.warn('GEMINI_API_KEY not found or invalid. AI features will be disabled.');
 }
 
 // Lazy initialization to prevent SSR issues
 let _ai: any = null;
+let _currentApiKey: string | null = null;
 
 const initializeAI = () => {
-  if (!hasApiKey) return null;
+  if (!isServer || !hasApiKey) return null;
   if (_ai) return _ai;
-  
+
   try {
+    // Get the next API key from rotation
+    const apiKey = getNextApiKey();
+    _currentApiKey = apiKey;
+
+    console.log(`🔑 Using API Key rotation - Current key: ${apiKey.substring(0, 20)}...`);
+
     _ai = genkit({
       plugins: [
         googleAI({
-          apiKey: process.env.GEMINI_API_KEY!,
+          apiKey: apiKey,
         }),
       ],
-      enableTracingAndMetrics: false,
     });
     return _ai;
   } catch (error) {
     console.error('Failed to initialize AI:', error);
-    return null;
+    // Try rotating to next key on initialization failure
+    try {
+      handleApiKeyError();
+      const fallbackKey = getNextApiKey();
+      console.log(`🔄 Fallback: Using next API key: ${fallbackKey.substring(0, 20)}...`);
+
+      _ai = genkit({
+        plugins: [
+          googleAI({
+            apiKey: fallbackKey,
+          }),
+        ],
+      });
+      return _ai;
+    } catch (fallbackError) {
+      console.error('Fallback AI initialization also failed:', fallbackError);
+      return null;
+    }
   }
 };
 
