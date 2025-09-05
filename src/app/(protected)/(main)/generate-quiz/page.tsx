@@ -74,6 +74,7 @@ import { QuizSharingDialog } from '@/components/quiz-sharing';
 import { QuizGenerationError, ExplanationError } from '@/components/error-recovery';
 import { errorLogger } from '@/lib/error-logger';
 import { UserFeedback, QuickFeedback } from '@/components/user-feedback';
+import { QuizWizard } from '@/components/quiz-wizard/quiz-wizard';
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -1131,9 +1132,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   }
 
   return (
-    <FormProvider {...formMethods}>
-      <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
-    </FormProvider>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container-modern py-8">
+        <QuizWizard
+          onGenerateQuiz={handleGenerateQuiz}
+          isGenerating={isGenerating}
+        />
+      </div>
+    </div>
   );
 }
 
