@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
 import { useAuth } from "@/context/AuthContext";
 import { GenerationAd } from "@/components/ads/ad-banner";
+import { QuestionsWizard } from "@/components/quiz-wizard/questions-wizard";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -195,174 +196,13 @@ export default function GenerateQuestionsPage() {
   };
 
   return (
-    <>
-      <PageHeader
-        title="Practice Questions Generator"
-        description="Generate topic-specific practice questions with correct answers instantly."
-      />
-      <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Question Parameters</CardTitle>
-              <CardDescription>Fill out the form to generate your practice questions.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="topic"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Topic(s) / Chapter(s)</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="e.g., Photosynthesis, Newton's Laws of Motion" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="difficulty"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Difficulty</FormLabel>
-                        <FormControl>
-                            <div className="flex gap-2">
-                                {["easy", "medium", "hard", "master"].map(level => (
-                                    <Button key={level} type="button" variant={field.value === level ? 'default' : 'outline'} onClick={() => field.onChange(level)} className="flex-1 capitalize">{level}</Button>
-                                ))}
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="numberOfQuestions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number of Questions: <span className="font-bold text-primary">{field.value}</span></FormLabel>
-                        <FormControl>
-                          <Slider
-                              onValueChange={(value) => field.onChange(value[0])}
-                              defaultValue={[field.value]}
-                              max={55}
-                              min={1}
-                              step={1}
-                          />
-                        </FormControl>
-                         <Alert className="mt-2 text-xs p-2">
-                           <AlertTriangle className="h-4 w-4"/>
-                           <AlertDescription>
-                             The AI-generated count may sometimes vary slightly from your selection.
-                           </AlertDescription>
-                        </Alert>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <Button type="submit" className="w-full" size="lg" disabled={isGenerating}>
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4"/>
-                        Generate Questions
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container-modern py-8">
+        <QuestionsWizard
+          onGenerateQuestions={onSubmit}
+          isGenerating={isGenerating}
+        />
       </div>
-        <div className="max-w-4xl mx-auto w-full mt-8">
-            <Card className="min-h-[400px]">
-                <CardHeader className="flex-row items-center justify-between">
-                <div>
-                    <CardTitle>Generated Questions</CardTitle>
-                    <CardDescription>Click on a question to reveal the correct answer.</CardDescription>
-                </div>
-                {questions && questions.length > 0 && (
-                    <Button onClick={downloadPdf} variant="outline" size="sm">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download PDF
-                    </Button>
-                )}
-                </CardHeader>
-                <CardContent>
-                {isGenerating && (
-                    <div className="flex flex-col items-center justify-center h-64">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-                    <p className="text-muted-foreground mb-4">Generating practice questions...</p>
-                    <GenerationAd />
-                    </div>
-                )}
-                {questions && (
-                    <Accordion type="single" collapsible className="w-full space-y-4">
-                    {questions.map((q, index) => (
-                        <AccordionItem value={`item-${index}`} key={index} className="border-b-0">
-                        <Card className="bg-muted/50">
-                            <AccordionTrigger className="text-left p-6 hover:no-underline">
-                            <span className="flex-1 font-semibold">{index + 1}. {q.question}</span>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-6">
-                            {q.answers && (
-                                <div className="mb-4">
-                                <h4 className="font-semibold mb-3 text-sm text-muted-foreground">Options:</h4>
-                                <ul className="space-y-2">
-                                    {q.answers.map((opt, i) => (
-                                    <li key={i} className={cn(
-                                        "p-3 rounded-md border text-sm",
-                                        visibleAnswers[index] && opt === q.correctAnswer ? "border-primary bg-primary/10 font-semibold" : "bg-background"
-                                        )}
-                                    >
-                                        {opt}
-                                    </li>
-                                    ))}
-                                </ul>
-                                </div>
-                            )}
-
-                            {visibleAnswers[index] ? (
-                                <div className="space-y-4">
-                                <Alert className="border-primary/50 text-primary-900 dark:text-primary-200 bg-primary/10">
-                                    <AlertTitle className="text-primary dark:text-primary-300 font-bold">Correct Answer</AlertTitle>
-                                    <AlertDescription className="text-primary/90 dark:text-primary-200/90">
-                                        {q.correctAnswer}
-                                    </AlertDescription>
-                                </Alert>
-                                </div>
-                            ) : (
-                                <Button onClick={() => toggleAnswerVisibility(index)} variant="outline">
-                                <Eye className="mr-2 h-4 w-4" />
-                                Show Answer
-                                </Button>
-                            )}
-                            </AccordionContent>
-                        </Card>
-                        </AccordionItem>
-                    ))}
-                    </Accordion>
-                )}
-                {!isGenerating && !questions && (
-                    <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <BookOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                    <p className="text-muted-foreground">Your generated questions will appear here.</p>
-                    <p className="text-xs text-muted-foreground mt-1">Fill out the form to get started.</p>
-                    </div>
-                )}
-                </CardContent>
-            </Card>
-        </div>
-    </>
+    </div>
   );
 }
