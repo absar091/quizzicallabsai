@@ -1,6 +1,5 @@
 
 import { googleAI } from '@genkit-ai/googleai';
-import { getModelWithFallback as getModelFromRouter } from './modelRouter';
 
 /**
  * Returns the appropriate Genkit model based on the user's plan with fallback support.
@@ -9,8 +8,7 @@ import { getModelWithFallback as getModelFromRouter } from './modelRouter';
  * @returns A Genkit ModelReference.
  */
 export function getModel(isPro: boolean, useFallback: boolean = false) {
-    const tier: "free" | "pro" = isPro ? "pro" : "free";
-    const modelName = getModelFromRouter(tier, useFallback);
+    const modelName = getModelName(isPro, useFallback);
 
     try {
         return googleAI.model(modelName);
@@ -28,8 +26,11 @@ export function getModel(isPro: boolean, useFallback: boolean = false) {
  * @returns The model name as a string.
  */
 export function getModelName(isPro: boolean, useFallback: boolean = false): string {
-    const tier: "free" | "pro" = isPro ? "pro" : "free";
-    return getModelFromRouter(tier, useFallback);
+    if (isPro) {
+        return useFallback ? 'gemini-2.5-flash' : 'gemini-2.5-pro';
+    } else {
+        return useFallback ? 'gemini-2.0-flash' : 'gemini-1.5-flash';
+    }
 }
 
 /**
