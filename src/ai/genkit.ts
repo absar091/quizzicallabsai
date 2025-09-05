@@ -71,9 +71,11 @@ export const isAiAvailable = () => {
 // Model selection based on user plan
 export const getModelForPlan = (isPro: boolean) => {
   if (typeof process === 'undefined' || !hasApiKey) {
-    return isPro ? 'gemini-2.0-flash-exp' : 'gemini-1.5-flash';
+    const { getModelWithFallback } = require('./lib/modelRouter');
+    return getModelWithFallback(isPro ? 'pro' : 'free', false);
   }
-  return isPro ? 'gemini-2.0-flash-exp' : 'gemini-1.5-flash';
+  const { getModelWithFallback } = require('./lib/modelRouter');
+  return getModelWithFallback(isPro ? 'pro' : 'free', false);
 };
 
 // Enhanced prompt for Pro users

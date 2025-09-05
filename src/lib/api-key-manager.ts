@@ -39,8 +39,9 @@ class ApiKeyManager {
 
     if (keys.length === 0) {
       console.warn('⚠️ No valid Gemini API keys found in environment variables');
-      // Provide fallback for development
-      keys.push('demo-key-for-development');
+      console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('GEMINI')));
+      // Don't provide demo key - let it fail gracefully
+      return [];
     }
 
     console.log(`🔑 Loaded ${keys.length} API keys from environment`);

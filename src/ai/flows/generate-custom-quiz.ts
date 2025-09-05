@@ -60,11 +60,19 @@ export async function generateCustomQuiz(
   if (typeof process === 'undefined' || !isAiAvailable()) {
     throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
-  
+
   const aiInstance = ai || (await import('@/ai/genkit')).ai;
   if (!aiInstance) {
     throw new Error('AI service is temporarily unavailable. Please try again later.');
   }
+
+  console.log('🎯 Starting quiz generation with input:', {
+    topic: input.topic,
+    difficulty: input.difficulty,
+    numberOfQuestions: input.numberOfQuestions,
+    questionTypes: input.questionTypes,
+    isPro: input.isPro
+  });
   
   // Explicit input validation
   if (!input.topic || input.topic.trim().length === 0) {
