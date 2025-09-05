@@ -48,6 +48,7 @@ class CloudSyncManager {
 
   private constructor() {
     this.deviceId = this.generateDeviceId();
+    this.loadOfflineQueue();
     this.setupOnlineOfflineDetection();
   }
 
@@ -69,9 +70,11 @@ class CloudSyncManager {
 
   private setupOnlineOfflineDetection() {
     if (typeof window !== 'undefined') {
-      window.addEventListener('online', () => {
+      window.addEventListener('online', async () => {
         this.isOnline = true;
-        this.performSync();
+        // Process offline queue first, then perform sync
+        await this.processOfflineQueue();
+        await this.performSync();
       });
 
       window.addEventListener('offline', () => {
@@ -355,8 +358,66 @@ class CloudSyncManager {
       this.pendingChanges.set(dataType, data);
       if (this.isOnline) {
         await this.syncPendingChanges();
+      } else {
+        // Queue for offline sync
+        this.addToOfflineQueue(dataType, data);
       }
     }
+  }
+
+  private addToOfflineQueue(dataType: string, data: any) {
+    if (this.offlineQueue.length >= this.maxQueueSize) {
+      // Remove oldest item if queue is full
+      this.offlineQueue.shift();
+    }
+
+    this.offlineQueue.push({
+      type: dataType,
+      data,
+      timestamp: Date.now()
+    });
+
+    // Persist offline queue to localStorage
+    this.persistOfflineQueue();
+  }
+
+  private persistOfflineQueue() {
+    try {
+      localStorage.setItem('offlineQueue', JSON.stringify(this.offlineQueue));
+    } catch (error) {
+      console.warn('Failed to persist offline queue:', error);
+    }
+  }
+
+  private loadOfflineQueue() {
+    try {
+      const stored = localStorage.getItem('offlineQueue');
+      if (stored) {
+        this.offlineQueue = JSON.parse(stored);
+      }
+    } catch (error) {
+      console.warn('Failed to load offline queue:', error);
+      this.offlineQueue = [];
+    }
+  }
+
+  private async processOfflineQueue() {
+    if (!this.isOnline || this.offlineQueue.length === 0) return;
+
+    const queueToProcess = [...this.offlineQueue];
+    this.offlineQueue = [];
+
+    for (const item of queueToProcess) {
+      try {
+        await this.updateRemoteData({ [item.type]: item.data });
+      } catch (error) {
+        console.error(`Failed to sync offline item ${item.type}:`, error);
+        // Re-queue failed items
+        this.offlineQueue.push(item);
+      }
+    }
+
+    this.persistOfflineQueue();
   }
 
   private async syncPendingChanges() {
