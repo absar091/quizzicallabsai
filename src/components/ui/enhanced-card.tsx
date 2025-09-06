@@ -9,12 +9,12 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-white/90 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl',
-        glass: 'bg-white/10 backdrop-blur-md border-white/20 shadow-xl',
-        gradient: 'bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm border-border/30 shadow-lg',
+        default: 'bg-card/90 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl dark:bg-card',
+        glass: 'bg-card/50 backdrop-blur-md border-border/50 shadow-xl dark:bg-card/30 dark:border-border/30',
+        gradient: 'bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-sm border-border/30 shadow-lg',
         neon: 'bg-primary/5 border-primary/20 shadow-lg shadow-primary/10',
         outlined: 'bg-transparent border-2 border-dashed border-border/50 hover:border-primary/50',
-        elevated: 'bg-white shadow-2xl border-0 hover:shadow-3xl transform hover:-translate-y-1',
+        elevated: 'bg-card shadow-2xl border-0 hover:shadow-3xl transform hover:-translate-y-1',
       },
       padding: {
         none: 'p-0',

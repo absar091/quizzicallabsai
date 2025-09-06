@@ -83,19 +83,22 @@ export function QuestionSettingsStep() {
                 onClick={() => handleStyleToggle(style.id)}
                 className={cn(
                   'p-4 rounded-lg border transition-all duration-200 text-left',
+                  'bg-card hover:bg-accent/50',
                   isSelected
-                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                    : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20 dark:bg-primary/20 dark:border-primary'
+                    : 'border-border hover:border-primary/50'
                 )}
               >
                 <div className="flex items-center space-x-3 mb-2">
                   <div className={cn(
                     'p-2 rounded-lg',
-                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    isSelected
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
                   )}>
                     <StyleIcon className="w-4 h-4" />
                   </div>
-                  <h4 className="font-medium text-sm">{style.label}</h4>
+                  <h4 className="font-medium text-sm text-foreground">{style.label}</h4>
                 </div>
                 <p className="text-xs text-muted-foreground">{style.description}</p>
               </button>
