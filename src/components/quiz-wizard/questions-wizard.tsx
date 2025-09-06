@@ -12,8 +12,9 @@ import { EnhancedCard, EnhancedCardContent, EnhancedCardHeader, EnhancedCardTitl
 import { EnhancedProgress } from '@/components/ui/enhanced-progress';
 import { TopicStep } from './steps/topic-step';
 import { DifficultyStep } from './steps/difficulty-step';
-import { QuestionsSettingsStep } from './steps/questions-settings-step';
-import { QuestionsReviewStep } from './steps/questions-review-step';
+import { QuizConfigStep } from './steps/quiz-config-step';
+import { FineTuningStep } from './steps/fine-tuning-step';
+import { ReviewStep } from './steps/review-step';
 
 const questionsFormSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
