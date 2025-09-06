@@ -46,6 +46,15 @@ const processTextContent = (text: string) => {
     // Fix common AI typos in mathematical expressions
     .replace(/\\times/g, '\\times ')
     .replace(/\\div/g, '\\div ')
+    // Improve chemical formula rendering
+    .replace(/(\d+)([A-Z])/g, '$1 $2') // Add space between numbers and elements
+    .replace(/([A-Z])([A-Z])/g, '$1 $2') // Add space between consecutive elements
+    .replace(/(\d+)\s*([A-Z])/g, '$1$2') // Remove space between coefficient and element
+    // Fix common LaTeX issues
+    .replace(/\\\(/g, '$') // Convert \( to $
+    .replace(/\\\)/g, '$') // Convert \) to $
+    .replace(/\\\[/g, '$$') // Convert \[ to $$
+    .replace(/\\\]/g, '$$') // Convert \] to $$
     .trim();
 };
 
@@ -113,14 +122,27 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
             )}
             {smiles && (
                 <div className="flex justify-center p-4 bg-muted rounded-lg">
+                    <div className="text-center mb-2">
+                        <span className="text-sm text-muted-foreground">Chemical Structure</span>
+                    </div>
                     <Image
-                        src={`https://www.simplesmiles.io/chem_structure.png?smiles=${encodeURIComponent(smiles)}&bg=transparent&fg=contrast`}
-                        alt={`Chemical structure for ${smiles}`}
+                        src={`https://www.simplesmiles.io/chem_structure.png?smiles=${encodeURIComponent(smiles)}&bg=transparent&fg=contrast&size=300x200`}
+                        alt={`Chemical structure for SMILES: ${smiles}`}
                         width={300}
                         height={200}
                         unoptimized // External image that we can't optimize
-                        className="object-contain dark:invert"
+                        className="object-contain dark:invert rounded border"
+                        onError={(e) => {
+                            // Fallback to text representation if image fails
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.parentElement?.querySelector('.fallback-text') as HTMLElement;
+                            if (fallback) fallback.style.display = 'block';
+                        }}
                     />
+                    <div className="fallback-text hidden text-center mt-2">
+                        <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{smiles}</span>
+                    </div>
                 </div>
             )}
             {chartData && chartData.length > 0 && (
