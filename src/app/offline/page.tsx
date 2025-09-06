@@ -1,4 +1,4 @@
-is erro from whiole app if presnet nam make app error free espe'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { Wifi, WifiOff, RefreshCw, Home, BookOpen } from 'lucide-react';
