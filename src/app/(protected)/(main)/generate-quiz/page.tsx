@@ -389,7 +389,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      
+
       timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
@@ -409,7 +409,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         clearInterval(timerRef.current);
       }
     };
-  }, [quiz, showResults, timeLeft, handleSubmit]);
+  }, [quiz, showResults, handleSubmit]);
   
   const handleGenerateQuiz = async (values: QuizFormValues) => {
     setIsGenerating(true);

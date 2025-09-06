@@ -29,15 +29,38 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+// Enhanced text processing for better AI-generated content rendering
+const processTextContent = (text: string) => {
+  if (!text) return '';
+
+  // Handle common AI formatting issues
+  return text
+    // Fix spacing around mathematical operators
+    .replace(/([+\-×÷=≠≤≥≈])(?!\s)/g, '$1 ')
+    .replace(/(?<!\s)([+\-×÷=≠≤≥≈])/g, ' $1')
+    // Fix spacing around parentheses in math
+    .replace(/(\w)\(/g, '$1 (')
+    .replace(/\)(\w)/g, ') $1')
+    // Clean up multiple spaces
+    .replace(/\s+/g, ' ')
+    // Fix common AI typos in mathematical expressions
+    .replace(/\\times/g, '\\times ')
+    .replace(/\\div/g, '\\div ')
+    .trim();
+};
+
 // This component will find and render LaTeX expressions within a string,
 // and also display SMILES chemical structures and charts.
 export default function RichContentRenderer({ content, smiles, chartData, placeholder, inline = false }: RichContentRendererProps) {
     if (!content && !smiles && !chartData && !placeholder) return null;
 
+    // Process and clean the content
+    const processedContent = processTextContent(content);
+
     // Regex to find all occurrences of $...$ (inline) and $$...$$ (display)
     const latexRegex = /(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g;
     // In inline mode, strip all line breaks and <br> tags
-    const cleanContent = inline && content ? content.replace(/\n|<br\s*\/?>/gi, ' ') : content;
+    const cleanContent = inline && processedContent ? processedContent.replace(/\n|<br\s*\/?>/gi, ' ') : processedContent;
     const parts = cleanContent ? cleanContent.split(latexRegex) : [];
 
     const renderLatex = (text: string) => {
@@ -46,16 +69,17 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                 const isDisplay = part.startsWith('$$');
                 const latex = part.substring(isDisplay ? 2 : 1, part.length - (isDisplay ? 2 : 1));
                 try {
-                    return isDisplay ? 
-                        <BlockMath key={index}>{latex}</BlockMath> : 
+                    return isDisplay ?
+                        <BlockMath key={index}>{latex}</BlockMath> :
                         <InlineMath key={index}>{latex}</InlineMath>;
                 } catch (e) {
                     console.error("KaTeX parsing error:", e);
-                    return <span key={index}>{part}</span>;
+                    // Fallback: render the original LaTeX without processing
+                    return <span key={index} className="font-mono text-sm bg-muted px-1 rounded">{part}</span>;
                 }
             }
             // In inline mode, ensure all spans are inline
-            return <span key={index} style={inline ? { display: 'inline' } : {}}>{part}</span>;
+            return <span key={index} style={inline ? { display: 'inline' } : {}} className="leading-relaxed">{part}</span>;
         });
     };
 
@@ -69,11 +93,11 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
     }
 
     if (inline) {
-        return <span>{renderLatex(content)}</span>;
+        return <span className="text-base leading-relaxed">{renderLatex(processedContent)}</span>;
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 text-base leading-relaxed">
              {placeholder && (
                  <div className="flex justify-center p-4 bg-muted rounded-lg">
                     <div className={cn("relative w-full max-w-md", getAspectRatioClass(placeholder.aspectRatio))}>
@@ -119,7 +143,11 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                     </CardContent>
                 </Card>
             )}
-            {content && <span>{renderLatex(content)}</span>}
+            {processedContent && (
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                    {renderLatex(processedContent)}
+                </div>
+            )}
         </div>
     );
 }
