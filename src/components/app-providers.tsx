@@ -34,6 +34,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
             <InstallPwaPrompt />
             <PWAInstallPrompt />
             <ServiceWorkerRegistration />
+            <MobileOptimization />
             {showHelpBot && (
                  <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
                     <HelpBot />
