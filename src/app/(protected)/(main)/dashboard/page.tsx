@@ -23,6 +23,7 @@ import { QuizAccessDialog } from "@/components/quiz-sharing";
 import { AdminAccess } from "@/components/admin-access";
 import { SyncStatus, FloatingSyncIndicator, SyncStatusToast } from "@/components/sync-status";
 import { onCloudSyncUpdate } from "@/lib/cloud-sync";
+import { EnhancedLoading } from '@/components/enhanced-loading';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
