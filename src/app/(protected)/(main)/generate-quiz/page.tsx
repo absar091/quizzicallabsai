@@ -506,11 +506,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   };
 
 
-  const handleAnswer = (answer: string) => {
+  const handleAnswer = (selectedAnswer: string) => {
     const newAnswers = [...userAnswers];
-    newAnswers[currentQuestion] = answer;
+    // Store the answer index (0, 1, 2, 3) instead of the full text for better comparison
+    const currentQ = quiz[currentQuestion];
+    const answerIndex = currentQ.answers?.findIndex(answer => answer === selectedAnswer) ?? -1;
+    newAnswers[currentQuestion] = answerIndex >= 0 ? selectedAnswer : selectedAnswer;
     setUserAnswers(newAnswers);
-    
+
     // Save progress in real-time
     if (quiz && formValues) {
       saveProgress({
