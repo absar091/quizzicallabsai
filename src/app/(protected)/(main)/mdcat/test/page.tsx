@@ -87,10 +87,26 @@ function MdcatTestFlow() {
     }, [generateTest]);
 
     if (isLoading) {
+        const [progress, setProgress] = useState(25);
+
+        useEffect(() => {
+            const interval = setInterval(() => {
+                setProgress(prev => {
+                    if (prev >= 95) {
+                        clearInterval(interval);
+                        return prev;
+                    }
+                    return prev + Math.random() * 10 + 5; // Random progress between 5-15%
+                });
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }, []);
+
         return (
             <div>
                 <QuizGenerationLoading
-                    progress={25}
+                    progress={progress}
                     onRetry={generateTest}
                 />
                 <div className="mt-8">

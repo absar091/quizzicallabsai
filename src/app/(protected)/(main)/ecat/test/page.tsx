@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense, useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 // Dynamic import for AI function
 type GenerateCustomQuizOutput = any;
 import GenerateQuizPage, { Quiz } from "../../../(main)/generate-quiz/page";
@@ -90,10 +90,26 @@ function EcatTestFlow() {
     
 
     if (isLoading) {
+        const [progress, setProgress] = useState(25);
+
+        useEffect(() => {
+            const interval = setInterval(() => {
+                setProgress(prev => {
+                    if (prev >= 95) {
+                        clearInterval(interval);
+                        return prev;
+                    }
+                    return prev + Math.random() * 10 + 5; // Random progress between 5-15%
+                });
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }, []);
+
         return (
             <div>
                 <QuizGenerationLoading
-                    progress={25}
+                    progress={progress}
                     onRetry={generateTest}
                 />
                 <div className="mt-8">

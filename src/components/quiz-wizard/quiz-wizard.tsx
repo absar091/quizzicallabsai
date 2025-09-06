@@ -16,6 +16,7 @@ import { QuestionSettingsStep } from './steps/question-settings-step';
 import { QuizConfigStep } from './steps/quiz-config-step';
 import { FineTuningStep } from './steps/fine-tuning-step';
 import { ReviewStep } from './steps/review-step';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const quizFormSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
