@@ -338,3 +338,60 @@
 .focus-modern:focus-visible {
     @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
 }
+
+/* Mobile Scrolling Fixes */
+@media (max-width: 768px) {
+  /* Ensure proper scrolling on mobile */
+  html, body {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  /* Fix for iOS Safari scrolling */
+  body {
+    position: relative;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Ensure containers allow scrolling */
+  #__next {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Fix for modal and overlay scrolling */
+  .fixed {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure touch targets are properly sized */
+  button, a, input, textarea, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Additional mobile optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+
+  .hover\:shadow-xl:hover {
+    box-shadow: none;
+  }
+}
+
+/* Prevent horizontal scroll */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
