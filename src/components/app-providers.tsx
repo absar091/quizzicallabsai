@@ -11,6 +11,7 @@ import { SplashScreen } from "@/components/splash-screen";
 import InstallPwaPrompt from "./install-pwa-prompt";
 import { PWAInstallPrompt } from "./pwa-install-prompt";
 import { ServiceWorkerRegistration } from "./service-worker-registration";
+import { MobileOptimization } from "./mobile-optimization";
 
 import { useAuth } from "@/hooks/useAuth";
 import NotificationHandler from "./notification-handler";
