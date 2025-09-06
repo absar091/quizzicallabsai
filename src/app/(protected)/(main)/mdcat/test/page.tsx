@@ -23,6 +23,7 @@ function MdcatTestFlow() {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [progress, setProgress] = useState(25);
 
     const generateTest = useCallback(async () => {
         const subject = searchParams.get('subject');
@@ -86,10 +87,8 @@ function MdcatTestFlow() {
         generateTest();
     }, [generateTest]);
 
-    if (isLoading) {
-        const [progress, setProgress] = useState(25);
-
-        useEffect(() => {
+    useEffect(() => {
+        if (isLoading) {
             const interval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 95) {
@@ -101,8 +100,10 @@ function MdcatTestFlow() {
             }, 1000);
 
             return () => clearInterval(interval);
-        }, []);
+        }
+    }, [isLoading]);
 
+    if (isLoading) {
         return (
             <div>
                 <QuizGenerationLoading
