@@ -31,6 +31,8 @@ function AppContent({ children }: { children: React.ReactNode }) {
             <Toaster />
             <CookieConsentBanner />
             <InstallPwaPrompt />
+            <PWAInstallPrompt />
+            <ServiceWorkerRegistration />
             {showHelpBot && (
                  <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
                     <HelpBot />
