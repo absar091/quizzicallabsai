@@ -32,31 +32,38 @@ interface QuestionsWizardProps {
 const steps = [
   {
     id: 'topic',
-    title: 'Choose Topic',
-    description: 'What topics do you want practice questions for?',
+    title: 'Topic Name',
+    description: 'Enter the topic you want to create a quiz for',
     icon: FileText,
     component: TopicStep,
   },
   {
     id: 'difficulty',
-    title: 'Set Difficulty',
-    description: 'How challenging should these questions be?',
+    title: 'Style',
+    description: 'Choose the difficulty level for your quiz',
     icon: Brain,
     component: DifficultyStep,
   },
   {
-    id: 'settings',
-    title: 'Question Settings',
-    description: 'Configure the number of questions',
+    id: 'config',
+    title: 'Questions & Time',
+    description: 'Set the number of questions and time limit',
     icon: Settings,
-    component: QuestionsSettingsStep,
+    component: QuizConfigStep,
+  },
+  {
+    id: 'instructions',
+    title: 'Specific Instructions',
+    description: 'Add any special instructions for the AI (optional)',
+    icon: Sparkles,
+    component: FineTuningStep,
   },
   {
     id: 'review',
     title: 'Review & Generate',
-    description: 'Confirm your settings and generate questions',
+    description: 'Review your settings and generate your quiz',
     icon: Eye,
-    component: QuestionsReviewStep,
+    component: ReviewStep,
   },
 ];
 
