@@ -77,8 +77,8 @@ import { UserFeedback, QuickFeedback } from '@/components/user-feedback';
 import { QuizWizard } from '@/components/quiz-wizard/quiz-wizard';
 
 const formSchema = z.object({
-  topic: z.string().optional(),
-  difficulty: z.string().optional(),
+  topic: z.string().min(1, "Topic is required"),
+  difficulty: z.string().min(1, "Difficulty is required"),
   numberOfQuestions: z.number().min(1).max(55),
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
@@ -91,7 +91,7 @@ const formSchema = z.object({
 });
 
 export type QuizFormValues = z.infer<typeof formSchema>;
-export type QuizWizardFormValues = QuizFormValues;
+export type QuizWizardFormValues = z.infer<typeof formSchema>;
 export type Quiz = GenerateCustomQuizOutput["quiz"];
 type Flashcard = GenerateFlashcardsOutput["flashcards"][0];
 

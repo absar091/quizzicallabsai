@@ -1,44 +1,15 @@
 'use client';
 
 import { useFormContext } from 'react-hook-form';
-import { Search, BookOpen, GraduationCap, Code, Calculator, Microscope, Globe } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
 import { EnhancedInput } from '@/components/ui/enhanced-input';
 import { EnhancedCard } from '@/components/ui/enhanced-card';
 import { cn } from '@/lib/utils';
 
-const topicSuggestions = [
-  {
-    category: 'Academic Subjects',
-    icon: GraduationCap,
-    topics: [
-      'Mathematics', 'Physics', 'Chemistry', 'Biology',
-      'English Literature', 'History', 'Geography', 'Computer Science'
-    ]
-  },
-  {
-    category: 'Programming',
-    icon: Code,
-    topics: [
-      'JavaScript', 'Python', 'React', 'Node.js',
-      'TypeScript', 'CSS', 'HTML', 'Database Design'
-    ]
-  },
-  {
-    category: 'Science',
-    icon: Microscope,
-    topics: [
-      'Quantum Physics', 'Organic Chemistry', 'Genetics',
-      'Astronomy', 'Environmental Science', 'Neuroscience'
-    ]
-  },
-  {
-    category: 'Other',
-    icon: Globe,
-    topics: [
-      'World History', 'Psychology', 'Economics',
-      'Philosophy', 'Art History', 'Music Theory'
-    ]
-  }
+const popularTopics = [
+  'Mathematics', 'Physics', 'Chemistry', 'Biology',
+  'JavaScript', 'Python', 'React', 'World History',
+  'Psychology', 'Economics', 'English Literature', 'Computer Science'
 ];
 
 export function TopicStep() {
@@ -50,7 +21,7 @@ export function TopicStep() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Topic Input */}
       <div className="space-y-4">
         <EnhancedInput
@@ -69,46 +40,28 @@ export function TopicStep() {
         )}
       </div>
 
-      {/* Topic Suggestions */}
-      <div className="space-y-6">
+      {/* Popular Topics */}
+      <div className="space-y-4">
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">Popular Topics</h3>
           <p className="text-muted-foreground text-sm">
-            Choose from these popular categories or enter your own topic above
+            Quick select or enter your own topic above
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {topicSuggestions.map((category) => {
-            const CategoryIcon = category.icon;
-            return (
-              <EnhancedCard key={category.category} className="hover:scale-105 transition-transform duration-200">
-                <div className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <CategoryIcon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h4 className="font-semibold">{category.category}</h4>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {category.topics.map((topic) => (
-                      <button
-                        key={topic}
-                        onClick={() => handleTopicSelect(topic)}
-                        className={cn(
-                          'p-3 text-sm rounded-lg border transition-all duration-200 text-left hover:border-primary hover:bg-primary/5',
-                          currentTopic === topic && 'border-primary bg-primary/10 text-primary font-medium'
-                        )}
-                      >
-                        {topic}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </EnhancedCard>
-            );
-          })}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {popularTopics.map((topic) => (
+            <button
+              key={topic}
+              onClick={() => handleTopicSelect(topic)}
+              className={cn(
+                'p-3 text-sm rounded-lg border transition-all duration-200 hover:border-primary hover:bg-primary/5',
+                currentTopic === topic && 'border-primary bg-primary/10 text-primary font-medium'
+              )}
+            >
+              {topic}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -120,8 +73,7 @@ export function TopicStep() {
             <div>
               <h4 className="font-medium text-accent mb-1">Pro Tip</h4>
               <p className="text-sm text-muted-foreground">
-                Be specific with your topic! Instead of "Science", try "Photosynthesis in Plants" or "Newton's Laws of Motion".
-                This helps our AI generate more targeted and relevant questions.
+                Be specific! Instead of "Science", try "Photosynthesis in Plants" for better questions.
               </p>
             </div>
           </div>

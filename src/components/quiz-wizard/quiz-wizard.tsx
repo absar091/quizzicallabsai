@@ -13,6 +13,7 @@ import { EnhancedProgress } from '@/components/ui/enhanced-progress';
 import { TopicStep } from './steps/topic-step';
 import { DifficultyStep } from './steps/difficulty-step';
 import { QuestionSettingsStep } from './steps/question-settings-step';
+import { QuizConfigStep } from './steps/quiz-config-step';
 import { FineTuningStep } from './steps/fine-tuning-step';
 import { ReviewStep } from './steps/review-step';
 
@@ -41,28 +42,28 @@ interface QuizWizardProps {
 const steps = [
   {
     id: 'topic',
-    title: 'Choose Topic',
-    description: 'What would you like to quiz yourself on?',
+    title: 'Topic',
+    description: 'What topic would you like to quiz yourself on?',
     icon: FileText,
     component: TopicStep,
   },
   {
-    id: 'difficulty',
-    title: 'Set Difficulty',
-    description: 'How challenging should this quiz be?',
+    id: 'style',
+    title: 'Question Style',
+    description: 'Choose the type of questions',
     icon: Brain,
-    component: DifficultyStep,
-  },
-  {
-    id: 'settings',
-    title: 'Question Settings',
-    description: 'Customize your quiz preferences',
-    icon: Settings,
     component: QuestionSettingsStep,
   },
   {
-    id: 'tuning',
-    title: 'Fine Tuning',
+    id: 'config',
+    title: 'Quiz Settings',
+    description: 'Number of questions and time limit',
+    icon: Settings,
+    component: QuizConfigStep,
+  },
+  {
+    id: 'instructions',
+    title: 'Instructions',
     description: 'Add specific instructions (optional)',
     icon: Sparkles,
     component: FineTuningStep,
