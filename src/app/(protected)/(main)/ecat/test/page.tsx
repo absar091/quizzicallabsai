@@ -12,9 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// Dynamic import for AI function
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { QuizGenerationLoading } from "@/components/enhanced-loading";
 import { GenerationAd } from "@/components/ads/ad-banner";
 
 function EcatTestFlow() {
@@ -90,34 +91,11 @@ function EcatTestFlow() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60svh] p-4">
-                <div className="w-full max-w-md mx-auto">
-                    <Card className="text-center">
-                        <CardHeader>
-                            <CardTitle className="text-xl">Generating Your Quiz</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="text-lg font-medium">Analyzing your topic...</div>
-                            <div className="text-sm text-muted-foreground">This usually takes 45 seconds</div>
-
-                            <div className="space-y-2">
-                                <Progress value={25} className="h-2" />
-                                <div className="flex justify-between text-xs text-muted-foreground">
-                                    <span>0:02 elapsed</span>
-                                    <span>25%</span>
-                                </div>
-                            </div>
-
-                            <Button
-                                variant="outline"
-                                onClick={generateTest}
-                                className="w-full"
-                            >
-                                Try Again
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
+            <div>
+                <QuizGenerationLoading
+                    progress={25}
+                    onRetry={generateTest}
+                />
                 <div className="mt-8">
                     <GenerationAd />
                 </div>
