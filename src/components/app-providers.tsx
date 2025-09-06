@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import { SplashScreen } from "@/components/splash-screen";
 import InstallPwaPrompt from "./install-pwa-prompt";
+import { PWAInstallPrompt } from "./pwa-install-prompt";
+import { ServiceWorkerRegistration } from "./service-worker-registration";
 
 import { useAuth } from "@/hooks/useAuth";
 import NotificationHandler from "./notification-handler";
