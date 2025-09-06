@@ -21,6 +21,7 @@ function NtsTestFlow() {
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [progress, setProgress] = useState(25);
 
     const generateTest = useCallback(async () => {
         const category = searchParams.get('category');
@@ -40,27 +41,30 @@ function NtsTestFlow() {
         try {
             // Construct a more detailed topic for the AI
             const topicForAI = `NTS test for category '${category}' on the subject of '${subject}', focusing specifically on the chapter: '${chapter}'. Questions should be past-paper style and appropriate for this test level.`;
-            
+
+            const quizInput = {
+                category: category,
+                topic: topicForAI,
+                numberOfQuestions: numQuestions,
+            };
+
             const response = await fetch('/api/ai/nts-quiz', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(quizInput)
             });
-            
+
             if (!response.ok) throw new Error('Failed to generate quiz');
             const result = await response.json();
-            
+
             if (result.error) throw new Error(result.error);
-            const aiResult = await generateNtsQuiz({
-                category: category,
-                topic: topicForAI,
-                numberOfQuestions: numQuestions,
-            });
-            if (!aiResult.quiz || aiResult.quiz.length === 0) {
+
+            if (!result.quiz || result.quiz.length === 0) {
                 throw new Error("The AI returned an empty quiz. Please try again.");
             }
-            // The output of generateNtsQuiz is slightly different, so we format it for GenerateQuizPage
-            const formattedQuiz = aiResult.quiz.map(q => ({
+
+            // Format the quiz for GenerateQuizPage
+            const formattedQuiz = result.quiz.map((q: any) => ({
                 question: q.question,
                 answers: q.answers,
                 correctAnswer: q.correctAnswer,
@@ -85,10 +89,8 @@ function NtsTestFlow() {
         generateTest();
     }, [generateTest]);
 
-    if (isLoading) {
-        const [progress, setProgress] = useState(25);
-
-        useEffect(() => {
+    useEffect(() => {
+        if (isLoading) {
             const interval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 95) {
@@ -100,8 +102,10 @@ function NtsTestFlow() {
             }, 1000);
 
             return () => clearInterval(interval);
-        }, []);
+        }
+    }, [isLoading]);
 
+    if (isLoading) {
         return (
             <div>
                 <QuizGenerationLoading

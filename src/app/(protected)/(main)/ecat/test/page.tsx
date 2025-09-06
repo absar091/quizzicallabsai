@@ -25,6 +25,7 @@ function EcatTestFlow() {
     const [comprehensionText, setComprehensionText] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [progress, setProgress] = useState(25);
 
     const generateTest = useCallback(async () => {
         const subject = searchParams.get('subject');
