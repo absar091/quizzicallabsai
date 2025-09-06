@@ -70,8 +70,8 @@ export class OfflineQuizManager {
       const store = transaction.objectStore(this.STORE_NAME);
       const result = await store.get(quizId);
       
-      if (result && result.metadata.expiresAt > Date.now()) {
-        return result;
+      if (result && (result as CachedQuiz).metadata.expiresAt > Date.now()) {
+        return result as CachedQuiz;
       } else if (result) {
         // Quiz expired, remove it
         await this.removeCachedQuiz(quizId);
