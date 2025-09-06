@@ -7,9 +7,12 @@ import GenerateQuizPage, { Quiz } from "../../../(main)/generate-quiz/page";
 import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 // Dynamic import for AI function
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 function NtsTestFlow() {
     const searchParams = useSearchParams();
@@ -82,19 +85,34 @@ function NtsTestFlow() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-                <div className="relative">
-                    <BrainCircuit className="h-20 w-20 text-primary" />
-                    <motion.div
-                        className="absolute inset-0 flex items-center justify-center"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    >
-                        <Sparkles className="h-8 w-8 text-accent animate-pulse" />
-                    </motion.div>
+            <div className="flex flex-col items-center justify-center min-h-[60svh] p-4">
+                <div className="w-full max-w-md mx-auto">
+                    <Card className="text-center">
+                        <CardHeader>
+                            <CardTitle className="text-xl">Generating Your Quiz</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="text-lg font-medium">Analyzing your topic...</div>
+                            <div className="text-sm text-muted-foreground">This usually takes 45 seconds</div>
+
+                            <div className="space-y-2">
+                                <Progress value={25} className="h-2" />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                    <span>0:02 elapsed</span>
+                                    <span>25%</span>
+                                </div>
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                onClick={generateTest}
+                                className="w-full"
+                            >
+                                Try Again
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </div>
-                <h2 className="text-2xl font-semibold mb-2 mt-6">Preparing your NTS test for "{searchParams.get('chapter')}"...</h2>
-                <p className="text-muted-foreground max-w-sm mb-6">This may take a moment.</p>
             </div>
         )
     }
@@ -172,5 +190,3 @@ export default function NtsTestSuspenseWrapper() {
         </Suspense>
     )
 }
-
-    
