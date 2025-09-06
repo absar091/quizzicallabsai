@@ -1,4 +1,4 @@
-n'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { X, Download, Smartphone } from 'lucide-react';
