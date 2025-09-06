@@ -35,6 +35,7 @@ export interface QuizResult {
     total: number;
     percentage: number;
     date: string;
+    timeTaken?: number; // Time taken in seconds
 }
 
 export interface BookmarkedQuestion {

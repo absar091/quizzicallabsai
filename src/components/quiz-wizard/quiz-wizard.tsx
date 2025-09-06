@@ -161,7 +161,7 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
           </div>
 
           {/* Step Indicators */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 overflow-x-auto pb-2">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
               const isCompleted = index < currentStep;
@@ -169,7 +169,7 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
               const isClickable = index <= currentStep;
 
               return (
-                <div key={step.id} className="flex items-center">
+                <div key={step.id} className="flex items-center flex-shrink-0">
                   <button
                     onClick={() => handleStepClick(index)}
                     disabled={!isClickable}
@@ -191,7 +191,7 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
                   {index < steps.length - 1 && (
                     <div
                       className={cn(
-                        'flex-1 h-0.5 mx-4 transition-colors duration-200',
+                        'flex-1 h-0.5 mx-2 sm:mx-4 transition-colors duration-200 min-w-4',
                         isCompleted ? 'bg-primary' : 'bg-muted-foreground/30'
                       )}
                     />
@@ -239,24 +239,26 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
         </EnhancedCard>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mt-8 gap-4">
           <EnhancedButton
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstStep}
             leftIcon={<ArrowLeft className="w-4 h-4" />}
             animation="scale"
+            className="w-full sm:w-auto"
           >
             Previous
           </EnhancedButton>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-center w-full sm:w-auto">
             {!isLastStep ? (
               <EnhancedButton
                 variant="gradient"
                 onClick={handleNext}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
                 animation="scale"
+                className="w-full sm:w-auto"
               >
                 Next
               </EnhancedButton>
@@ -269,6 +271,7 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
                 leftIcon={<Sparkles className="w-4 h-4" />}
                 animation="scale"
                 size="lg"
+                className="w-full sm:w-auto"
               >
                 Generate Quiz
               </EnhancedButton>
