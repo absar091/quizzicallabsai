@@ -13,6 +13,7 @@ import { getQuizResults, QuizResult } from '@/lib/indexed-db';
 import { mdcatSyllabus } from '@/lib/mdcat-syllabus';
 import { ecatSyllabus } from '@/lib/ecat-syllabus';
 import { ntsSyllabus } from '@/lib/nts-syllabus';
+import { EnhancedLoading } from '@/components/enhanced-loading';
 
 const tests = [
   {
@@ -46,12 +47,18 @@ export default function ExamPrepPage() {
         ECAT: 0,
         NTS: 0,
     });
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadData() {
-            if (user) {
-                const history = await getQuizResults(user.uid);
-                setQuizHistory(history);
+            setIsLoading(true);
+            try {
+                if (user) {
+                    const history = await getQuizResults(user.uid);
+                    setQuizHistory(history);
+                }
+            } finally {
+                setIsLoading(false);
             }
         }
         loadData();
@@ -88,6 +95,18 @@ export default function ExamPrepPage() {
         }
     }, [quizHistory]);
 
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <EnhancedLoading
+          type="general"
+          message="Loading your exam preparation data..."
+          estimatedTime={15}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
