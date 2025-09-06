@@ -35,6 +35,18 @@ const questionStyleOptions = [
     label: 'Comprehension-based',
     description: 'Reading passage with questions',
     icon: MessageSquareQuote,
+  },
+  {
+    id: 'Practice Questions',
+    label: 'Practice Questions',
+    description: 'Mixed practice with explanations',
+    icon: Brain,
+  },
+  {
+    id: 'Custom Format',
+    label: 'Custom Format',
+    description: 'Tailored to specific learning needs',
+    icon: Lightbulb,
   }
 ];
 
