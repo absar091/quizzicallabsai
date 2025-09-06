@@ -68,16 +68,23 @@ export class OfflineQuizManager {
       const db = await this.initDB();
       const transaction = db.transaction([this.STORE_NAME], 'readonly');
       const store = transaction.objectStore(this.STORE_NAME);
-      const result = await store.get(quizId);
-      
-      if (result && (result as CachedQuiz).metadata.expiresAt > Date.now()) {
-        return result as CachedQuiz;
-      } else if (result) {
-        // Quiz expired, remove it
-        await this.removeCachedQuiz(quizId);
-      }
-      
-      return null;
+
+      return new Promise((resolve, reject) => {
+        const request = store.get(quizId);
+        request.onsuccess = () => {
+          const result = request.result as CachedQuiz;
+          if (result && result.metadata.expiresAt > Date.now()) {
+            resolve(result);
+          } else if (result) {
+            // Quiz expired, remove it
+            this.removeCachedQuiz(quizId);
+            resolve(null);
+          } else {
+            resolve(null);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
     } catch (error) {
       console.error('Failed to get cached quiz:', error);
       return null;
