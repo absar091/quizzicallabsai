@@ -4,10 +4,18 @@ import { getNextApiKey, handleApiKeyError } from '@/lib/api-key-manager';
 
 // Check if we're in a server environment and API key is available
 const isServer = typeof process !== 'undefined';
+
+// Simple check for API keys - assume they're available if environment suggests they exist
 const hasApiKey = isServer && (
-  (process.env?.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.includes('Dummy')) ||
-  (process.env?.GEMINI_API_KEY_1 && !process.env.GEMINI_API_KEY_1.includes('Dummy'))
+  process.env.GEMINI_API_KEY_1 ||
+  process.env.GEMINI_API_KEY_2 ||
+  process.env.GEMINI_API_KEY_3 ||
+  process.env.GEMINI_API_KEY_4 ||
+  process.env.GEMINI_API_KEY_5 ||
+  process.env.GEMINI_API_KEY
 );
+
+console.log(`🔑 AI Key Check: ${hasApiKey ? 'Keys detected' : 'No keys found'}`);
 
 if (!isServer) {
   console.warn('AI features are only available on the server side.');
