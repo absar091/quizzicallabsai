@@ -151,8 +151,35 @@ export class OfflineQuizManager {
       isOffline: this.isOffline(),
       lastOnline: localStorage.getItem('lastOnlineTime'),
       hasCache: 'caches' in window,
-      hasIndexedDB: 'indexedDB' in window
+      hasIndexedDB: 'indexedDB' in window,
+      serviceWorker: 'serviceWorker' in navigator,
+      isStandalone: window.matchMedia('(display-mode: standalone)').matches ||
+                   (window.navigator as any).standalone === true
     };
+  }
+
+  // Handle offline API errors
+  static handleOfflineError(error: any) {
+    if (this.isOffline()) {
+      return {
+        error: 'offline',
+        message: 'You are currently offline. This feature requires an internet connection.',
+        offline: true,
+        suggestion: 'Please check your connection and try again, or use offline features like cached quizzes.'
+      };
+    }
+    return error;
+  }
+
+  // Check if we can perform action offline
+  static canPerformOffline(action: string): boolean {
+    const offlineActions = [
+      'view-cached-quiz',
+      'view-cached-questions',
+      'view-study-materials',
+      'continue-incomplete-quiz'
+    ];
+    return this.isOffline() && offlineActions.includes(action);
   }
 }
 
