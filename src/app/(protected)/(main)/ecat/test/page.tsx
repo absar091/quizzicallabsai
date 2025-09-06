@@ -88,12 +88,9 @@ function EcatTestFlow() {
     useEffect(() => {
         generateTest();
     }, [generateTest]);
-    
 
-    if (isLoading) {
-        const [progress, setProgress] = useState(25);
-
-        useEffect(() => {
+    useEffect(() => {
+        if (isLoading) {
             const interval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 95) {
@@ -105,8 +102,10 @@ function EcatTestFlow() {
             }, 1000);
 
             return () => clearInterval(interval);
-        }, []);
+        }
+    }, [isLoading]);
 
+    if (isLoading) {
         return (
             <div>
                 <QuizGenerationLoading
