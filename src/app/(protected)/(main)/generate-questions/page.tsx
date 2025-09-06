@@ -30,6 +30,7 @@ import { usePlan } from "@/hooks/usePlan";
 import { useAuth } from "@/context/AuthContext";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { QuestionsWizard } from "@/components/quiz-wizard/questions-wizard";
+import { EnhancedLoading } from '@/components/enhanced-loading';
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -194,6 +195,19 @@ export default function GenerateQuestionsPage() {
 
     doc.save(`${form.getValues('topic').replace(/\s+/g, '_')}_practice_questions.pdf`);
   };
+
+  if (isGenerating) {
+    return (
+      <div>
+        <EnhancedLoading
+          type="quiz"
+          message="Generating your practice questions..."
+          estimatedTime={30}
+        />
+        <GenerationAd />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
