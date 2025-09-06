@@ -87,9 +87,18 @@
   * {
     @apply border-border;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
   }
 }
 

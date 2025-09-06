@@ -47,20 +47,27 @@ export function MobileOptimization() {
     // Initial setup
     handleResize();
 
-    // Prevent pull-to-refresh on mobile
+    // Prevent pull-to-refresh on mobile (only when pulling down from top)
     let startY = 0;
+    let isPullingDown = false;
+
     const handleTouchStart = (e: TouchEvent) => {
       startY = e.touches[0].clientY;
+      isPullingDown = false;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+
       const currentY = e.touches[0].clientY;
       const diffY = startY - currentY;
 
-      // If scrolling up and at top, or scrolling down and at bottom, prevent default
-      if ((diffY > 0 && window.scrollY === 0) || (diffY < 0 && window.innerHeight + window.scrollY >= document.body.offsetHeight)) {
+      // Only prevent pull-to-refresh when at the very top and pulling down
+      if (window.scrollY <= 5 && diffY < -10) {
+        isPullingDown = true;
         e.preventDefault();
       }
+      // Allow normal scrolling in all other cases
     };
 
     // Add touch event listeners for better scroll behavior
