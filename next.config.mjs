@@ -64,14 +64,30 @@ const nextConfig = {
         dns: false,             // ✅ gRPC dns dependency
         async_hooks: false,     // ✅ OpenTelemetry async hooks
         dgram: false,           // ✅ Jaeger UDP datagram
+        buffer: false,
         zlib: false,
         os: false,
         child_process: false,
         worker_threads: false,
+        // Modern Node.js URL scheme aliases
+        'node:fs': false,
+        'node:http': false,
+        'node:https': false,
+        'node:buffer': false,
+        'node:async_hooks': false,
         // Third-party modules that depend on Node.js
         'require-in-the-middle': false,
         handlebars: false,
       };
+
+      // Handle node: URL scheme for Genkit packages
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@genkit-ai/googleai': 'commonjs @genkit-ai/googleai',
+        '@genkit-ai/core': 'commonjs @genkit-ai/core',
+        'genkit': 'commonjs genkit',
+        'node-fetch': 'commonjs node-fetch',
+      });
     }
 
     return config;
