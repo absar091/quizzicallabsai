@@ -153,9 +153,9 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
     <FormProvider {...formMethods}>
       <div className={cn('max-w-4xl mx-auto', className)}>
         {/* Progress Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gradient">Create Your Quiz</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Create Your Quiz</h1>
             <span className="text-sm text-muted-foreground">
               Step {currentStep + 1} of {steps.length}
             </span>
