@@ -1,35 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Sparkles, BookOpen, Download, AlertTriangle, Eye, ArrowLeft, Check, Edit } from "lucide-react";
-
+import { Loader2, Sparkles, Download, AlertTriangle, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { PageHeader } from "@/components/page-header";
-import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import { usePlan } from "@/hooks/usePlan";
-import { useAuth } from "@/context/AuthContext";
 import { GenerationAd } from "@/components/ads/ad-banner";
-import { QuizGenerationLoading } from '@/components/enhanced-loading';
+import { QuizGenerationLoading } from "@/components/enhanced-loading";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -46,21 +36,6 @@ type Question = {
   correctAnswer: string;
   explanation?: string;
 };
-
-const questionStyles = [
-  { id: 'Knowledge-based', label: 'Knowledge-based', description: 'Fact recall, definitions, formulas.' },
-  { id: 'Conceptual', label: 'Conceptual', description: 'Tests understanding of "why" or "how".' },
-  { id: 'Numerical', label: 'Numerical', description: 'Involves solving/calculating with numbers.' },
-  { id: 'Practice Questions', label: 'Practice Questions', description: 'Mixed practice with explanations.' },
-];
-
-const steps = [
-  { id: 'topic', title: 'Topic', description: 'What subject do you want to practice?', fields: ['topic'], icon: BookOpen },
-  { id: 'mode', title: 'Quiz Mode', description: 'Choose how you want to take your quiz.', fields: ['mode'], icon: Edit },
-  { id: 'styles', title: 'Question Styles', description: 'Select the types of questions you want.', fields: ['questionStyles'], icon: Check },
-  { id: 'config', title: 'Settings', description: 'Configure difficulty and number of questions.', fields: ['difficulty', 'numberOfQuestions', 'timeLimit'], icon: BookOpen },
-  { id: 'summary', title: 'Summary & Generate', description: 'Review your settings and generate questions.', icon: Sparkles },
-];
 
 const addPdfHeaderAndFooter = (doc: any, title: string, isPro: boolean) => {
   const pageCount = (doc as any).internal.getNumberOfPages();
@@ -522,20 +497,9 @@ export default function GenerateQuestionsPage() {
                   </motion.div>
                 </AnimatePresence>
               </CardContent>
-              <div className="flex items-center justify-between border-t p-4">
-                <Button type="button" variant="ghost" onClick={prevStep} disabled={currentStep === 0}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                </Button>
-                {currentStep < steps.length - 1 ? (
-                  <Button type="button" onClick={nextStep}>
-                    Next
-                  </Button>
-                ) : (
-                  <Button type="submit" disabled={isGenerating}>
-                    <Sparkles className="mr-2 h-5 w-5" /> Generate Questions
-                  </Button>
-                )}
-              </div>
+          <Button type="submit" disabled={isGenerating} className="w-full">
+            <Sparkles className="mr-2 h-5 w-5" /> Generate Practice Questions
+          </Button>
             </Card>
           </form>
         </FormProvider>
