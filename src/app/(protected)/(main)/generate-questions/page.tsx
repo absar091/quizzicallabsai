@@ -30,7 +30,7 @@ import { usePlan } from "@/hooks/usePlan";
 import { useAuth } from "@/context/AuthContext";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { QuestionsWizard } from "@/components/quiz-wizard/questions-wizard";
-import { EnhancedLoading } from '@/components/enhanced-loading';
+import { EnhancedLoading, QuizGenerationLoading } from '@/components/enhanced-loading';
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
@@ -80,6 +80,7 @@ export default function GenerateQuestionsPage() {
   const { user } = useAuth();
   const { isPro } = usePlan();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(25);
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [visibleAnswers, setVisibleAnswers] = useState<Record<number, boolean>>({});
 
@@ -96,6 +97,19 @@ export default function GenerateQuestionsPage() {
     setIsGenerating(true);
     setQuestions(null);
     setVisibleAnswers({});
+    setProgress(25);
+
+    // Start progress simulation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return prev;
+        }
+        return prev + Math.random() * 8 + 2; // Random progress between 2-10%
+      });
+    }, 800);
+
     try {
       const response = await fetch('/api/ai/custom-quiz', {
         method: 'POST',
@@ -111,21 +125,31 @@ export default function GenerateQuestionsPage() {
           specificInstructions: "For each question, provide a detailed explanation for the correct answer."
         })
       });
-      
+
+      clearInterval(progressInterval);
+      setProgress(95);
+
       if (!response.ok) {
         throw new Error('Failed to generate questions');
       }
-      
+
       const result = await response.json();
-      
+
       if (result.error) {
         throw new Error(result.error);
       }
       if (!result.quiz || result.quiz.length === 0) {
         throw new Error("The AI failed to generate any questions. Please try refining your topic.");
       }
-      setQuestions(result.quiz as Question[]);
+
+      setProgress(100);
+      // Small delay to show 100% progress
+      setTimeout(() => {
+        setQuestions(result.quiz as Question[]);
+      }, 500);
+
     } catch (error: any) {
+      clearInterval(progressInterval);
       toast({
         title: "Error Generating Questions",
         description: error.message || "An error occurred while generating practice questions. The AI might be busy.",
@@ -199,12 +223,103 @@ export default function GenerateQuestionsPage() {
   if (isGenerating) {
     return (
       <div>
-        <EnhancedLoading
-          type="quiz"
-          message="Generating your practice questions..."
-          estimatedTime={30}
+        <QuizGenerationLoading
+          progress={progress}
+          onRetry={() => onSubmit(form.getValues())}
         />
-        <GenerationAd />
+        <div className="mt-8">
+          <GenerationAd />
+        </div>
+      </div>
+    );
+  }
+
+  // If we have questions, show them instead of the wizard
+  if (questions && questions.length > 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="container-modern py-8">
+          <PageHeader
+            title={`Practice Questions: ${form.getValues('topic')}`}
+            description={`${questions.length} questions generated`}
+          />
+
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <Button onClick={() => setQuestions(null)} variant="outline">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Generate More Questions
+            </Button>
+            <Button onClick={downloadPdf} variant="default">
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            {questions.map((question, index) => (
+              <Card key={index} className="w-full">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                      {index + 1}
+                    </span>
+                    {question.question}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {question.answers && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {question.answers.map((answer, answerIndex) => (
+                        <div
+                          key={answerIndex}
+                          className={cn(
+                            "p-3 rounded-lg border transition-colors",
+                            answer === question.correctAnswer
+                              ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200"
+                              : "bg-muted/50 border-muted"
+                          )}
+                        >
+                          <span className="font-medium mr-2">
+                            {String.fromCharCode(65 + answerIndex)}.
+                          </span>
+                          {answer}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      Correct Answer: <span className="font-medium text-green-600 dark:text-green-400">{question.correctAnswer}</span>
+                    </div>
+                    <Button
+                      onClick={() => toggleAnswerVisibility(index)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      {visibleAnswers[index] ? 'Hide' : 'Show'} Explanation
+                    </Button>
+                  </div>
+
+                  {visibleAnswers[index] && question.explanation && (
+                    <Alert>
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertTitle>Explanation</AlertTitle>
+                      <AlertDescription>
+                        {question.explanation}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-8">
+            <GenerationAd />
+          </div>
+        </div>
       </div>
     );
   }

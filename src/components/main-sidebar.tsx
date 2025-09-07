@@ -57,8 +57,8 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
   const NavLink = ({ href, label, icon: Icon }: { href: string, label: string, icon: React.ElementType }) => {
     const isActive = pathname === href;
     return (
-      <Link 
-          href={href} 
+      <Link
+          href={href}
           onClick={onNavigate}
           className={cn(
             "flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-all hover:bg-secondary hover:text-primary",
@@ -66,7 +66,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
             isActive && "bg-secondary text-primary font-semibold"
       )}
       title={isCollapsed ? label : undefined}>
-        <Icon weight={isActive ? 'fill' : 'regular'} className="h-6 w-6" />
+        <Icon weight={isActive ? 'fill' : 'regular'} className={cn("h-6 w-6", isCollapsed && "h-5 w-5")} />
         {!isCollapsed && <span className="text-base">{label}</span>}
       </Link>
     )
