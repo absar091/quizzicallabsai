@@ -42,7 +42,33 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    // Handle Node.js modules that should not be bundled for client-side
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        util: false,
+        url: false,
+        querystring: false,
+        events: false,
+        http: false,
+        https: false,
+        zlib: false,
+        os: false,
+        child_process: false,
+        'require-in-the-middle': false,
+        handlebars: false,
+      };
+    }
 
+    return config;
+  },
 };
 
 export default nextConfig;
