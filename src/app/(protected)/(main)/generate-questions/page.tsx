@@ -95,22 +95,26 @@ export default function GenerateQuestionsPage() {
     setQuestions(null);
     setVisibleAnswers({});
     try {
-      // Dynamic import to avoid bundling Node.js modules in client-side code
-      const { generateCustomQuiz } = await import("@/ai/flows/generate-custom-quiz");
-
-      const result = await generateCustomQuiz({
-        ...values,
-        isPro,
-        questionTypes: ["Multiple Choice"],
-        questionStyles: ["Knowledge-based", "Conceptual"],
-        timeLimit: values.numberOfQuestions,
-        userAge: user?.age,
-        userClass: 'General Student',
-        specificInstructions: "For each question, provide a detailed explanation for the correct answer."
+      const response = await fetch("/api/generate-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          isPro,
+          questionTypes: ["Multiple Choice"],
+          questionStyles: ["Knowledge-based", "Conceptual"],
+          timeLimit: values.numberOfQuestions,
+          userAge: user?.age,
+          userClass: 'General Student',
+          specificInstructions: "For each question, provide a detailed explanation for the correct answer."
+        }),
       });
-      if (!result.quiz || result.quiz.length === 0) {
-        throw new Error("The AI failed to generate any questions. Please try refining your topic.");
+
+      if (!response.ok) {
+        throw new Error("Failed to generate questions");
       }
+
+      const result = await response.json();
       setQuestions(result.quiz as Question[]);
     } catch (error: any) {
       toast({

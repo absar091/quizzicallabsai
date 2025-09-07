@@ -340,16 +340,23 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
-      // Dynamic import to avoid bundling Node.js modules in client-side code
-      const { generateCustomQuiz } = await import("@/ai/flows/generate-custom-quiz");
-
-      const result = await generateCustomQuiz({
-        ...values,
-        isPro: isPro,
-        userAge: user?.age,
-        userClass: user?.className,
-        recentQuizHistory: historyForAI,
+      const response = await fetch("/api/generate-quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          isPro: isPro,
+          userAge: user?.age,
+          userClass: user?.className,
+          recentQuizHistory: historyForAI,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate quiz");
+      }
+
+      const result = await response.json();
       clearInterval(interval);
       setGenerationProgress(100);
 
@@ -416,15 +423,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
-      // Dynamic import to avoid bundling Node.js modules in client-side code
-      const { generateExplanationsForIncorrectAnswers } = await import("@/ai/flows/generate-explanations-for-incorrect-answers");
-
-      const result = await generateExplanationsForIncorrectAnswers({
-        question: question.question,
-        studentAnswer: userAnswers[questionIndex] || "",
-        correctAnswer: question.correctAnswer || "N/A",
-        topic: formValues.topic,
+      const response = await fetch("/api/generate-explanation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question.question,
+          studentAnswer: userAnswers[questionIndex] || "",
+          correctAnswer: question.correctAnswer || "N/A",
+          topic: formValues.topic,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate explanation");
+      }
+
+      const result = await response.json();
       setExplanations((prev) => ({
         ...prev,
         [questionIndex]: { ...prev[questionIndex], isLoading: false, explanation: result.explanation },
@@ -452,18 +466,25 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
-        // Dynamic import to avoid bundling Node.js modules in client-side code
-        const { generateSimpleExplanation } = await import("@/ai/flows/generate-simple-explanation");
+      const response = await fetch("/api/generate-simple-explanation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question.question,
+          correctAnswer: question.correctAnswer || "N/A",
+          topic: formValues.topic,
+        }),
+      });
 
-        const result = await generateSimpleExplanation({
-            question: question.question,
-            correctAnswer: question.correctAnswer || "N/A",
-            topic: formValues.topic,
-        });
-        setExplanations((prev) => ({
-            ...prev,
-            [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: result.explanation },
-        }));
+      if (!response.ok) {
+        throw new Error("Failed to generate simple explanation");
+      }
+
+      const result = await response.json();
+      setExplanations((prev) => ({
+          ...prev,
+          [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: result.explanation },
+      }));
     } catch (error) {
         toast({
             title: "Error Simplifying",
@@ -492,24 +513,30 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setGeneratedFlashcards(null);
 
     try {
-        // Dynamic import to avoid bundling Node.js modules in client-side code
-        const { generateFlashcards } = await import("@/ai/flows/generate-flashcards");
+      const response = await fetch("/api/generate-flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: formValues.topic,
+          incorrectQuestions: incorrectQuestions.map(q => ({
+            question: q.question,
+            userAnswer: q.userAnswer || null,
+            correctAnswer: q.correctAnswer || '',
+          }))
+        }),
+      });
 
-        const flashcardInput = {
-            topic: formValues.topic,
-            incorrectQuestions: incorrectQuestions.map(q => ({
-                question: q.question,
-                userAnswer: q.userAnswer || null,
-                correctAnswer: q.correctAnswer || '',
-            }))
-        };
-        const result = await generateFlashcards(flashcardInput);
-        if (result.flashcards.length === 0) {
-            toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
-        } else {
-            setGeneratedFlashcards(result.flashcards);
-            setShowFlashcardViewer(true);
-        }
+      if (!response.ok) {
+        throw new Error("Failed to generate flashcards");
+      }
+
+      const result = await response.json();
+      if (result.flashcards.length === 0) {
+        toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
+      } else {
+        setGeneratedFlashcards(result.flashcards);
+        setShowFlashcardViewer(true);
+      }
     } catch (error) {
         toast({ title: "Error Generating Flashcards", description: "Could not generate flashcards at this time.", variant: "destructive" });
     } finally {
