@@ -62,6 +62,8 @@ const nextConfig = {
         https: false,
         http2: false,           // ✅ gRPC http2 dependency
         dns: false,             // ✅ gRPC dns dependency
+        async_hooks: false,     // ✅ OpenTelemetry async hooks
+        dgram: false,           // ✅ Jaeger UDP datagram
         zlib: false,
         os: false,
         child_process: false,
