@@ -18,7 +18,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-import { generateCustomQuiz } from "@/ai/flows/generate-custom-quiz";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Slider } from "@/components/ui/slider";
@@ -96,6 +95,9 @@ export default function GenerateQuestionsPage() {
     setQuestions(null);
     setVisibleAnswers({});
     try {
+      // Dynamic import to avoid bundling Node.js modules in client-side code
+      const { generateCustomQuiz } = await import("@/ai/flows/generate-custom-quiz");
+
       const result = await generateCustomQuiz({
         ...values,
         isPro,

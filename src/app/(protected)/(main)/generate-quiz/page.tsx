@@ -344,6 +344,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
+      // Dynamic import to avoid bundling Node.js modules in client-side code
+      const { generateCustomQuiz } = await import("@/ai/flows/generate-custom-quiz");
+
       const result = await generateCustomQuiz({
         ...values,
         isPro: isPro,
@@ -417,6 +420,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
+      // Dynamic import to avoid bundling Node.js modules in client-side code
+      const { generateExplanationsForIncorrectAnswers } = await import("@/ai/flows/generate-explanations-for-incorrect-answers");
+
       const result = await generateExplanationsForIncorrectAnswers({
         question: question.question,
         studentAnswer: userAnswers[questionIndex] || "",
@@ -450,6 +456,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
+        // Dynamic import to avoid bundling Node.js modules in client-side code
+        const { generateSimpleExplanation } = await import("@/ai/flows/generate-simple-explanation");
+
         const result = await generateSimpleExplanation({
             question: question.question,
             correctAnswer: question.correctAnswer || "N/A",
@@ -487,6 +496,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setGeneratedFlashcards(null);
 
     try {
+        // Dynamic import to avoid bundling Node.js modules in client-side code
+        const { generateFlashcards } = await import("@/ai/flows/generate-flashcards");
+
         const flashcardInput = {
             topic: formValues.topic,
             incorrectQuestions: incorrectQuestions.map(q => ({
