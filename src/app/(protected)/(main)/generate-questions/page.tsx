@@ -255,6 +255,21 @@ export default function GenerateQuestionsPage() {
           progress={progress}
           onRetry={() => onSubmit(form.getValues())}
         />
+      </div>
+    );
+  }
+
+  if (questions && questions.length > 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="container-modern py-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold">Practice Questions</h1>
+            <p className="text-lg text-muted-foreground font-medium mt-2">
+              {questions.length} questions generated for: {form.getValues('topic')}
+            </p>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <Button onClick={() => setQuestions(null)} variant="outline">
               <Sparkles className="w-4 h-4 mr-2" />
@@ -338,115 +353,6 @@ export default function GenerateQuestionsPage() {
                               <AlertTriangle className="h-4 w-4 flex-shrink-0" />
                               <AlertTitle className="text-sm md:text-base">Explanation</AlertTitle>
                               <AlertDescription className="text-sm md:text-sm leading-relaxed break-words mt-2">
-                                {question.explanation}
-                              </AlertDescription>
-                            </Alert>
-                          </AccordionContent>
-                        </AccordionItem>
-                      )}
-                    </Accordion>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="mt-8">
-            <GenerationAd />
-          </div>
-      </div>
-    );
-  }
-
-  if (questions && questions.length > 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="container-modern py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Practice Questions</h1>
-            <p className="text-lg text-muted-foreground font-medium mt-2">
-              {questions.length} questions generated for: {form.getValues('topic')}
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <Button onClick={() => setQuestions(null)} variant="outline">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Generate More Questions
-            </Button>
-            <Button onClick={downloadPdf} variant="default">
-              <Download className="w-4 h-4 mr-2" />
-              Download PDF
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {questions.map((question, index) => (
-              <Card key={index} className="w-full">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    {question.question}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {question.answers && (
-                    <Accordion type="multiple" className="w-full space-y-3">
-                      <AccordionItem value={`options-${index}`} className="border rounded-lg">
-                        <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                          <span>View Options (A, B, C, D)</span>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {question.answers.map((answer, answerIndex) => (
-                              <div
-                                key={answerIndex}
-                                className="p-3 rounded-lg border bg-muted/30 border-muted"
-                              >
-                                <span className="font-medium mr-2">
-                                  {String.fromCharCode(65 + answerIndex)}.
-                                </span>
-                                <span className="text-sm">{answer}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
-                      <AccordionItem value={`answer-${index}`} className="border rounded-lg">
-                        <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            Show Answer
-                          </span>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4">
-                          <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-4 rounded-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="font-medium text-green-800 dark:text-green-200">
-                                Correct Answer: {String.fromCharCode(65 + question.answers.indexOf(question.correctAnswer))}. {question.correctAnswer}
-                              </span>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
-                      {question.explanation && (
-                        <AccordionItem value={`explanation-${index}`} className="border rounded-lg">
-                          <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                            <span className="flex items-center gap-1">
-                              <AlertTriangle className="w-4 h-4" />
-                              Show Explanation
-                            </span>
-                          </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-4">
-                            <Alert>
-                              <AlertTriangle className="h-4 w-4" />
-                              <AlertTitle>Explanation</AlertTitle>
-                              <AlertDescription>
                                 {question.explanation}
                               </AlertDescription>
                             </Alert>
