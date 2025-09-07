@@ -19,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { QuizGenerationLoading } from "@/components/enhanced-loading";
 import { useAuth } from "@/context/AuthContext";
+import { usePlan } from "@/hooks/usePlan";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
