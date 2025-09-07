@@ -72,7 +72,7 @@ export function QuestionSettingsStep() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {questionStyleOptions.map((style) => {
             const StyleIcon = style.icon;
             const isSelected = selectedStyles.includes(style.id);
@@ -82,25 +82,27 @@ export function QuestionSettingsStep() {
                 key={style.id}
                 onClick={() => handleStyleToggle(style.id)}
                 className={cn(
-                  'p-4 rounded-lg border transition-all duration-200 text-left',
-                  'bg-card hover:bg-accent/50',
+                  'p-3 rounded-lg border transition-all duration-200 text-left min-h-[80px]',
+                  'bg-card hover:bg-accent/50 active:scale-95',
                   isSelected
-                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20 dark:bg-primary/20 dark:border-primary'
+                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20 dark:bg-primary/20 dark:border-primary shadow-sm'
                     : 'border-border hover:border-primary/50'
                 )}
               >
-                <div className="flex items-center space-x-3 mb-2">
+                <div className="flex items-start space-x-2 mb-1">
                   <div className={cn(
-                    'p-2 rounded-lg',
+                    'p-1.5 rounded-md flex-shrink-0 mt-0.5',
                     isSelected
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground'
                   )}>
-                    <StyleIcon className="w-4 h-4" />
+                    <StyleIcon className="w-3.5 h-3.5" />
                   </div>
-                  <h4 className="font-medium text-sm text-foreground">{style.label}</h4>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-xs text-foreground leading-tight">{style.label}</h4>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">{style.description}</p>
+                <p className="text-xs text-muted-foreground leading-tight line-clamp-2">{style.description}</p>
               </button>
             );
           })}

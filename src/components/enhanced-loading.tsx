@@ -76,7 +76,7 @@ export function EnhancedLoading({
   useEffect(() => {
     const messageInterval = setInterval(() => {
       setCurrentMessageIndex(prev => (prev + 1) % messages.length);
-    }, 3000);
+    }, 2500); // Faster message rotation
 
     const timeInterval = setInterval(() => {
       setTimeElapsed(prev => {
@@ -101,115 +101,141 @@ export function EnhancedLoading({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-8">
+    <div className="flex flex-col items-center justify-center min-h-[300px] space-y-6 px-4">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="text-center space-y-6"
+        transition={{ duration: 0.4 }}
+        className="text-center space-y-4 max-w-sm"
       >
-        {/* Animated Icon */}
+        {/* Enhanced Animated Icon with Pulse */}
+        <div className="relative">
+          <motion.div
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{
+              rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
+              scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-primary via-accent to-primary shadow-lg relative z-10"
+          >
+            <Icon className="w-8 h-8 text-white" />
+          </motion.div>
+
+          {/* Pulsing rings */}
+          <motion.div
+            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border-2 border-primary/30"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.8, 1], opacity: [0.2, 0, 0.2] }}
+            transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+            className="absolute inset-0 rounded-full border border-accent/20"
+          />
+        </div>
+
+        {/* "Please Wait" Text */}
         <motion.div
-          animate={{
-            rotate: [0, 360],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-primary to-accent shadow-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-1"
         >
-          <Icon className="w-10 h-10 text-white" />
+          <p className="text-sm font-medium text-primary">Please wait...</p>
+          <p className="text-xs text-muted-foreground">Your request is being processed</p>
         </motion.div>
 
         {/* Dynamic Message */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentMessageIndex}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-2"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-1"
           >
-            <h3 className="text-xl font-semibold text-foreground">
+            <h3 className="text-lg font-semibold text-foreground leading-tight">
               {message || messages[currentMessageIndex]}
             </h3>
-            <p className="text-muted-foreground">
-              This usually takes {estimatedTime} seconds
+            <p className="text-xs text-muted-foreground">
+              Usually takes ~{estimatedTime}s
             </p>
           </motion.div>
         </AnimatePresence>
 
-        {/* Progress Bar */}
-        <div className="w-full max-w-md space-y-2">
+        {/* Compact Progress Bar */}
+        <div className="w-full space-y-2">
           <Progress
             value={progress}
-            className="h-2"
+            className="h-1.5"
           />
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{Math.round(progress)}% complete</span>
-            <span>{formatTime(timeElapsed)} elapsed</span>
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{Math.round(progress)}%</span>
+            <span>{formatTime(timeElapsed)}</span>
           </div>
         </div>
 
-        {/* Taking Longer Alert */}
+        {/* Taking Longer Alert - More Compact */}
         <AnimatePresence>
           {isTakingLonger && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
             >
-              <Alert className="max-w-md border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-800 dark:text-yellow-200">
-                  This is taking longer than expected. Our AI is working hard on your request!
+              <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20 py-2">
+                <AlertTriangle className="h-3 w-3 text-yellow-600" />
+                <AlertDescription className="text-xs text-yellow-800 dark:text-yellow-200">
+                  Taking longer than usual. Please wait...
                 </AlertDescription>
               </Alert>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Retry Button */}
+        {/* Retry Button - More Compact */}
         {showRetry && onRetry && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.3 }}
           >
             <Button
               onClick={onRetry}
               variant="outline"
-              className="mt-4"
+              size="sm"
+              className="text-xs"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Try Again
+              <RefreshCw className="w-3 h-3 mr-1" />
+              Retry
             </Button>
           </motion.div>
         )}
       </motion.div>
 
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
+      {/* Subtle animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        {[...Array(3)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-primary/20 rounded-full"
+            className="absolute w-1 h-1 bg-primary/40 rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${20 + i * 30}%`,
+              top: `${30 + i * 20}%`,
             }}
             animate={{
-              y: [0, -20, 0],
-              opacity: [0.2, 0.8, 0.2],
+              y: [0, -10, 0],
+              opacity: [0.2, 0.6, 0.2],
             }}
             transition={{
-              duration: 3,
+              duration: 2,
               repeat: Infinity,
-              delay: i * 0.5,
+              delay: i * 0.3,
             }}
           />
         ))}

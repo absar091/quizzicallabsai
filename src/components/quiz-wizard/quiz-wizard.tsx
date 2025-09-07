@@ -161,45 +161,89 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
             </span>
           </div>
 
-          {/* Step Indicators */}
-          <div className="flex items-center justify-between mb-6 overflow-x-auto pb-2">
-            {steps.map((step, index) => {
-              const StepIcon = step.icon;
-              const isCompleted = index < currentStep;
-              const isCurrent = index === currentStep;
-              const isClickable = index <= currentStep;
+          {/* Step Indicators - Mobile Optimized */}
+          <div className="mb-6">
+            {/* Mobile: Compact horizontal layout */}
+            <div className="flex items-center justify-center gap-2 sm:hidden">
+              {steps.map((step, index) => {
+                const StepIcon = step.icon;
+                const isCompleted = index < currentStep;
+                const isCurrent = index === currentStep;
+                const isClickable = index <= currentStep;
 
-              return (
-                <div key={step.id} className="flex items-center flex-shrink-0">
+                return (
                   <button
+                    key={step.id}
                     onClick={() => handleStepClick(index)}
                     disabled={!isClickable}
                     className={cn(
-                      'flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200',
+                      'flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200',
                       isCompleted && 'bg-primary border-primary text-primary-foreground',
                       isCurrent && 'border-primary text-primary bg-primary/10',
                       !isCompleted && !isCurrent && 'border-muted-foreground/30 text-muted-foreground',
-                      isClickable && 'hover:border-primary/50 cursor-pointer'
+                      isClickable && 'hover:border-primary/50 cursor-pointer active:scale-95'
                     )}
                   >
                     {isCompleted ? (
-                      <Check className="w-5 h-5" />
+                      <Check className="w-3 h-3" />
                     ) : (
-                      <StepIcon className="w-5 h-5" />
+                      <StepIcon className="w-3 h-3" />
                     )}
                   </button>
+                );
+              })}
+            </div>
 
-                  {index < steps.length - 1 && (
-                    <div
+            {/* Desktop: Full layout with progress lines */}
+            <div className="hidden sm:flex items-center justify-between overflow-x-auto pb-2">
+              {steps.map((step, index) => {
+                const StepIcon = step.icon;
+                const isCompleted = index < currentStep;
+                const isCurrent = index === currentStep;
+                const isClickable = index <= currentStep;
+
+                return (
+                  <div key={step.id} className="flex items-center flex-shrink-0">
+                    <button
+                      onClick={() => handleStepClick(index)}
+                      disabled={!isClickable}
                       className={cn(
-                        'flex-1 h-0.5 mx-2 sm:mx-4 transition-colors duration-200 min-w-4',
-                        isCompleted ? 'bg-primary' : 'bg-muted-foreground/30'
+                        'flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200',
+                        isCompleted && 'bg-primary border-primary text-primary-foreground',
+                        isCurrent && 'border-primary text-primary bg-primary/10',
+                        !isCompleted && !isCurrent && 'border-muted-foreground/30 text-muted-foreground',
+                        isClickable && 'hover:border-primary/50 cursor-pointer'
                       )}
-                    />
-                  )}
-                </div>
-              );
-            })}
+                    >
+                      {isCompleted ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <StepIcon className="w-5 h-5" />
+                      )}
+                    </button>
+
+                    {index < steps.length - 1 && (
+                      <div
+                        className={cn(
+                          'flex-1 h-0.5 mx-2 sm:mx-4 transition-colors duration-200 min-w-4',
+                          isCompleted ? 'bg-primary' : 'bg-muted-foreground/30'
+                        )}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile: Step labels */}
+            <div className="text-center mt-3 sm:hidden">
+              <p className="text-sm font-medium text-foreground">
+                {currentStepData.title}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Step {currentStep + 1} of {steps.length}
+              </p>
+            </div>
           </div>
 
           {/* Progress Bar */}
