@@ -1,17 +1,6 @@
 "use client";
 
-// Utility to decode HTML entities
-function decodeHtml(html: string): string {
-  if (!html) return '';
-  const txt = typeof document !== 'undefined' ? document.createElement('textarea') : null;
-  if (txt) {
-    txt.innerHTML = html;
-    return txt.value;
-  }
-  return html;
-}
-
-import { useState, useEffect, useCallback, useRef, useContext } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,21 +23,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
-// Dynamic imports for AI functions to prevent SSR errors
-type GenerateCustomQuizOutput = any;
-type GenerateFlashcardsOutput = any;
+import { generateCustomQuiz, generateExplanationsForIncorrectAnswers, generateSimpleExplanation, generateFlashcards, type GenerateCustomQuizOutput, type GenerateFlashcardsOutput } from "@/app/actions";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { ref, get, push, query, orderByChild, equalTo } from '@/lib/firebase';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
-import { getDatabase, serverTimestamp, set } from "firebase/database";
+import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
 import { db } from "@/lib/firebase";
 import {
     getQuizState,
@@ -63,22 +48,10 @@ import {
 } from "@/lib/indexed-db";
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
-import { GenerationAd } from "@/components/ads/ad-banner";
-import { sanitizeString } from '@/lib/sanitize';
-import { useProgressPersistence } from '@/hooks/useProgressPersistence';
-import { EnhancedLoading, QuizGenerationLoading, ExplanationLoading, FlashcardGenerationLoading } from '@/components/enhanced-loading';
-import { StudyStreakManager, StudyStreak } from '@/lib/study-streaks';
-import { useOfflineQuizzes } from '@/lib/offline-support';
-import { useAccessibility, useVoiceQuestions } from '@/hooks/useAccessibility';
-import { QuizSharingDialog } from '@/components/quiz-sharing';
-import { QuizGenerationError, ExplanationError } from '@/components/error-recovery';
-import { errorLogger } from '@/lib/error-logger';
-import { UserFeedback, QuickFeedback } from '@/components/user-feedback';
-import { QuizWizard } from '@/components/quiz-wizard/quiz-wizard';
 
 const formSchema = z.object({
-  topic: z.string().min(1, "Topic is required"),
-  difficulty: z.string().min(1, "Difficulty is required"),
+  topic: z.string().min(1, "Topic is required."),
+  difficulty: z.enum(["easy", "medium", "hard", "master"]),
   numberOfQuestions: z.number().min(1).max(55),
   questionTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one question type.",
@@ -88,11 +61,9 @@ const formSchema = z.object({
   }),
   timeLimit: z.number().min(1).max(120),
   specificInstructions: z.string().optional(),
-  mode: z.enum(["practice", "exam"]).optional(),
 });
 
 export type QuizFormValues = z.infer<typeof formSchema>;
-export type QuizWizardFormValues = z.infer<typeof formSchema>;
 export type Quiz = GenerateCustomQuizOutput["quiz"];
 type Flashcard = GenerateFlashcardsOutput["flashcards"][0];
 
@@ -112,22 +83,22 @@ const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string, isPr
 
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        
+
         // Header
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
         doc.text("Quizzicallabs™", pageWidth / 2, 15, { align: 'center' });
-        
+
         doc.setFontSize(14);
         doc.text(`Quiz Topic: ${title}`, pageWidth / 2, 25, { align: 'center' });
-        
+
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.text(`Difficulty: ${difficulty}`, pageWidth / 2, 31, { align: 'center' });
-        
+
         doc.setLineWidth(0.2);
         doc.line(20, 38, pageWidth - 20, 38);
-        
+
         // Watermark for free users
         if (!isPro) {
             doc.saveGraphicsState();
@@ -155,29 +126,19 @@ type GenerateQuizPageProps = {
 
 // --- Main Page Component ---
 export default function GenerateQuizPage({ initialQuiz, initialFormValues, initialComprehensionText }: GenerateQuizPageProps) {
-  // Safety check to ensure AuthContext is available
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    return null;
-  }
-  
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPro } = usePlan();
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const quizId = quiz ? `quiz_${Date.now()}` : '';
-  const { saveProgress, loadProgress, clearProgress } = useProgressPersistence(quizId);
-  const { cacheQuiz, isOffline } = useOfflineQuizzes();
-  const { announceToScreenReader, manageFocus } = useAccessibility();
-  const { speak, stop, isSupported: voiceSupported } = useVoiceQuestions();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
+
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [comprehensionText, setComprehensionText] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [explanations, setExplanations] = useState<ExplanationState>({});
-  
+
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
 
@@ -185,18 +146,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const [generatedFlashcards, setGeneratedFlashcards] = useState<Flashcard[] | null>(null);
   const [showFlashcardViewer, setShowFlashcardViewer] = useState(false);
 
-  const steps = [
-    { id: 'topic', title: 'Topic', description: 'What subject do you want to be quizzed on?', fields: ['topic'], icon: BookOpen },
-    { id: 'mode', title: 'Quiz Mode', description: 'Choose how you want to take your quiz.', fields: ['mode'], icon: Edit },
-    { id: 'styles', title: 'Question Styles', description: 'Select the kind of questions you want.', fields: ['questionStyles'], icon: Puzzle },
-    { id: 'config', title: 'Configuration', description: 'Fine-tune the quiz difficulty, length, and timing.', fields: ['difficulty', 'numberOfQuestions', 'timeLimit'], icon: Settings },
-    { id: 'summary', title: 'Summary & Generate', description: 'Review your selections and start the quiz.', icon: Sparkles },
-  ];
-
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef(false);
-  const [currentStep, setCurrentStep] = useState(0);
 
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
@@ -221,80 +173,40 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       }
       return acc + (correctAnswer === userAnswer ? 1 : 0);
     }, 0);
-  
+
     const scorableQuestions = quiz.filter(q => q.type !== 'descriptive' && q.correctAnswer !== undefined).length;
     const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
-    
+
     return { score, percentage, totalScorable: scorableQuestions };
   }, [quiz, userAnswers]);
 
 
   const handleSubmit = useCallback(async () => {
-    if (typeof window !== 'undefined' && (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
-        try {
-            (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
-            return;
-        } catch (error) {
-            console.error('Mock test submit override failed:', error);
-            // Continue with normal submit if override fails
-        }
+    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
+        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
+        return;
     }
 
-    try {
-      setShowResults(true);
-      clearProgress(); // Clear progress when quiz is completed
-      
-      if(quiz && formValues && user) {
-          const { score, percentage } = calculateScore();
-          const resultId = `${user.uid}-${Date.now()}`;
-          const newResult = {
-              id: resultId,
-              userId: user.uid,
-              topic: formValues.topic,
-              score,
-              total: quiz.length,
-              percentage,
-              date: new Date().toISOString(),
-          };
-          
-          // Update study streak
-          try {
-            const { db } = await import('@/lib/firebase');
-            const { ref: dbRef, get, set } = await import('firebase/database');
-            const streakRef = dbRef(db, `users/${user.uid}/study_streak`);
-            const streakSnapshot = await get(streakRef);
-            
-            const currentStreak: StudyStreak = streakSnapshot.exists() ? streakSnapshot.val() : {
-              userId: user.uid,
-              currentStreak: 0,
-              longestStreak: 0,
-              lastStudyDate: '',
-              totalStudyDays: 0,
-              streakMilestones: []
-            };
-            
-            const updatedStreak = StudyStreakManager.updateStreak(user.uid, currentStreak);
-            await set(streakRef, updatedStreak);
-          } catch (error) {
-            console.error('Error updating study streak:', error);
-          }
-          
-          try {
-            const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
-            await set(resultRef, newResult);
-            await saveQuizResult(newResult);
-            await deleteQuizState(user.uid);
-          } catch (error) {
-            console.error('Error saving quiz result:', error);
-          }
-      }
-      if (typeof window !== 'undefined') {
-        window.scrollTo(0, 0);
-      }
-    } catch (error) {
-      console.error('Error in handleSubmit:', error);
+    setShowResults(true);
+    if(quiz && formValues && user) {
+        const { score, percentage } = calculateScore();
+        const resultId = `${user.uid}-${Date.now()}`;
+        const newResult = {
+            id: resultId,
+            userId: user.uid,
+            topic: formValues.topic,
+            score,
+            total: quiz.length,
+            percentage,
+            date: new Date().toISOString(),
+        };
+        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
+        await set(resultRef, newResult);
+        await saveQuizResult(newResult);
+        await deleteQuizState(user.uid);
     }
-  }, [quiz, userAnswers, formValues, user, calculateScore, clearProgress]);
+    window.scrollTo(0, 0);
+  }, [quiz, userAnswers, formValues, user, calculateScore]);
 
 
   useEffect(() => {
@@ -302,34 +214,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
-        // Check for shared quiz data
-        if (typeof window !== 'undefined') {
-            const urlParams = new URLSearchParams(window.location.search);
-            const isShared = urlParams.get('shared') === 'true';
-            
-            if (isShared) {
-                const sharedData = sessionStorage.getItem('sharedQuizData');
-                if (sharedData) {
-                    const { quiz: sharedQuiz, formValues: sharedFormValues } = JSON.parse(sharedData);
-                    setQuiz(sharedQuiz);
-                    setUserAnswers(new Array(sharedQuiz.length).fill(null));
-                    setTimeLeft(sharedFormValues.timeLimit * 60);
-                    setFormValues(sharedFormValues);
-                    setShowResults(false);
-                    sessionStorage.removeItem('sharedQuizData');
-                    return;
-                }
-            }
-            
-            const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
-            if (initialQuiz && initialFormValues && mockTestAnswers) {
-                setQuiz(initialQuiz);
-                setFormValues(initialFormValues);
-                setUserAnswers(mockTestAnswers);
-                setShowResults(true);
-                delete (window as any).__MOCK_TEST_ANSWERS__;
-                return;
-            }
+        const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
+        if (initialQuiz && initialFormValues && mockTestAnswers) {
+            setQuiz(initialQuiz);
+            setFormValues(initialFormValues);
+            setUserAnswers(mockTestAnswers);
+            setShowResults(true);
+            delete (window as any).__MOCK_TEST_ANSWERS__;
+            return;
         }
 
         if (initialQuiz && initialFormValues) {
@@ -355,7 +247,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 return;
             }
         }
-        
+
         setQuiz(null);
         setShowResults(false);
     };
@@ -419,21 +311,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         clearInterval(timerRef.current);
       }
     };
-  }, [quiz, showResults, handleSubmit]);
-  
+  }, [quiz, showResults, timeLeft, handleSubmit]);
+
   const handleGenerateQuiz = async (values: QuizFormValues) => {
     setIsGenerating(true);
     setFormValues(values);
     setGenerationProgress(0);
 
     const interval = setInterval(() => {
-      setGenerationProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 5;
-      });
+        setGenerationProgress(prev => {
+            if (prev >= 95) {
+                clearInterval(interval);
+                return prev;
+            }
+            return prev + 5;
+        })
     }, 500);
 
     setQuiz(null);
@@ -444,102 +336,62 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setExplanations({});
 
     try {
-      // Smart quiz generation with user quiz history
-  const db = (await import('@/lib/firebase')).db;
-  const { QuestionBank } = await import('@/lib/question-bank');
-  // Removed direct Genkit/AI import. Use API route instead.
-      const userId = user?.uid;
-      const topic = values.topic;
-      const difficulty = values.difficulty;
-      const count = values.numberOfQuestions;
+      const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
+      const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
-      // 1. Always generate fresh questions for the requested topic
-      // This ensures users get questions specifically for their requested topic
-      const response = await fetch('/api/ai/custom-quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic,
-          difficulty,
-          numberOfQuestions: count,
-          userId,
-          ...values
-        })
+      const result = await generateCustomQuiz({
+        ...values,
+        isPro: isPro,
+        userAge: user?.age,
+        userClass: user?.className,
+        recentQuizHistory: historyForAI,
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate quiz');
-      }
-
-      const result = await response.json();
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      let questions = result.quiz;
-
-      // 2. Save questions to bank for future use
-      await QuestionBank.saveQuestions(questions, topic, difficulty, userId);
-
-      // 3. Record this quiz session in history
-      const historyRef = ref(db, `user_quiz_history/${userId}`);
-      await push(historyRef, {
-        topic,
-        difficulty,
-        timestamp: Date.now(),
-        questionCount: count
-      });
-
       clearInterval(interval);
       setGenerationProgress(100);
 
       setTimeout(() => {
-        setQuiz(questions);
-        setUserAnswers(new Array(questions.length).fill(null));
+        if (!result.quiz || result.quiz.length === 0) {
+           throw new Error("The AI returned an empty quiz. This can happen with very niche topics. Please try broadening your topic or rephrasing your instructions.");
+        }
+        setQuiz(result.quiz);
+        setComprehensionText(result.comprehensionText || null);
+        setUserAnswers(new Array(result.quiz.length).fill(null));
         setTimeLeft(values.timeLimit * 60);
         setIsGenerating(false);
         setFormValues(values);
-      }, 500);
+      }, 500)
 
-    } catch (error) {
-      clearInterval(interval);
-      setIsGenerating(false);
+    } catch (error: any) {
+        clearInterval(interval);
+        setIsGenerating(false);
+        setFormValues(null);
+        let errorMessage = "An unexpected response was received from the server.";
+        if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
+          errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
+        } else if (error?.message?.includes("429")) {
+            errorMessage = "You have hit a rate limit. Please try again after some time.";
+        } else if (error.message && !error.message.includes('Unexpected')) {
+            errorMessage = error.message;
+        }
       toast({
-        title: "Quiz Generation Failed",
-        description: error?.message || "An error occurred while generating your quiz. Please try again.",
-        variant: "destructive"
+        title: "Error Generating Quiz",
+        description: errorMessage,
+        variant: "destructive",
       });
-      console.error("Quiz generation error:", error);
+      console.error(error);
     }
-      
-  // ...existing code...
   };
 
 
-  const handleAnswer = (selectedAnswer: string) => {
+  const handleAnswer = (answer: string) => {
     const newAnswers = [...userAnswers];
-    // Store the answer index (0, 1, 2, 3) instead of the full text for better comparison
-    const currentQ = quiz[currentQuestion];
-    const answerIndex = currentQ.answers?.findIndex(answer => answer === selectedAnswer) ?? -1;
-    newAnswers[currentQuestion] = answerIndex >= 0 ? selectedAnswer : selectedAnswer;
+    newAnswers[currentQuestion] = answer;
     setUserAnswers(newAnswers);
-
-    // Save progress in real-time
-    if (quiz && formValues) {
-      saveProgress({
-        answers: newAnswers,
-        currentQuestion,
-        timeSpent: (formValues.timeLimit * 60) - timeLeft
-      });
-    }
   };
-  
+
   const handleNext = () => {
     if (currentQuestion < (quiz?.length ?? 0) - 1) {
-      const nextQ = currentQuestion + 1;
-      setCurrentQuestion(nextQ);
-      announceToScreenReader(`Question ${nextQ + 1} of ${quiz?.length}`);
-      manageFocus('[data-question-content]');
+      setCurrentQuestion(currentQuestion + 1);
     } else {
       handleSubmit();
     }
@@ -547,10 +399,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const handleBack = () => {
     if (currentQuestion > 0) {
-      const prevQ = currentQuestion - 1;
-      setCurrentQuestion(prevQ);
-      announceToScreenReader(`Question ${prevQ + 1} of ${quiz?.length}`);
-      manageFocus('[data-question-content]');
+      setCurrentQuestion(currentQuestion - 1);
     }
   };
 
@@ -563,21 +412,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
-      const response = await fetch('/api/ai/explanation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: question.question,
-          studentAnswer: userAnswers[questionIndex] || "",
-          correctAnswer: question.correctAnswer || "N/A",
-          topic: formValues.topic,
-          isPro: user?.plan === 'Pro',
-        })
+      const result = await generateExplanationsForIncorrectAnswers({
+        question: question.question,
+        studentAnswer: userAnswers[questionIndex] || "",
+        correctAnswer: question.correctAnswer || "N/A",
+        topic: formValues.topic,
       });
-      
-      if (!response.ok) throw new Error('Failed to generate explanation');
-      const result = await response.json();
-      
       setExplanations((prev) => ({
         ...prev,
         [questionIndex]: { ...prev[questionIndex], isLoading: false, explanation: result.explanation },
@@ -595,7 +435,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       console.error(error);
     }
   };
-  
+
   const getSimpleExplanation = async (questionIndex: number) => {
     if (!quiz || !formValues) return;
     const question = quiz[questionIndex];
@@ -603,22 +443,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       ...prev,
       [questionIndex]: { ...prev[questionIndex], isSimpleLoading: true, simpleExplanation: null },
     }));
-    
+
     try {
-        const response = await fetch('/api/ai/simple-explanation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const result = await generateSimpleExplanation({
             question: question.question,
             correctAnswer: question.correctAnswer || "N/A",
             topic: formValues.topic,
-            isPro: user?.plan === 'Pro',
-          })
         });
-        
-        if (!response.ok) throw new Error('Failed to generate simple explanation');
-        const result = await response.json();
-        
         setExplanations((prev) => ({
             ...prev,
             [questionIndex]: { ...prev[questionIndex], isSimpleLoading: false, simpleExplanation: result.explanation },
@@ -646,27 +477,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         toast({ title: "Nothing to review!", description: "You answered all questions correctly." });
         return;
     }
-    
+
     setIsGeneratingFlashcards(true);
     setGeneratedFlashcards(null);
 
     try {
-        const response = await fetch('/api/ai/flashcards', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const flashcardInput = {
             topic: formValues.topic,
             incorrectQuestions: incorrectQuestions.map(q => ({
                 question: q.question,
                 userAnswer: q.userAnswer || null,
                 correctAnswer: q.correctAnswer || '',
             }))
-          })
-        });
-        
-        if (!response.ok) throw new Error('Failed to generate flashcards');
-        const result = await response.json();
-        
+        };
+        const result = await generateFlashcards(flashcardInput);
         if (result.flashcards.length === 0) {
             toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
         } else {
@@ -715,7 +539,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 y += (doc.splitTextToSize(`- ${a}`, maxWidth - 5).length * 4) + 3;
             });
         }
-        
+
         y += 5;
     });
 
@@ -726,7 +550,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         doc.setFontSize(14);
         doc.text("Answer Key", margin, y);
         y += 10;
-        
+
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(11);
         quiz.forEach((q, i) => {
@@ -739,7 +563,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         });
     }
 
-    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty, user?.plan === 'Pro');
+    addPdfHeaderAndFooter(doc, formValues.topic, formValues.difficulty, isPro);
     doc.save(`${formValues.topic.replace(/\s+/g, '_')}_quiz.pdf`);
   };
 
@@ -748,8 +572,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     const { default: jsPDF } = await import('jspdf');
     const { score, percentage, totalScorable } = calculateScore();
     const doc = new jsPDF();
-    
-    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty, user?.plan === 'Pro');
+
+    addPdfHeaderAndFooter(doc, "Quiz Result Card", formValues.difficulty, isPro);
 
     let y = 50;
 
@@ -765,73 +589,63 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     doc.text(`Percentage: ${percentage.toFixed(0)}%`, 20, y);
     y += 10;
     doc.text(`Status: ${percentage >= 50 ? 'Pass' : 'Fail'}`, 20, y);
-    
+
     doc.save('quiz_result_card.pdf');
   };
-  
+
   const toggleBookmark = async (question: string, correctAnswer: string) => {
     if(!formValues || !user) return;
-    
-    try {
-      const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
-      const bookmarkId = btoa(question).replace(/[^a-zA-Z0-9]/g, '');
-      
-      if (isCurrentlyBookmarked) {
-          const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-          await set(bookmarkRef, null);
-          await deleteBookmark(user.uid, question);
-          setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
-      } else {
-          const newBookmark: BookmarkedQuestion = { 
-              userId: user.uid,
-              question, 
-              correctAnswer, 
-              topic: formValues.topic 
-          };
-          const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-          await set(bookmarkRef, newBookmark);
-          await saveBookmark(newBookmark, user.plan);
-          setBookmarkedQuestions(prev => [...prev, newBookmark]);
-      }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
+
+    const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
+    const bookmarkId = btoa(question); // Use base64 encoded question as a safe key
+
+    if (isCurrentlyBookmarked) {
+        // Remove from Firebase and local state
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        await set(bookmarkRef, null);
+        await deleteBookmark(user.uid, question);
+        setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
+    } else {
+        const newBookmark: BookmarkedQuestion = {
+            userId: user.uid,
+            question,
+            correctAnswer,
+            topic: formValues.topic
+        };
+        // Save to Firebase and local state
+        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        await set(bookmarkRef, newBookmark);
+        await saveBookmark(newBookmark);
+        setBookmarkedQuestions(prev => [...prev, newBookmark]);
     }
   };
 
   const resetQuiz = async () => {
-    try {
-      if(initialQuiz && typeof window !== 'undefined') {
-          if (window.location.pathname.includes('/mdcat/')) {
-             window.location.href = '/mdcat';
-          } else if (window.location.pathname.includes('/ecat/')) {
-              window.location.href = '/ecat';
-          } else if (window.location.pathname.includes('/nts/')) {
-              window.location.href = '/nts';
-          } else {
-              window.location.href = '/exam-prep';
-          }
-          return;
-      }
-      if (user) {
-          try {
-            await deleteQuizState(user.uid);
-          } catch (error) {
-            console.error('Error deleting quiz state:', error);
-          }
-      }
-      setQuiz(null);
-      setCurrentQuestion(0);
-      setUserAnswers([]);
-      setShowResults(false); 
-      setExplanations({});
-      setFormValues(null);
-      formMethods.reset();
-      if (typeof window !== 'undefined') {
-        window.scrollTo(0, 0);
-      }
-    } catch (error) {
-      console.error('Error in resetQuiz:', error);
+    if(initialQuiz) {
+        // Check which prep section this quiz came from and redirect accordingly
+        if (window.location.pathname.includes('/mdcat/')) {
+           window.location.href = '/mdcat';
+        } else if (window.location.pathname.includes('/ecat/')) {
+            window.location.href = '/ecat';
+        } else if (window.location.pathname.includes('/nts/')) {
+            window.location.href = '/nts';
+        } else {
+            // Fallback for other initial quizzes
+            window.location.href = '/exam-prep';
+        }
+        return;
     }
+    if (user) {
+        await deleteQuizState(user.uid);
+    }
+    setQuiz(null);
+    setCurrentQuestion(0);
+    setUserAnswers([]);
+    setShowResults(false);
+    setExplanations({});
+    setFormValues(null);
+    formMethods.reset();
+    window.scrollTo(0, 0);
   };
 
   const retryIncorrect = () => {
@@ -844,7 +658,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         });
         return;
     }
-    
+
     const newFormValues = {
         ...formValues,
         topic: `Retry: ${formValues.topic}`,
@@ -862,7 +676,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setExplanations({});
     window.scrollTo(0, 0);
   };
-  
+
     const formatExplanation = (text: string | null) => {
         if (!text) return null;
         return text
@@ -874,28 +688,37 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 return part;
             });
     };
-  
+
   // --- Conditional Rendering ---
 
   if (showFlashcardViewer) {
     return <FlashcardViewer flashcards={generatedFlashcards || []} onBack={() => setShowFlashcardViewer(false)} />;
   }
 
+
   if (isGenerating) {
     return (
-      <div>
-        <QuizGenerationLoading
-          progress={generationProgress}
-          onRetry={() => {
-            setIsGenerating(false);
-            setGenerationProgress(0);
-          }}
-        />
-        <GenerationAd />
+      <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+        <div className="relative">
+            <BrainCircuit className="h-20 w-20 text-primary" />
+            <motion.div
+                className="absolute inset-0 flex items-center justify-center"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
+            </motion.div>
+        </div>
+        <h2 className="text-2xl font-semibold mb-2 mt-6">Generating Your Quiz...</h2>
+        <p className="text-muted-foreground max-w-sm mb-6">Please wait while our AI crafts the perfect quiz for you.</p>
+        <div className="w-full max-w-sm">
+           <Progress value={generationProgress} />
+           <p className="text-sm mt-2 text-primary font-medium">{generationProgress}%</p>
+        </div>
       </div>
     );
   }
-  
+
   const cardVariants = {
     hidden: { opacity: 0, x: 20 },
     visible: { opacity: 1, x: 0 },
@@ -909,8 +732,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     return (
       <FormProvider {...formMethods}>
         <div className="flex flex-col">
-
-
             <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</p>
                 <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -943,21 +764,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                   className="w-full"
               >
                 <div className="space-y-6">
-                    <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]" data-question-content>
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <RichContentRenderer content={decodeHtml(sanitizeString(currentQ.question))} smiles={currentQ.smiles} inline />
-                          {voiceSupported && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => speak(currentQ.question)}
-                              className="ml-2"
-                              aria-label="Read question aloud"
-                            >
-                              🔊
-                            </Button>
-                          )}
-                        </div>
+                    <div className="text-center text-xl sm:text-2xl font-semibold leading-relaxed min-h-[6rem]">
+                        <RichContentRenderer content={currentQ.question} smiles={currentQ.smiles} />
                     </div>
                     <div className="w-full max-w-md mx-auto">
                       {currentQ.type === 'descriptive' ? (
@@ -980,12 +788,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                       <FormControl>
                                         <RadioGroupItem value={answer} id={`q${currentQuestion}a${index}`} className="hidden peer" />
                                       </FormControl>
-                                      <Label 
-                                        htmlFor={`q${currentQuestion}a${index}`} 
-                                        className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all"
-                                        data-option={index + 1}
-                                      >
-                                          <RichContentRenderer content={decodeHtml(sanitizeString(answer))} inline />
+                                      <Label htmlFor={`q${currentQuestion}a${index}`} className="flex-1 text-base font-normal cursor-pointer rounded-xl border p-4 peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:border-primary transition-all">
+                                          <RichContentRenderer content={answer} />
                                       </Label>
                                   </FormItem>
                               )
@@ -996,24 +800,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 </div>
               </motion.div>
           </AnimatePresence>
-            
+
           <div className="mt-8 flex justify-between w-full">
-            <Button 
-              onClick={handleBack} 
-              size="lg" 
-              variant="outline" 
-              disabled={currentQuestion === 0}
-              data-action="previous"
-            >
+            <Button onClick={handleBack} size="lg" variant="outline" disabled={currentQuestion === 0}>
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Back
             </Button>
-            <Button 
-              onClick={handleNext} 
-              size="lg" 
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-              data-action={currentQuestion === quiz.length - 1 ? "submit" : "next"}
-            >
+            <Button onClick={handleNext} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
                 {currentQuestion === quiz.length - 1 ? "Submit Quiz" : "Next Question"}
                 {currentQuestion !== quiz.length - 1 && <ArrowRight className="ml-2 h-5 w-5" />}
             </Button>
@@ -1022,7 +815,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       </FormProvider>
     );
   }
-  
+
   if (showResults && quiz && formValues) {
     const { score, percentage, totalScorable } = calculateScore();
     const incorrectAnswers = quiz.filter((q, i) => q.correctAnswer !== userAnswers[i] && q.type !== 'descriptive');
@@ -1037,7 +830,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                          <div className="flex flex-wrap gap-2">
                             <Button variant="outline" onClick={downloadQuestions}><Download className="mr-2 h-4 w-4" /> Questions</Button>
                             <Button onClick={downloadResultCard}><Download className="mr-2 h-4 w-4" /> Result Card</Button>
-                            <QuizSharingDialog quiz={quiz} formValues={formValues} />
                          </div>
                     </div>
                 </CardHeader>
@@ -1078,24 +870,24 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                         </CardHeader>
                                         <CardContent className="p-4 sm:p-6 pt-2">
                                             <div className="text-sm mt-2 space-y-1">
-                                 <div className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
-                                   {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
-                                   <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
-                                 </div>
-                                 {!isCorrect && q.correctAnswer && (
-                                    <div className="text-primary flex items-start gap-2">
-                                      <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                      <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
-                                    </div>
+                                                 <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
+                                                    {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
+                                                    <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
+                                                 </p>
+                                                 {!isCorrect && q.correctAnswer && (
+                                                     <p className="text-primary flex items-start gap-2">
+                                                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
+                                                     </p>
                                                  )}
-                      {q.type === 'descriptive' && !q.correctAnswer && (
-                      <div className="flex items-start gap-2 text-muted-foreground">
-                        <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
-                        <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
-                      </div>
+                                                 {q.type === 'descriptive' && !q.correctAnswer && (
+                                                    <p className="flex items-start gap-2 text-muted-foreground">
+                                                         <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
+                                                         <span>Your Answer: {userAnswers[index] || "Not answered"}</span>
+                                                    </p>
                                                  )}
                                             </div>
-                                            
+
                                             {!isCorrect && q.type !== 'descriptive' && (
                                                 <div className="mt-4 space-y-2">
                                                     {explanationState?.explanation && (
@@ -1148,223 +940,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container mx-auto flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center px-4 py-12">
-        <FormProvider {...formMethods}>
-          <form onSubmit={formMethods.handleSubmit(handleGenerateQuiz)} className="w-full max-w-2xl">
-            <Card className="overflow-hidden">
-                <CardHeader>
-                    <div className="flex flex-col items-center text-center">
-                        <h1 className="font-headline text-3xl font-bold tracking-tight">Create Custom Quiz</h1>
-                        <p className="mt-1 text-muted-foreground">{steps[currentStep]?.description}</p>
-                    </div>
-                    <Progress value={((currentStep + 1) / steps.length) * 100} className="mt-4" />
-                </CardHeader>
-                <CardContent className="min-h-[350px]">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentStep}
-                            initial={{ x: 30, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: -30, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {/* Step 0: Topic */}
-                            {currentStep === 0 && (
-                                <FormField name="topic" control={formMethods.control} render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input autoFocus className="h-12 text-lg text-center" placeholder="e.g., Cellular Respiration" {...field} />
-                                        </FormControl>
-                                        <FormMessage className="text-center" />
-                                    </FormItem>
-                                )} />
-                            )}
-                            {/* Step 1: Mode */}
-                            {currentStep === 1 && (
-                                <FormField name="mode" control={formMethods.control} render={({ field }) => (
-                                    <FormItem>
-                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
-                                              <RadioGroupItem value="practice" className="sr-only" />
-                                              <div className="flex items-center gap-3 mb-2">
-                                                <BookOpen className="h-6 w-6 text-primary" />
-                                                <span className="font-bold text-lg">Practice Mode</span>
-                                              </div>
-                                              <span className="text-sm text-muted-foreground">Get instant feedback after each question. No timer.</span>
-                                            </Label>
-                                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
-                                              <RadioGroupItem value="exam" className="sr-only" />
-                                              <div className="flex items-center gap-3 mb-2">
-                                                <Edit className="h-6 w-6 text-primary" />
-                                                <span className="font-bold text-lg">Exam Mode</span>
-                                              </div>
-                                              <span className="text-sm text-muted-foreground">Simulate a test with a timer. Results at the end.</span>
-                                            </Label>
-                                        </RadioGroup>
-                                    </FormItem>
-                                )}/>
-                            )}
-                             {/* Step 2: Styles */}
-                            {currentStep === 2 && (
-                                <FormField name="questionStyles" control={formMethods.control} render={() => (
-                                    <FormItem>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                                            {questionStyleOptions.map((item) => (
-                                                <FormField key={item.id} control={formMethods.control} name="questionStyles" render={({ field }) => (
-                                                <FormItem>
-                                                     <Label className="flex flex-row items-center space-x-2 space-y-0 rounded-md border p-3 cursor-pointer has-[:checked]:border-primary">
-                                                      <FormControl>
-                                                        <Checkbox
-                                                          checked={field.value?.includes(item.id)}
-                                                          onCheckedChange={(checked) => {
-                                                            return checked
-                                                              ? field.onChange([...(field.value || []), item.id])
-                                                              : field.onChange(
-                                                                  field.value?.filter(
-                                                                    (value) => value !== item.id
-                                                                  )
-                                                                )
-                                                          }}
-                                                        />
-                                                      </FormControl>
-                                                      <div className="space-y-0.5 leading-none">
-                                                        <span className="font-normal text-sm">{item.label}</span>
-                                                      </div>
-                                                    </Label>
-                                                </FormItem>
-                                                )} />
-                                            ))}
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}/>
-                            )}
-                             {/* Step 3: Config */}
-                            {currentStep === 3 && (
-                                <div className="space-y-8 pt-4">
-                                    <FormField control={formMethods.control} name="difficulty" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-base font-semibold">Difficulty</FormLabel>
-                                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
-                                                <Label className="flex items-center space-x-2 cursor-pointer">
-                                                    <RadioGroupItem value="easy" />
-                                                    <span>Easy</span>
-                                                </Label>
-                                                <Label className="flex items-center space-x-2 cursor-pointer">
-                                                    <RadioGroupItem value="medium" />
-                                                    <span>Medium</span>
-                                                </Label>
-                                                <Label className="flex items-center space-x-2 cursor-pointer">
-                                                    <RadioGroupItem value="hard" />
-                                                    <span>Hard</span>
-                                                </Label>
-                                            </RadioGroup>
-                                        </FormItem>
-                                    )}>
-                                    </FormField>
-
-                                    <FormField control={formMethods.control} name="questionTypes" render={() => (
-                                        <FormItem>
-                                            <FormLabel className="text-base font-semibold">Question Types</FormLabel>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                                {questionTypeOptions.map((item) => (
-                                                  <FormField
-                                                    key={item.id}
-                                                    control={formMethods.control}
-                                                    name="questionTypes"
-                                                    render={({ field }) => {
-                                                      return (
-                                                        <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                                          <FormControl>
-                                                            <Checkbox
-                                                              checked={field.value?.includes(item.id)}
-                                                              onCheckedChange={(checked) => {
-                                                                return checked
-                                                                  ? field.onChange([...(field.value || []), item.id])
-                                                                  : field.onChange(
-                                                                      field.value?.filter(
-                                                                        (value) => value !== item.id
-                                                                      )
-                                                                    )
-                                                              }}
-                                                            />
-                                                          </FormControl>
-                                                          <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                                            <item.icon className="h-4 w-4"/>
-                                                            {item.label}
-                                                          </FormLabel>
-                                                        </FormItem>
-                                                      )
-                                                    }}
-                                                  />
-                                                ))}
-                                              </div>
-                                              <FormMessage />
-                                        </FormItem>
-                                    )}>
-                                    </FormField>
-
-                                    <FormField control={formMethods.control} name="numberOfQuestions" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-base font-semibold">Number of Questions: {field.value}</FormLabel>
-                                            <FormControl>
-                                              <Slider min={3} max={80} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}/>
-                                    <FormField control={formMethods.control} name="timeLimit" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-base font-semibold">Time Limit (minutes): {field.value}</FormLabel>
-                                            <FormControl>
-                                              <Slider min={1} max={120} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}/>
-                                </div>
-                            )}
-                            {/* Step 4: Summary */}
-                            {currentStep === 4 && (
-                                 <div className="space-y-4">
-                                     <Card className="bg-muted/50">
-                                        <CardHeader><CardTitle>Review Your Settings</CardTitle></CardHeader>
-                                        <CardContent className="space-y-2">
-                                            <p><strong>📚 Topic:</strong> {formMethods.getValues('topic')}</p>
-                                            <p><strong>🎯 Mode:</strong> <span className="capitalize">{formMethods.getValues('mode')}</span></p>
-                                            <p><strong>📋 Types:</strong> {formMethods.getValues('questionTypes').join(', ')}</p>
-                                            <p><strong>🎨 Styles:</strong> {formMethods.getValues('questionStyles').join(', ')}</p>
-                                            <p><strong>📊 Questions:</strong> {formMethods.getValues('numberOfQuestions')}</p>
-                                            <p><strong>⏰ Time:</strong> {formMethods.getValues('timeLimit')} minutes</p>
-                                        </CardContent>
-                                     </Card>
-                                 </div>
-                            )}
-                        </motion.div>
-                    </AnimatePresence>
-                </CardContent>
-                 <div className="flex items-center justify-between border-t p-4">
-                    <Button type="button" variant="ghost" onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} disabled={currentStep === 0}>
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                    </Button>
-                    {currentStep < steps.length - 1 ? (
-                        <Button type="button" onClick={async () => {
-                            const fields = steps[currentStep].fields;
-                            const isValid = await formMethods.trigger(fields as any, { shouldFocus: true });
-                            if (isValid) setCurrentStep(prev => prev + 1);
-                        }}>
-                            Next
-                        </Button>
-                    ) : (
-                        <Button type="submit" disabled={isGenerating}>
-                            <Wand2 className="mr-2 h-5 w-5" /> Generate Quiz
-                        </Button>
-                    )}
-                </div>
-            </Card>
-          </form>
-        </FormProvider>
-      </div>
-    </div>
+    <FormProvider {...formMethods}>
+      <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
+    </FormProvider>
   );
 }
 
@@ -1428,7 +1006,7 @@ function FlashcardViewer({ flashcards, onBack }: { flashcards: Flashcard[], onBa
                     </motion.div>
                 </AnimatePresence>
             </div>
-            
+
             <div className="text-center text-muted-foreground font-medium">
                 Card {currentIndex + 1} of {flashcards.length}
             </div>
@@ -1462,7 +1040,7 @@ const questionStyleOptions = [
 function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void; }) {
     const form = useFormContext<QuizFormValues>();
     const watchQuestionStyles = form.watch('questionStyles');
-    
+
     return (
         <div>
           <PageHeader
@@ -1480,217 +1058,3 @@ function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormVa
                       control={form.control}
                       name="topic"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Topic</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., The Solar System, React Hooks, The French Revolution" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name="difficulty"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Difficulty Level</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                            >
-                              {["easy", "medium", "hard", "master"].map((level) => (
-                                 <FormItem key={level} className="flex-1">
-                                    <FormControl>
-                                       <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                                    </FormControl>
-                                    <Label htmlFor={level} className="flex h-full flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-secondary peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                                      {level}
-                                    </Label>
-                                  </FormItem>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>2. Question Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="questionTypes"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Question Types</FormLabel>
-                           <Alert className="mt-2 text-xs p-2">
-                            <ShieldAlert className="h-4 w-4"/>
-                            <AlertDescription>
-                               For entry test topics (MDCAT/ECAT/NTS), the AI will automatically generate 'Multiple Choice' questions only, regardless of your selection, to match the real exam format.
-                            </AlertDescription>
-                           </Alert>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            {questionTypeOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={form.control}
-                                name="questionTypes"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.id)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, item.id])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.id
-                                                  )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                        <item.icon className="h-4 w-4"/>
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="questionStyles"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Question Styles</FormLabel>
-                           {watchQuestionStyles.includes('Comprehension-based MCQs') && (
-                               <Alert className="mt-2 text-xs p-2">
-                                <AlertTriangle className="h-4 w-4"/>
-                                <AlertDescription>
-                                    When 'Comprehension-based' is selected, the AI will generate a reading passage for the quiz.
-                                </AlertDescription>
-                               </Alert>
-                           )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-                            {questionStyleOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={form.control}
-                                name="questionStyles"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.id)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...(field.value || []), item.id])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.id
-                                                  )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                         <item.icon className="h-4 w-4"/>
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                   <FormField
-                      control={form.control}
-                      name="numberOfQuestions"
-                      render={({ field }) => (
-                         <FormItem>
-                          <FormLabel>Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                           <FormControl>
-                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
-                          </FormControl>
-                           <Alert className="mt-2 text-xs p-2">
-                            <AlertTriangle className="h-4 w-4"/>
-                            <AlertDescription>
-                                The AI-generated count may sometimes vary slightly from your selection.
-                            </AlertDescription>
-                           </Alert>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="timeLimit"
-                      render={({ field }) => (
-                         <FormItem>
-                          <FormLabel>Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                           <FormControl>
-                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                </CardContent>
-              </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>3. Fine-Tuning (Optional)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <FormField
-                            control={form.control}
-                            name="specificInstructions"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Specific Instructions for the AI</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                    placeholder="e.g., Focus on the contributions of Louis Pasteur. Include questions about the 19th-century scientific context."
-                                    className="resize-none"
-                                    {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-
-              <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                 <Sparkles className="mr-2 h-5 w-5"/>
-                 Generate Quiz
-              </Button>
-            </form>
-          </Form>
-        </div>
-    )
-}
