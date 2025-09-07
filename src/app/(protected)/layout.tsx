@@ -50,13 +50,20 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
       {/* Desktop Sidebar */}
-      <div className={cn("hidden border-r bg-card md:block fixed left-0 top-0 h-full z-40 transition-all duration-300", isSidebarOpen ? "w-[240px]" : "w-[60px]")}>
+      <div
+        className={cn(
+          "hidden border-r bg-card md:block fixed left-0 top-0 h-full z-40 transition-all duration-300",
+          isSidebarOpen ? "w-[240px]" : "w-[60px]"
+        )}
+        onMouseEnter={() => setIsSidebarOpen(true)}
+        onMouseLeave={() => setIsSidebarOpen(false)}
+      >
         <MainSidebar onNavigate={handleSidebarNavigate} isCollapsed={!isSidebarOpen} />
       </div>
 
       <div className={cn("flex flex-col transition-all duration-300 min-h-screen", isSidebarOpen ? "md:ml-[240px]" : "md:ml-[60px]")}>
         <header className="flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 sticky top-0 z-30">
-            <AppHeader onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
+            <AppHeader onSidebarToggle={() => setIsSidebarOpen(true)} isSidebarOpen={isSidebarOpen} />
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6 pb-24 md:pb-6 min-h-0 overflow-y-auto">
