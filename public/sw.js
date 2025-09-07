@@ -1,4 +1,4 @@
-p// Service Worker for Quizzicallabs AI PWA
+ // Service Worker for Quizzicallabs AI PWA
 const CACHE_NAME = 'quizzicallabs-v1.0.0';
 const OFFLINE_URL = '/offline';
 
