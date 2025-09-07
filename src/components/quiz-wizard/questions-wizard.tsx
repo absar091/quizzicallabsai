@@ -139,12 +139,12 @@ export function QuestionsWizard({ onGenerateQuestions, isGenerating = false, cla
     <FormProvider {...formMethods}>
       <div className={cn('max-w-4xl mx-auto', className)}>
         {/* Progress Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gradient">Create Practice Questions</h1>
-            <span className="text-sm text-muted-foreground">
+        <div className="mb-6">
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-semibold">Create Practice Questions</h1>
+            <p className="text-sm text-muted-foreground">
               Step {currentStep + 1} of {steps.length}
-            </span>
+            </p>
           </div>
 
           {/* Step Indicators */}
