@@ -9,18 +9,18 @@ export function TopicStep() {
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold mb-1">Topic</h2>
-        <p className="text-muted-foreground text-sm">Enter your topic</p>
+        <h2 className="text-2xl font-bold mb-1">Topic</h2>
+        <p className="text-muted-foreground">Enter your topic</p>
       </div>
 
       <div className="space-y-4">
         <Input
           {...register('topic')}
           placeholder="e.g. Biology, Physics, History..."
-          className="text-base"
+          className="text-lg h-12"
         />
         {errors.topic && (
-          <span className="text-sm text-destructive">{String(errors.topic.message)}</span>
+          <span className="text-destructive font-medium">{String(errors.topic.message)}</span>
         )}
       </div>
     </div>

@@ -21,20 +21,20 @@ export function DifficultyStep() {
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold mb-1">Difficulty</h2>
-        <p className="text-muted-foreground text-sm">Select difficulty level</p>
+        <h2 className="text-2xl font-bold mb-1">Difficulty Level</h2>
+        <p className="text-muted-foreground text-base">Choose your challenge level</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {difficultyLevels.map((level) => (
           <button
             key={level.id}
             onClick={() => handleDifficultySelect(level.id)}
             className={cn(
-              'p-3 text-center border-2 transition-colors font-medium rounded',
+              'p-4 text-center border-2 rounded-lg transition-all duration-200 font-semibold text-lg',
               selectedDifficulty === level.id
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border hover:border-primary bg-muted/50 hover:bg-muted'
+                ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                : 'border-muted hover:border-primary bg-card hover:bg-accent shadow-sm'
             )}
           >
             {level.label}
