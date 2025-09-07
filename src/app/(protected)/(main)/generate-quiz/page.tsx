@@ -184,9 +184,18 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const [generatedFlashcards, setGeneratedFlashcards] = useState<Flashcard[] | null>(null);
   const [showFlashcardViewer, setShowFlashcardViewer] = useState(false);
 
+  const steps = [
+    { id: 'topic', title: 'Topic', description: 'What subject do you want to be quizzed on?', fields: ['topic'], icon: BookOpen },
+    { id: 'mode', title: 'Quiz Mode', description: 'Choose how you want to take your quiz.', fields: ['mode'], icon: Edit },
+    { id: 'styles', title: 'Question Styles', description: 'Select the kind of questions you want.', fields: ['questionStyles'], icon: Puzzle },
+    { id: 'config', title: 'Configuration', description: 'Fine-tune the quiz difficulty, length, and timing.', fields: ['difficulty', 'numberOfQuestions', 'timeLimit'], icon: Settings },
+    { id: 'summary', title: 'Summary & Generate', description: 'Review your selections and start the quiz.', icon: Sparkles },
+  ];
+
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasInitialized = useRef(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const formMethods = useForm<QuizFormValues>({
     resolver: zodResolver(formSchema),
@@ -1139,11 +1148,220 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container-modern py-8">
-        <QuizWizard
-          onGenerateQuiz={handleGenerateQuiz}
-          isGenerating={isGenerating}
-        />
+      <div className="container mx-auto flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center px-4 py-12">
+        <FormProvider {...formMethods}>
+          <form onSubmit={formMethods.handleSubmit(handleGenerateQuiz)} className="w-full max-w-2xl">
+            <Card className="overflow-hidden">
+                <CardHeader>
+                    <div className="flex flex-col items-center text-center">
+                        <h1 className="font-headline text-3xl font-bold tracking-tight">Create Custom Quiz</h1>
+                        <p className="mt-1 text-muted-foreground">{steps[currentStep]?.description}</p>
+                    </div>
+                    <Progress value={((currentStep + 1) / steps.length) * 100} className="mt-4" />
+                </CardHeader>
+                <CardContent className="min-h-[350px]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentStep}
+                            initial={{ x: 30, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: -30, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {/* Step 0: Topic */}
+                            {currentStep === 0 && (
+                                <FormField name="topic" control={formMethods.control} render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input autoFocus className="h-12 text-lg text-center" placeholder="e.g., Cellular Respiration" {...field} />
+                                        </FormControl>
+                                        <FormMessage className="text-center" />
+                                    </FormItem>
+                                )} />
+                            )}
+                            {/* Step 1: Mode */}
+                            {currentStep === 1 && (
+                                <FormField name="mode" control={formMethods.control} render={({ field }) => (
+                                    <FormItem>
+                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
+                                              <RadioGroupItem value="practice" className="sr-only" />
+                                              <div className="flex items-center gap-3 mb-2">
+                                                <BookOpen className="h-6 w-6 text-primary" />
+                                                <span className="font-bold text-lg">Practice Mode</span>
+                                              </div>
+                                              <span className="text-sm text-muted-foreground">Get instant feedback after each question. No timer.</span>
+                                            </Label>
+                                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
+                                              <RadioGroupItem value="exam" className="sr-only" />
+                                              <div className="flex items-center gap-3 mb-2">
+                                                <Edit className="h-6 w-6 text-primary" />
+                                                <span className="font-bold text-lg">Exam Mode</span>
+                                              </div>
+                                              <span className="text-sm text-muted-foreground">Simulate a test with a timer. Results at the end.</span>
+                                            </Label>
+                                        </RadioGroup>
+                                    </FormItem>
+                                )}/>
+                            )}
+                             {/* Step 2: Styles */}
+                            {currentStep === 2 && (
+                                <FormField name="questionStyles" control={formMethods.control} render={() => (
+                                    <FormItem>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                            {questionStyleOptions.map((item) => (
+                                                <FormField key={item.id} control={formMethods.control} name="questionStyles" render={({ field }) => (
+                                                <FormItem>
+                                                     <Label className="flex flex-row items-center space-x-2 space-y-0 rounded-md border p-3 cursor-pointer has-[:checked]:border-primary">
+                                                      <FormControl>
+                                                        <Checkbox
+                                                          checked={field.value?.includes(item.id)}
+                                                          onCheckedChange={(checked) => {
+                                                            return checked
+                                                              ? field.onChange([...(field.value || []), item.id])
+                                                              : field.onChange(
+                                                                  field.value?.filter(
+                                                                    (value) => value !== item.id
+                                                                  )
+                                                                )
+                                                          }}
+                                                        />
+                                                      </FormControl>
+                                                      <div className="space-y-0.5 leading-none">
+                                                        <span className="font-normal text-sm">{item.label}</span>
+                                                      </div>
+                                                    </Label>
+                                                </FormItem>
+                                                )} />
+                                            ))}
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}/>
+                            )}
+                             {/* Step 3: Config */}
+                            {currentStep === 3 && (
+                                <div className="space-y-8 pt-4">
+                                    <FormField control={formMethods.control} name="difficulty" render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-base font-semibold">Difficulty</FormLabel>
+                                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                                                <Label className="flex items-center space-x-2 cursor-pointer">
+                                                    <RadioGroupItem value="easy" />
+                                                    <span>Easy</span>
+                                                </Label>
+                                                <Label className="flex items-center space-x-2 cursor-pointer">
+                                                    <RadioGroupItem value="medium" />
+                                                    <span>Medium</span>
+                                                </Label>
+                                                <Label className="flex items-center space-x-2 cursor-pointer">
+                                                    <RadioGroupItem value="hard" />
+                                                    <span>Hard</span>
+                                                </Label>
+                                            </RadioGroup>
+                                        </FormItem>
+                                    )}>
+                                    </FormField>
+
+                                    <FormField control={formMethods.control} name="questionTypes" render={() => (
+                                        <FormItem>
+                                            <FormLabel className="text-base font-semibold">Question Types</FormLabel>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                                {questionTypeOptions.map((item) => (
+                                                  <FormField
+                                                    key={item.id}
+                                                    control={formMethods.control}
+                                                    name="questionTypes"
+                                                    render={({ field }) => {
+                                                      return (
+                                                        <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                                                          <FormControl>
+                                                            <Checkbox
+                                                              checked={field.value?.includes(item.id)}
+                                                              onCheckedChange={(checked) => {
+                                                                return checked
+                                                                  ? field.onChange([...(field.value || []), item.id])
+                                                                  : field.onChange(
+                                                                      field.value?.filter(
+                                                                        (value) => value !== item.id
+                                                                      )
+                                                                    )
+                                                              }}
+                                                            />
+                                                          </FormControl>
+                                                          <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
+                                                            <item.icon className="h-4 w-4"/>
+                                                            {item.label}
+                                                          </FormLabel>
+                                                        </FormItem>
+                                                      )
+                                                    }}
+                                                  />
+                                                ))}
+                                              </div>
+                                              <FormMessage />
+                                        </FormItem>
+                                    )}>
+                                    </FormField>
+
+                                    <FormField control={formMethods.control} name="numberOfQuestions" render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-base font-semibold">Number of Questions: {field.value}</FormLabel>
+                                            <FormControl>
+                                              <Slider min={3} max={80} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}/>
+                                    <FormField control={formMethods.control} name="timeLimit" render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-base font-semibold">Time Limit (minutes): {field.value}</FormLabel>
+                                            <FormControl>
+                                              <Slider min={1} max={120} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}/>
+                                </div>
+                            )}
+                            {/* Step 4: Summary */}
+                            {currentStep === 4 && (
+                                 <div className="space-y-4">
+                                     <Card className="bg-muted/50">
+                                        <CardHeader><CardTitle>Review Your Settings</CardTitle></CardHeader>
+                                        <CardContent className="space-y-2">
+                                            <p><strong>📚 Topic:</strong> {formMethods.getValues('topic')}</p>
+                                            <p><strong>🎯 Mode:</strong> <span className="capitalize">{formMethods.getValues('mode')}</span></p>
+                                            <p><strong>📋 Types:</strong> {formMethods.getValues('questionTypes').join(', ')}</p>
+                                            <p><strong>🎨 Styles:</strong> {formMethods.getValues('questionStyles').join(', ')}</p>
+                                            <p><strong>📊 Questions:</strong> {formMethods.getValues('numberOfQuestions')}</p>
+                                            <p><strong>⏰ Time:</strong> {formMethods.getValues('timeLimit')} minutes</p>
+                                        </CardContent>
+                                     </Card>
+                                 </div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                </CardContent>
+                 <div className="flex items-center justify-between border-t p-4">
+                    <Button type="button" variant="ghost" onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} disabled={currentStep === 0}>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    </Button>
+                    {currentStep < steps.length - 1 ? (
+                        <Button type="button" onClick={async () => {
+                            const fields = steps[currentStep].fields;
+                            const isValid = await formMethods.trigger(fields as any, { shouldFocus: true });
+                            if (isValid) setCurrentStep(prev => prev + 1);
+                        }}>
+                            Next
+                        </Button>
+                    ) : (
+                        <Button type="submit" disabled={isGenerating}>
+                            <Wand2 className="mr-2 h-5 w-5" /> Generate Quiz
+                        </Button>
+                    )}
+                </div>
+            </Card>
+          </form>
+        </FormProvider>
       </div>
     </div>
   );
