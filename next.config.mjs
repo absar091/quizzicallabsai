@@ -47,6 +47,7 @@ const nextConfig = {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
+        // Core Node.js modules
         fs: false,
         path: false,
         net: false,
@@ -59,9 +60,13 @@ const nextConfig = {
         events: false,
         http: false,
         https: false,
+        http2: false,           // ✅ gRPC http2 dependency
+        dns: false,             // ✅ gRPC dns dependency
         zlib: false,
         os: false,
         child_process: false,
+        worker_threads: false,
+        // Third-party modules that depend on Node.js
         'require-in-the-middle': false,
         handlebars: false,
       };
