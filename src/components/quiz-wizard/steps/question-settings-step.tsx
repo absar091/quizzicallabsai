@@ -24,11 +24,11 @@ export function QuestionSettingsStep() {
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold mb-1">Question Types</h2>
-        <p className="text-muted-foreground text-sm">Select question styles</p>
+        <h2 className="text-2xl font-bold mb-1">Question Styles</h2>
+        <p className="text-muted-foreground text-base">Choose what types of questions you want</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {questionOptions.map((style) => {
           const isSelected = selectedStyles.includes(style);
 
@@ -37,10 +37,10 @@ export function QuestionSettingsStep() {
               key={style}
               onClick={() => handleStyleToggle(style)}
               className={cn(
-                'w-full p-3 text-left border-2 rounded transition-colors font-medium',
+                'w-full p-4 text-left border-2 rounded-lg transition-all duration-200 font-semibold text-lg',
                 isSelected
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border hover:border-primary bg-muted/50 hover:bg-muted'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                  : 'border-muted hover:border-primary bg-card hover:bg-accent shadow-sm'
               )}
             >
               {style}

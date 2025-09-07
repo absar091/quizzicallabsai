@@ -9,16 +9,16 @@ export function FineTuningStep() {
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold mb-1">Instructions</h2>
-        <p className="text-muted-foreground text-sm">Optional special instructions</p>
+        <h2 className="text-2xl font-bold mb-1">Specific Instructions</h2>
+        <p className="text-muted-foreground text-base">Add any special requirements (optional)</p>
       </div>
 
       <div className="space-y-4">
         <Textarea
           {...register('specificInstructions')}
           placeholder="Add any specific requirements or instructions..."
-          rows={4}
-          className="resize-none"
+          rows={5}
+          className="resize-none font-medium text-base"
         />
       </div>
     </div>

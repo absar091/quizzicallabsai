@@ -141,8 +141,8 @@ export function QuestionsWizard({ onGenerateQuestions, isGenerating = false, cla
         {/* Progress Header */}
         <div className="mb-6">
           <div className="text-center mb-4">
-            <h1 className="text-2xl font-semibold">Create Practice Questions</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-3xl font-bold">Create Practice Questions</h1>
+            <p className="text-base text-muted-foreground font-medium">
               Step {currentStep + 1} of {steps.length}
             </p>
           </div>

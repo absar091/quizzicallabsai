@@ -225,10 +225,12 @@ export default function GenerateQuestionsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <div className="container-modern py-8">
-          <PageHeader
-            title={`Practice Questions: ${form.getValues('topic')}`}
-            description={`${questions.length} questions generated`}
-          />
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold">Practice Questions</h1>
+            <p className="text-lg text-muted-foreground font-medium mt-2">
+              {questions.length} questions generated for: {form.getValues('topic')}
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <Button onClick={() => setQuestions(null)} variant="outline">
