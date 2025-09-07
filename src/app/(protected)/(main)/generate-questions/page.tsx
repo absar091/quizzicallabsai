@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Sparkles, BookOpen, Download, AlertTriangle, Eye } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, Sparkles, BookOpen, Download, AlertTriangle, Eye, ArrowLeft, Check, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,13 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -21,13 +29,15 @@ import { cn } from "@/lib/utils";
 import { usePlan } from "@/hooks/usePlan";
 import { useAuth } from "@/context/AuthContext";
 import { GenerationAd } from "@/components/ads/ad-banner";
-import { QuestionsWizard } from "@/components/quiz-wizard/questions-wizard";
 import { QuizGenerationLoading } from '@/components/enhanced-loading';
 
 const formSchema = z.object({
   topic: z.string().min(3, "Topic(s) or chapter(s) are required."),
+  mode: z.enum(["practice", "exam"]),
   difficulty: z.enum(["easy", "medium", "hard", "master"]),
+  questionStyles: z.array(z.string()).min(1, "Select at least one question style"),
   numberOfQuestions: z.number().min(1).max(55),
+  timeLimit: z.number().optional(),
 });
 
 type Question = {
@@ -36,6 +46,21 @@ type Question = {
   correctAnswer: string;
   explanation?: string;
 };
+
+const questionStyles = [
+  { id: 'Knowledge-based', label: 'Knowledge-based', description: 'Fact recall, definitions, formulas.' },
+  { id: 'Conceptual', label: 'Conceptual', description: 'Tests understanding of "why" or "how".' },
+  { id: 'Numerical', label: 'Numerical', description: 'Involves solving/calculating with numbers.' },
+  { id: 'Practice Questions', label: 'Practice Questions', description: 'Mixed practice with explanations.' },
+];
+
+const steps = [
+  { id: 'topic', title: 'Topic', description: 'What subject do you want to practice?', fields: ['topic'], icon: BookOpen },
+  { id: 'mode', title: 'Quiz Mode', description: 'Choose how you want to take your quiz.', fields: ['mode'], icon: Edit },
+  { id: 'styles', title: 'Question Styles', description: 'Select the types of questions you want.', fields: ['questionStyles'], icon: Check },
+  { id: 'config', title: 'Settings', description: 'Configure difficulty and number of questions.', fields: ['difficulty', 'numberOfQuestions', 'timeLimit'], icon: BookOpen },
+  { id: 'summary', title: 'Summary & Generate', description: 'Review your settings and generate questions.', icon: Sparkles },
+];
 
 const addPdfHeaderAndFooter = (doc: any, title: string, isPro: boolean) => {
   const pageCount = (doc as any).internal.getNumberOfPages();
@@ -78,15 +103,31 @@ export default function GenerateQuestionsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(25);
   const [questions, setQuestions] = useState<Question[] | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: "",
+      mode: "practice",
+      questionStyles: ["Knowledge-based"],
       difficulty: "medium",
       numberOfQuestions: 10,
+      timeLimit: 10,
     },
   });
+
+  const nextStep = async () => {
+    const fields = steps[currentStep].fields;
+    const isValid = await form.trigger(fields as any, { shouldFocus: true });
+    if (isValid && currentStep < steps.length - 1) {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(0, prev - 1));
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsGenerating(true);
@@ -333,11 +374,169 @@ export default function GenerateQuestionsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container-modern py-8">
-        <QuestionsWizard
-          onGenerateQuestions={onSubmit}
-          isGenerating={isGenerating}
-        />
+      <div className="container mx-auto flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center px-4 py-12">
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl">
+            <Card className="overflow-hidden">
+              <CardHeader>
+                <div className="flex flex-col items-center text-center">
+                  <h1 className="font-headline text-3xl font-bold tracking-tight">Create Practice Questions</h1>
+                  <p className="mt-1 text-muted-foreground">{steps[currentStep].description}</p>
+                </div>
+                <Progress value={((currentStep + 1) / steps.length) * 100} className="mt-4" />
+              </CardHeader>
+              <CardContent className="min-h-[350px]">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentStep}
+                    initial={{ x: 30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -30, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Step 0: Topic */}
+                    {currentStep === 0 && (
+                      <FormField name="topic" control={form.control} render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input autoFocus className="h-12 text-lg text-center placeholder:text-muted-foreground" placeholder="e.g., Cellular Respiration" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-center" />
+                        </FormItem>
+                      )} />
+                    )}
+                    {/* Step 1: Mode */}
+                    {currentStep === 1 && (
+                      <FormField name="mode" control={form.control} render={({ field }) => (
+                        <FormItem>
+                          <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
+                              <RadioGroupItem value="practice" className="sr-only" />
+                              <div className="flex items-center gap-3 mb-2">
+                                <BookOpen className="h-6 w-6 text-primary" />
+                                <span className="font-bold text-lg">Practice Mode</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">Get instant feedback after each question. No timer.</span>
+                            </Label>
+                            <Label className="flex-1 cursor-pointer rounded-md border-2 border-transparent p-4 transition-all has-[:checked]:border-primary">
+                              <RadioGroupItem value="exam" className="sr-only" />
+                              <div className="flex items-center gap-3 mb-2">
+                                <Edit className="h-6 w-6 text-primary" />
+                                <span className="font-bold text-lg">Exam Mode</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">Simulate a test with a timer. Results at the end.</span>
+                            </Label>
+                          </RadioGroup>
+                        </FormItem>
+                      )} />
+                    )}
+                    {/* Step 2: Styles */}
+                    {currentStep === 2 && (
+                      <FormField name="questionStyles" control={form.control} render={() => (
+                        <FormItem>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            {questionStyles.map((item) => (
+                              <FormField key={item.id} control={form.control} name="questionStyles" render={({ field }) => (
+                                <FormItem>
+                                  <Label className="flex flex-row items-center space-x-2 space-y-0 rounded-md border p-3 cursor-pointer has-[:checked]:border-primary">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(item.id)}
+                                        onCheckedChange={(checked) => (checked
+                                          ? field.onChange([...field.value, item.id])
+                                          : field.onChange(field.value?.filter((value) => value !== item.id))
+                                        )}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-0.5 leading-none">
+                                      <span className="font-normal text-sm">{item.label}</span>
+                                    </div>
+                                  </Label>
+                                </FormItem>
+                              )} />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    )}
+                    {/* Step 3: Config */}
+                    {currentStep === 3 && (
+                      <div className="space-y-8 pt-4">
+                        <FormField control={form.control} name="difficulty" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Difficulty</FormLabel>
+                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                              <Label className="flex items-center space-x-2 cursor-pointer">
+                                <RadioGroupItem value="easy" />
+                                <span>Easy</span>
+                              </Label>
+                              <Label className="flex items-center space-x-2 cursor-pointer">
+                                <RadioGroupItem value="medium" />
+                                <span>Medium</span>
+                              </Label>
+                              <Label className="flex items-center space-x-2 cursor-pointer">
+                                <RadioGroupItem value="hard" />
+                                <span>Hard</span>
+                              </Label>
+                            </RadioGroup>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="numberOfQuestions" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Number of Questions: {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider min={3} max={80} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
+                            </FormControl>
+                          </FormItem>
+                        )} />
+                        {form.getValues('mode') === 'exam' && (
+                          <FormField control={form.control} name="timeLimit" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-semibold">Time Limit (minutes): {field.value}</FormLabel>
+                              <FormControl>
+                                <Slider min={1} max={120} step={1} value={[field.value]} onValueChange={(vals) => field.onChange(vals[0])} />
+                              </FormControl>
+                            </FormItem>
+                          )} />
+                        )}
+                      </div>
+                    )}
+                    {/* Step 4: Summary */}
+                    {currentStep === 4 && (
+                      <div className="space-y-4">
+                        <Card className="bg-muted/50">
+                          <CardHeader><CardTitle>Review Your Settings</CardTitle></CardHeader>
+                          <CardContent className="space-y-2">
+                            <p><strong>📚 Topic:</strong> {form.getValues('topic')}</p>
+                            <p><strong>🎯 Mode:</strong> <span className="capitalize">{form.getValues('mode')}</span></p>
+                            <p><strong>📊 Questions:</strong> {form.getValues('numberOfQuestions')}</p>
+                            {form.getValues('mode') === 'exam' && <p><strong>⏰ Time:</strong> {form.getValues('timeLimit')} minutes</p>}
+                            <p><strong>🎨 Styles:</strong> {form.getValues('questionStyles').join(', ')}</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </CardContent>
+              <div className="flex items-center justify-between border-t p-4">
+                <Button type="button" variant="ghost" onClick={prevStep} disabled={currentStep === 0}>
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                </Button>
+                {currentStep < steps.length - 1 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button type="submit" disabled={isGenerating}>
+                    <Sparkles className="mr-2 h-5 w-5" /> Generate Questions
+                  </Button>
+                )}
+              </div>
+            </Card>
+          </form>
+        </FormProvider>
       </div>
     </div>
   );
