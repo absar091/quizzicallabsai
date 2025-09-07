@@ -269,32 +269,34 @@ export default function GenerateQuestionsPage() {
           <div className="space-y-4">
             {questions.map((question, index) => (
               <Card key={index} className="w-full">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    {question.question}
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base md:text-lg leading-relaxed">
+                    <div className="flex items-start gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-7 h-7 md:w-6 md:h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                        {index + 1}
+                      </span>
+                      <span className="block leading-relaxed break-words">{question.question}</span>
+                    </div>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="pt-0 space-y-3 md:space-y-4 px-4 md:px-6">
                   {question.answers && (
-                    <Accordion type="multiple" className="w-full space-y-3">
+                    <Accordion type="multiple" className="w-full space-y-2 md:space-y-3">
                       <AccordionItem value={`options-${index}`} className="border rounded-lg">
-                        <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                          <span>View Options (A, B, C, D)</span>
+                        <AccordionTrigger className="flex items-center justify-between px-3 py-3 md:px-4 md:py-3 text-left hover:no-underline text-sm md:text-base">
+                          <span className="pr-2">View Options (A, B, C, D)</span>
                         </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <AccordionContent className="px-3 pb-4 md:px-4 md:pb-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-3">
                             {question.answers.map((answer, answerIndex) => (
                               <div
                                 key={answerIndex}
-                                className="p-3 rounded-lg border bg-muted/30 border-muted"
+                                className="p-3 md:p-3 rounded-lg border bg-muted/30 border-muted min-h-[2.5rem] flex items-start md:items-center"
                               >
-                                <span className="font-medium mr-2">
+                                <span className="font-medium mr-2 flex-shrink-0 text-sm md:text-base">
                                   {String.fromCharCode(65 + answerIndex)}.
                                 </span>
-                                <span className="text-sm">{answer}</span>
+                                <span className="text-sm md:text-sm leading-relaxed break-words">{answer}</span>
                               </div>
                             ))}
                           </div>
@@ -302,19 +304,22 @@ export default function GenerateQuestionsPage() {
                       </AccordionItem>
 
                       <AccordionItem value={`answer-${index}`} className="border rounded-lg">
-                        <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            Show Answer
+                        <AccordionTrigger className="flex items-center justify-between px-3 py-3 md:px-4 md:py-3 text-left hover:no-underline text-sm md:text-base">
+                          <span className="flex items-center gap-2">
+                            <Eye className="w-4 h-4 flex-shrink-0" />
+                            <span className="block">Show Answer</span>
                           </span>
                         </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4">
+                        <AccordionContent className="px-3 pb-4 md:px-4 md:pb-4">
                           <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-4 rounded-lg">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="font-medium text-green-800 dark:text-green-200">
-                                Correct Answer: {String.fromCharCode(65 + question.answers.indexOf(question.correctAnswer))}. {question.correctAnswer}
-                              </span>
+                            <div className="flex items-start gap-2 mb-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-1.5"></div>
+                              <div className="font-medium text-green-800 dark:text-green-200 break-words leading-relaxed">
+                                <span className="block text-sm md:text-base">Correct Answer:</span>
+                                <span className="text-sm md:text-sm leading-relaxed">
+                                  {String.fromCharCode(65 + question.answers.indexOf(question.correctAnswer))}. {question.correctAnswer}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </AccordionContent>
@@ -322,17 +327,17 @@ export default function GenerateQuestionsPage() {
 
                       {question.explanation && (
                         <AccordionItem value={`explanation-${index}`} className="border rounded-lg">
-                          <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-left hover:no-underline text-sm">
-                            <span className="flex items-center gap-1">
-                              <AlertTriangle className="w-4 h-4" />
-                              Show Explanation
+                          <AccordionTrigger className="flex items-center justify-between px-3 py-3 md:px-4 md:py-3 text-left hover:no-underline text-sm md:text-base">
+                            <span className="flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                              <span className="block">Show Explanation</span>
                             </span>
                           </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-4">
+                          <AccordionContent className="px-3 pb-4 md:px-4 md:pb-4">
                             <Alert>
-                              <AlertTriangle className="h-4 w-4" />
-                              <AlertTitle>Explanation</AlertTitle>
-                              <AlertDescription>
+                              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                              <AlertTitle className="text-sm md:text-base">Explanation</AlertTitle>
+                              <AlertDescription className="text-sm md:text-sm leading-relaxed break-words mt-2">
                                 {question.explanation}
                               </AlertDescription>
                             </Alert>
