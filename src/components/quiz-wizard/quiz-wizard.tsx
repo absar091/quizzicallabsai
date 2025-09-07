@@ -261,27 +261,25 @@ export function QuizWizard({ onGenerateQuiz, isGenerating = false, className }: 
         </div>
 
         {/* Step Content */}
-        <EnhancedCard className="min-h-[500px]">
-          <EnhancedCardContent className="p-8">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={currentStep}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: 'spring', stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 },
-                }}
-                className="min-h-[400px]"
-              >
-                <currentStepData.component />
-              </motion.div>
-            </AnimatePresence>
-          </EnhancedCardContent>
-        </EnhancedCard>
+        <div className="bg-card rounded-lg border min-h-[400px] p-6">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="min-h-[300px] flex items-center"
+            >
+              <currentStepData.component />
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mt-8 gap-4">
