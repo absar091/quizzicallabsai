@@ -88,6 +88,7 @@ const formSchema = z.object({
   }),
   timeLimit: z.number().min(1).max(120),
   specificInstructions: z.string().optional(),
+  mode: z.enum(["practice", "exam"]).optional(),
 });
 
 export type QuizFormValues = z.infer<typeof formSchema>;
