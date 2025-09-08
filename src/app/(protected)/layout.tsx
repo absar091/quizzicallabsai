@@ -52,7 +52,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       {/* Desktop Sidebar */}
       <div
         className={cn(
-          "hidden border-r bg-card md:block fixed left-0 top-0 h-full z-40 transition-all duration-300",
+          "hidden border-r bg-card md:block fixed left-0 top-0 h-full z-40 transition-all duration-500 ease-in-out",
           isSidebarOpen ? "w-[240px]" : "w-[60px]"
         )}
         onMouseEnter={() => setIsSidebarOpen(true)}

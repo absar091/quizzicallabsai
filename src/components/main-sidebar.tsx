@@ -66,7 +66,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
             isActive && "bg-secondary text-primary font-semibold"
       )}
       title={isCollapsed ? label : undefined}>
-        <Icon weight={isActive ? 'fill' : 'regular'} className={cn(isCollapsed ? "h-6 w-6" : "h-4 w-4", "transition-all duration-300 ease-in-out")} />
+        <Icon weight={isActive ? 'fill' : 'regular'} className={cn(isCollapsed ? "h-8 w-8" : "h-4 w-4", "transition-all duration-500 ease-in-out")} />
         {!isCollapsed && <span className="text-base">{label}</span>}
       </Link>
     )
