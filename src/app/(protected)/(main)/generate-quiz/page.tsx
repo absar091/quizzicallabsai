@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { BrainCircuit, Loader2 } from "lucide-react";
+import { Clock } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { BrainCircuit, Loader2, CheckCircle, XCircle, MessageSquareQuote, Star, Download, Redo, RefreshCw, Brain, Lightbulb, LayoutDashboard, ArrowLeft, ArrowRight } from "lucide-react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
