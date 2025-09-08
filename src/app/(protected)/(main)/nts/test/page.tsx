@@ -3,6 +3,7 @@
 
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import dynamic from 'next/dynamic';
 const GenerateQuizPage = dynamic(() => import("../../../(main)/generate-quiz/page"), { 
     loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
 });

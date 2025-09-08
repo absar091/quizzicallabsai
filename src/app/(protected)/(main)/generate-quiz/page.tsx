@@ -36,7 +36,8 @@ import type { GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
 import {
     getQuizState,
     saveQuizState,
-    getBookmarks
+    getBookmarks,
+    getQuizResults
 } from "@/lib/indexed-db";
 
 function QuizLoadingSkeleton() {
