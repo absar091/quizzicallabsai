@@ -24,7 +24,7 @@ const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: Question, description: "Learn how to use all features" },
     { href: "/how-to-use/contact-support", label: "Contact Support", icon: Headphones, description: "Get help from our team" },
     { href: "mailto:support@quizzicallabz.qzz.io", label: "Email Us", icon: Envelope, description: "support@quizzicallabz.qzz.io", external: true },
-    { href: "https://wa.me/923001234567", label: "WhatsApp Support", icon: ChatCircle, description: "Quick chat support", external: true },
+    { href: "https://wa.me/923297642797", label: "WhatsApp Support", icon: ChatCircle, description: "Quick chat support", external: true },
 ];
 
 const legalLinks = [
