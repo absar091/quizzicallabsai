@@ -17,9 +17,9 @@ const contactMethods = [
     icon: Mail,
     title: "Email Support",
     description: "Get detailed help via email",
-    contact: "support@quizzicallabs.com",
+    contact: "support@quizzicallabz.qzz.io",
     responseTime: "Within 24 hours",
-    action: "mailto:support@quizzicallabs.com",
+    action: "mailto:support@quizzicallabz.qzz.io",
     color: "bg-blue-500/10 text-blue-600"
   },
   {

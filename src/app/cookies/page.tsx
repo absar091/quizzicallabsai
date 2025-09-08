@@ -58,7 +58,7 @@ export default function CookiePolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">Contact Us</h2>
-            <p>If you have any questions about our use of cookies, you can contact us at <a href="mailto:privacy@quizzicallabs.com" className="text-primary hover:underline">privacy@quizzicallabs.com</a>.</p>
+            <p>If you have any questions about our use of cookies, you can contact us at <a href="mailto:privacy@quizzicallabz.qzz.io" className="text-primary hover:underline">privacy@quizzicallabz.qzz.io</a>.</p>
           </div>
         </CardContent>
       </Card>

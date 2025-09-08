@@ -51,7 +51,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">5. Children's Privacy</h2>
-            <p>Our service may be used by learners of all ages. We collect age information at signup to comply with applicable regulations and to tailor content appropriately. If you are a parent or guardian and wish to review or request deletion of a minor's personal information, please contact us at privacy@quizzicallabs.com.</p>
+            <p>Our service may be used by learners of all ages. We collect age information at signup to comply with applicable regulations and to tailor content appropriately. If you are a parent or guardian and wish to review or request deletion of a minor's personal information, please contact us at privacy@quizzicallabz.qzz.io.</p>
           </div>
             
           <div className="space-y-2">
@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at privacy@quizzicallabs.com.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us at privacy@quizzicallabz.qzz.io.</p>
           </div>
         </CardContent>
       </Card>
