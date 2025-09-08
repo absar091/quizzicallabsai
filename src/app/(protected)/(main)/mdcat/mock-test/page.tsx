@@ -6,7 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 // Dynamic import for AI function
 type GenerateCustomQuizOutput = any;
 type GenerateCustomQuizInput = any;
-import GenerateQuizPage from '@/app/(protected)/(main)/generate-quiz/page';
+const GenerateQuizPage = dynamic(() => import('@/app/(protected)/(main)/generate-quiz/page'), { 
+    loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
+});
 import { Loader2, AlertTriangle, Sparkles, BrainCircuit } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';

@@ -25,7 +25,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
-import GenerateQuizPage from "../generate-quiz/page";
+const GenerateQuizPage = dynamic(() => import("../generate-quiz/page"), { 
+    loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
+});
 import type { Quiz } from "../generate-quiz/page";
 import { useAuth, AuthContext } from "@/context/AuthContext";
 import { useContext } from "react";

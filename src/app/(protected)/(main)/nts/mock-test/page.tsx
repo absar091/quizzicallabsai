@@ -4,7 +4,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 // Dynamic import for AI function
-import GenerateQuizPage from '@/app/(protected)/(main)/generate-quiz/page';
+const GenerateQuizPage = dynamic(() => import('@/app/(protected)/(main)/generate-quiz/page'), { 
+    loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
+});
 type Quiz = any[];
 import { Loader2, AlertTriangle, BookUser, BrainCircuit, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
