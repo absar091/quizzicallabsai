@@ -1,11 +1,10 @@
-
 {
   "name": "nextn",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-  "generate:icons": "node scripts/generate-icons.js",
+    "generate:icons": "node scripts/generate-icons.js",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
@@ -45,7 +44,9 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
+    "dompurify": "^3.0.5",
     "dotenv": "^16.4.5",
     "embla-carousel-autoplay": "^8.2.0",
     "embla-carousel-react": "^8.2.0",
@@ -71,18 +72,18 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8",
-    "dompurify": "^3.0.5",
-    "crypto-js": "^4.2.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^20.14.12",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.1",
     "@types/react-google-recaptcha": "^2.1.9",
-    "@types/dompurify": "^3.0.5",
-    "@types/crypto-js": "^4.2.2",
+    "eslint": "9.35.0",
+    "eslint-config-next": "15.5.2",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.4"

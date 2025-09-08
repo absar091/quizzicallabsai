@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Share2, Copy, Check } from 'lucide-react';
+import { X } from 'lucide-react';
+import { Share2 } from 'lucide-react';
+import { Copy } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface ShareAppPopupProps {
   isOpen: boolean;

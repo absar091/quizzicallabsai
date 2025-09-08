@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Flame, Trophy, Calendar } from 'lucide-react';
+import { Flame } from 'lucide-react';
+import { Trophy } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { StudyStreakManager, StudyStreak } from '@/lib/study-streaks';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
