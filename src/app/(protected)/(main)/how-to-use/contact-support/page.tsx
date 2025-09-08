@@ -26,9 +26,9 @@ const contactMethods = [
     icon: MessageCircle,
     title: "WhatsApp Chat",
     description: "Quick chat support",
-    contact: "+92 300 123 4567",
+    contact: "+923297642797",
     responseTime: "Within 2 hours",
-    action: "https://wa.me/923001234567",
+    action: "https://wa.me/923297642797",
     color: "bg-green-500/10 text-green-600"
   },
   {
