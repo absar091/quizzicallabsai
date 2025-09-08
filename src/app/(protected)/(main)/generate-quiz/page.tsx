@@ -1,54 +1,62 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, ArrowLeft, ArrowRight, Download, MessageSquareQuote, Redo, LayoutDashboard, Star, FileText, Settings, Eye, Brain, Lightbulb, Puzzle, BookCopy, Clock, CheckCircle, XCircle, BarChart, SlidersHorizontal, ShieldAlert, BrainCircuit, AlertTriangle, TimerOff, Bell, Loader2, RefreshCw, BookOpen, Edit, Wand2 } from "lucide-react";
-import RichContentRenderer from '@/components/rich-content-renderer';
-
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
-import { PageHeader } from "@/components/page-header";
+import { BrainCircuit, Loader2 } from "lucide-react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { usePlan } from "@/hooks/usePlan";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
+// Dynamic imports for code splitting
+const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form'), {
+  loading: () => <QuizLoadingSkeleton />,
+});
+
+const QuizTaker = dynamic(() => import('@/components/quiz-wizard/quiz-taker'), {
+  loading: () => <QuizLoadingSkeleton />,
+});
+
+const QuizResults = dynamic(() => import('@/components/quiz-wizard/quiz-results'), {
+  loading: () => <QuizLoadingSkeleton />,
+});
+
+const FlashcardViewer = dynamic(() => import('@/components/quiz-wizard/flashcard-viewer'), {
+  loading: () => <QuizLoadingSkeleton />,
+});
+
+// Import types and utilities
 import type { GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
 import type { GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import Link from "next/link";
-import { get, getDatabase, ref, serverTimestamp, set } from "firebase/database";
-import { db } from "@/lib/firebase";
 import {
     getQuizState,
     saveQuizState,
-    deleteQuizState,
-    getBookmarks,
-    saveBookmark,
-    deleteBookmark,
-    saveQuizResult,
-    getQuizResults,
-    BookmarkedQuestion
+    getBookmarks
 } from "@/lib/indexed-db";
-import { Textarea } from "@/components/ui/textarea";
-import { usePlan } from "@/hooks/usePlan";
+
+function QuizLoadingSkeleton() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
+      <div className="relative">
+        <BrainCircuit className="h-20 w-20 text-primary" />
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="h-8 w-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+        </motion.div>
+      </div>
+      <h2 className="text-2xl font-semibold mb-2 mt-6">Loading Quiz...</h2>
+      <p className="text-muted-foreground max-w-sm">Preparing your personalized quiz experience.</p>
+    </div>
+  );
+}
 
 const formSchema = z.object({
   topic: z.string().min(1, "Topic is required."),
@@ -984,331 +992,4 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
     </FormProvider>
   );
-}
-
-// --- Flashcard Viewer Component ---
-function FlashcardViewer({ flashcards, onBack }: { flashcards: Flashcard[], onBack: () => void }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isFlipped, setIsFlipped] = useState(false);
-    const [direction, setDirection] = useState(0);
-
-    const activeCard = flashcards[currentIndex];
-
-    const handleNext = () => {
-        if (currentIndex < flashcards.length - 1) {
-            setDirection(1);
-            setIsFlipped(false);
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
-
-    const handlePrev = () => {
-        if (currentIndex > 0) {
-            setDirection(-1);
-            setIsFlipped(false);
-            setCurrentIndex(currentIndex - 1);
-        }
-    };
-
-    return (
-        <div className="max-w-xl mx-auto flex flex-col items-center gap-6">
-            <PageHeader title="Flashcards Review" description="Review the concepts you got wrong." />
-            <div className="w-full h-72 perspective-[1000px]">
-                <AnimatePresence initial={false} custom={direction}>
-                    <motion.div
-                        key={currentIndex}
-                        className="relative w-full h-full cursor-pointer"
-                        onClick={() => setIsFlipped(!isFlipped)}
-                        initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ transformStyle: 'preserve-3d' }}
-                    >
-                        {/* Front */}
-                        <motion.div
-                            className="absolute w-full h-full flex items-center justify-center p-8 text-center bg-card border rounded-2xl shadow-lg"
-                            style={{ backfaceVisibility: 'hidden' }}
-                            animate={{ rotateY: isFlipped ? 180 : 0 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <h3 className="text-2xl md:text-3xl font-bold">{activeCard.term}</h3>
-                        </motion.div>
-                        {/* Back */}
-                        <motion.div
-                             className="absolute w-full h-full flex items-center justify-center p-8 text-center bg-card border rounded-2xl shadow-lg"
-                            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                            animate={{ rotateY: isFlipped ? 0 : -180 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <p className="text-lg md:text-xl text-muted-foreground">{activeCard.definition}</p>
-                        </motion.div>
-                    </motion.div>
-                </AnimatePresence>
-            </div>
-
-            <div className="text-center text-muted-foreground font-medium">
-                Card {currentIndex + 1} of {flashcards.length}
-            </div>
-
-            <div className="flex items-center gap-4">
-                <Button variant="outline" onClick={handlePrev} disabled={currentIndex === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Previous
-                </Button>
-                <Button onClick={handleNext} disabled={currentIndex === flashcards.length - 1}>
-                    Next <ArrowRight className="ml-2 h-4 w-4"/>
-                </Button>
-            </div>
-             <Button variant="link" onClick={onBack}>Back to Results</Button>
-        </div>
-    );
-}
-
-const questionTypeOptions = [
-    { id: "Multiple Choice", label: "Multiple Choice", icon: Puzzle },
-    { id: "Descriptive", label: "Short/Long Answer", icon: FileText },
-]
-const questionStyleOptions = [
-    { id: "Knowledge-based", label: "Knowledge-based", icon: Brain },
-    { id: "Conceptual", label: "Conceptual", icon: Lightbulb },
-    { id: "Numerical", label: "Numerical", icon: BarChart },
-    { id: "Past Paper Style", label: "Past Paper Style", icon: BookCopy },
-    { id: "Comprehension-based MCQs", label: "Comprehension-based", icon: MessageSquareQuote },
-]
-
-// --- Form Component ---
-function QuizSetupForm({ onGenerateQuiz }: { onGenerateQuiz: (values: QuizFormValues) => void; }) {
-    const form = useFormContext<QuizFormValues>();
-    const watchQuestionStyles = form.watch('questionStyles');
-
-    return (
-        <div>
-          <PageHeader
-            title="Custom Quiz Generator"
-            description="Create personalized tests on any topic, with custom difficulty and question styles."
-          />
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onGenerateQuiz)} className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>1. Quiz Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="topic"
-render={({ field }) => (
-  <FormItem>
-    <FormLabel>Topic</FormLabel>
-    <FormControl>
-      <Input placeholder="e.g., The Solar System, React Hooks, The French Revolution" {...field} />
-    </FormControl>
-    <FormMessage />
-  </FormItem>
-)}
-/>
-<FormField
-  control={form.control}
-  name="difficulty"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Difficulty Level</FormLabel>
-      <FormControl>
-        <RadioGroup
-          onValueChange={field.onChange}
-          defaultValue={field.value}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-        >
-          {["easy", "medium", "hard", "master"].map((level) => (
-            <FormItem key={level} className="flex-1">
-              <FormControl>
-                <RadioGroupItem value={level} id={level} className="sr-only peer" />
-              </FormControl>
-              <Label htmlFor={level} className="flex h-full flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-secondary peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize">
-                {level}
-              </Label>
-            </FormItem>
-          ))}
-        </RadioGroup>
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>2. Question Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="questionTypes"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Question Types</FormLabel>
-                           <Alert className="mt-2 text-xs p-2">
-                            <ShieldAlert className="h-4 w-4"/>
-                            <AlertDescription>
-                               For entry test topics (MDCAT/ECAT/NTS), the AI will automatically generate 'Multiple Choice' questions only, regardless of your selection, to match the real exam format.
-                            </AlertDescription>
-                           </Alert>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            {questionTypeOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={form.control}
-                                name="questionTypes"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.id)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, item.id])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.id
-                                                  )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                        <item.icon className="h-4 w-4"/>
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="questionStyles"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Question Styles</FormLabel>
-                           {watchQuestionStyles.includes('Comprehension-based MCQs') && (
-                               <Alert className="mt-2 text-xs p-2">
-                                <AlertTriangle className="h-4 w-4"/>
-                                <AlertDescription>
-                                    When 'Comprehension-based' is selected, the AI will generate a reading passage for the quiz.
-                                </AlertDescription>
-                               </Alert>
-                           )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-                            {questionStyleOptions.map((item) => (
-                              <FormField
-                                key={item.id}
-                                control={form.control}
-                                name="questionStyles"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4 has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(item.id)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...(field.value || []), item.id])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== item.id
-                                                  )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                                         <item.icon className="h-4 w-4"/>
-                                        {item.label}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                   <FormField
-                      control={form.control}
-                      name="numberOfQuestions"
-                      render={({ field }) => (
-                         <FormItem>
-                          <FormLabel>Number of Questions: <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                           <FormControl>
-                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={55} min={1} step={1} />
-                          </FormControl>
-                           <Alert className="mt-2 text-xs p-2">
-                            <AlertTriangle className="h-4 w-4"/>
-                            <AlertDescription>
-                                The AI-generated count may sometimes vary slightly from your selection.
-                            </AlertDescription>
-                           </Alert>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="timeLimit"
-                      render={({ field }) => (
-                         <FormItem>
-                          <FormLabel>Time Limit (Minutes): <span className="text-primary font-bold">{field.value}</span></FormLabel>
-                           <FormControl>
-                              <Slider onValueChange={(value) => field.onChange(value[0])} defaultValue={[field.value]} max={120} min={1} step={1} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                </CardContent>
-              </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>3. Fine-Tuning (Optional)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <FormField
-                            control={form.control}
-                            name="specificInstructions"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Specific Instructions for the AI</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                    placeholder="e.g., Focus on the contributions of Louis Pasteur. Include questions about the 19th-century scientific context."
-                                    className="resize-none"
-                                    {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-
-              <Button type="submit" size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                 <Sparkles className="mr-2 h-5 w-5"/>
-                 Generate Quiz
-              </Button>
-            </form>
-          </Form>
-        </div>
-    );
 }
