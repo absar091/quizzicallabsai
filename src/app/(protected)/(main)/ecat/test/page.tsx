@@ -3,6 +3,7 @@
 
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import dynamic from 'next/dynamic';
 // Dynamic import for AI function
 type GenerateCustomQuizOutput = any;
 const GenerateQuizPage = dynamic(() => import('../../../(main)/generate-quiz/page'), { 

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, UploadCloud, Sparkles, BrainCircuit, FileImage, FileText } from "lucide-react";
+import dynamic from 'next/dynamic';
 
 import { Button } from "@/components/ui/button";
 import {
