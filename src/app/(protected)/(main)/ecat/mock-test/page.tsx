@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import dynamic from 'next/dynamic';
 // Dynamic import for AI function
 type GenerateCustomQuizOutput = any;
 type GenerateCustomQuizInput = any;
