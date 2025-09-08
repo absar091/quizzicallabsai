@@ -3,7 +3,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Mail, Phone, Heart, Share2, Copy, Check, HelpCircle, Github, AlertTriangle, BrainCircuit } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { Share2 } from 'lucide-react';
+import { Copy } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
+import { Github } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from './ui/input';

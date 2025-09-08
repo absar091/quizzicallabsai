@@ -4,7 +4,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DownloadCloud, MoreVertical, PlusSquare, Share, X } from "lucide-react";
+import { DownloadCloud } from "lucide-react";
+import { MoreVertical } from "lucide-react";
+import { PlusSquare } from "lucide-react";
+import { Share } from "lucide-react";
+import { X } from "lucide-react";
 
 export default function InstallPwaPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);

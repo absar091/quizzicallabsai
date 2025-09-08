@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, BookOpen, FileText, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

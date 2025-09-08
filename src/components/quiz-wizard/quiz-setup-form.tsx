@@ -2,7 +2,13 @@
 
 import * as z from "zod";
 import { useFormContext } from "react-hook-form";
-import { Puzzle, FileText, Brain, Lightbulb, BarChart, BookCopy, MessageSquareQuote } from "lucide-react";
+import { Puzzle } from "lucide-react";
+import { FileText } from "lucide-react";
+import { Brain } from "lucide-react";
+import { Lightbulb } from "lucide-react";
+import { BarChart } from "lucide-react";
+import { BookCopy } from "lucide-react";
+import { MessageSquareQuote } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,7 +19,9 @@ import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 
 export const formSchema = z.object({

@@ -10,7 +10,10 @@ type GenerateCustomQuizInput = any;
 const GenerateQuizPage = dynamic(() => import('@/app/(protected)/(main)/generate-quiz/page'), { 
     loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
 });
-import { Loader2, AlertTriangle, Sparkles, BrainCircuit } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -2,7 +2,14 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, RefreshCw, Wifi, WifiOff, Clock, Server, AlertCircle, CheckCircle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+import { Wifi } from "lucide-react";
+import { WifiOff } from "lucide-react";
+import { Clock } from "lucide-react";
+import { Server } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

@@ -7,7 +7,10 @@ import dynamic from 'next/dynamic';
 const GenerateQuizPage = dynamic(() => import("../../../(main)/generate-quiz/page"), { 
     loading: () => <div className="flex items-center justify-center min-h-[60svh]"><Loader2 className="h-8 w-8 animate-spin" /></div> 
 });
-import { Loader2, BrainCircuit, Sparkles, AlertTriangle } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

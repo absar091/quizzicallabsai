@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Brain, Sparkles, BookOpen, FileText, Clock, AlertTriangle, RefreshCw } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Brain } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import { FileText } from "lucide-react";
+import { Clock } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";

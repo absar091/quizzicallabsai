@@ -3,7 +3,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Bot, ChevronsUp, Send, Sparkles, MessageCircle, Loader2 } from "lucide-react";
+import { X } from "lucide-react";
+import { Bot } from "lucide-react";
+import { ChevronsUp } from "lucide-react";
+import { Send } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { MessageCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { faqs, initialQuestions, FAQ } from "@/lib/faqs";
