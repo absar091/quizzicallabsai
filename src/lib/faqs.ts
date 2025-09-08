@@ -93,7 +93,7 @@ export const faqs: FAQ[] = [
   },
   {
     question: "How do I contact support?",
-    answer: "I'm sorry I couldn't resolve your issue. For direct assistance, you can reach out to our team via WhatsApp for the quickest response at +92 326 1536764, or email us at Ahmadraoabsar@gmail.com.",
+    answer: "I'm sorry I couldn't resolve your issue. For direct assistance, you can reach out to our team via WhatsApp for the quickest response at +923297642797, or email us at support@quizzicallabz.qzz.io.",
     related: ["I didn’t receive my verification email.", "What does the 'AI is overloaded' error mean?"]
   }
 ];
