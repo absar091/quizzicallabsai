@@ -61,6 +61,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
       <Link
           href={href}
           onClick={onNavigate}
+          onMouseEnter={() => prefetchRoute(href)} // Prefetch on hover for better performance
           className={cn(
             "flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-all hover:bg-secondary hover:text-primary",
             isCollapsed ? "gap-0 justify-center" : "gap-4",
