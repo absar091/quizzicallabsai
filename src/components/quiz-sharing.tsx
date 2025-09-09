@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Share2, Copy, Heart, Users, Eye, CheckCircle } from 'lucide-react';
+import { Share2, Copy, Heart, Users, Eye, CheckCircle, MessageCircle, Facebook, Twitter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { QuizSharingManager, SharedQuiz } from '@/lib/quiz-sharing';
@@ -66,12 +66,38 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
     }
   };
 
+  const appUrl = 'https://quizzicallabs.vercel.app';
+  const shareableLink = shareCode ? `${appUrl}/shared-quiz?code=${shareCode}&title=${encodeURIComponent(shareData.title)}&creator=${encodeURIComponent(user?.displayName || 'Anonymous')}&questions=${quiz.length}` : '';
+
   const copyShareCode = () => {
     navigator.clipboard.writeText(shareCode);
     toast({
       title: 'Copied!',
       description: 'Share code copied to clipboard'
     });
+  };
+
+  const copyShareableLink = () => {
+    navigator.clipboard.writeText(shareableLink);
+    toast({
+      title: 'Link Copied!',
+      description: 'Shareable link copied to clipboard'
+    });
+  };
+
+  const shareViaWhatsApp = () => {
+    const message = `🎯 Take this quiz: "${shareData.title}" by ${user?.displayName || 'Anonymous'}\n\nQuestions: ${quiz.length}\nDifficulty: ${shareData.difficulty}\n\n${shareableLink}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const shareViaFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableLink)}&quote=${encodeURIComponent(`Take this quiz: "${shareData.title}" by ${user?.displayName || 'Anonymous'}`)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareViaTwitter = () => {
+    const tweetText = `🎯 Take this quiz: "${shareData.title}" by ${user?.displayName || 'Anonymous'} #QuizzicallabsAI ${shareableLink}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
   };
 
   return (
@@ -136,20 +162,50 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
             <div>
               <h3 className="font-semibold">Quiz Shared Successfully!</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Others can access your quiz using this code:
+                Share this quiz using your preferred method:
               </p>
             </div>
-            
-            <div className="bg-muted p-4 rounded-lg">
-              <div className="text-2xl font-mono font-bold">{shareCode}</div>
-              <Button variant="ghost" size="sm" onClick={copyShareCode} className="mt-2">
+
+            {/* Share Code */}
+            <div className="bg-muted p-3 rounded-lg">
+              <div className="text-lg font-mono font-bold mb-2">Code: {shareCode}</div>
+              <Button variant="ghost" size="sm" onClick={copyShareCode}>
                 <Copy className="mr-2 h-4 w-4" />
                 Copy Code
               </Button>
             </div>
-            
+
+            {/* Shareable Link */}
+            <div className="bg-muted p-3 rounded-lg">
+              <div className="text-sm font-semibold mb-1">Direct Link:</div>
+              <div className="text-xs text-muted-foreground mb-2 break-all">{shareableLink}</div>
+              <Button variant="ghost" size="sm" onClick={copyShareableLink}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Link
+              </Button>
+            </div>
+
+            {/* Social Media Sharing */}
+            <div className="border-t pt-4">
+              <div className="text-sm font-semibold mb-3">Share via:</div>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" size="sm" onClick={shareViaWhatsApp} className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </Button>
+                <Button variant="outline" size="sm" onClick={shareViaFacebook} className="flex items-center gap-2">
+                  <Facebook className="h-4 w-4" />
+                  Facebook
+                </Button>
+                <Button variant="outline" size="sm" onClick={shareViaTwitter} className="flex items-center gap-2">
+                  <Twitter className="h-4 w-4" />
+                  Twitter
+                </Button>
+              </div>
+            </div>
+
             <p className="text-xs text-muted-foreground">
-              Share this code with friends or students so they can take your quiz!
+              Others can access your quiz using either the code or the direct link!
             </p>
           </div>
         )}
