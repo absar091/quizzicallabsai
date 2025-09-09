@@ -250,6 +250,37 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const isSharedAccess = urlParams.get('shared') === 'true';
+
+        // Check for shared quiz data in sessionStorage
+        const sharedQuizData = sessionStorage.getItem('sharedQuizData');
+
+        if (sharedQuizData && isSharedAccess) {
+            try {
+                const sharedData = JSON.parse(sharedQuizData) as {
+                    quiz: Quiz;
+                    formValues: QuizFormValues;
+                    isShared?: boolean;
+                };
+
+                setQuiz(sharedData.quiz);
+                setFormValues(sharedData.formValues);
+                setComprehensionText(null); // Shared quizzes don't have comprehension text
+                setUserAnswers(new Array(sharedData.quiz.length).fill(null));
+                setTimeLeft(sharedData.formValues.timeLimit * 60);
+                setShowResults(false);
+
+                // Clear shared data to prevent conflicts
+                sessionStorage.removeItem('sharedQuizData');
+
+                return;
+            } catch (error) {
+                console.error('Error parsing shared quiz data:', error);
+                sessionStorage.removeItem('sharedQuizData');
+            }
+        }
+
         const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
         if (initialQuiz && initialFormValues && mockTestAnswers) {
             setQuiz(initialQuiz);
@@ -261,9 +292,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }
 
         if (initialQuiz && initialFormValues) {
-            setQuiz(initialQuiz);
+            setQuiz(initialQuiz.questions as Quiz);
             setComprehensionText(initialComprehensionText || null);
-            setUserAnswers(new Array(initialQuiz.length).fill(null));
+            setUserAnswers(new Array(initialQuiz.questions.length).fill(null));
             setTimeLeft(initialFormValues.timeLimit * 60);
             setFormValues({
                 topic: formValues?.topic || initialFormValues.topic,
@@ -278,7 +309,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             return;
         }
 
-        if (user) {
+        if (user && !isSharedAccess) {
             const savedState = await getQuizState(user.uid);
             if (savedState && savedState.quiz && savedState.formValues) {
                 setQuiz(savedState.quiz);
