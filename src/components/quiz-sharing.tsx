@@ -67,7 +67,7 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
   };
 
   const appUrl = 'https://quizzicallabs.vercel.app';
-  const shareableLink = shareCode ? `${appUrl}/shared-quiz?code=${shareCode}&title=${encodeURIComponent(shareData.title)}&creator=${encodeURIComponent(user?.displayName || 'Anonymous')}&questions=${quiz.length}` : '';
+  const shareableLink = shareCode ? `${appUrl}/shared-quiz?code=${shareCode}` : '';
 
   const copyShareCode = () => {
     navigator.clipboard.writeText(shareCode);
@@ -220,38 +220,9 @@ export function QuizAccessDialog() {
   const [quiz, setQuiz] = useState<SharedQuiz | null>(null);
   const { toast } = useToast();
   
-  const startSharedQuiz = async (sharedQuiz: SharedQuiz) => {
-    try {
-      // Update quiz stats
-      await QuizSharingManager.updateQuizStats(sharedQuiz.id, 0);
-      
-      // Navigate to quiz page with shared quiz data
-      const quizData = {
-        quiz: sharedQuiz.questions,
-        formValues: {
-          topic: sharedQuiz.title,
-          difficulty: sharedQuiz.difficulty as any,
-          numberOfQuestions: sharedQuiz.questions.length,
-          questionTypes: ['Multiple Choice'],
-          questionStyles: ['Shared Quiz'],
-          timeLimit: Math.max(10, sharedQuiz.questions.length),
-          specificInstructions: sharedQuiz.description || ''
-        }
-      };
-      
-      // Store in sessionStorage for the quiz page
-      sessionStorage.setItem('sharedQuizData', JSON.stringify(quizData));
-      
-      // Navigate to quiz page
-      window.location.href = '/generate-quiz?shared=true';
-      
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Could not start quiz. Please try again.',
-        variant: 'destructive'
-      });
-    }
+  const startSharedQuiz = async () => {
+    // Redirect to the shared-quiz page which will handle authentication
+    window.location.href = `/shared-quiz?code=${shareCode}`;
   };
 
   const handleAccess = async () => {
