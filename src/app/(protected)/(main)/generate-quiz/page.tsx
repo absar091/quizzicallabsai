@@ -26,6 +26,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { QuizSharingDialog } from "@/components/quiz-sharing";
 
 // Dynamic imports for code splitting
 const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form'), {
@@ -1002,6 +1003,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                             Generate Flashcards
                         </Button>
                     )}
+                    <QuizSharingDialog
+                        quiz={quiz}
+                        formValues={formValues}
+                    />
                     <Button variant="outline" asChild><Link href="/"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>
