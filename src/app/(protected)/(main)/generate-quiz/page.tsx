@@ -234,7 +234,17 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
         // Calculate time taken: initial time - remaining time
         const initialTimeSeconds = formValues.timeLimit * 60;
-        const timeTaken = Math.max(0, initialTimeSeconds - timeLeft);
+        const timeSpent = initialTimeSeconds - timeLeft;
+        const timeTaken = Math.max(0, timeSpent); // Ensure non-negative time
+
+        // Debug log for study time tracking
+        console.log('Study time calculation:', {
+          initialTimeSeconds,
+          timeLeft,
+          timeSpent,
+          timeTaken,
+          timeLimit: formValues.timeLimit
+        });
 
         const newResult = {
             id: resultId,
