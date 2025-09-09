@@ -178,6 +178,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
 
+  // Study time tracking
+  const [studyStartTime, setStudyStartTime] = useState<Date | null>(null);
+  const [isQuestionActive, setIsQuestionActive] = useState(false);
+
   const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState(false);
   const [generatedFlashcards, setGeneratedFlashcards] = useState<Flashcard[] | null>(null);
   const [showFlashcardViewer, setShowFlashcardViewer] = useState(false);
@@ -227,6 +231,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     if(quiz && formValues && user) {
         const { score, percentage } = calculateScore();
         const resultId = `${user.uid}-${Date.now()}`;
+
+        // Calculate time taken: initial time - remaining time
+        const initialTimeSeconds = formValues.timeLimit * 60;
+        const timeTaken = Math.max(0, initialTimeSeconds - timeLeft);
+
         const newResult = {
             id: resultId,
             userId: user.uid,
@@ -235,6 +244,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             total: quiz.length,
             percentage,
             date: new Date().toISOString(),
+            timeTaken: timeTaken, // Track actual study time
         };
         const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
         await set(resultRef, newResult);
@@ -242,7 +252,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         await deleteQuizState(user.uid);
     }
     window.scrollTo(0, 0);
-  }, [quiz, userAnswers, formValues, user, calculateScore]);
+  }, [quiz, userAnswers, formValues, user, calculateScore, timeLeft]);
 
 
   useEffect(() => {
