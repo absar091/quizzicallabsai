@@ -54,6 +54,7 @@
     "firebase-admin": "^12.2.0",
     "framer-motion": "^11.2.13",
     "genkit": "^1.12.0",
+    "handlebars": "^4.7.8",
     "html2canvas": "^1.4.1",
     "idb": "^8.0.0",
     "jspdf": "^3.0.1",
