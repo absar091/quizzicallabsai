@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Users, Clock, Trophy, Play, Settings, Plus, Lock, Globe, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { PageHeader } from '@/components/page-header';
@@ -30,6 +31,7 @@ interface QuizArenaSetup {
 
 export default function QuizArenaPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [setupMode, setSetupMode] = useState<'select' | 'create' | 'room'>('select');
 
   const [currentQuizId, setCurrentQuizId] = useState<string>('');
@@ -111,14 +113,57 @@ export default function QuizArenaPage() {
       const code = generateRoomCode();
       setRoomCode(code);
 
-      // In the next phase, we'll integrate with Firestore for room creation
-      // For now, show the room dialog
-      setTimeout(() => {
-        setShowRoomDialog(true);
-        setIsCreatingRoom(false);
-      }, 1500);
+      // Import the QuizArena library
+      const { QuizArena, QuizArenaDiscovery } = await import('@/lib/quiz-arena');
+
+      // Create a sample quiz based on template or generate a simple quiz
+      let quiz;
+      if (currentQuizId) {
+        // Convert template to quiz format (simplified for demo)
+        const template = quizTemplates.find(t => t.id === currentQuizId);
+        if (!template) throw new Error('Template not found');
+
+        quiz = [
+          {
+            question: "Sample Question 1?",
+            answers: ["Option A", "Option B", "Option C", "Option D"],
+            correctIndex: 0,
+            type: "multiple-choice"
+          },
+          {
+            question: "Sample Question 2?",
+            answers: ["Option A", "Option B", "Option C", "Option D"],
+            correctIndex: 1,
+            type: "multiple-choice"
+          }
+        ];
+
+        // TODO: Generate actual quiz content based on template
+      } else {
+        // Create a simple custom quiz
+        quiz = [
+          {
+            question: `${quizSetup.title} - Question 1`,
+            answers: ["Answer A", "Answer B", "Answer C", "Answer D"],
+            correctIndex: 0,
+            type: "multiple-choice"
+          }
+        ];
+      }
+
+      // Create room using Firestore
+      await QuizArena.Host.createRoom(code, user.uid, user.displayName || 'Anonymous', quiz);
+
+      // Show room dialog
+      setShowRoomDialog(true);
     } catch (error) {
       console.error('Error creating room:', error);
+      toast?.({
+        title: 'Error Creating Room',
+        description: 'Failed to create quiz room. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
       setIsCreatingRoom(false);
     }
   };
