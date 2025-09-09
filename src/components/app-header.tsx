@@ -33,31 +33,36 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
   if (!user) {
     return (
        <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center">
-              <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8">
+              <Link href="/" className="flex items-center gap-2 font-semibold text-lg flex-shrink-0 min-w-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground flex-shrink-0">
                       <BrainCircuit className="h-5 w-5" />
                   </div>
-                  <span>Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
+                  <span className="hidden sm:inline">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
+                  <span className="sm:hidden truncate">QC<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
               </Link>
+
+              {/* Navigation for larger screens */}
+              <nav className="hidden md:flex items-center gap-6 mx-6 text-sm font-medium">
+                <Link href="/#features" className="transition-colors hover:text-primary text-muted-foreground">Features</Link>
+                <Link href="/how-to-use" className="transition-colors hover:text-primary text-muted-foreground">Guides</Link>
+              </nav>
+
+              {/* Spacer */}
               <div className="flex-1" />
-              <div className="flex items-center gap-2 sm:gap-4">
-                  <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
-                     <Link href="/#features" className="transition-colors hover:text-primary text-muted-foreground">Features</Link>
-                     <Link href="/how-to-use" className="transition-colors hover:text-primary text-muted-foreground">Guides</Link>
-                  </nav>
-                  {!isAuthPage && !isLandingPage && <div className="md:hidden"/>}
-                  {isLandingPage && (
-                    <>
-                    <Button asChild variant="ghost">
-                      <Link href="/login">Log In</Link>
-                    </Button>
-                    <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
-                        <Link href="/signup">Get Started Free</Link>
-                    </Button>
-                    </>
-                  )}
-              </div>
+
+              {/* Auth buttons */}
+              {!isAuthPage && !isLandingPage && <div />}
+              {isLandingPage && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                    <Link href="/login">Log In</Link>
+                  </Button>
+                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 h-9 px-3 text-sm sm:h-10 sm:px-4 sm:text-base">
+                    <Link href="/signup">Get Started Free</Link>
+                  </Button>
+                </div>
+              )}
           </div>
       </header>
     )
