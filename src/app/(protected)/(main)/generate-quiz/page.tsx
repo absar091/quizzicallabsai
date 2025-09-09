@@ -52,7 +52,11 @@ import {
     getQuizState,
     saveQuizState,
     getBookmarks,
-    getQuizResults
+    getQuizResults,
+    saveQuizResult,
+    deleteQuizState,
+    deleteBookmark,
+    saveBookmark
 } from "@/lib/indexed-db";
 
 function QuizLoadingSkeleton() {
@@ -261,7 +265,15 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             setComprehensionText(initialComprehensionText || null);
             setUserAnswers(new Array(initialQuiz.length).fill(null));
             setTimeLeft(initialFormValues.timeLimit * 60);
-            setFormValues(initialFormValues);
+            setFormValues({
+                topic: formValues?.topic || initialFormValues.topic,
+                difficulty: initialFormValues.difficulty as "easy" | "medium" | "hard" | "master",
+                numberOfQuestions: formValues?.numberOfQuestions || initialFormValues.numberOfQuestions,
+                questionTypes: formValues?.questionTypes || initialFormValues.questionTypes,
+                questionStyles: formValues?.questionStyles || initialFormValues.questionStyles,
+                timeLimit: formValues?.timeLimit || initialFormValues.timeLimit,
+                specificInstructions: initialFormValues.specificInstructions || ""
+            });
             setShowResults(false);
             return;
         }
@@ -763,7 +775,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   // --- Conditional Rendering ---
 
   if (showFlashcardViewer) {
-    return <FlashcardViewer flashcards={generatedFlashcards || []} onBack={() => setShowFlashcardViewer(false)} />;
+    return <FlashcardViewer flashcards={generatedFlashcards as any || []} onBack={() => setShowFlashcardViewer(false)} />;
   }
 
 
@@ -1005,7 +1017,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                     )}
                     <QuizSharingDialog
                         quiz={quiz}
-                        formValues={formValues}
+                        formValues={formValues as any}
                     />
                     <Button variant="outline" asChild><Link href="/"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
