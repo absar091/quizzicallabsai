@@ -177,6 +177,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const [formValues, setFormValues] = useState<QuizFormValues | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Study time tracking
   const [studyStartTime, setStudyStartTime] = useState<Date | null>(null);
@@ -222,13 +223,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
 
   const handleSubmit = useCallback(async () => {
-    if ((window as any).__MOCK_TEST_SUBMIT_OVERRIDE__) {
-        (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__(userAnswers);
-        return;
-    }
+    // Prevent multiple submissions if already submitting
+    if (isSubmitting || showResults) return;
 
+    setIsSubmitting(true);
     setShowResults(true);
-    if(quiz && formValues && user) {
+
+    try {
+      if (quiz && formValues && user) {
         const { score, percentage } = calculateScore();
         const resultId = `${user.uid}-${Date.now()}`;
 
@@ -247,22 +249,28 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         });
 
         const newResult = {
-            id: resultId,
-            userId: user.uid,
-            topic: formValues.topic,
-            score,
-            total: quiz.length,
-            percentage,
-            date: new Date().toISOString(),
-            timeTaken: timeTaken, // Track actual study time
+          id: resultId,
+          userId: user.uid,
+          topic: formValues.topic,
+          score,
+          total: quiz.length,
+          percentage,
+          date: new Date().toISOString(),
+          timeTaken: timeTaken, // Track actual study time
         };
         const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
         await set(resultRef, newResult);
         await saveQuizResult(newResult);
         await deleteQuizState(user.uid);
+      }
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+      setShowResults(false); // Reset to allow retry
+    } finally {
+      setIsSubmitting(false);
     }
     window.scrollTo(0, 0);
-  }, [quiz, userAnswers, formValues, user, calculateScore, timeLeft]);
+  }, [quiz, userAnswers, formValues, user, calculateScore, timeLeft, isSubmitting, showResults]);
 
 
   useEffect(() => {
@@ -312,18 +320,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }
 
         if (initialQuiz && initialFormValues) {
-            setQuiz(initialQuiz.questions as Quiz);
+            // Handle both data shapes: { quiz: Quiz[] } or Quiz[] directly
+            const quizData = Array.isArray(initialQuiz) ? initialQuiz : (initialQuiz as any).questions || [];
+            setQuiz(quizData);
             setComprehensionText(initialComprehensionText || null);
-            setUserAnswers(new Array(initialQuiz.questions.length).fill(null));
+            setUserAnswers(new Array(quizData.length).fill(null));
             setTimeLeft(initialFormValues.timeLimit * 60);
             setFormValues({
-                topic: formValues?.topic || initialFormValues.topic,
-                difficulty: initialFormValues.difficulty as "easy" | "medium" | "hard" | "master",
-                numberOfQuestions: formValues?.numberOfQuestions || initialFormValues.numberOfQuestions,
-                questionTypes: formValues?.questionTypes || initialFormValues.questionTypes,
-                questionStyles: formValues?.questionStyles || initialFormValues.questionStyles,
-                timeLimit: formValues?.timeLimit || initialFormValues.timeLimit,
-                specificInstructions: initialFormValues.specificInstructions || ""
+                topic: initialFormValues.topic,
+                difficulty: initialFormValues.difficulty,
+                numberOfQuestions: initialFormValues.numberOfQuestions,
+                questionTypes: initialFormValues.questionTypes,
+                questionStyles: initialFormValues.questionStyles,
+                timeLimit: initialFormValues.timeLimit,
+                specificInstructions: initialFormValues.specificInstructions
             });
             setShowResults(false);
             return;
