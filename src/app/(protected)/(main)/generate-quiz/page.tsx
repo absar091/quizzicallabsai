@@ -94,6 +94,9 @@ const formSchema = z.object({
 
 export type QuizFormValues = z.infer<typeof formSchema>;
 export type Quiz = GenerateCustomQuizOutput["quiz"];
+
+// Add a type alias for compatibility
+export type ComponentQuizShape = Quiz;
 type Flashcard = GenerateFlashcardsOutput["flashcards"][0];
 
 interface ExplanationState {
@@ -342,12 +345,26 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (user && !isSharedAccess) {
             const savedState = await getQuizState(user.uid);
             if (savedState && savedState.quiz && savedState.formValues) {
-                setQuiz(savedState.quiz);
-                setComprehensionText(savedState.comprehensionText || null);
-                setCurrentQuestion(savedState.currentQuestion);
-                setUserAnswers(savedState.userAnswers);
-                setTimeLeft(savedState.timeLeft);
-                setFormValues(savedState.formValues);
+            // Handle IndexedDB QuizState which has different format than component state
+            const quizData = Array.isArray(savedState.quiz) ? savedState.quiz : savedState.quiz?.questions || [];
+            setQuiz(quizData);
+            setComprehensionText(savedState.comprehensionText || null);
+            setCurrentQuestion(savedState.currentQuestion);
+            setUserAnswers(savedState.userAnswers);
+            setTimeLeft(savedState.timeLeft);
+
+            // Convert IndexedDB formValues to component format
+            if (savedState.formValues) {
+                setFormValues({
+                    topic: savedState.formValues.topic,
+                    difficulty: savedState.formValues.difficulty as "easy" | "medium" | "hard" | "master",
+                    numberOfQuestions: savedState.formValues.numberOfQuestions,
+                    questionTypes: ["Multiple Choice"], // Default fallback
+                    questionStyles: ["Knowledge-based"], // Default fallback
+                    timeLimit: savedState.formValues.quizType === "timed" ? 10 : 60, // Default fallback
+                    specificInstructions: ""
+                });
+            }
                 setShowResults(false);
                 return;
             }
@@ -376,14 +393,22 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   useEffect(() => {
     async function persistState() {
         if (user && quiz && !showResults && !initialQuiz) {
-            await saveQuizState(user.uid, {
-                quiz,
+            // Convert component state to IndexedDB compatible format
+            const quizStateForDB = {
+                // IndexedDB expects { questions: [] } format
+                quiz: { questions: quiz, topic: formValues?.topic || '', difficulty: formValues?.difficulty || 'medium' } as any,
                 comprehensionText,
                 currentQuestion,
                 userAnswers,
                 timeLeft,
-                formValues,
-            });
+                formValues: formValues ? {
+                    // This won't perfectly map all fields, but saves the essential ones
+                    ...formValues,
+                    quizType: formValues.timeLimit > 0 ? 'timed' : 'practice',
+                    includeComprehension: !!comprehensionText
+                } as any : null,
+            };
+            await saveQuizState(user.uid, quizStateForDB);
         }
     }
     persistState();
