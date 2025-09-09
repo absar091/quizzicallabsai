@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlan } from "@/hooks/usePlan";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import RichContentRenderer from "@/components/rich-content-renderer";
 
 // Dynamic imports for code splitting
 const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form'), {
