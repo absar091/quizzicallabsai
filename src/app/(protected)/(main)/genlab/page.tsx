@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, FilePlus, Lightbulb, FileArrowUp, FileText, Cards, ClipboardText } from '@phosphor-icons/react';
+import { ArrowRight, FilePlus, Lightbulb, FileArrowUp, FileText, Cards, ClipboardText, Users, Trophy } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { canDownloadExamPaper } from '@/lib/plan-restrictions';
@@ -18,6 +18,12 @@ const tools = [
     title: 'Custom Quiz',
     description: 'Create personalized tests on any topic, with custom difficulty and question styles.',
     href: '/generate-quiz',
+  },
+  {
+    icon: Trophy,
+    title: 'Quiz Arena',
+    description: 'Host real-time multiplayer quiz rooms and compete with friends in competitive battles.',
+    href: '/quiz-arena',
   },
   {
     icon: Lightbulb,

@@ -1,11 +1,125 @@
+// 🔥 Quiz Arena - Live Multiplayer Quiz Security Rules v2
+// Copy and paste this entire file to your Firebase Firestore Security Rules
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // This app uses Firebase Realtime Database, not Firestore
-    // These rules are kept for potential future Firestore usage
-    match /{document=**} {
+
+    // 🔒 Quiz Rooms - Core game state management
+    match /quiz-rooms/{roomId} {
+
+      // ✅ Anyone can read rooms to join & sync (for public rooms & joining)
+      allow read: if true;
+
+      // ✅ Only authenticated users can create rooms (as host)
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.hostId;
+
+      // ✅ Host can update room state (start, next question, finish)
+      // They can only update specific fields and must be the host
+      allow update: if request.auth != null &&
+        request.resource.data.hostId == request.auth.uid &&
+        // Only allow updates to game state fields
+        request.resource.data.keys().hasOnly([
+          'started', 'finished', 'currentQuestion', 'startedAt', 'finishedAt'
+        ]);
+
+      // ❌ Host cannot delete rooms (prevents griefing)
+      allow delete: if false;
+    }
+
+    // 🎮 Quiz Players - Subcollection for managing players in each room
+    match /quiz-rooms/{roomId}/players/{userId} {
+
+      // ✅ Anyone can read player list (for leaderboard)
+      allow read: if true;
+
+      // ✅ Authenticated players can join (only their own entry)
+      allow create: if request.auth != null &&
+        request.auth.uid == userId;
+
+      // ✅ Players can ONLY update their own score
+      allow update: if request.auth != null &&
+        request.auth.uid == userId &&
+        // Only allow score updates
+        request.resource.data.diff(request.resource).keys().hasOnly(['score']);
+
+      // ❌ No deletions (players stay in room until game ends)
+      allow delete: if false;
+    }
+
+    // 📝 Quiz Answers - Secure answer submission system
+    match /quiz-rooms/{roomId}/answers/{answerId} {
+
+      // ✅ Anyone can read answers (for leaderboard calculations)
+      allow read: if true;
+
+      // ✅ ONLY the authenticated user can submit their own answers
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.userId &&
+        // Answer must contain required fields
+        request.resource.data.keys().hasAll([
+          'userId', 'questionIndex', 'answerIndex', 'correct', 'submittedAt'
+        ]);
+
+      // ❌ No updates or deletions (answers are immutable)
+      allow update, delete: if false;
+    }
+
+    // 🎯 Quiz Discovery - Public rooms and system collections
+    match /quiz-rooms {
+      // ✅ Only read access for discovery
+      allow read: if true;
+
+      // 🔒 No write access to root collection
+      allow write: if false;
+    }
+
+    // 🛡️ System collections (for future features)
+    match /system/{document} {
+      // 🔒 System-only access
       allow read, write: if false;
     }
+
+    // 👤 User profiles (existing from your app)
+    match /users/{userId} {
+      // ✅ Users can read/write their own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 💬 Quiz results (existing from quiz feature)
+    match /quiz-results/{document} {
+      // Your existing quiz results rules
+      allow read, write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+
+    // 🔗 Shared quizzes (existing from share feature)
+    match /shared-quizzes/{document} {
+      // Keep as read-only for public access to shared quizzes
+      allow read: if true;
+    }
+
+    // 🕒 Default deny-all rule for any other collections
+    match /{document} {
+      allow read, write: if false;
+    }
+  }
+
+  // 🎪 Additional security functions (if needed)
+
+  // Function to check if user is room host
+  function isRoomHost(roomId, userId) {
+    return get(/databases/$(database)/documents/$(roomId)).data.hostId == userId;
+  }
+
+  // Function to check if room is active (not finished)
+  function isRoomActive(roomId) {
+    return get(/databases/$(database)/documents/$(roomId)).exists &&
+           !get(/databases/$(database)/documents/$(roomId)).data.finished;
+  }
+
+  // Function to validate answer format
+  function isValidAnswer(answer) {
+    return answer.keys().hasAll(['userId', 'questionIndex', 'answerIndex', 'correct', 'submittedAt']);
   }
 }
