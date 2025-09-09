@@ -5,7 +5,7 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area, ScatterChart, Scatter, PieChart, Pie, Cell } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { cn } from '@/lib/utils';
 
@@ -14,10 +14,17 @@ type PlaceholderData = {
     aspectRatio: "1:1" | "4:3" | "16:9";
 }
 
+type ChartDataPoint = {
+    name: string;
+    value: number;
+    [key: string]: any;
+};
+
 type RichContentRendererProps = {
     content: string;
     smiles?: string | null;
-    chartData?: { name: string; value: number }[] | null;
+    chartData?: ChartDataPoint[] | null;
+    chartType?: 'line' | 'bar' | 'area' | 'scatter' | 'pie';
     placeholder?: PlaceholderData | null;
     inline?: boolean;
 };
@@ -58,9 +65,7 @@ const processTextContent = (text: string) => {
     .trim();
 };
 
-// This component will find and render LaTeX expressions within a string,
-// and also display SMILES chemical structures and charts.
-export default function RichContentRenderer({ content, smiles, chartData, placeholder, inline = false }: RichContentRendererProps) {
+export default function RichContentRenderer({ content, smiles, chartData, chartType = 'line', placeholder, inline = false }: RichContentRendererProps) {
     if (!content && !smiles && !chartData && !placeholder) return null;
 
     // Process and clean the content
@@ -149,18 +154,81 @@ export default function RichContentRenderer({ content, smiles, chartData, placeh
                 <Card className="bg-muted/50">
                     <CardContent className="pt-6">
                         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                            <LineChart
-                              data={chartData}
-                              width={400}
-                              height={200}
-                              margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <ChartTooltip content={<ChartTooltipContent />} />
-                                <Line type="monotone" dataKey="value" stroke="var(--color-value)" />
-                            </LineChart>
+                            {chartType === 'line' && (
+                                <LineChart
+                                  data={chartData}
+                                  width={400}
+                                  height={200}
+                                  margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Line type="monotone" dataKey="value" stroke="var(--color-value)" />
+                                </LineChart>
+                            )}
+                            {chartType === 'bar' && (
+                                <BarChart
+                                  data={chartData}
+                                  width={400}
+                                  height={200}
+                                  margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Bar dataKey="value" fill="var(--color-value)" />
+                                </BarChart>
+                            )}
+                            {chartType === 'area' && (
+                                <AreaChart
+                                  data={chartData}
+                                  width={400}
+                                  height={200}
+                                  margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Area type="monotone" dataKey="value" stroke="var(--color-value)" fill="var(--color-value)" fillOpacity={0.3} />
+                                </AreaChart>
+                            )}
+                            {chartType === 'scatter' && (
+                                <ScatterChart
+                                  data={chartData}
+                                  width={400}
+                                  height={200}
+                                  margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Scatter dataKey="value" fill="var(--color-value)" />
+                                </ScatterChart>
+                            )}
+                            {chartType === 'pie' && (
+                                <PieChart width={400} height={200}>
+                                    <Pie
+                                        data={chartData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx={200}
+                                        cy={100}
+                                        outerRadius={80}
+                                        fill="var(--color-value)"
+                                        label
+                                    >
+                                        {chartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 50%)`} />
+                                        ))}
+                                    </Pie>
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                </PieChart>
+                            )}
                         </ChartContainer>
                     </CardContent>
                 </Card>

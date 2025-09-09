@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as z from "zod";
+import { ref, set, get } from 'firebase/database';
+import { db } from '@/lib/firebase';
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import { Sparkles } from "lucide-react";
@@ -96,6 +98,13 @@ interface ExplanationState {
     isSimpleLoading: boolean;
     simpleExplanation: string | null;
   };
+}
+
+interface BookmarkedQuestion {
+  userId: string;
+  question: string;
+  correctAnswer: string;
+  topic: string;
 }
 
 const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string, isPro: boolean) => {
