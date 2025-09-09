@@ -311,7 +311,7 @@ export function QuizAccessDialog() {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-4" onClick={() => startSharedQuiz(quiz)}>
+                <Button className="w-full mt-4" onClick={startSharedQuiz}>
                   Start Quiz
                 </Button>
               </CardContent>
