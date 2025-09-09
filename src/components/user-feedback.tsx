@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Star, ThumbsUp, ThumbsDown, Send, X, Smile, Meh, Frown, Heart } from "lucide-react";
+import { MessageSquare } from "lucide-react";
+import { Star } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
+import { ThumbsDown } from "lucide-react";
+import { Send } from "lucide-react";
+import { X } from "lucide-react";
+import { Smile } from "lucide-react";
+import { Meh } from "lucide-react";
+import { Frown } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

@@ -1,7 +1,7 @@
 import { sendWelcomeNotifications } from '@/services/notification-service';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase';
-import { verifyIdToken } from 'firebase-admin/auth';
+import { getAuth } from 'firebase-admin/auth'; // Changed import
 import { initializeApp, getApps } from 'firebase-admin/app';
 
 export async function POST(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         }
 
         try {
-            await verifyIdToken(token);
+            await getAuth().verifyIdToken(token); // Changed usage
         } catch (error) {
             return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
         }
@@ -47,3 +47,4 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
     }
 }
+

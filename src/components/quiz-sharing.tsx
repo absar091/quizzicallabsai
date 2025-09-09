@@ -33,7 +33,9 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
     title: `${formValues.topic} Quiz`,
     description: '',
     isPublic: false,
-    tags: [formValues.difficulty, formValues.topic.split(' ')[0]]
+    tags: [formValues.difficulty, formValues.topic.split(' ')[0]],
+    topic: formValues.topic, // Added
+    difficulty: formValues.difficulty, // Added
   });
 
   const handleShare = async () => {
