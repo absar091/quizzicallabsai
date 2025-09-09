@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Users, Clock, Trophy, Play, Settings, Plus, Lock, Globe, Sparkles } from 'lucide-react';
+import { Users, Clock, Trophy, Play, Settings, Plus, Lock, Globe, Sparkles, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -79,9 +79,12 @@ export default function QuizArenaPage() {
     }
   ];
 
-  const handleQuizTemplateSelect = (templateId: string) => {
+  const handleQuizTemplateSelect = async (templateId: string) => {
+    if (!user) return;
+
     const template = quizTemplates.find(t => t.id === templateId);
     if (template) {
+      // Set template configuration
       setQuizSetup(prev => ({
         ...prev,
         title: template.title,
@@ -90,7 +93,9 @@ export default function QuizArenaPage() {
         difficulty: template.difficulty
       }));
       setCurrentQuizId(templateId);
-      setSetupMode('room');
+
+      // Directly create room with template
+      await handleCreateRoom();
     }
   };
 
@@ -109,58 +114,130 @@ export default function QuizArenaPage() {
     setIsCreatingRoom(true);
 
     try {
-      // Generate room code
-      const code = generateRoomCode();
-      setRoomCode(code);
+      console.log('🎯 Starting room creation process...');
 
-      // Import the QuizArena library
-      const { QuizArena, QuizArenaDiscovery } = await import('@/lib/quiz-arena');
-
-      // Create a sample quiz based on template or generate a simple quiz
-      let quiz;
+      // Step 1: Generate actual quiz content first
+      let quizContent;
       if (currentQuizId) {
-        // Convert template to quiz format (simplified for demo)
+        // Use template settings
         const template = quizTemplates.find(t => t.id === currentQuizId);
         if (!template) throw new Error('Template not found');
 
-        quiz = [
-          {
-            question: "Sample Question 1?",
-            answers: ["Option A", "Option B", "Option C", "Option D"],
-            correctIndex: 0,
-            type: "multiple-choice"
-          },
-          {
-            question: "Sample Question 2?",
-            answers: ["Option A", "Option B", "Option C", "Option D"],
-            correctIndex: 1,
-            type: "multiple-choice"
-          }
-        ];
+        console.log('📚 Generating quiz from template:', template.title);
 
-        // TODO: Generate actual quiz content based on template
+        // Generate quiz using AI
+        const response = await fetch('/api/generate-quiz', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            topic: template.topic,
+            difficulty: template.difficulty.toLowerCase() === 'medium' ? 'medium' : template.difficulty.toLowerCase(),
+            numberOfQuestions: template.questions,
+            questionTypes: ["Multiple Choice"],
+            questionStyles: ["Conceptual", "Numerical"],
+            timeLimit: quizSetup.timePerQuestion * template.questions,
+            userClass: "MDCAT Student",
+            isPro: false,
+            specificInstructions: `Create ${template.questions} high-quality questions for ${template.topic} suitable for ${template.difficulty} level students.`
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz content');
+        }
+
+        const result = await response.json();
+        quizContent = result.quiz;
+
       } else {
-        // Create a simple custom quiz
-        quiz = [
-          {
-            question: `${quizSetup.title} - Question 1`,
-            answers: ["Answer A", "Answer B", "Answer C", "Answer D"],
-            correctIndex: 0,
-            type: "multiple-choice"
-          }
-        ];
+        // Custom quiz generation
+        console.log('🎨 Generating custom quiz...');
+
+        const response = await fetch('/api/generate-quiz', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            topic: quizSetup.topic,
+            difficulty: quizSetup.difficulty,
+            numberOfQuestions: Math.max(10, Math.min(quizSetup.maxPlayers * 2, 30)),
+            questionTypes: ["Multiple Choice"],
+            questionStyles: ["Conceptual"],
+            timeLimit: quizSetup.timePerQuestion * Math.max(10, Math.min(quizSetup.maxPlayers * 2, 30)),
+            userClass: "MDCAT Student",
+            isPro: false,
+            specificInstructions: `Create a quiz about ${quizSetup.topic} with ${quizSetup.difficulty} difficulty level. Follow MDCAT syllabus standards.`
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz content');
+        }
+
+        const result = await response.json();
+        quizContent = result.quiz;
       }
 
-      // Create room using Firestore
-      await QuizArena.Host.createRoom(code, user.uid, user.displayName || 'Anonymous', quiz);
+      if (!quizContent || quizContent.length === 0) {
+        throw new Error('No quiz content generated. Please try again.');
+      }
 
-      // Show room dialog
-      setShowRoomDialog(true);
-    } catch (error) {
-      console.error('Error creating room:', error);
+      console.log('✅ Quiz generated successfully:', quizContent.length, 'questions');
+
+      // Step 2: Generate unique room code
+      const roomCode = generateRoomCode();
+      console.log('🔖 Room code generated:', roomCode);
+
+      // Step 3: Transform quiz data to QuizArena format
+      const quizArenaData = quizContent.map((q: any) => ({
+        question: q.question,
+        options: q.answers || [],
+        correctIndex: q.answers?.indexOf(q.correctAnswer) || 0,
+        type: "multiple-choice"
+      }));
+
+      console.log('🔄 Transformed quiz data for QuizArena');
+
+      // Step 4: Create room using QuizArena
+      const { QuizArena } = await import('@/lib/quiz-arena');
+
       toast?.({
-        title: 'Error Creating Room',
-        description: 'Failed to create quiz room. Please try again.',
+        title: 'Creating Room...',
+        description: 'Setting up your multiplayer quiz room...',
+      });
+
+      await QuizArena.Host.createRoom(roomCode, user.uid, user.displayName || 'Anonymous', quizArenaData);
+
+      console.log('🚀 Room created successfully:', roomCode);
+
+      // Step 5: Success feedback
+      toast?.({
+        title: 'Room Created! 🎯',
+        description: `Share this code with ${quizSetup.maxPlayers} friends: ${roomCode}`,
+      });
+
+      // Store room code locally
+      setRoomCode(roomCode);
+      setShowRoomDialog(true);
+
+    } catch (error: any) {
+      console.error('❌ Error creating room:', error);
+      let errorMessage = 'Failed to create quiz room. Please try again.';
+
+      if (error.message?.includes('Failed to generate quiz content')) {
+        errorMessage = 'Failed to generate quiz questions. Please check your topic and try again.';
+      } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
+        errorMessage = 'AI service is busy. Please wait a moment and try again.';
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage = 'Connection issue. Please check your internet and try again.';
+      }
+
+      toast?.({
+        title: 'Room Creation Failed',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -185,9 +262,28 @@ export default function QuizArenaPage() {
     return (
       <div className="space-y-8">
         <PageHeader
-          title="Quiz Arena"
+          title="Quiz Arena [BETA]"
           description="Create or join multiplayer quiz rooms and compete with others in real-time!"
         />
+
+        {/* BETA Warning Notice */}
+        <Card className="border-orange-500 bg-orange-50 dark:bg-orange-950/10 border-l-4">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle className="h-6 w-6 text-orange-600 dark:text-orange-400 mt-0.5" />
+              <div className="space-y-2">
+                <h3 className="font-semibold text-orange-800 dark:text-orange-200">⚠️ Beta Feature Notice</h3>
+                <p className="text-sm text-orange-700 dark:text-orange-300">
+                  This feature is in testing and may cause errors or unexpected behavior.
+                  We're actively working on improvements. Your feedback would be greatly appreciated!
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  If you encounter any issues, please report them to our support team.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Hero Section */}
         <Card className="bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10 border-primary/20">
@@ -244,9 +340,19 @@ export default function QuizArenaPage() {
                   <Button
                     onClick={() => handleQuizTemplateSelect(template.id)}
                     className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                    disabled={isCreatingRoom}
                   >
-                    <Play className="mr-2 h-4 w-4" />
-                    Host This Quiz
+                    {isCreatingRoom ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-muted border-t-accent rounded-full animate-spin mr-2" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-4 w-4" />
+                        Host This Quiz
+                      </>
+                    )}
                   </Button>
                 </CardFooter>
               </Card>
@@ -274,8 +380,23 @@ export default function QuizArenaPage() {
   if (setupMode === 'create') {
     return (
       <div className="space-y-8 max-w-2xl mx-auto">
+        {/* BETA Warning Notice */}
+        <Card className="border-orange-500 bg-orange-50 dark:bg-orange-950/10 border-l-4">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5" />
+              <div className="space-y-1">
+                <h4 className="font-semibold text-orange-800 dark:text-orange-200 text-sm">⚠️ Beta Feature</h4>
+                <p className="text-xs text-orange-700 dark:text-orange-300">
+                  This feature is in testing. Report any issues to our support team.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <PageHeader
-          title="Create Custom Quiz"
+          title="Create Custom Quiz [BETA]"
           description="Set up your perfect multiplayer quiz room"
         />
 

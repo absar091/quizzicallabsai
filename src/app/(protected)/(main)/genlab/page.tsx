@@ -21,7 +21,7 @@ const tools = [
   },
   {
     icon: Trophy,
-    title: 'Quiz Arena',
+    title: 'Quiz Arena [BETA]',
     description: 'Host real-time multiplayer quiz rooms and compete with friends in competitive battles.',
     href: '/quiz-arena',
   },
