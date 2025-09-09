@@ -65,40 +65,53 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
 
   // App Header for logged in users
   return (
-    <>
+    <div className="flex items-center gap-2 md:gap-4 w-full">
+      {/* Mobile back button */}
       {showAppBackButton && (
         <Button
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
           aria-label="Go back"
-          className="md:hidden"
+          className="flex-shrink-0 md:hidden"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
       )}
-      
+
       {/* Desktop sidebar toggle */}
       <Button
         variant="ghost"
         size="icon"
         onClick={onSidebarToggle}
         aria-label="Toggle sidebar"
-        className="hidden md:inline-flex"
+        className="flex-shrink-0 hidden md:inline-flex"
       >
         <Menu className="h-5 w-5" />
       </Button>
-      <div className="w-full flex-1 flex items-center justify-between md:justify-end">
-          <div className="md:hidden">
-              {!showAppBackButton && <Link href="/" className="font-semibold text-lg">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></Link>}
-          </div>
-           <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                  <Bell className="h-5 w-5"/>
-                  <span className="sr-only">Notifications</span>
-              </Button>
-           </div>
+
+      {/* Main content area */}
+      <div className="flex-1 flex items-center justify-between min-w-0">
+        {/* Mobile logo (only on top-level pages) */}
+        <div className="flex-1 md:hidden">
+          {!showAppBackButton && (
+            <Link href="/" className="font-semibold text-lg truncate block">
+              Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup>
+            </Link>
+          )}
+        </div>
+
+        {/* Spacer for mobile to push notifications to right */}
+        <div className="flex-1"></div>
+
+        {/* Notifications icon */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="ghost" size="icon">
+            <Bell className="h-5 w-5"/>
+            <span className="sr-only">Notifications</span>
+          </Button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
