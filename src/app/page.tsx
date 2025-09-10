@@ -185,7 +185,7 @@ export default function Home() {
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
               >
                 Transform <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">3 Hours</span> of Study into
-                <span className="block bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
                   30 Seconds of Learning
                 </span>
               </motion.h1>
@@ -219,54 +219,54 @@ export default function Home() {
 
             {/* Problem/Solution Section */}
             <motion.div className="grid md:grid-cols-2 gap-8 mb-16" variants={FADE_IN_ANIMATION_VARIANTS}>
-              <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
+              <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20">
                 <CardContent className="p-8">
-                  <div className="text-red-600 mb-4">
+                  <div className="text-orange-600 mb-4">
                     <Target className="h-12 w-12" />
                   </div>
-                  <h3 className="text-2xl font-bold text-red-800 dark:text-red-200 mb-4">❌ The Problem</h3>
-                  <ul className="space-y-3 text-red-700 dark:text-red-300">
+                  <h3 className="text-2xl font-bold text-orange-800 dark:text-orange-200 mb-4">❌ The Problem</h3>
+                  <ul className="space-y-3 text-orange-700 dark:text-orange-300">
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                       Students spend 3+ hours creating study materials
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                       Only 20% retention rate after a week
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                       Generic quizzes that don't adapt to learning style
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                       Boring study sessions lead to dropout
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+              <Card className="border-cyan-200 bg-cyan-50 dark:bg-cyan-950/20">
                 <CardContent className="p-8">
-                  <div className="text-green-600 mb-4">
+                  <div className="text-cyan-600 mb-4">
                     <Zap className="h-12 w-12" />
                   </div>
-                  <h3 className="text-2xl font-bold text-green-800 dark:text-green-200 mb-4">✅ Our Solution</h3>
-                  <ul className="space-y-3 text-green-700 dark:text-green-300">
+                  <h3 className="text-2xl font-bold text-cyan-800 dark:text-cyan-200 mb-4">✅ Our Solution</h3>
+                  <ul className="space-y-3 text-cyan-700 dark:text-cyan-300">
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
                       AI generates complete materials in 30 seconds
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
                       90% scientifically proven retention rate
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
                       Adaptive difficulty based on your performance
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
                       Quiz Arena makes learning addictive
                     </li>
                   </ul>
@@ -639,19 +639,19 @@ export default function Home() {
                 <CardContent className="space-y-4">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-muted-foreground">Unlimited Quizzes & Guides</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-muted-foreground">Standard AI Model</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-muted-foreground">Quiz Arena (Public Only)</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-muted-foreground">Basic Social Sharing</span>
                     </li>
                   </ul>
@@ -690,19 +690,19 @@ export default function Home() {
                 <CardContent className="space-y-4">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="font-medium">Private Quiz Arenas</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="font-medium">Advanced AI (Gemini 2.0 Pro)</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="font-medium">Analytics Dashboard</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="font-medium">Priority Support</span>
                     </li>
                   </ul>
@@ -748,7 +748,7 @@ export default function Home() {
             </div>
 
             <div className="text-sm text-muted-foreground">
-              ✨ No credit card required • ⚡ Instant setup • 🎯 Join 10,000+ students worldwide
+              ✨ No credit card required • ⚡ Instant setup • 🎯 Join learners worldwide
             </div>
           </motion.div>
         </div>
