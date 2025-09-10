@@ -26,11 +26,10 @@ export function getModel(isPro: boolean, useFallback: boolean = false) {
  * @returns The model name as a string.
  */
 export function getModelName(isPro: boolean, useFallback: boolean = false): string {
-    // Use available Gemini models
     if (isPro) {
-        return useFallback ? 'gemini-1.5-flash' : 'gemini-1.5-pro';
+        return useFallback ? 'gemini-2.5-flash' : 'gemini-2.5-pro';
     } else {
-        return useFallback ? 'gemini-1.5-flash' : 'gemini-1.5-flash';
+        return useFallback ? 'gemini-2.0-flash' : 'gemini-1.5-flash';
     }
 }
 
