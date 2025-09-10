@@ -41,18 +41,24 @@
       ".write": "auth != null"
     },
     "quiz-rooms": {
-      ".indexOn": ["hostId", "started", "finished"],
       ".read": "auth != null",
       "$roomId": {
         ".read": "auth != null",
-        ".write": "data.exists() ? (data.val().hostId == auth.uid) : (auth != null)",
+        ".write": "auth != null",
         "players": {
           ".read": "auth != null",
-          ".write": "auth != null"
+          ".write": "auth != null",
+          "$userId": {
+            ".read": "auth != null",
+            ".write": "$userId === auth.uid"
+          }
         },
         "answers": {
           ".read": "auth != null",
-          ".write": "auth != null"
+          ".write": "auth != null",
+          "$answerId": {
+            ".write": "auth.uid === data.child('userId').val()"
+          }
         }
       }
     },
