@@ -92,44 +92,6 @@ const features = [
   },
 ];
 
-const whoIsItFor = [
-  {
-    icon: Users,
-    title: "For Students",
-    points: [
-      "Master any topic with personalized quizzes.",
-      "Prepare for specific exams like MDCAT, ECAT & NTS.",
-      "Get instant, detailed explanations for tough questions.",
-      "Generate study guides and flashcards in seconds.",
-    ],
-  },
-  {
-    icon: CheckSquare,
-    title: "For Teachers",
-    points: [
-      "Create professional exam papers with multiple variants.",
-      "Generate quizzes from your own notes or documents.",
-      "Automate question generation for any subject.",
-      "Save hours on creating assessment materials.",
-    ],
-  },
-];
-
-const freePlanFeatures = [
-    "Unlimited Quizzes & Guides",
-    "Standard AI Model",
-    "Full Prep Module Access",
-    "Contains Ads",
-]
-
-const proPlanFeatures = [
-    "All Free Features, plus:",
-    "Advanced AI Model (gemini-1.5-pro)",
-    "Higher Quality & Accuracy",
-    "Ad-Free Experience",
-    "Priority Support",
-]
-
 const testimonials = [
   {
     quote: "Our Game Night went from Netflix to Quiz Arena - the kids actually learned biology while destroying their friends on leaderboards!",
@@ -316,7 +278,7 @@ export default function Home() {
             <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12" variants={FADE_IN_ANIMATION_VARIANTS}>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary mb-2">10K+</div>
-                <div className="text-sm text-muted-foreground">Students Empowerred</div>
+                <div className="text-sm text-muted-foreground">Students Empowered</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary mb-2">2K+</div>
@@ -353,7 +315,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Pop Quiz Arena Section */}
+      {/* Quiz Arena Highlight Section */}
       <section className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -533,7 +495,7 @@ export default function Home() {
               Complete Learning Toolkit
             </motion.h2>
             <motion.p variants={FADE_IN_ANIMATION_VARIANTS} className="max-w-3xl text-muted-foreground mx-auto">
-              From quiz generation to competitive battles, we've built the most comprehensive AI-powered learning platform
+              From quiz generation to competitive battles, we have built the most comprehensive AI-powered learning platform
             </motion.p>
           </div>
 
@@ -592,104 +554,8 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Learning Journey</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Start free and unlock the full power of AI-powered education
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <Card className="relative h-full shadow-xl border-2 border-muted">
-                <CardHeader className="pb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <CardTitle className="text-3xl font-bold text-foreground">Free</CardTitle>
-                    <Badge variant="secondary">Starter Plan</Badge>
-                  </div>
-                  <CardDescription className="text-base">
-                    Perfect foundation for your learning journey
-                  </CardDescription>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">$0</span>
-                    <span className="text-muted-foreground">/forever</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {freePlanFeatures.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-8" asChild>
-                    <Link href="/signup">Get Started Free</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Pro Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <Card className="relative h-full shadow-2xl border-2 border-primary bg-gradient-to-br from-primary/5 to-accent/5">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2">
-                    🏆 MOST POPULAR
-                  </Badge>
-                </div>
-                <CardHeader className="pb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Pro</CardTitle>
-                    <Badge className="bg-gradient-to-r from-primary/20 to-accent/20">Premium Plan</Badge>
-                  </div>
-                  <CardDescription className="text-base">
-                    Unleash the full potential of AI learning
-                  </CardDescription>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">$2</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {proPlanFeatures.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="font-medium">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" asChild>
-                    <Link href="/pricing">Upgrade to Pro</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-muted/30">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -747,6 +613,122 @@ export default function Home() {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Learning Journey</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Start free and unlock the full power of AI-powered education
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="relative h-full shadow-xl border-2 border-muted">
+                <CardHeader className="pb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <CardTitle className="text-3xl font-bold text-foreground">Free</CardTitle>
+                    <Badge variant="secondary">Starter Plan</Badge>
+                  </div>
+                  <CardDescription className="text-base">
+                    Perfect foundation for your learning journey
+                  </CardDescription>
+                  <div className="mt-4">
+                    <span className="text-5xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/forever</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="text-muted-foreground">Unlimited Quizzes & Guides</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="text-muted-foreground">Standard AI Model</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="text-muted-foreground">Quiz Arena (Public Only)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="text-muted-foreground">Basic Social Sharing</span>
+                    </li>
+                  </ul>
+                  <Button className="w-full mt-8" asChild>
+                    <Link href="/signup">Get Started Free</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Pro Plan */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="relative h-full shadow-2xl border-2 border-primary bg-gradient-to-br from-primary/5 to-accent/5">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2">
+                    🏆 MOST POPULAR
+                  </Badge>
+                </div>
+                <CardHeader className="pb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Pro</CardTitle>
+                    <Badge className="bg-gradient-to-r from-primary/20 to-accent/20">Premium Plan</Badge>
+                  </div>
+                  <CardDescription className="text-base">
+                    Unleash the full potential of AI learning
+                  </CardDescription>
+                  <div className="mt-4">
+                    <span className="text-5xl font-bold">$2</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="font-medium">Private Quiz Arenas</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="font-medium">Advanced AI (Gemini 2.0 Pro)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="font-medium">Analytics Dashboard</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <span className="font-medium">Priority Support</span>
+                    </li>
+                  </ul>
+                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" asChild>
+                    <Link href="/pricing">Upgrade to Pro</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </section>
 
