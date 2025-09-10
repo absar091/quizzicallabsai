@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, Users, Eye, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
-import { SharedQuiz, QuizSharingManager } from '@/lib/quiz-sharing';
+import { Heart, Users, Eye, Loader2, AlertCircle, CheckCircle, Lock } from 'lucide-react';
+import { SharedQuiz, SharedQuizMetadata, QuizSharingManager } from '@/lib/quiz-sharing';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
@@ -19,67 +19,68 @@ export default function SharedQuizPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sharedQuiz, setSharedQuiz] = useState<SharedQuiz | null>(null);
+  const [quizMetadata, setQuizMetadata] = useState<SharedQuizMetadata | null>(null);
+  const [fullQuiz, setFullQuiz] = useState<SharedQuiz | null>(null);
 
   const shareCode = searchParams.get('code');
 
   useEffect(() => {
+    if (!shareCode) {
+      setError('No share code provided');
+      setLoading(false);
+      return;
+    }
+
     const handleSharedQuizAccess = async () => {
-      if (!shareCode) {
-        setError('No share code provided');
-        setLoading(false);
-        return;
-      }
-
       try {
-        // Try to get quiz by share code
-        const quiz = await QuizSharingManager.getQuizByShareCode(shareCode.toUpperCase());
+        // Always get quiz metadata first for public display
+        const metadata = await QuizSharingManager.getQuizMetadataByShareCode(shareCode.toUpperCase());
 
-        if (!quiz) {
+        if (!metadata) {
           setError('Quiz not found. Please check the share code and try again.');
           setLoading(false);
           return;
         }
 
-        setSharedQuiz(quiz);
+        setQuizMetadata(metadata);
 
-        // Update quiz stats (attempts counter)
-        try {
-          await QuizSharingManager.updateQuizStats(quiz.id, 0);
-        } catch (statError) {
-          // Silently handle stat update errors
-          console.error('Failed to update quiz stats:', statError);
+        // If user is authenticated, get full quiz data
+        if (user) {
+          const fullQuizData = await QuizSharingManager.getQuizByShareCode(shareCode.toUpperCase());
+          if (fullQuizData) {
+            setFullQuiz(fullQuizData);
+
+            // Update quiz stats (attempts counter)
+            try {
+              await QuizSharingManager.updateQuizStats(fullQuizData.id, 0);
+            } catch (statError) {
+              // Silently handle stat update errors
+              console.error('Failed to update quiz stats:', statError);
+            }
+
+            // Prepare quiz data for generate-quiz page
+            const quizData = {
+              quiz: fullQuizData.questions,
+              formValues: {
+                topic: fullQuizData.title,
+                difficulty: (fullQuizData.difficulty as any) || 'medium',
+                numberOfQuestions: fullQuizData.questions.length,
+                questionTypes: ['Multiple Choice'],
+                questionStyles: ['Shared Quiz'],
+                timeLimit: Math.max(10, Math.ceil(fullQuizData.questions.length * 0.75)), // 3/4 minute per question
+                specificInstructions: fullQuizData.description || ''
+              }
+            };
+
+            // Store in sessionStorage for the generate-quiz page to pick up
+            sessionStorage.setItem('sharedQuizData', JSON.stringify(quizData));
+
+            // Automatically redirect to generate-quiz page after showing success
+            setTimeout(() => {
+              router.push('/generate-quiz?shared=true');
+            }, 2000);
+          }
         }
-
-        // Prepare quiz data for generate-quiz page
-        const quizData = {
-          quiz: quiz.questions,
-          formValues: {
-            topic: quiz.title,
-            difficulty: (quiz.difficulty as any) || 'medium',
-            numberOfQuestions: quiz.questions.length,
-            questionTypes: ['Multiple Choice'],
-            questionStyles: ['Shared Quiz'],
-            timeLimit: Math.max(10, Math.ceil(quiz.questions.length * 0.75)), // 3/4 minute per question
-            specificInstructions: quiz.description || ''
-          }
-        };
-
-        // Store in sessionStorage for the generate-quiz page to pick up
-        sessionStorage.setItem('sharedQuizData', JSON.stringify(quizData));
-
-        // Automatically redirect to generate-quiz page after a short delay for user feedback
-        setTimeout(() => {
-          // For authenticated users, redirect to protected route
-          if (user) {
-            router.push('/generate-quiz?shared=true');
-          } else {
-            // For non-authenticated users, redirect to login flow with properly encoded redirect URL
-            const redirectUrl = '/generate-quiz?shared=true';
-            const loginUrl = `/login?redirect=${encodeURIComponent(redirectUrl)}&message=${encodeURIComponent('Welcome! Please sign in to access the shared quiz.')}`;
-            router.push(loginUrl);
-          }
-        }, 2000); // 2 second delay to show the user what quiz they're getting
 
       } catch (err) {
         console.error('Error accessing shared quiz:', err);
@@ -136,36 +137,51 @@ export default function SharedQuizPage() {
     );
   }
 
-  if (sharedQuiz) {
+  if (quizMetadata) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20">
         <Card className="max-w-md mx-4">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <CheckCircle className="h-12 w-12 text-green-500" />
+              {user && fullQuiz ? (
+                <CheckCircle className="h-12 w-12 text-green-500" />
+              ) : (
+                <Lock className="h-12 w-12 text-primary" />
+              )}
             </div>
-            <CardTitle className="text-xl mb-2">Quiz Found!</CardTitle>
+            <CardTitle className="text-xl mb-2">
+              {user && fullQuiz ? "Quiz Ready!" : "Quiz Preview"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-muted/50 p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-2">{sharedQuiz.title}</h3>
+              <h3 className="font-semibold text-lg mb-2">{quizMetadata.title}</h3>
               <div className="space-y-2 text-sm">
-                <p><strong>Created by:</strong> {sharedQuiz.creatorName}</p>
-                <p><strong>Topic:</strong> {sharedQuiz.topic}</p>
-                <p><strong>Difficulty:</strong> <Badge variant="secondary">{sharedQuiz.difficulty}</Badge></p>
-                <p><strong>Questions:</strong> {sharedQuiz.questions.length}</p>
-                {sharedQuiz.description && (
-                  <p><strong>Description:</strong> {sharedQuiz.description}</p>
+                <p><strong>Created by:</strong> {quizMetadata.creatorName}</p>
+                <p><strong>Topic:</strong> {quizMetadata.topic}</p>
+                <p><strong>Difficulty:</strong> <Badge variant="secondary">{quizMetadata.difficulty}</Badge></p>
+                <p><strong>Questions:</strong> {fullQuiz ? fullQuiz.questions.length : "Multiple"}</p>
+                {fullQuiz && fullQuiz.description && (
+                  <p><strong>Description:</strong> {fullQuiz.description}</p>
+                )}
+
+                {!fullQuiz && (
+                  <div className="bg-primary/5 p-3 rounded-lg border border-primary/20 mt-3">
+                    <p className="text-sm text-primary flex items-center gap-2 font-medium">
+                      <Lock className="h-4 w-4" />
+                      Sign in to view full quiz details and play
+                    </p>
+                  </div>
                 )}
 
                 <div className="flex items-center justify-center gap-6 pt-3 text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Heart className="h-4 w-4" />
-                    <span>{sharedQuiz.likes}</span>
+                    <span>{quizMetadata.likes}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
-                    <span>{sharedQuiz.attempts}</span>
+                    <span>{quizMetadata.attempts}</span>
                   </div>
                 </div>
               </div>
@@ -174,25 +190,33 @@ export default function SharedQuizPage() {
             <div className="text-center">
               <p className="text-muted-foreground mb-4">
                 {user
-                  ? "Redirecting you to the quiz..."
-                  : "You'll need to sign in to access this quiz. Don't worry, it's quick and easy!"
+                  ? fullQuiz
+                    ? "Redirecting you to the quiz..."
+                    : "Loading quiz content..."
+                  : "Sign in to access this quiz and track your progress!"
                 }
               </p>
 
-              {!user && (
+              {!user && shareCode && (
                 <div className="flex gap-2 justify-center mb-4">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/login?redirect=${encodeURIComponent('/generate-quiz?shared=true')}&message=${encodeURIComponent('Please sign in to access the shared quiz.')}`}>
+                    <Link href={`/login?redirect=${encodeURIComponent(`/shared-quiz?code=${shareCode.toUpperCase()}`)}`}>
                       Sign In
                     </Link>
                   </Button>
                   <Button asChild size="sm">
-                    <Link href={`/signup?redirect=${encodeURIComponent('/generate-quiz?shared=true')}&message=${encodeURIComponent('Create your account to access the shared quiz!')}`}>
+                    <Link href={`/signup?redirect=${encodeURIComponent(`/shared-quiz?code=${shareCode.toUpperCase()}`)}`}>
                       Sign Up
                     </Link>
                   </Button>
                 </div>
               )}
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">
+                This quiz requires an account to play and track your performance history.
+              </p>
             </div>
           </CardContent>
         </Card>

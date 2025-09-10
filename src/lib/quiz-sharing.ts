@@ -17,6 +17,19 @@ export interface SharedQuiz {
   averageScore: number;
 }
 
+export interface SharedQuizMetadata {
+  id: string;
+  title: string;
+  description: string;
+  creatorName: string;
+  topic: string;
+  difficulty: string;
+  tags: string[];
+  likes: number;
+  attempts: number;
+  createdAt: number;
+}
+
 export class QuizSharingManager {
   // Generate unique share code
   static generateShareCode(): string {
@@ -79,20 +92,57 @@ export class QuizSharingManager {
     try {
       const { db } = await import('@/lib/firebase');
       const { ref, query, orderByChild, equalTo, get } = await import('firebase/database');
-      
+
       const quizzesRef = ref(db, 'shared_quizzes');
       const shareCodeQuery = query(quizzesRef, orderByChild('shareCode'), equalTo(shareCode));
       const snapshot = await get(shareCodeQuery);
-      
+
       if (snapshot.exists()) {
         const quizzes = snapshot.val();
         const quizId = Object.keys(quizzes)[0];
         return quizzes[quizId];
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching quiz by share code:', error);
+      return null;
+    }
+  }
+
+  // Get quiz metadata (without questions) by share code - for public access
+  static async getQuizMetadataByShareCode(shareCode: string): Promise<SharedQuizMetadata | null> {
+    try {
+      const { db } = await import('@/lib/firebase');
+      const { ref, query, orderByChild, equalTo, get } = await import('firebase/database');
+
+      const quizzesRef = ref(db, 'shared_quizzes');
+      const shareCodeQuery = query(quizzesRef, orderByChild('shareCode'), equalTo(shareCode));
+      const snapshot = await get(shareCodeQuery);
+
+      if (snapshot.exists()) {
+        const quizzes = snapshot.val();
+        const quizId = Object.keys(quizzes)[0];
+        const quiz = quizzes[quizId];
+
+        // Return only metadata, no questions
+        return {
+          id: quiz.id,
+          title: quiz.title,
+          description: quiz.description,
+          creatorName: quiz.creatorName,
+          topic: quiz.topic,
+          difficulty: quiz.difficulty,
+          tags: quiz.tags || [],
+          likes: quiz.likes || 0,
+          attempts: quiz.attempts || 0,
+          createdAt: quiz.createdAt
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching quiz metadata by share code:', error);
       return null;
     }
   }
