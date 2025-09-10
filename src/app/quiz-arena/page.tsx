@@ -40,6 +40,23 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
+// Custom scrollbar styles
+const globalStyles = `
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #0891b2, #0ea5e9);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #0c7494, #0284c7);
+  }
+`;
+
 interface QuizArenaSetup {
   title: string;
   description: string;
@@ -50,26 +67,6 @@ interface QuizArenaSetup {
   maxPlayers: number;
   allowLateJoining: boolean;
 }
-
-// Custom Scrollbar Styles
-const globalStyles = `
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #0f172a;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #0891b2, #0ea5e9);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #0c7494, #0284c7);
-  }
-`;
 
 export default function QuizArenaPage() {
   const { user } = useAuth();
@@ -90,7 +87,6 @@ export default function QuizArenaPage() {
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [roomCode, setRoomCode] = useState('');
 
-  // Inject global scrollbar styles
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = globalStyles;
@@ -101,7 +97,6 @@ export default function QuizArenaPage() {
     };
   }, []);
 
-  // Simplified, cohesive color palette
   const quizTemplates = [
     {
       id: 'mdcpharmacology',
@@ -150,7 +145,6 @@ export default function QuizArenaPage() {
     const template = quizTemplates.find(t => t.id === templateId);
     if (!template) return;
 
-    // Simplified handling - just start with template
     setQuizSetup(prev => ({
       ...prev,
       title: template.title,
@@ -159,7 +153,6 @@ export default function QuizArenaPage() {
       difficulty: template.difficulty
     }));
 
-    // Create room immediately
     await handleCreateRoom();
   };
 
@@ -172,7 +165,7 @@ export default function QuizArenaPage() {
       console.log('🎯 Starting room creation process...');
 
       let quizContent;
-      const template = quizTemplates.find(t => t.id === 'mdcpharmacology'); // Default template for demo
+      const template = quizTemplates.find(t => t.id === 'mdcpharmacology');
 
       if (template) {
         const response = await fetch('/api/generate-quiz', {
@@ -207,11 +200,9 @@ export default function QuizArenaPage() {
 
       console.log('✅ Quiz generated successfully:', quizContent.length, 'questions');
 
-      // Generate room code
       const roomCode = generateRoomCode();
       console.log('🔖 Room code generated:', roomCode);
 
-      // Transform quiz data
       const quizArenaData = quizContent.map((q: any) => ({
         question: q.question,
         options: q.answers || [],
@@ -221,7 +212,6 @@ export default function QuizArenaPage() {
 
       console.log('🔄 Transformed quiz data for QuizArena');
 
-      // Create room
       const { QuizArena } = await import('@/lib/quiz-arena');
 
       toast?.({
@@ -233,7 +223,6 @@ export default function QuizArenaPage() {
 
       console.log('🚀 Arena created successfully:', roomCode);
 
-      // Redirect to hosting page
       window.location.href = `/quiz-arena/host/${roomCode}`;
       return;
 
@@ -611,94 +600,3 @@ export default function QuizArenaPage() {
     </div>
   );
 }
-
-Assistant: I need to complete the rewrite properly. Let me finish this comprehensively.<attempt_completion>
-<result>⚡ **QUIZ ARENA POLISH COMPLETE** 🚀
-
-## ✅ **Fixed Your Feedback Points:**
-
-### 1. **🗑️ Removed Clashing Demo Box**
-```javascript
-// ❌ BEFORE: Awkward floating rectangle
-<Quiz Arena Live Demo> box floating awkwardly
-
-// ✅ AFTER: Clean, professional header
-<div className="bg-slate-800/50 border border-slate-700 rounded-2xl">
-  <Gamepad2 className="text-cyan-400" />
-  <span>LIVE ARENA PLATFORM</span>
-</div>
-```
-
-### 2. **🎨 Simplified Color Palette**
-```javascript
-// ❌ BEFORE: Chaos of colors (purple, orange, green, red, blue)
-from-cyan-500 to-pink-500, from-red-500 to-orange-500, 
-
-// ✅ AFTER: Cohesive primary palette
-- Modern: Cyan/Teal (primary)
-- Accent: Emerald/Green  
-- Secondary: Orange/Amber
-- All on slate-800/slate-900 backgrounds
-```
-
-### 3. **📱 Styled Scrollbar**
-```javascript
-// Added custom scrollbar styles
-const globalStyles = `
-  ::-webkit-scrollbar {
-    width: 8px;
-    background: #0f172a; // Slate background
-  }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #0891b2, #0ea5e9); // Cyan-Teal gradient
-    border-radius: 4px;
-  }
-`;
-```
-
-### 4. **🎯 Additional Professional Improvements**
-
-#### **Template Cards - Cleaner Design:**
-```javascript
-<Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-cyan-500/30 hover:border-cyan-400">
-// Before: Overwhelming gradients and effects
-// After: Subtle hover effects, professional styling
-</Card>
-```
-
-#### **Typography & Spacing - More Professional:**
-```javascript
-// Before: Jarring contrasts and tight spacing
-// After: Consistent Slate theme, better breathing room
-```
-
-#### **Interactive Elements - Simplified:**
-```javascript
-// Before: Complex hover animations
-// After: Smooth, subtle transitions that don't distract
-```
-
----
-
-## 🌟 **Final Result:**
-
-### **🎮 Professional Gaming Experience:**
-- **3-Color Palette** (Cyan/Teal primary, Green amber accents)
-- **No Awkward Floating Elements** (Demo box removed)  
-- **Styled Scrollbar** matching dark theme
-- **Clean Black/Slate Color Scheme**
-- **Professional Card Layout**
-
-### **📱 Perfect for Gen Z:**
-- **Clean, Modern Aesthetic**
-- **Professional Gaming Vibe** (like Epic Games/Riot)
-- **Seamless Integration**
-- **Non-Intrusive Interactivity**
-
----
-
-## 🎯 **Your Quiz Arena Now Looks:**
-- **Professional** - Like a production gaming platform
-- **Cohesive** - Single color palette throughout  
-- **Clean** - No clashing elements or distractions
-- **Refined** - Polished with attention to detail
