@@ -20,6 +20,9 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Personal Identification Information:</strong> Name, email address, age, and class/grade information that you provide when you register an account. This information is used to personalize your experience and is never shared with third parties.</li>
                 <li><strong>Usage Data:</strong> Information on how you use the application, such as features used, quizzes taken, scores, performance analytics, and bookmarked questions. This is collected automatically to power your dashboard and help you track your progress.</li>
                 <li><strong>Content Data:</strong> Documents you upload for quiz generation. These files are temporarily transmitted to our AI provider for processing and are not retained on our servers beyond the processing period unless you explicitly choose to save them.</li>
+                <li><strong>Social Gaming Data:</strong> When you participate in multiplayer arenas or live quiz battles, we collect information about your interactions, including usernames used, scores, participation in sessions, and host/moderator actions. This data helps us maintain fair play and improve the multiplayer experience.</li>
+                <li><strong>Shared Content Data:</strong> Information about quizzes you create and share, including quiz titles, descriptions, question content, sharing history, and visibility settings. This includes metadata like creation timestamps, user IDs, and engagement metrics.</li>
+                <li><strong>Live Interaction Records:</strong> During live multiplayer sessions, we may temporarily record or log participant interactions, chat messages (if implemented), and session performance data to ensure a safe and enjoyable experience for all users.</li>
                 <li><strong>Device and Connection Information:</strong> We collect standard information such as your IP address, browser type, and operating system for security, debugging, and analytics purposes.</li>
             </ul>
           </div>
@@ -34,7 +37,11 @@ export default function PrivacyPolicyPage() {
               <li>Monitor and analyze usage and trends to improve the application.</li>
               <li>Communicate with you for customer service, updates, and other informational purposes.</li>
               <li>Prevent fraud and ensure the security of our services.</li>
+              <li>Manage and moderate multiplayer arenas, live quiz battles, and shared content to maintain a safe and enjoyable environment for all users.</li>
+              <li>Track engagement and performance in social gaming features to provide you with personalized leaderboards, achievements, and progress statistics.</li>
+              <li>Maintain records of shared content ownership, usage permissions, and sharing history for content management purposes.</li>
             </ul>
+            <p>Social gaming data and live interaction records are used exclusively to enable and enhance the multiplayer experience. This data helps us detect and prevent inappropriate behavior, maintain fair play, and provide you with accurate performance metrics and achievements.</p>
           </div>
 
           <div className="space-y-2">
