@@ -12,7 +12,8 @@ import {
   query,
   where,
   onSnapshot,
-  Timestamp
+  Timestamp,
+  deleteDoc
 } from 'firebase/firestore';
 
 // 🎯 TypeScript Interfaces (matching the blueprint)
@@ -168,6 +169,17 @@ export class QuizArenaPlayer {
 
     // Add player to players subcollection
     await setDoc(doc(db, `quiz-rooms/${roomId}/players`, userId), player);
+  }
+
+  /**
+   * Leave a room (allows players to exit before quiz starts)
+   */
+  static async leaveRoom(
+    roomId: string,
+    userId: string
+  ): Promise<void> {
+    // Remove player from players subcollection
+    await deleteDoc(doc(db, `quiz-rooms/${roomId}/players`, userId));
   }
 
   /**

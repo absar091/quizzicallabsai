@@ -104,21 +104,5 @@ service cloud.firestore {
     }
   }
 
-  // 🎪 Additional security functions (if needed)
 
-  // Function to check if user is room host
-  function isRoomHost(roomId, userId) {
-    return get(/databases/$(database)/documents/$(roomId)).data.hostId == userId;
-  }
-
-  // Function to check if room is active (not finished)
-  function isRoomActive(roomId) {
-    return get(/databases/$(database)/documents/$(roomId)).exists &&
-           !get(/databases/$(database)/documents/$(roomId)).data.finished;
-  }
-
-  // Function to validate answer format
-  function isValidAnswer(answer) {
-    return answer.keys().hasAll(['userId', 'questionIndex', 'answerIndex', 'correct', 'submittedAt']);
-  }
 }

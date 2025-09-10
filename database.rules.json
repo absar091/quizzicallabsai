@@ -40,6 +40,22 @@
       ".read": "auth != null",
       ".write": "auth != null"
     },
+    "quiz-rooms": {
+      ".indexOn": ["hostId", "started", "finished"],
+      ".read": "auth != null",
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "data.exists() ? (data.val().hostId == auth.uid) : (auth != null)",
+        "players": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "answers": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        }
+      }
+    },
     "questionBank": {
       ".read": "auth != null",
       ".write": "auth != null"

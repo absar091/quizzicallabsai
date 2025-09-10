@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Users, Clock, Trophy, Play, Pause, Settings, CheckCircle, X, Share2, Copy } from 'lucide-react';
+import { Users, Clock, Trophy, Play, Pause, Settings, CheckCircle, X, Share2, Copy, MessageCircle, Send } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -63,37 +63,39 @@ export default function RoomHostPage() {
 
       // Load room data from Firestore using QuizArena Discovery
       const { QuizArena } = await import('@/lib/quiz-arena');
-      const { db } = await import('@/lib/firebase');
-      const { ref, get } = await import('firebase/database');
 
-      // Get room data from Firebase
-      const roomRef = ref(db, `quiz-rooms/${roomCode}`);
-      const roomSnapshot = await get(roomRef);
+      // Try to get room data from Firestore
+      const { firestore } = await import('@/lib/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+
+      // Get room data from Firestore
+      const roomRef = doc(firestore, 'quiz-rooms', roomCode);
+      const roomSnapshot = await getDoc(roomRef);
 
       if (!roomSnapshot.exists()) {
         throw new Error('Room not found');
       }
 
-      const firebaseRoomData = roomSnapshot.val();
+      const firebaseRoomData = roomSnapshot.data();
 
       console.log('✅ Room data loaded from Firebase:', firebaseRoomData);
 
       // Transform Firebase room data to component format
       const roomPlayers = [];
       try {
-        const playersRef = ref(db, `quiz-rooms/${roomCode}/players`);
-        const playersSnapshot = await get(playersRef);
-        if (playersSnapshot.exists()) {
-          const playersData = playersSnapshot.val();
-          Object.keys(playersData).forEach(playerId => {
-            roomPlayers.push({
-              userId: playerId,
-              name: playersData[playerId].name || 'Unknown Player',
-              score: playersData[playerId].score || 0,
-              joinedAt: playersData[playerId].joinedAt || new Date().toISOString()
-            });
+        const { collection, getDocs } = await import('firebase/firestore');
+        const playersRef = collection(firestore, 'quiz-rooms', roomCode, 'players');
+        const playersSnapshot = await getDocs(playersRef);
+
+        playersSnapshot.forEach((doc) => {
+          const playerData = doc.data();
+          roomPlayers.push({
+            userId: doc.id,
+            name: playerData.name || 'Unknown Player',
+            score: playerData.score || 0,
+            joinedAt: playerData.joinedAt?.toDate()?.toISOString() || new Date().toISOString()
           });
-        }
+        });
       } catch (error) {
         console.warn('Could not load players data:', error);
         // Add host as default player
@@ -278,9 +280,30 @@ export default function RoomHostPage() {
               <Copy className="mr-2 h-4 w-4" />
               {roomCode}
             </Button>
-            <Button variant="outline">
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
+            <Button
+              variant="outline"
+              onClick={() => {
+                const joinLink = `${window.location.origin}/quiz-arena/join/${roomCode}`;
+                navigator.clipboard.writeText(joinLink);
+                toast?.({
+                  title: 'Link Copied to Clipboard!',
+                  description: 'Share this link with your friends to invite them to the quiz.',
+                });
+              }}
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copy Join Link
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const message = `🎯 Join my live quiz battle!\n\nRoom: ${roomCode}\n\nLink: ${window.location.origin}/quiz-arena/join/${roomCode}\n\nGet ready for some epic competition! 🏆`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+              }}
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              WhatsApp
             </Button>
           </div>
         </div>
