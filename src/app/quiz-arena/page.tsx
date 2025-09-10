@@ -71,7 +71,7 @@ interface QuizArenaSetup {
 export default function QuizArenaPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [setupMode, setSetupMode] = useState<'select' | 'create' | 'room'>('select');
+  const [setupMode, setSetupMode] = useState<'select' | 'create' | 'join' | 'room'>('select');
 
   const [quizSetup, setQuizSetup] = useState<QuizArenaSetup>({
     title: '',
@@ -333,7 +333,7 @@ export default function QuizArenaPage() {
               <p className="text-slate-400 text-sm">Create custom competitions</p>
             </div>
 
-            <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 hover:border-emerald-400/50 transition-all duration-300">
+            <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 hover:border-emerald-400/50 transition-all duration-300 cursor-pointer" onClick={() => setSetupMode('join')}>
               <Radar className="w-8 h-8 text-emerald-400 mb-3" />
               <h3 className="text-xl font-semibold text-white mb-2">JOIN BATTLE</h3>
               <p className="text-slate-400 text-sm">Enter arena code</p>
@@ -534,6 +534,102 @@ export default function QuizArenaPage() {
                   </>
                 )}
               </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleJoinArena = () => {
+    if (!roomCode.trim() || !user) return;
+
+    // Redirect to the join URL
+    window.location.href = `/quiz-arena/join/${roomCode.toUpperCase().trim()}`;
+  };
+
+  if (setupMode === 'join') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+
+        <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => setSetupMode('select')}
+              className="text-cyan-400 hover:text-cyan-300"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              BACK TO ARENAS
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <Radar className="w-5 h-5 text-emerald-400" />
+              <span className="text-emerald-400 font-semibold">JOIN BATTLE</span>
+            </div>
+          </div>
+
+          {/* Join Form */}
+          <div className="bg-slate-900/50 border border-slate-700 rounded-xl p-8 backdrop-blur-sm">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Radar className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Enter Battle Code</h2>
+              <p className="text-slate-400">Get your arena code from a friend to join their live battle</p>
+            </div>
+
+            {/* Room Code Input */}
+            <div className="max-w-md mx-auto mb-8">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-emerald-400 font-semibold uppercase text-sm mb-4 block text-center">
+                    ARENA CODE (6 CHARACTERS)
+                  </Label>
+                  <Input
+                    placeholder="e.g. ABC123"
+                    value={roomCode}
+                    onChange={(e) => setRoomCode(e.target.value.toUpperCase().slice(0, 6))}
+                    className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 focus:border-emerald-400 text-center text-2xl font-mono tracking-wider uppercase h-16 text-lg"
+                    maxLength={6}
+                  />
+                </div>
+
+                <div className="text-center text-xs text-slate-400">
+                  Ask your host for the 6-character arena code to join their battle
+                </div>
+              </div>
+            </div>
+
+
+            {/* Join Button */}
+            <div className="flex justify-center mb-8">
+              <Button
+                onClick={handleJoinArena}
+                disabled={!roomCode.trim() || roomCode.length !== 6}
+                size="lg"
+                className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
+              >
+                <Radar className="mr-3 h-6 w-6" />
+                JOIN THE BATTLE
+              </Button>
+            </div>
+
+            {/* Help Section */}
+            <div className="text-center">
+              <p className="text-slate-400 text-sm mb-4">
+                <strong>How to join:</strong>
+              </p>
+              <div className="bg-slate-800/30 rounded-lg p-4 text-left">
+                <div className="space-y-2 text-sm text-slate-300">
+                  <p><span className="text-emerald-400">•</span> Get the arena code from your host (usually 6 capital letters like "ABC123")</p>
+                  <p><span className="text-emerald-400">•</span> Enter the code above and click "JOIN THE BATTLE"</p>
+                  <p><span className="text-emerald-400">•</span> You'll join as a participant and start competing instantly</p>
+                  <p><span className="text-emerald-400">•</span> Have fun and see if you can top the leaderboard!</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
