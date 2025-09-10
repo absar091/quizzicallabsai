@@ -341,7 +341,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" asChild>
+                <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
                   <Link href="/quiz-arena">
                     Join Live Battles Now
                     <TrendingUp className="ml-2 h-5 w-5" />
@@ -355,7 +355,7 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 p-8 rounded-2xl border border-orange-200 dark:border-orange-800">
+              <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="font-semibold">📊 Live Match Stats</h4>
@@ -486,11 +486,11 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => {
               const colorSchemes = [
-                { bg: 'from-orange-500/20 to-red-500/20', icon: 'text-orange-600', badge: 'bg-orange-500/10 text-orange-600' },
+                { bg: 'from-cyan-500/20 to-teal-500/20', icon: 'text-cyan-600', badge: 'bg-cyan-500/10 text-cyan-600' },
                 { bg: 'from-blue-500/20 to-purple-500/20', icon: 'text-blue-600', badge: 'bg-blue-500/10 text-blue-600' },
-                { bg: 'from-green-500/20 to-emerald-500/20', icon: 'text-green-600', badge: 'bg-green-500/10 text-green-600' },
+                { bg: 'from-teal-500/20 to-cyan-500/20', icon: 'text-teal-600', badge: 'bg-teal-500/10 text-teal-600' },
                 { bg: 'from-cyan-500/20 to-blue-500/20', icon: 'text-cyan-600', badge: 'bg-cyan-500/10 text-cyan-600' },
-                { bg: 'from-yellow-500/20 to-orange-500/20', icon: 'text-yellow-600', badge: 'bg-yellow-500/10 text-yellow-600' },
+                { bg: 'from-purple-500/20 to-indigo-500/20', icon: 'text-purple-600', badge: 'bg-purple-500/10 text-purple-600' },
                 { bg: 'from-indigo-500/20 to-purple-500/20', icon: 'text-indigo-600', badge: 'bg-indigo-500/10 text-indigo-600' }
               ];
               const scheme = colorSchemes[i % colorSchemes.length];
