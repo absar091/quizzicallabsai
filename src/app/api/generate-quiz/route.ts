@@ -6,6 +6,22 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log('Generating quiz for:', body.topic);
 
+    // Additional topic validation
+    if (!body.topic || body.topic.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Topic is required. Please enter a valid topic." },
+        { status: 400 }
+      );
+    }
+
+    // Validate number of questions
+    if (body.numberOfQuestions && (body.numberOfQuestions < 1 || body.numberOfQuestions > 55)) {
+      return NextResponse.json(
+        { error: "Number of questions must be between 1 and 55." },
+        { status: 400 }
+      );
+    }
+
     const result = await generateCustomQuiz(body);
 
     if (!result) {
