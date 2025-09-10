@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import { Sparkles } from "lucide-react";
-import { BrainCircuit, Loader2, CheckCircle, XCircle, MessageSquareQuote, Star, Download, Redo, RefreshCw, Brain, Lightbulb, LayoutDashboard, ArrowLeft, ArrowRight } from "lucide-react";
+import { BrainCircuit, Loader2, CheckCircle, XCircle, MessageSquareQuote, Star, Download, Redo, RefreshCw, Brain, Lightbulb, LayoutDashboard, ArrowLeft, ArrowRight, Share2, Users, MessageCircle, Heart } from "lucide-react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
@@ -1090,7 +1090,62 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                         </div>
                     </div>
                 </CardContent>
-                 <CardFooter className="flex flex-wrap justify-center gap-2 pt-4 border-t">
+                {/* Social Sharing Section */}
+                <div className="border-t pt-6">
+                    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-blue-200 dark:border-blue-800">
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                                    <Share2 className="h-5 w-5 text-white" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg text-gray-900 dark:text-gray-100">
+                                        🎉 Great job! Ready to share?
+                                    </CardTitle>
+                                    <CardDescription className="text-gray-600 dark:text-gray-300">
+                                        Help others learn and grow your knowledge network!
+                                    </CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center border">
+                                    <Users className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                                    <div className="text-sm font-semibold">Help Friends Learn</div>
+                                    <div className="text-xs text-gray-500">Share knowledge with others</div>
+                                </div>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center border">
+                                    <MessageCircle className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                                    <div className="text-sm font-semibold">Join Community</div>
+                                    <div className="text-xs text-gray-500">Connect with learners worldwide</div>
+                                </div>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center border">
+                                    <Heart className="h-6 w-6 mx-auto mb-2 text-red-500" />
+                                    <div className="text-sm font-semibold">Earn Recognition</div>
+                                    <div className="text-xs text-gray-500">Get likes and build credibility</div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                <div className="text-center space-y-3">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        🚀 Your knowledge can inspire others!
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        Shared quizzes typically get 5-15 attempts from friends and followers
+                                    </div>
+                                    <QuizSharingDialog
+                                        quiz={quiz}
+                                        formValues={formValues as any}
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                 <CardFooter className="flex flex-wrap justify-center gap-2 pt-4">
                     <Button onClick={resetQuiz}><Redo className="mr-2 h-4 w-4" /> {initialQuiz ? 'Go to Prep Home' : 'Take Another Quiz'}</Button>
                     {incorrectAnswers.length > 0 && (
                         <Button onClick={retryIncorrect} variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Retry Incorrect</Button>
@@ -1101,10 +1156,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                             Generate Flashcards
                         </Button>
                     )}
-                    <QuizSharingDialog
-                        quiz={quiz}
-                        formValues={formValues as any}
-                    />
                     <Button variant="outline" asChild><Link href="/"><LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard</Link></Button>
                 </CardFooter>
             </Card>
