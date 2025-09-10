@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function TermsOfUsePage() {
   return (
     <div className="container py-8 max-w-4xl mx-auto">
-      <PageHeader title="Terms of Use" description="Last updated: July 30, 2024" />
+      <PageHeader title="Terms of Use" description="Last updated: September 10, 2025" />
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>

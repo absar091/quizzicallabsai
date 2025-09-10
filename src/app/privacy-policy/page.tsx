@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function PrivacyPolicyPage() {
   return (
     <div className="container py-8 max-w-4xl mx-auto">
-      <PageHeader title="Privacy Policy" description="Last updated: August 2, 2024" />
+      <PageHeader title="Privacy Policy" description="Last updated: September 10, 2025" />
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
