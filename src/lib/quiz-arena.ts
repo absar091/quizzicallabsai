@@ -153,7 +153,7 @@ export class QuizArenaHost {
 
 export class QuizArenaPlayer {
   /**
-   * Join an existing room
+   * Join an existing room with optimized connection
    */
   static async joinRoom(
     roomId: string,
@@ -167,8 +167,20 @@ export class QuizArenaPlayer {
       joinedAt: Timestamp.now()
     };
 
-    // Add player to players subcollection
-    await setDoc(doc(db, `quiz-rooms/${roomId}/players`, userId), player);
+    // Use updateDoc with merge to optimize performance and prevent overwrites
+    const playerRef = doc(db, `quiz-rooms/${roomId}/players`, userId);
+    const playerSnap = await getDoc(playerRef);
+
+    if (playerSnap.exists()) {
+      // Update existing player (re-joining case)
+      await updateDoc(playerRef, {
+        name: userName,
+        joinedAt: Timestamp.now()
+      });
+    } else {
+      // Create new player document
+      await setDoc(playerRef, player);
+    }
   }
 
   /**

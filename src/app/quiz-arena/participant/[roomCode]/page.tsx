@@ -264,19 +264,38 @@ export default function ParticipantArenaPage() {
                   </div>
                 </div>
 
-                {/* Timer */}
+                {/* Enhanced Timer */}
                 {roomData.started && !hasSubmitted && (
-                  <div className="flex items-center gap-2">
-                    <Timer className="h-4 w-4 text-orange-500" />
-                    <div className="flex-1">
-                      <Progress
-                        value={(timeRemaining / 30) * 100}
-                        className="h-2 bg-black/20"
-                      />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Timer className={`h-5 w-5 ${timeRemaining <= 10 ? 'text-red-500 animate-pulse' : 'text-orange-500'}`} />
+                      <div className="flex-1">
+                        <Progress
+                          value={(timeRemaining / 30) * 100}
+                          className={`h-3 transition-colors ${
+                            timeRemaining <= 10 ? 'bg-red-500/20' :
+                            timeRemaining <= 20 ? 'bg-yellow-500/20' : 'bg-primary/20'
+                          }`}
+                        />
+                      </div>
+                      <span className={`text-lg font-mono font-bold px-2 py-1 rounded ${
+                        timeRemaining <= 5 ? 'bg-red-500 text-white animate-bounce' :
+                        timeRemaining <= 10 ? 'text-red-600' :
+                        timeRemaining <= 20 ? 'text-orange-500' : 'text-green-600'
+                      }`}>
+                        {timeRemaining}s
+                      </span>
                     </div>
-                    <span className="text-sm font-mono font-bold text-orange-500">
-                      {timeRemaining}s
-                    </span>
+
+                    {/* Critical time warning */}
+                    {timeRemaining <= 10 && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2">
+                        <div className="flex items-center justify-center gap-2 text-red-600 font-semibold text-sm">
+                          <AlertTriangle className="h-4 w-4 animate-pulse" />
+                          Time is running out! Submit your answer soon.
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -302,39 +321,76 @@ export default function ParticipantArenaPage() {
 
                         {/* Options */}
                         <div className="space-y-3">
-                          {currentQuestion.options?.map((option: string, index: number) => (
-                            <div
-                              key={index}
-                              className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                                selectedAnswer === index
-                                  ? 'border-primary bg-primary/10'
-                                  : 'border-border hover:border-primary/50'
-                              } ${
-                                showResults
-                                  ? index === currentQuestion.correctIndex
-                                    ? 'border-green-500 bg-green-500/10'
-                                    : index === selectedAnswer && selectedAnswer !== currentQuestion.correctIndex
-                                    ? 'border-red-500 bg-red-500/10'
-                                    : 'border-border opacity-50'
-                                  : ''
-                              }`}
-                              onClick={() => !hasSubmitted && setSelectedAnswer(index)}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold ${
-                                  selectedAnswer === index
-                                    ? 'border-primary text-primary'
-                                    : 'border-muted-foreground text-muted-foreground'
-                                }`}>
-                                  {String.fromCharCode(65 + index)}
+                          {currentQuestion.options?.map((option: string, index: number) => {
+                            const isSelected = selectedAnswer === index;
+                            const isCorrect = index === currentQuestion.correctIndex;
+                            const isWrongSelection = showResults && isSelected && !isCorrect;
+
+                            return (
+                              <div
+                                key={index}
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                                  !showResults ? 'hover:scale-101' : ''
+                                } ${
+                                  isSelected && !showResults
+                                    ? 'border-primary bg-primary/15 shadow-lg scale-102'
+                                    : showResults && isCorrect
+                                    ? 'border-green-500 bg-green-500/15 shadow-lg'
+                                    : showResults && isWrongSelection
+                                    ? 'border-red-500 bg-red-500/15'
+                                    : !showResults
+                                    ? 'border-muted hover:border-primary/60 hover:bg-primary/5'
+                                    : 'border-muted/50 bg-muted/30'
+                                }`}
+                                onClick={() => !hasSubmitted && setSelectedAnswer(index)}
+                              >
+                                <div className="flex items-center gap-4">
+                                  {/* Letter Badge */}
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                                    isSelected && !showResults
+                                      ? 'bg-primary text-primary-foreground'
+                                      : showResults && isCorrect
+                                      ? 'bg-green-500 text-white'
+                                      : showResults && isWrongSelection
+                                      ? 'bg-red-500 text-white'
+                                      : 'bg-muted/50 border-2 border-muted-foreground/20 text-muted-foreground'
+                                  }`}>
+                                    {String.fromCharCode(65 + index)}
+                                  </div>
+
+                                  {/* Option Text */}
+                                  <span className={`flex-1 ${
+                                    isSelected && !showResults
+                                      ? 'font-semibold text-primary'
+                                      : showResults && isCorrect
+                                      ? 'font-semibold text-green-700'
+                                      : 'text-foreground'
+                                  }`}>
+                                    {option}
+                                  </span>
+
+                                  {/* Result Indicators */}
+                                  {showResults && isCorrect && (
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <CheckCircle className="h-5 w-5 text-green-500" />
+                                      <span className="text-xs font-semibold text-green-600">+10 pts</span>
+                                    </div>
+                                  )}
+
+                                  {showResults && isWrongSelection && (
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <Timer className="h-5 w-5 text-red-500" />
+                                      <span className="text-xs font-semibold text-red-600">Incorrect</span>
+                                    </div>
+                                  )}
+
+                                  {isSelected && !showResults && (
+                                    <CheckCircle className="h-5 w-5 text-primary ml-auto" />
+                                  )}
                                 </div>
-                                <span>{option}</span>
-                                {showResults && index === currentQuestion.correctIndex && (
-                                  <CheckCircle className="h-5 w-5 text-green-500 ml-auto" />
-                                )}
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
 
                         {/* Submit Button */}
