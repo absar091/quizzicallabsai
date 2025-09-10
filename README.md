@@ -329,6 +329,6 @@ We welcome passionate educators, developers, and learning enthusiasts! 🚀
 
 *Built with ❤️ by educators, for the future of learning.*
 
-*© 2024 Quizzicallabs AI. Transforming education, one quiz at a time.*
+*© 2025 Quizzicallabs AI. Transforming education, one quiz at a time.*
 
 </div>
