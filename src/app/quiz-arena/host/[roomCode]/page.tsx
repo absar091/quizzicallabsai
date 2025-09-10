@@ -150,24 +150,51 @@ export default function RoomHostPage() {
   const handleStartQuiz = async () => {
     if (!roomData) return;
 
+    // Require at least 2 players (host + 1 other)
+    if (roomData.playerCount < 2) {
+      toast?.({
+        title: 'Cannot Start Quiz Yet',
+        description: 'You need at least 2 players (host + 1 participant) to start the quiz.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
 
       toast?.({
         title: 'Starting Quiz...',
-        description: 'Get ready, players!',
+        description: 'Get ready, players! Quiz begins in 3 seconds...',
       });
 
-      // In a real implementation:
-      // await QuizArena.Host.startQuiz(roomCode, user!.uid);
+      // Start countdown
+      let countdown = 3;
+      const countdownInterval = setInterval(() => {
+        if (countdown > 0) {
+          toast?.({
+            title: `Quiz Starting in ${countdown}...`,
+            description: 'Get ready to compete!',
+          });
+          countdown--;
+        } else {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
 
-      setQuizStarted(true);
-      setCurrentQuestionIndex(0);
+      // Small delay to let participants prepare
+      setTimeout(() => {
+        // In a real implementation:
+        // await QuizArena.Host.startQuiz(roomCode, user!.uid);
 
-      toast?.({
-        title: 'Quiz Started! 🎯',
-        description: 'Good luck to all players!',
-      });
+        setQuizStarted(true);
+        setCurrentQuestionIndex(0);
+
+        toast?.({
+          title: 'Quiz Started! 🎯',
+          description: 'Good luck to all players!',
+        });
+      }, 3000);
 
     } catch (error) {
       console.error('Error starting quiz:', error);
