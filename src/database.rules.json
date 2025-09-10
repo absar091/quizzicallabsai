@@ -64,10 +64,17 @@
         ".indexOn": ["lastSync"]
       }
     },
-    "sharedQuizzes": {
+    "shared_quizzes": {
       ".read": true,
       ".write": "auth != null",
       ".indexOn": ["createdAt", "shareCode"]
+    },
+    "quiz_likes": {
+      "$quizId": {
+        ".read": true,
+        ".write": "auth != null",
+        ".indexOn": ["userId"]
+      }
     },
     "questionBank": {
       "$uid": {

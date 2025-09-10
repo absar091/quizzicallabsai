@@ -93,21 +93,9 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == request.resource.data.userId;
     }
 
-    // 🔗 Shared quizzes (existing from share feature)
+    // Keep as read-only for public access to shared quizzes
     match /shared-quizzes/{document} {
-      // ✅ Public read access for quiz previews and sharing
       allow read: if true;
-
-      // ✅ Authenticated users can create and update their shared quizzes
-      allow create: if request.auth != null &&
-        request.auth.uid == request.resource.data.creatorId;
-
-      // ✅ Only quiz creator can update their quiz
-      allow update: if request.auth != null &&
-        request.auth.uid == request.resource.data.creatorId;
-
-      // ❌ No delete access (quiz links should remain active)
-      allow delete: if false;
     }
 
     // 🕒 Default deny-all rule for any other collections
