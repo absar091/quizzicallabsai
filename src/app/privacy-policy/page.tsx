@@ -70,17 +70,17 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">5. Children's Privacy</h2>
-            <p>Our service may be used by learners of all ages. We collect age information at signup to comply with applicable regulations and to tailor content appropriately. If you are a parent or guardian and wish to review or request deletion of a minor's personal information, please contact us at privacy@quizzicallabz.qzz.io.</p>
-          </div>
-            
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">6. Your Data Rights</h2>
-            <p>You have the right to access, update, or delete your information at any time through your Profile page. This includes the permanent deletion of your account and all associated data.</p>
+            <h2 className="text-xl font-semibold text-foreground">6. Children's Privacy</h2>
+            <p>Our service may be used by learners of all ages. We collect age information at signup to comply with applicable regulations and to tailor content appropriately. Social gaming features may be restricted for users under certain ages to comply with applicable children's privacy laws. If you are a parent or guardian and wish to review or request deletion of a minor's personal information, please contact us at privacy@quizzicallabz.qzz.io.</p>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">7. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold text-foreground">7. Your Data Rights</h2>
+            <p>You have the right to access, update, or delete your information at any time through your Profile page. This includes the permanent deletion of your account and all associated data. For shared content, you may request removal of your quizzes at any time, though they may remain temporarily visible while we process the deletion.</p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">8. Changes to This Policy</h2>
             <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
           </div>
 
