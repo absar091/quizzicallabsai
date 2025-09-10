@@ -165,16 +165,16 @@ export default function Home() {
               className="flex justify-center gap-4 mb-8 flex-wrap"
             >
               <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                <Trophy className="h-4 w-4" />
-                10,000+ Students Empowered
+                <BrainCircuit className="h-4 w-4" />
+                AI-Powered Learning
               </div>
               <div className="flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
                 <Zap className="h-4 w-4" />
-                AI-Powered Platform
+                Smart Quiz Generation
               </div>
-              <div className="flex items-center gap-2 bg-green-500/10 text-green-600 px-4 py-2 rounded-full text-sm font-medium">
-                <Award className="h-4 w-4" />
-                Quiz Arena Live
+              <div className="flex items-center gap-2 bg-purple-500/10 text-purple-600 px-4 py-2 rounded-full text-sm font-medium">
+                <GamepadIcon className="h-4 w-4" />
+                Interactive Platform
               </div>
             </motion.div>
 
@@ -195,7 +195,7 @@ export default function Home() {
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed"
               >
                 Generate custom quizzes, compete in live multiplayer battles, and share educational content virally.
-                Join <strong>10,000+ students</strong> already mastering subjects with AI-powered learning.
+                Join thousands of learners transforming their education with AI-powered learning.
               </motion.p>
 
               <motion.div
@@ -274,45 +274,29 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            {/* Stats Section */}
+            {/* Stats Section - New Launch Friendly */}
             <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12" variants={FADE_IN_ANIMATION_VARIANTS}>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">10K+</div>
-                <div className="text-sm text-muted-foreground">Students Empowered</div>
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">∞</div>
+                <div className="text-sm text-muted-foreground">Unlimited Quizzes</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">2K+</div>
-                <div className="text-sm text-muted-foreground">Quiz Battles Monthly</div>
+                <div className="text-3xl md:text-4xl font-bold text-teal-400 mb-2">AI</div>
+                <div className="text-sm text-muted-foreground">Powered Generation</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">50K+</div>
-                <div className="text-sm text-muted-foreground">Study Materials Generated</div>
+                <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">LIVE</div>
+                <div className="text-sm text-muted-foreground">Multiplayer Battles</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">4.9⭐</div>
-                <div className="text-sm text-muted-foreground">Student Rating</div>
+                <div className="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">β</div>
+                <div className="text-sm text-muted-foreground">Beta Access</div>
               </div>
             </motion.div>
           </motion.div>
         </div>
 
-        {/* Floating Demo Screenshot */}
-        <motion.div
-          className="absolute top-20 right-10 hidden xl:block"
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1, duration: 0.8 }}
-        >
-          <div className="relative">
-            <div className="w-80 h-48 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl shadow-2xl border border-white/20 backdrop-blur-sm">
-              <div className="p-6 text-center text-white font-semibold">
-                Quiz Arena Live Demo
-                <br />
-                <span className="text-sm opacity-75">Click to see in action</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+
       </section>
 
       {/* Quiz Arena Highlight Section */}
