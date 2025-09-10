@@ -19,25 +19,15 @@ export default function TermsOfUsePage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">2. Use of AI-Generated Content</h2>
-            <p>Our Service uses AI to generate content ("AI Content"), including quizzes and study guides. AI Content may contain inaccuracies, omissions, or biases. It is provided for educational use only and should not replace professional academic materials or verified sources.</p>
-            <p>You are responsible for verifying any AI Content before using it for academic or professional purposes. Please see our <Link href="/disclaimer" className="text-primary hover:underline">Disclaimer</Link> for additional guidance regarding AI limitations and risks.</p>
+            <h2 className="text-xl font-semibold text-foreground">8. Limitation of Liability and Disclaimer of Warranties</h2>
+            <p>The Service is provided on an "AS IS" and "AS AVAILABLE" basis. To the fullest extent permissible by law, QuizzicalLabs™ disclaims all warranties, express or implied, in connection with the Service and your use thereof. We do not warrant that the Service will be uninterrupted, secure, or error-free.</p>
+            <p>We are not liable for content shared in multiplayer arenas, interactions during live battles, or any harm arising from user-to-user interactions. Users participate in social features at their own risk and are responsible for their conduct.</p>
+            <p>In no event shall QuizzicalLabs™, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
           </div>
-          
+
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">3. User Conduct and Responsibilities</h2>
-            <p>You agree not to use the Service:</p>
-             <ul className="list-disc list-inside pl-4 space-y-1">
-                <li>In any way that violates any applicable national or international law or regulation.</li>
-                <li>To generate content that is defamatory, obscene, pornographic, abusive, or that infringes on any third party's rights, including intellectual property rights.</li>
-                <li>For any form of academic dishonesty. The AI-generated content is a study aid, not a tool for cheating.</li>
-                <li>To attempt to gain unauthorized access, interfere with, damage, or disrupt any parts of the Service, the server on which the Service is stored, or any server, computer, or database connected to the Service.</li>
-                <li>To reverse-engineer, decompile, or otherwise attempt to discover the source code or underlying algorithms of the Service.</li>
-                <li>To share, post, or distribute harmful, offensive, discriminatory, or inappropriate content in any form, including during live quiz sessions.</li>
-                <li>To harass, bully, or engage in any form of antisocial behavior in multiplayer arenas, live battles, or shared quiz spaces.</li>
-                <li>To impersonate other users, celebrities, or entities in shared quiz sessions.</li>
-            </ul>
-            <p>In multiplayer arenas and quiz battles, you agree to maintain respectful conduct. Host controls and reporting tools are available for participants. Violations may result in temporary suspension or permanent account termination.</p>
+            <h2 className="text-xl font-semibold text-foreground">9. Changes to Terms</h2>
+            <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of material changes by posting the new Terms on this page and updating the "Last updated" date.</p>
           </div>
 
           <div className="space-y-2">
