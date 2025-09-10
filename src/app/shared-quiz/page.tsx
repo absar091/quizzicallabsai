@@ -82,9 +82,19 @@ export default function SharedQuizPage() {
           }
         }
 
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error accessing shared quiz:', err);
-        setError('Failed to load quiz. Please try again later.');
+        let errorMessage = 'Failed to load quiz. Please try again later.';
+
+        if (err.message?.includes('permission-denied')) {
+          errorMessage = 'This quiz may have been deleted or is no longer available.';
+        } else if (err.message?.includes('not-found')) {
+          errorMessage = 'Quiz not found. The share link may be invalid.';
+        } else if (err.message?.includes('network')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
+
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
