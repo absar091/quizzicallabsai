@@ -63,6 +63,7 @@ interface QuizArenaSetup {
   topic: string;
   difficulty: string;
   timePerQuestion: number;
+  numberOfQuestions: number;
   isPublic: boolean;
   maxPlayers: number;
   allowLateJoining: boolean;
@@ -79,6 +80,7 @@ export default function QuizArenaPage() {
     topic: '',
     difficulty: 'medium',
     timePerQuestion: 30,
+    numberOfQuestions: 10,
     isPublic: false,
     maxPlayers: 20,
     allowLateJoining: false
@@ -506,6 +508,23 @@ export default function QuizArenaPage() {
                       onValueChange={(value) => setQuizSetup(prev => ({ ...prev, timePerQuestion: value[0] }))}
                       max={120}
                       min={10}
+                      step={5}
+                      className="mt-3"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-cyan-400 font-semibold uppercase text-sm">NUMBER OF QUESTIONS</Label>
+                  <div className="bg-slate-800 rounded-lg p-4 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300 text-sm">QUESTIONS</span>
+                      <span className="text-cyan-400 font-bold">{quizSetup.numberOfQuestions}</span>
+                    </div>
+                    <Slider
+                      value={[quizSetup.numberOfQuestions]}
+                      onValueChange={(value) => setQuizSetup(prev => ({ ...prev, numberOfQuestions: value[0] }))}
+                      max={50}
+                      min={5}
                       step={5}
                       className="mt-3"
                     />
