@@ -53,7 +53,20 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">4. Data Storage, Retention, and Security</h2>
             <p>Your data is stored securely on servers managed by Firebase (a Google company). We use administrative, technical, and physical security measures to protect your personal information. Uploaded documents for quiz generation are processed and then discarded; they are not stored on our servers.</p>
-            <p>We retain your account information and quiz history as long as your account is active. If you delete your account, your personal data will be permanently removed from our active databases.</p>
+            <p>We retain your account information and quiz history as long as your account is active. Shared quizzes and social gaming data are retained for operational purposes and may be removed if flagged for moderation issues. Live interaction records are typically retained temporarily (hours to days) for monitoring purposes and then anonymized or deleted.</p>
+            <p>If you delete your account, your personal data will be permanently removed from our active databases. However, anonymized data about quiz performance and engagement may be retained for analytics purposes. Content you have shared with other users may remain accessible to those users even after account deletion.</p>
+            <p>Shared content metadata (creation timestamps, user IDs) is retained to maintain ownership records and prevent content disputes. This information helps us manage intellectual property rights and content moderation effectively.</p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">5. Data Sharing and User Interactions</h2>
+            <p>When you participate in social features:</p>
+            <ul className="list-disc list-inside pl-4 space-y-1">
+              <li><strong>Live Battles:</strong> Your username and real-time scoring are visible to other participants. Leaderboard rankings and achievements may be shared within the gaming community.</li>
+              <li><strong>Shared Quizzes:</strong> Content you create and share becomes accessible to other users based on your privacy settings. Other users can take, favorite, and replay your quizzes.</li>
+              <li><strong>Public Interactions:</strong> Performance data, ratings, and reviews of shared content are visible to all users to build a community-driven reputation system.</li>
+            </ul>
+            <p>We never sell or rent personal information to third parties. However, certain social gaming metrics and aggregated performance data may be used to create public leaderboards and community statistics.</p>
           </div>
 
           <div className="space-y-2">
