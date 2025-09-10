@@ -505,20 +505,38 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         clearInterval(interval);
         setIsGenerating(false);
         setFormValues(null);
-        let errorMessage = "An unexpected response was received from the server.";
-        if (error.message && (error.message.includes("503") || error.message.includes("overloaded"))) {
-          errorMessage = "The AI model is currently overloaded. Please wait a moment and try again.";
-        } else if (error?.message?.includes("429")) {
-            errorMessage = "You have hit a rate limit. Please try again after some time.";
-        } else if (error.message && !error.message.includes('Unexpected')) {
-            errorMessage = error.message;
+
+        let errorMessage = "An unexpected error occurred while generating your quiz.";
+        let errorTitle = "Error Generating Quiz";
+
+        console.error("Quiz generation error:", error);
+
+        // Handle specific error types from the error object
+        if (error.message && (error.message.includes("rate limit") || error.message.includes("429"))) {
+          errorTitle = "Rate Limit Reached";
+          errorMessage = "You've made too many requests. Please wait a minute and try again.";
+        } else if (error.message && (error.message.includes("overloaded") || error.message.includes("503"))) {
+          errorTitle = "Service Overloaded";
+          errorMessage = "Our AI service is currently busy. Please try again in a few minutes.";
+        } else if (error.message && (error.message.includes("Empty") || error.message.includes("no quiz") || error.message.includes("broaden"))) {
+          errorTitle = "Content Issue";
+          errorMessage = "The AI couldn't generate a valid quiz for this topic. Try broadening your topic or providing more context.";
+        } else if (error.message && error.message.includes("Failed to generate")) {
+          errorTitle = "Server Error";
+          errorMessage = "Our servers are having issues. Please try again in a moment.";
+        } else if (error.message && error.message.includes("timeout")) {
+          errorTitle = "Request Timeout";
+          errorMessage = "The request took too long. Please try again.";
+        } else if (error.message) {
+          // Use the actual error message from the server
+          errorMessage = error.message;
         }
-      toast({
-        title: "Error Generating Quiz",
-        description: errorMessage,
-        variant: "destructive",
-      });
-      console.error(error);
+
+        toast({
+          title: errorTitle,
+          description: errorMessage,
+          variant: "destructive",
+        });
     }
   };
 

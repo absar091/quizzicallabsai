@@ -65,9 +65,9 @@
       }
     },
     "sharedQuizzes": {
-      ".read": "auth != null",
+      ".read": true,
       ".write": "auth != null",
-      ".indexOn": ["createdAt", "shareId"]
+      ".indexOn": ["createdAt", "shareCode"]
     },
     "questionBank": {
       "$uid": {
