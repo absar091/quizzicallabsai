@@ -50,8 +50,8 @@ const features = [
     description: "Compete in real-time multiplayer quiz battles with friends worldwide. Rise through global leaderboards and unlock achievements!",
     isNew: true,
     badge: "🔥 LIVE",
-    gradient: "from-orange-500/20 to-red-500/20",
-    iconColor: "text-orange-600"
+    gradient: "from-cyan-500/20 to-teal-500/20",
+    iconColor: "text-cyan-600"
   },
   {
     icon: Share2,
@@ -66,8 +66,8 @@ const features = [
     icon: BrainCircuit,
     title: "Ultra-Personalized AI",
     description: "AI adapts to your learning pace with smart difficulty levels, performance tracking, and curriculum-aligned content.",
-    gradient: "from-green-500/20 to-emerald-500/20",
-    iconColor: "text-emerald-600"
+    gradient: "from-teal-500/20 to-cyan-500/20",
+    iconColor: "text-teal-600"
   },
   {
     icon: FileArrowUp,
@@ -80,8 +80,8 @@ const features = [
     icon: Trophy,
     title: "Complete Test Prep",
     description: "Full MDCAT/ECAT/NTS preparation with official syllabus coverage, mock exams, and detailed analytics.",
-    gradient: "from-yellow-500/20 to-orange-500/20",
-    iconColor: "text-yellow-600"
+    gradient: "from-purple-500/20 to-indigo-500/20",
+    iconColor: "text-purple-600"
   },
   {
     icon: BookOpen,
@@ -219,27 +219,27 @@ export default function Home() {
 
             {/* Problem/Solution Section */}
             <motion.div className="grid md:grid-cols-2 gap-8 mb-16" variants={FADE_IN_ANIMATION_VARIANTS}>
-              <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20">
+            <Card className="border-slate-200 bg-slate-50 dark:bg-slate-950/20">
                 <CardContent className="p-8">
-                  <div className="text-orange-600 mb-4">
+                  <div className="text-slate-600 mb-4">
                     <Target className="h-12 w-12" />
                   </div>
-                  <h3 className="text-2xl font-bold text-orange-800 dark:text-orange-200 mb-4">❌ The Problem</h3>
-                  <ul className="space-y-3 text-orange-700 dark:text-orange-300">
+                  <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">❌ The Problem</h3>
+                  <ul className="space-y-3 text-slate-700 dark:text-slate-300">
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                       Students spend 3+ hours creating study materials
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                       Only 20% retention rate after a week
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                       Generic quizzes that don't adapt to learning style
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                       Boring study sessions lead to dropout
                     </li>
                   </ul>
