@@ -442,8 +442,175 @@ export default function QuizArenaPage() {
               variant="ghost"
               onClick={() => setSetupMode('select')}
               className="text-cyan-400 hover:text-cyan-300"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              BACK TO ARENAS
+            </Button>
 
-[Response interrupted by a tool use result. Only one tool may be used at a time and should be placed at the end of the message.]
+            <div className="flex items-center gap-2">
+              <Sword className="w-5 h-5 text-cyan-400" />
+              <span className="text-cyan-400 font-semibold">CUSTOM BATTLE SETUP</span>
+            </div>
+          </div>
+
+          {/* Custom Form */}
+          <div className="bg-slate-900/50 border border-slate-700 rounded-xl p-8 backdrop-blur-sm">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Forge Your Arena</h2>
+              <p className="text-slate-400">Customize every aspect of your battleground</p>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-cyan-400 font-semibold uppercase text-sm">ARENA TITLE</Label>
+                  <Input
+                    placeholder="Enter epic arena name..."
+                    value={quizSetup.title}
+                    onChange={(e) => setQuizSetup(prev => ({ ...prev, title: e.target.value }))}
+                    className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 focus:border-cyan-400 mt-2"
+                  />
+                </div>
+                <div>
+                  <Label className="text-cyan-400 font-semibold uppercase text-sm">DOMAIN</Label>
+                  <Select value={quizSetup.difficulty} onValueChange={(value) => setQuizSetup(prev => ({ ...prev, difficulty: value }))}>
+                    <SelectTrigger className="bg-slate-800 border-slate-600 text-white focus:border-cyan-400 mt-2">
+                      <SelectValue placeholder="Select difficulty level" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectItem value="easy" className="text-green-400 hover:bg-slate-700">
+                        🌱 RECRUIT - Basic Knowledge
+                      </SelectItem>
+                      <SelectItem value="medium" className="text-yellow-400 hover:bg-slate-700">
+                        💪 VETERAN - Moderate Challenge
+                      </SelectItem>
+                      <SelectItem value="hard" className="text-red-400 hover:bg-slate-700">
+                        🔥 CHAMPION - Expert Mastery
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-cyan-400 font-semibold uppercase text-sm">SUBJECT</Label>
+                  <Input
+                    placeholder="Enter subject matter..."
+                    value={quizSetup.topic}
+                    onChange={(e) => setQuizSetup(prev => ({ ...prev, topic: e.target.value }))}
+                    className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 focus:border-cyan-400 mt-2"
+                  />
+                </div>
+                <div>
+                  <Label className="text-cyan-400 font-semibold uppercase text-sm">TIMING (PER QUESTION)</Label>
+                  <div className="bg-slate-800 rounded-lg p-4 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300 text-sm">SECONDS</span>
+                      <span className="text-cyan-400 font-bold">{quizSetup.timePerQuestion}s</span>
+                    </div>
+                    <Slider
+                      value={[quizSetup.timePerQuestion]}
+                      onValueChange={(value) => setQuizSetup(prev => ({ ...prev, timePerQuestion: value[0] }))}
+                      max={120}
+                      min={10}
+                      step={5}
+                      className="mt-3"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Create Button */}
+            <div className="flex justify-center">
+              <Button
+                onClick={handleCreateRoom}
+                disabled={!quizSetup.title.trim() || !quizSetup.topic.trim() || isCreatingRoom}
+                size="lg"
+                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
+              >
+                {isCreatingRoom ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3" />
+                    FORGING YOUR ARENA...
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="mr-3 h-6 w-6" />
+                    CREATE EPIC BATTLE
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading Screen
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
+      {/* Background Particles */}
+      <div className="absolute inset-0">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-3 h-3 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-30 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <Card className="max-w-md mx-4 border-slate-700 bg-slate-900/80 backdrop-blur-lg">
+        <CardContent className="p-8 text-center">
+          <div className="relative mb-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full blur-lg opacity-30"></div>
+            <div className="relative w-20 h-20 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              {isCreatingRoom ? (
+                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Gamepad2 className="w-10 h-10 text-white" />
+              )}
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-bold text-white mb-4">
+            {isCreatingRoom ? 'FORGING YOUR ARENA...' : 'ARENA LOADING...'}
+          </h2>
+
+          <p className="text-slate-400 mb-8">
+            {isCreatingRoom
+              ? `Deploying ${quizSetup.title} for ${quizSetup.maxPlayers} contenders...`
+              : 'Preparing the battleground...'
+            }
+          </p>
+
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setSetupMode('select')}
+              className="flex-1 border-cyan-400 text-cyan-400 hover:bg-cyan-950/20"
+            >
+              BACK TO MENU
+            </Button>
+            <Button asChild className="flex-1">
+              <Link href="/">RETURN HOME</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 Assistant: I need to complete the rewrite properly. Let me finish this comprehensively.<attempt_completion>
 <result>⚡ **QUIZ ARENA POLISH COMPLETE** 🚀
@@ -535,4 +702,3 @@ const globalStyles = `
 - **Cohesive** - Single color palette throughout  
 - **Clean** - No clashing elements or distractions
 - **Refined** - Polished with attention to detail
-
