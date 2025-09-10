@@ -74,8 +74,10 @@ export default function SharedQuizPage() {
           if (user) {
             router.push('/generate-quiz?shared=true');
           } else {
-            // For non-authenticated users, redirect to login flow
-            router.push(`/login?redirect=/generate-quiz?shared=true&message=${encodeURIComponent('Welcome! Please sign in to access the shared quiz.')}`);
+            // For non-authenticated users, redirect to login flow with properly encoded redirect URL
+            const redirectUrl = '/generate-quiz?shared=true';
+            const loginUrl = `/login?redirect=${encodeURIComponent(redirectUrl)}&message=${encodeURIComponent('Welcome! Please sign in to access the shared quiz.')}`;
+            router.push(loginUrl);
           }
         }, 2000); // 2 second delay to show the user what quiz they're getting
 
@@ -180,12 +182,12 @@ export default function SharedQuizPage() {
               {!user && (
                 <div className="flex gap-2 justify-center mb-4">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/login?redirect=/generate-quiz?shared=true&message=${encodeURIComponent('Please sign in to access the shared quiz.')}`}>
+                    <Link href={`/login?redirect=${encodeURIComponent('/generate-quiz?shared=true')}&message=${encodeURIComponent('Please sign in to access the shared quiz.')}`}>
                       Sign In
                     </Link>
                   </Button>
                   <Button asChild size="sm">
-                    <Link href={`/signup?redirect=/generate-quiz?shared=true&message=${encodeURIComponent('Create your account to access the shared quiz!')}`}>
+                    <Link href={`/signup?redirect=${encodeURIComponent('/generate-quiz?shared=true')}&message=${encodeURIComponent('Create your account to access the shared quiz!')}`}>
                       Sign Up
                     </Link>
                   </Button>

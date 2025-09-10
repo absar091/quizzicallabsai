@@ -120,12 +120,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.error('Failed to initialize cloud sync:', error);
           }
 
-          // Redirect from auth pages
+          // Redirect from auth pages - check for redirect parameter
           if (['/login', '/signup', '/forgot-password'].includes(pathname)) {
-            console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
-            setTimeout(() => {
-              router.push('/dashboard');
-            }, 100);
+            const currentUrl = new URL(window.location.href);
+            const redirect = currentUrl.searchParams.get('redirect');
+
+            if (redirect) {
+              console.log('🔄 REDIRECTING FROM AUTH PAGE TO:', redirect);
+              setTimeout(() => {
+                // Decode and validate redirect URL to prevent open redirect
+                let decodedRedirect;
+                try {
+                  decodedRedirect = decodeURIComponent(redirect);
+                  // Only allow redirects within the app domain
+                  if (decodedRedirect.startsWith('/') && !decodedRedirect.startsWith('//')) {
+                    router.push(decodedRedirect);
+                  } else {
+                    console.warn('❌ INVALID REDIRECT URL:', redirect);
+                    router.push('/dashboard');
+                  }
+                } catch (error) {
+                  console.warn('❌ ERROR DECODING REDIRECT:', error);
+                  router.push('/dashboard');
+                }
+              }, 100);
+            } else {
+              console.log('🔄 REDIRECTING FROM AUTH PAGE TO DASHBOARD');
+              setTimeout(() => {
+                router.push('/dashboard');
+              }, 100);
+            }
           }
         } catch (error) {
           // Sanitize error before logging
