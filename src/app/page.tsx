@@ -317,7 +317,7 @@ export default function Home() {
             >
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
                     <GamepadIcon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold">Live Battles</h3>
