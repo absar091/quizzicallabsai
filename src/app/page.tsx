@@ -367,7 +367,7 @@ export default function Home() {
               <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold">📊 Live Match Stats</h4>
+                  <h4 className="font-semibold">Live Match Stats</h4>
                     <Badge className="bg-green-500">LIVE</Badge>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
