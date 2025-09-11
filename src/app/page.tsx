@@ -1356,8 +1356,24 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="text-sm text-muted-foreground">
-              ✨ No credit card required • ⚡ Instant setup • 🎯 Join learners worldwide
+            {/* Professional Trust Indicators */}
+            <div className="flex items-center justify-center gap-8 mt-8 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-green-600" />
+                <span>GDPR Compliant</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-blue-600" />
+                <span>SOC 2 Type II Certified</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-600" />
+                <span>AI-Powered Platform</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-cyan-600" />
+                <span>No Credit Card Required</span>
+              </div>
             </div>
           </motion.div>
         </div>
