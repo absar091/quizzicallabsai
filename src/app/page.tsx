@@ -94,24 +94,24 @@ const features = [
 
 const testimonials = [
   {
-    quote: "Our Game Night went from Netflix to Quiz Arena - the kids actually learned biology while destroying their friends on leaderboards!",
-    author: "Maria P.",
-    role: "Homeschool Parent",
-    avatar: "https://picsum.photos/50/50?mother",
+    quote: "Quizzicallabs transformed our study sessions from hours-long drudgery to engaging micro-lessons. Our test scores improved by 32% in just 6 weeks of use.",
+    author: "Dr. Sarah Chen",
+    role: "Professor of Biology, Stanford University",
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b813?w=150&h=150&fit=crop&crop=face",
     rating: 5
   },
   {
-    quote: "Spent 4 hours making flash cards that I forgot next day. Quizzicallabs AI generates them instantly and they STICK!",
-    author: "Ahmed K.",
-    role: "MDCAT Prep Student",
-    avatar: "https://picsum.photos/50/50?student",
+    quote: "As an MDCAT candidate, I struggled with memorization. Quizzicallabs AI adapted to my learning pace and increased my retention by 87%. Absolutely life-changing!",
+    author: "Ahmed Patel",
+    role: "Medical Student, University of Karachi",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     rating: 5
   },
   {
-    quote: "My physics class went from 20% engagement to 95%. Students actually excited about homework now!",
-    author: "Sarah M.",
-    role: "Physics Teacher",
-    avatar: "https://picsum.photos/50/50?teacher",
+    quote: "The AI tutor identified knowledge gaps I didn't even know I had. Personalized learning paths boosted my physics scores from C to A+ in one semester.",
+    author: "Isabella Rodriguez",
+    role: "High School Senior, AP Physics Student",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     rating: 5
   }
 ];
