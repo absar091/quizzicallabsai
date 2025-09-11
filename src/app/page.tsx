@@ -159,23 +159,29 @@ export default function Home() {
             }}
             className="max-w-6xl mx-auto"
           >
-            {/* Top Badges */}
+            {/* Interactive Badge Chips */}
             <motion.div
               variants={FADE_IN_ANIMATION_VARIANTS}
-              className="flex justify-center gap-4 mb-8 flex-wrap"
+              className="flex justify-center gap-3 mb-8 flex-wrap"
             >
-              <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                <BrainCircuit className="h-4 w-4" />
-                AI-Powered Learning
-              </div>
-              <div className="flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium">
-                <Zap className="h-4 w-4" />
-                Smart Quiz Generation
-              </div>
-              <div className="flex items-center gap-2 bg-purple-500/10 text-purple-600 px-4 py-2 rounded-full text-sm font-medium">
-                <GamepadIcon className="h-4 w-4" />
-                Interactive Platform
-              </div>
+              <Link href="#ai-learning" className="group">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 text-cyan-600 hover:text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-cyan-200 hover:border-cyan-300 cursor-pointer transform hover:scale-105">
+                  <BrainCircuit className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                  🤖 AI-Powered Learning
+                </div>
+              </Link>
+              <Link href="#quiz-generation" className="group">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20 text-orange-600 hover:text-orange-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-orange-200 hover:border-orange-300 cursor-pointer transform hover:scale-105">
+                  <Zap className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                  ⚡ Smart Quiz Generation
+                </div>
+              </Link>
+              <Link href="/quiz-arena" className="group">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 hover:from-teal-500/20 hover:to-cyan-500/20 text-teal-600 hover:text-teal-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-teal-200 hover:border-teal-300 cursor-pointer transform hover:scale-105">
+                  <GamepadIcon className="h-5 w-5 group-hover:bounce transition-transform duration-300" />
+                  🎮 Multiplayer Battles
+                </div>
+              </Link>
             </motion.div>
 
             {/* Main Hero Content */}
@@ -184,9 +190,12 @@ export default function Home() {
                 variants={FADE_IN_ANIMATION_VARIANTS}
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
               >
-                Transform <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">3 Hours</span> of Study into
-                <span className="block bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
-                  30 Seconds of Learning
+                Study Smarter, <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Not Longer</span>.
+                <span className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mt-2">
+                  Turn Hours into Seconds
+                </span>
+                <span className="block text-3xl md:text-5xl lg:text-6xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1">
+                  with AI-Powered Quizzes
                 </span>
               </motion.h1>
 
@@ -194,8 +203,7 @@ export default function Home() {
                 variants={FADE_IN_ANIMATION_VARIANTS}
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed"
               >
-                Generate custom quizzes, compete in live multiplayer battles, and share educational content virally.
-                Join thousands of learners transforming their education with AI-powered learning.
+                Generate personalized quizzes, battle friends in real time, and master concepts faster than ever. Learning isn't boring anymore — it's interactive, instant, and powered by AI.
               </motion.p>
 
               <motion.div
@@ -211,7 +219,7 @@ export default function Home() {
                 <Button size="lg" variant="outline" className="border-2 hover:bg-accent/5" asChild>
                   <Link href="/quiz-arena">
                     <GamepadIcon className="mr-2 h-5 w-5" />
-                    Try Quiz Arena Live
+                    🔥 Play Live Quiz Arena
                   </Link>
                 </Button>
               </motion.div>
@@ -1340,8 +1348,7 @@ export default function Home() {
               </Button>
               <Button size="lg" variant="outline" className="border-2 hover:bg-accent/5">
                 <Link href="/quiz-arena" className="flex items-center gap-2">
-                  <GamepadIcon className="h-5 w-5" />
-                  Try Quiz Arena Live
+                  🔥 Play Live Quiz Arena
                 </Link>
               </Button>
             </div>

@@ -49,33 +49,38 @@
     --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--muted)) 100%);
   }
  
+  .dark body {
+    background-image: radial-gradient(circle, hsl(0 0% 10%) 0%, hsl(0 0% 2%) 100%);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
   .dark {
-    --background: 231 40% 10%; /* Very dark navy blue */
-    --foreground: 210 40% 98%;
+    --background: 0 0% 2%; /* Almost black */
+    --foreground: 0 0% 98%; /* White */
     
-    --card: 231 40% 14%; /* Slightly lighter navy */
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%; /* Slightly lighter black */
+    --card-foreground: 0 0% 98%;
     
-    --popover: 231 40% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 2%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 217 91% 60%; /* A vibrant lighter blue for dark mode primary */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 222 47% 18%; /* Muted dark blue */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 14%; /* Muted dark gray */
+    --secondary-foreground: 0 0% 98%;
     
-    --muted: 217 32% 19%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
     --accent: 34 85% 65%; /* Lighter Orange/Amber accent */
-    --accent-foreground: 231 40% 10%;
+    --accent-foreground: 0 0% 10%;
     
     --destructive: 0 63% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 32% 24%;
-    --input: 217 32% 24%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
     --ring: 217 91% 60%;
 
     --chart-1: 217 91% 60%;
