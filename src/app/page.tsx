@@ -159,27 +159,27 @@ export default function Home() {
             }}
             className="max-w-6xl mx-auto"
           >
-            {/* Interactive Badge Chips */}
+              {/* Interactive Badge Chips */}
             <motion.div
               variants={FADE_IN_ANIMATION_VARIANTS}
               className="flex justify-center gap-3 mb-8 flex-wrap"
             >
               <Link href="#ai-learning" className="group">
-                <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 text-cyan-600 hover:text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-cyan-200 hover:border-cyan-300 cursor-pointer transform hover:scale-105">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 text-cyan-700 hover:text-cyan-800 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-cyan-200 hover:border-cyan-300 cursor-pointer transform hover:scale-105">
                   <BrainCircuit className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                  🤖 AI-Powered Learning
+                  AI-Powered Learning
                 </div>
               </Link>
               <Link href="#quiz-generation" className="group">
-                <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20 text-orange-600 hover:text-orange-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-orange-200 hover:border-orange-300 cursor-pointer transform hover:scale-105">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20 text-orange-700 hover:text-orange-800 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-orange-200 hover:border-orange-300 cursor-pointer transform hover:scale-105">
                   <Zap className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                  ⚡ Smart Quiz Generation
+                  Smart Quiz Generation
                 </div>
               </Link>
               <Link href="/quiz-arena" className="group">
-                <div className="flex items-center gap-2 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 hover:from-teal-500/20 hover:to-cyan-500/20 text-teal-600 hover:text-teal-700 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-teal-200 hover:border-teal-300 cursor-pointer transform hover:scale-105">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 hover:from-teal-500/20 hover:to-cyan-500/20 text-teal-700 hover:text-teal-800 px-5 py-3 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-300 border border-teal-200 hover:border-teal-300 cursor-pointer transform hover:scale-105">
                   <GamepadIcon className="h-5 w-5 group-hover:bounce transition-transform duration-300" />
-                  🎮 Multiplayer Battles
+                  Multiplayer Battles
                 </div>
               </Link>
             </motion.div>
@@ -210,16 +210,16 @@ export default function Home() {
                 variants={FADE_IN_ANIMATION_VARIANTS}
                 className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
               >
-                <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg" asChild>
+                <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" asChild>
                   <Link href="/signup">
                     <Zap className="mr-2 h-5 w-5" />
                     Start Free Trial
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-2 hover:bg-accent/5" asChild>
+                <Button size="lg" variant="outline" className="border-2 hover:bg-accent/5 hover:shadow-lg transition-all duration-300" asChild>
                   <Link href="/quiz-arena">
                     <GamepadIcon className="mr-2 h-5 w-5" />
-                    🔥 Play Live Quiz Arena
+                    Play Live Quiz Arena
                   </Link>
                 </Button>
               </motion.div>
