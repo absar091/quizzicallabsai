@@ -274,23 +274,23 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            {/* Stats Section - New Launch Friendly */}
+            {/* Professional Stats Section */}
             <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12" variants={FADE_IN_ANIMATION_VARIANTS}>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">∞</div>
-                <div className="text-sm text-muted-foreground">Unlimited Quizzes</div>
+              <div className="text-center bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-2xl border border-primary/20">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-teal-500 bg-clip-text text-transparent mb-2">∞</div>
+                <div className="text-sm text-muted-foreground font-semibold">Unlimited Quizzes</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-teal-400 mb-2">AI</div>
-                <div className="text-sm text-muted-foreground">Powered Generation</div>
+              <div className="text-center bg-gradient-to-br from-teal-500/10 to-cyan-500/5 p-6 rounded-2xl border border-teal-500/20">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">AI</div>
+                <div className="text-sm text-muted-foreground font-semibold">Powered Generation</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">LIVE</div>
-                <div className="text-sm text-muted-foreground">Multiplayer Battles</div>
+              <div className="text-center bg-gradient-to-br from-purple-500/10 to-indigo-500/5 p-6 rounded-2xl border border-purple-500/20">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent mb-2">LIVE</div>
+                <div className="text-sm text-muted-foreground font-semibold">Multiplayer Battles</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">β</div>
-                <div className="text-sm text-muted-foreground">Beta Access</div>
+              <div className="text-center bg-gradient-to-br from-cyan-500/10 to-teal-500/5 p-6 rounded-2xl border border-cyan-500/20">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-primary bg-clip-text text-transparent mb-2">β</div>
+                <div className="text-sm text-muted-foreground font-semibold">Beta Access</div>
               </div>
             </motion.div>
           </motion.div>
@@ -418,20 +418,26 @@ export default function Home() {
               {
                 step: "01",
                 title: "Create or Join",
-                description: "Upload your study materials or select from our curated quiz templates. AI automatically generates personalized content.",
-                icon: FileText
+                description: "Upload your study materials or select from our curated quiz templates. Our AI instantly generates comprehensive personalized quizzes tailored to your subjects and learning goals.",
+                icon: FileText,
+                gradientFrom: "from-cyan-500/20 to-teal-500/20",
+                textColor: "text-cyan-600"
               },
               {
                 step: "02",
                 title: "Learn & Compete",
-                description: "Take quizzes individually or challenge friends in real-time multiplayer battles. Get detailed explanations instantly.",
-                icon: BrainCircuit
+                description: "Master subjects through individual practice or compete in thrilling Quiz Arena battles with friends worldwide. Get instant explanations and real-time scoring for maximum engagement.",
+                icon: BrainCircuit,
+                gradientFrom: "from-purple-500/20 to-indigo-500/20",
+                textColor: "text-purple-600"
               },
               {
                 step: "03",
                 title: "Track & Master",
-                description: "Monitor progress with detailed analytics, review bookmarked questions, and celebrate achievements.",
-                icon: TrendingUp
+                description: "Monitor your progress with comprehensive analytics, review bookmark questions for reinforcement, and celebrate achievements with the Quiz Arena community leaderboard.",
+                icon: TrendingUp,
+                gradientFrom: "from-teal-500/20 to-cyan-500/20",
+                textColor: "text-teal-600"
               }
             ].map((item, index) => (
               <motion.div
@@ -441,18 +447,24 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="relative h-full group hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-8">
+                <Card className="relative h-full group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  {/* Background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradientFrom} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
+
+                  <CardContent className="p-8 relative z-10">
                     <div className="text-center space-y-6">
-                      <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <item.icon className="h-8 w-8 text-primary" />
+                      <div className={`mx-auto w-16 h-16 bg-gradient-to-br ${item.gradientFrom} rounded-full flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                        <item.icon className={`h-8 w-8 ${item.textColor}`} />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-primary mb-2">{item.step}</div>
-                        <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                        <p className="text-muted-foreground">{item.description}</p>
+                        <div className={`text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2`}>{item.step}</div>
+                        <h3 className={`text-xl font-semibold mb-3 ${item.textColor} group-hover:scale-105 transition-transform`}>{item.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed group-hover:text-foreground/90 transition-colors">{item.description}</p>
                       </div>
                     </div>
+
+                    {/* Decorative element */}
+                    <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </CardContent>
                 </Card>
               </motion.div>
@@ -622,11 +634,14 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Card className="relative h-full shadow-xl border-2 border-muted">
-                <CardHeader className="pb-8">
+              <Card className="relative h-full shadow-xl border-2 border-cyan-500/20 overflow-hidden group hover:shadow-2xl transition-all duration-500">
+                {/* Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-teal-500/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <CardHeader className="pb-8 relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <CardTitle className="text-3xl font-bold text-foreground">Free</CardTitle>
-                    <Badge variant="secondary">Starter Plan</Badge>
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">Free</CardTitle>
+                    <Badge className="bg-cyan-500/10 text-cyan-600 border-cyan-500/20">Starter Plan</Badge>
                   </div>
                   <CardDescription className="text-base">
                     Perfect foundation for your learning journey
@@ -636,29 +651,40 @@ export default function Home() {
                     <span className="text-muted-foreground">/forever</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 relative z-10">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="text-muted-foreground">Unlimited Quizzes & Guides</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="text-muted-foreground">Standard AI Model</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="text-muted-foreground">Quiz Arena (Public Only)</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="text-muted-foreground">Basic Social Sharing</span>
                     </li>
                   </ul>
-                  <Button className="w-full mt-8" asChild>
+                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" asChild>
                     <Link href="/signup">Get Started Free</Link>
                   </Button>
                 </CardContent>
+
+                {/* Decorative element */}
+                <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
             </motion.div>
 
@@ -668,16 +694,20 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Card className="relative h-full shadow-2xl border-2 border-primary bg-gradient-to-br from-primary/5 to-accent/5">
+              <Card className="relative h-full shadow-2xl border-2 border-purple-500/20 overflow-hidden group hover:shadow-3xl transition-all duration-500">
+                {/* Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-2 shadow-lg">
                     🏆 MOST POPULAR
                   </Badge>
                 </div>
-                <CardHeader className="pb-8">
+
+                <CardHeader className="pb-8 relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Pro</CardTitle>
-                    <Badge className="bg-gradient-to-r from-primary/20 to-accent/20">Premium Plan</Badge>
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">Pro</CardTitle>
+                    <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20">Premium Plan</Badge>
                   </div>
                   <CardDescription className="text-base">
                     Unleash the full potential of AI learning
@@ -687,29 +717,42 @@ export default function Home() {
                     <span className="text-muted-foreground">/month</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+
+                <CardContent className="space-y-4 relative z-10">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="font-medium">Private Quiz Arenas</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="font-medium">Advanced AI (Gemini 2.0 Pro)</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="font-medium">Analytics Dashboard</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
                       <span className="font-medium">Priority Support</span>
                     </li>
                   </ul>
-                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" asChild>
+
+                  <Button className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600" asChild>
                     <Link href="/pricing">Upgrade to Pro</Link>
                   </Button>
                 </CardContent>
+
+                {/* Decorative element */}
+                <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
             </motion.div>
           </div>
