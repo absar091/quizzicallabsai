@@ -143,7 +143,10 @@ export default function Home() {
       <AppHeader />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-cyan-50/20 to-purple-50/20 dark:from-slate-900 dark:via-cyan-950/10 dark:to-purple-950/10">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-cyan-50/20 to-purple-50/20 dark:from-slate-900 dark:via-cyan-950/10 dark:to-purple-950/10"
+               style={{
+                 backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.15) 0%, transparent 50%)',
+               }}>
         <div className="container mx-auto px-4 py-16 md:py-24 lg:py-32">
           <motion.div
             initial="hidden"
@@ -202,9 +205,9 @@ export default function Home() {
                 </span>
                 <span className="block text-3xl md:text-5xl lg:text-6xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1"
                       style={{textShadow: '0px 2px 4px rgba(6,182,212,0.3)'}}>
-                  with AI-Powered Quizzes
+                      with AI-Powered Quizzes
                 </span>
-              </motion.p>
+              </motion.h1>
 
               <motion.div
                 variants={FADE_IN_ANIMATION_VARIANTS}
