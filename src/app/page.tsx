@@ -1117,7 +1117,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Key Features Section */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
@@ -1126,55 +1126,120 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Loved by Learning Communities</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent">
+              Learn Smarter with AI
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of students transforming their learning experience
+              Discover the essential features that make studying more effective and engaging
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid md:grid-cols-3 gap-8"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            variants={{
-              hidden: {},
-              show: { transition: { staggerChildren: 0.15 } },
-            }}
-          >
-            {testimonials.map((testimonial, i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {[
+              {
+                icon: BrainCircuit,
+                title: "Personalized Learning",
+                description: "Our AI adapts to your learning style and pace, creating custom study plans that optimize your retention and understanding.",
+                color: "from-purple-500 to-pink-500",
+                delay: 0
+              },
+              {
+                icon: GamepadIcon,
+                title: "Live Quiz Battles",
+                description: "Challenge friends in real-time multiplayer quizzes. Turn studying into engaging competitions with instant scoring and leaderboards.",
+                color: "from-cyan-500 to-teal-500",
+                delay: 0.1
+              },
+              {
+                icon: FileText,
+                title: "Document Quiz Generator",
+                description: "Upload your notes, PDF files, or documents. Our AI automatically generates comprehensive quizzes to test your knowledge.",
+                color: "from-blue-500 to-purple-500",
+                delay: 0.2
+              },
+              {
+                icon: Share2,
+                title: "Social Learning",
+                description: "Share your quiz creations with friends and classmates. Learn together through collaborative educational experiences.",
+                color: "from-green-500 to-teal-500",
+                delay: 0.3
+              },
+              {
+                icon: TrendingUp,
+                title: "Progress Tracking",
+                description: "Monitor your improvement with detailed analytics and insights. See how your study habits improve over time.",
+                color: "from-orange-500 to-red-500",
+                delay: 0.4
+              },
+              {
+                icon: Sparkles,
+                title: "AI-Powered Insights",
+                description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
+                color: "from-indigo-500 to-purple-500",
+                delay: 0.5
+              }
+            ].map((feature, index) => (
               <motion.div
-                key={i}
-                variants={FADE_IN_ANIMATION_VARIANTS}
-                whileHover={{ y: -5, scale: 1.02 }}
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: feature.delay, duration: 0.6 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="group"
               >
-                <Card className="h-full group hover:shadow-xl transition-all duration-300">
+                <Card className="h-full border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-950 hover:shadow-xl transition-all duration-300 overflow-hidden">
                   <CardContent className="p-8">
                     <div className="space-y-6">
-                      <div className="relative">
-                        <div className="absolute -top-2 -left-2 text-6xl text-primary/10 font-serif">"</div>
-                        <p className="text-foreground/90 italic text-lg leading-relaxed pl-6">
-                          {testimonial.quote}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-4 pt-4 border-t">
-                        <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-                          <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
-                          <AvatarFallback>
-                            {testimonial.author.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold text-foreground">{testimonial.author}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <div className="flex items-center justify-center">
+                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <feature.icon className="w-8 h-8 text-white" />
                         </div>
                       </div>
+
+                      <div className="text-center space-y-3">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                          {feature.title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                          {feature.description}
+                        </p>
+                      </div>
                     </div>
+
+                    {/* Subtle gradient overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
+          </div>
+
+          {/* Feature highlights */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 text-center"
+          >
+            <div className="inline-flex items-center gap-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-600">⚡</div>
+                <div className="text-sm font-semibold">Instant Quiz Generation</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">🎯</div>
+                <div className="text-sm font-semibold">Adaptive Learning</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">🏆</div>
+                <div className="text-sm font-semibold">Gamified Experience</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">🧠</div>
+                <div className="text-sm font-semibold">AI-Powered Insights</div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
