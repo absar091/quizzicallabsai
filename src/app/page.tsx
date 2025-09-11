@@ -188,22 +188,22 @@ export default function Home() {
             <div className="text-center mb-12">
               <motion.h1
                 variants={FADE_IN_ANIMATION_VARIANTS}
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 transform-gpu"
+                style={{
+                  textShadow: '0px 4px 8px rgba(0,0,0,0.1), 0px 8px 16px rgba(0,0,0,0.08), 0px 16px 32px rgba(0,0,0,0.06)',
+                  transform: 'perspective(500px) rotateX(2deg) translateZ(10px)'
+                }}
               >
-                Study Smarter, <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Not Longer</span>.
-                <span className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mt-2">
+                Study Smarter, <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent"
+                       style={{textShadow: '0px 2px 4px rgba(6,182,212,0.3)'}}>Not Longer</span>.
+                <span className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mt-2"
+                      style={{textShadow: '0px 2px 4px rgba(249,115,22,0.3)'}}>
                   Turn Hours into Seconds
                 </span>
-                <span className="block text-3xl md:text-5xl lg:text-6xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1">
+                <span className="block text-3xl md:text-5xl lg:text-6xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1"
+                      style={{textShadow: '0px 2px 4px rgba(6,182,212,0.3)'}}>
                   with AI-Powered Quizzes
                 </span>
-              </motion.h1>
-
-              <motion.p
-                variants={FADE_IN_ANIMATION_VARIANTS}
-                className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed"
-              >
-                Generate personalized quizzes, battle friends in real time, and master concepts faster than ever. Learning isn't boring anymore — it's interactive, instant, and powered by AI.
               </motion.p>
 
               <motion.div
@@ -311,7 +311,7 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-gradient-to-br from-cyan-500/5 via-teal-500/3 to-blue-500/5">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">🎮 Revolutionary Quiz Arena</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">Revolutionary Quiz Arena</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               The first <strong>real-time multiplayer quiz platform</strong> where learning meets competition. <span className="font-semibold text-primary">Join thousands of students getting smarter while having fun!</span>
             </p>
@@ -382,15 +382,15 @@ export default function Home() {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">🏆 Ahmed (1st)</span>
+                      <span className="text-sm">Ahmed (1st)</span>
                       <span className="font-semibold">2,450 pts</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">🤝 Fatima (2nd)</span>
+                      <span className="text-sm">Fatima (2nd)</span>
                       <span className="font-semibold">2,320 pts</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">💎 You (3rd)</span>
+                      <span className="text-sm">You (3rd)</span>
                       <span className="font-semibold">2,185 pts</span>
                     </div>
                   </div>
