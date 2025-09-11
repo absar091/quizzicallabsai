@@ -143,7 +143,7 @@ export default function Home() {
       <AppHeader />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-accent/3 to-secondary/5">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-cyan-50/20 to-purple-50/20 dark:from-slate-900 dark:via-cyan-950/10 dark:to-purple-950/10">
         <div className="container mx-auto px-4 py-16 md:py-24 lg:py-32">
           <motion.div
             initial="hidden"
@@ -227,54 +227,54 @@ export default function Home() {
 
             {/* Problem/Solution Section */}
             <motion.div className="grid md:grid-cols-2 gap-8 mb-16" variants={FADE_IN_ANIMATION_VARIANTS}>
-            <Card className="border-slate-200 bg-slate-50 dark:bg-slate-950/20">
+            <Card className="border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950/30 dark:to-slate-900/40">
                 <CardContent className="p-8">
-                  <div className="text-slate-600 mb-4">
-                    <Target className="h-12 w-12" />
+                  <div className="text-slate-700 dark:text-slate-300 mb-4">
+                    <Target className="h-12 w-12 text-orange-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">❌ The Problem</h3>
-                  <ul className="space-y-3 text-slate-700 dark:text-slate-300">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4 bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent">❌ The Problem</h3>
+                  <ul className="space-y-3 text-slate-800 dark:text-slate-200">
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                       Students spend 3+ hours creating study materials
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                       Only 20% retention rate after a week
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                       Generic quizzes that don't adapt to learning style
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                       Boring study sessions lead to dropout
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card className="border-cyan-200 bg-cyan-50 dark:bg-cyan-950/20">
+              <Card className="border-cyan-200 dark:border-cyan-700 bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-teal-950/40">
                 <CardContent className="p-8">
-                  <div className="text-cyan-600 mb-4">
-                    <Zap className="h-12 w-12" />
+                  <div className="text-primary mb-4">
+                    <Zap className="h-12 w-12 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold text-cyan-800 dark:text-cyan-200 mb-4">✅ Our Solution</h3>
-                  <ul className="space-y-3 text-cyan-700 dark:text-cyan-300">
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-teal-600 bg-clip-text text-transparent">✅ Our Solution</h3>
+                  <ul className="space-y-3 text-cyan-900 dark:text-cyan-100">
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                       AI generates complete materials in 30 seconds
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                       90% scientifically proven retention rate
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                       Adaptive difficulty based on your performance
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                       Quiz Arena makes learning addictive
                     </li>
                   </ul>
