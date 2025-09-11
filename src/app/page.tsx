@@ -1399,23 +1399,17 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Professional Trust Indicators */}
-            <div className="flex items-center justify-center gap-8 mt-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-600" />
-                <span>GDPR Compliant</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span>SOC 2 Type II Certified</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-purple-600" />
-                <span>AI-Powered Platform</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyan-600" />
-                <span>No Credit Card Required</span>
+            {/* Genuine Call-to-Action Elements */}
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground text-sm mb-2">
+                Join thousands of students studying smarter, not longer.
+              </p>
+              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span>🔒 Free to start</span>
+                <span>•</span>
+                <span>⚡ Instant quiz generation</span>
+                <span>•</span>
+                <span>🎮 Live multiplayer battles</span>
               </div>
             </div>
           </motion.div>
