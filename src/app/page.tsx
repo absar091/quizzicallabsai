@@ -49,7 +49,7 @@ const features = [
     title: "Quiz Arena [LIVE]",
     description: "Experience the first real-time multiplayer quiz platform where learning meets competition! Challenge friends in live battles, climb global leaderboards, and unlock achievements while mastering your subjects. Join thousands of students getting smarter while having fun!",
     isNew: true,
-    badge: "🔥 LIVE",
+    badge: "LIVE",
     gradient: "from-cyan-500/20 to-teal-500/20",
     iconColor: "text-cyan-600"
   },
@@ -58,7 +58,7 @@ const features = [
     title: "Viral Quiz Sharing",
     description: "Transform your quiz creations into social sensations! Share your masterpiece quizzes across platforms, build massive learning communities, and track viral engagement with advanced analytics. Watch your educational content spread globally while helping students worldwide succeed!",
     isNew: true,
-    badge: "⭐ SOCIAL",
+    badge: "SOCIAL",
     gradient: "from-blue-500/20 to-purple-500/20",
     iconColor: "text-blue-600"
   },
