@@ -92,29 +92,7 @@ const features = [
   },
 ];
 
-const testimonials = [
-  {
-    quote: "Quizzicallabs transformed our study sessions from hours-long drudgery to engaging micro-lessons. Our test scores improved by 32% in just 6 weeks of use.",
-    author: "Dr. Sarah Chen",
-    role: "Professor of Biology, Stanford University",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b813?w=150&h=150&fit=crop&crop=face",
-    rating: 5
-  },
-  {
-    quote: "As an MDCAT candidate, I struggled with memorization. Quizzicallabs AI adapted to my learning pace and increased my retention by 87%. Absolutely life-changing!",
-    author: "Ahmed Patel",
-    role: "Medical Student, University of Karachi",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    rating: 5
-  },
-  {
-    quote: "The AI tutor identified knowledge gaps I didn't even know I had. Personalized learning paths boosted my physics scores from C to A+ in one semester.",
-    author: "Isabella Rodriguez",
-    role: "High School Senior, AP Physics Student",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    rating: 5
-  }
-];
+
 
 export default function Home() {
   const { user, loading } = useAuth();
