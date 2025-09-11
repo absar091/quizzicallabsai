@@ -232,7 +232,7 @@ export default function Home() {
                   <div className="text-slate-700 dark:text-slate-300 mb-4">
                     <Target className="h-12 w-12 text-orange-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4 bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent">❌ The Problem</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4 bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-400 dark:to-slate-500 bg-clip-text text-transparent">The Problem</h3>
                   <ul className="space-y-3 text-slate-800 dark:text-slate-200">
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
@@ -259,7 +259,7 @@ export default function Home() {
                   <div className="text-primary mb-4">
                     <Zap className="h-12 w-12 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-teal-600 bg-clip-text text-transparent">✅ Our Solution</h3>
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-teal-600 bg-clip-text text-transparent">Our Solution</h3>
                   <ul className="space-y-3 text-cyan-900 dark:text-cyan-100">
                     <li className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
