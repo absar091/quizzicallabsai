@@ -47,7 +47,7 @@ const features = [
   {
     icon: GamepadIcon,
     title: "Quiz Arena [LIVE]",
-    description: "Compete in real-time multiplayer quiz battles with friends worldwide. Rise through global leaderboards and unlock achievements!",
+    description: "Experience the first real-time multiplayer quiz platform where learning meets competition! Challenge friends in live battles, climb global leaderboards, and unlock achievements while mastering your subjects. Join thousands of students getting smarter while having fun!",
     isNew: true,
     badge: "🔥 LIVE",
     gradient: "from-cyan-500/20 to-teal-500/20",
@@ -55,8 +55,8 @@ const features = [
   },
   {
     icon: Share2,
-    title: "Social Quiz Sharing",
-    description: "Share your creative quizzes virally. Build your learning community with engagement tracking and collaborative features.",
+    title: "Viral Quiz Sharing",
+    description: "Transform your quiz creations into social sensations! Share your masterpiece quizzes across platforms, build massive learning communities, and track viral engagement with advanced analytics. Watch your educational content spread globally while helping students worldwide succeed!",
     isNew: true,
     badge: "⭐ SOCIAL",
     gradient: "from-blue-500/20 to-purple-500/20",
@@ -64,29 +64,29 @@ const features = [
   },
   {
     icon: BrainCircuit,
-    title: "Ultra-Personalized AI",
-    description: "AI adapts to your learning pace with smart difficulty levels, performance tracking, and curriculum-aligned content.",
+    title: "Ultra-Personalized AI Tutoring",
+    description: "Experience learning that adapts to YOUR pace! Our advanced AI analyzes your performance in real-time, adjusts difficulty levels perfectly, and creates customized study paths. Smart tracking ensures you master concepts efficiently while staying engaged and motivated!",
     gradient: "from-teal-500/20 to-cyan-500/20",
     iconColor: "text-teal-600"
   },
   {
     icon: FileArrowUp,
-    title: "Document Quiz Generator",
-    description: "Upload PDFs, DOCX files, or images. Our AI creates perfect quizzes directly from your study materials instantly.",
+    title: "Smart Document Quiz Generator",
+    description: "Revolutionary AI that transforms ANY document into perfect quizzes! Upload PDFs, DOCX files, PowerPoints, images, or even handwritten notes - our AI extracts key concepts and generates comprehensive quizzes instantly. Study smarter, not harder!",
     gradient: "from-cyan-500/20 to-blue-500/20",
     iconColor: "text-cyan-600"
   },
   {
     icon: Trophy,
-    title: "Complete Test Prep",
-    description: "Full MDCAT/ECAT/NTS preparation with official syllabus coverage, mock exams, and detailed analytics.",
+    title: "Ultimate Test Prep Suite",
+    description: "Prepare for MDCAT/ECAT/NTS like never before! Complete coverage of official syllabi with smart question generation, timed mock exams that mimic real conditions, and detailed performance analytics. Boost your score with AI-powered preparation that really works!",
     gradient: "from-purple-500/20 to-indigo-500/20",
     iconColor: "text-purple-600"
   },
   {
     icon: BookOpen,
-    title: "AI Study Guides",
-    description: "Instant generation of comprehensive guides with summaries, analogies, key concepts, and built-in assessments.",
+    title: "AI-Powered Study Guides",
+    description: "Instantly transform complex topics into crystal-clear understanding! Our AI generates comprehensive guides with perfect summaries, creative analogies, mind maps, and built-in smart assessments. Master ANY subject in record time with content that's actually engaging!",
     gradient: "from-indigo-500/20 to-purple-500/20",
     iconColor: "text-indigo-600"
   },
