@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { GraduationCap, Loader2, BrainCircuit, Users, Check, Trophy, Share2, GamepadIcon, Target, Zap, Star, Award, TrendingUp, BookOpen, FileText } from "lucide-react";
+import { GraduationCap, Loader2, BrainCircuit, Users, Check, Trophy, Share2, GamepadIcon, Target, Zap, Star, Award, TrendingUp, BookOpen, FileText, Sparkles, Cpu, Database, Shield, CheckCircle } from "lucide-react";
 import { CheckSquare, FileArrowUp, PenNib, Calendar } from "@phosphor-icons/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion, type Variants } from "framer-motion";
+import { motion, type Variants, useScroll, useTransform } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const FADE_IN_ANIMATION_VARIANTS: Variants = {
