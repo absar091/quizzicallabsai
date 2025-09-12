@@ -7,10 +7,12 @@ import AppProviders from "@/components/app-providers";
 import { ErrorBoundary } from "@/components/error-boundary";
 import 'katex/dist/katex.min.css';
 
-const poppins = Poppins({ 
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: '--font-sans',
+  display: 'swap',
+  preload: false
 });
 
 const APP_NAME = "Quizzicallabs AI";
