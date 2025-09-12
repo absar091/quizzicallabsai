@@ -55,10 +55,21 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
               {!isAuthPage && !isLandingPage && <div />}
               {isLandingPage && (
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:inline-flex"
+                    instantaneous
+                  >
                     <Link href="/login">Log In</Link>
                   </Button>
-                  <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 h-9 px-3 text-sm sm:h-10 sm:px-4 sm:text-base">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 h-9 px-3 text-sm sm:h-10 sm:px-4 sm:text-base"
+                    asChild
+                    instantaneous
+                  >
                     <Link href="/signup">Get Started Free</Link>
                   </Button>
                 </div>

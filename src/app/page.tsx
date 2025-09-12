@@ -708,24 +708,18 @@ export default function Home() {
               }
             ].map((item, index) => (
               <div key={index}>
-                <Card className="relative h-full group hover:shadow-xl transition-all duration-300 overflow-hidden">
-                  {/* Background gradient on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradientFrom} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-
-                  <CardContent className="p-8 relative z-10">
+                <Card className="h-full">
+                  <CardContent className="p-8">
                     <div className="text-center space-y-6">
-                      <div className={`mx-auto w-16 h-16 bg-gradient-to-br ${item.gradientFrom} rounded-full flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                      <div className={`mx-auto w-16 h-16 bg-gradient-to-br ${item.gradientFrom} rounded-full flex items-center justify-center shadow-lg`}>
                         <item.icon className={`h-8 w-8 ${item.textColor}`} />
                       </div>
                       <div>
                         <div className={`text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2`}>{item.step}</div>
-                        <h3 className={`text-xl font-semibold mb-3 ${item.textColor} group-hover:scale-105 transition-transform`}>{item.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed group-hover:text-foreground/90 transition-colors">{item.description}</p>
+                        <h3 className={`text-xl font-semibold mb-3 ${item.textColor}`}>{item.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                       </div>
                     </div>
-
-                    {/* Decorative element */}
-                    <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </CardContent>
                 </Card>
               </div>
