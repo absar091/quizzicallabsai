@@ -24,6 +24,12 @@ export default function JoinQuizPage() {
   const [players, setPlayers] = useState<ArenaPlayer[]>([]);
 
   useEffect(() => {
+    // Redirect unauthenticated users to quiz arena page
+    if (!user && !loading) {
+      router.push(`/quiz-arena?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
     if (!roomCode) {
       setLoading(false);
       return;
@@ -163,55 +169,22 @@ export default function JoinQuizPage() {
     );
   }
 
-  // Not logged in - Show sign up prompt
+  // Not logged in - Redirect to quiz arena page with redirect
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-accent/10 to-secondary/20">
         <Card className="max-w-md mx-4">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CardContent className="p-8 text-center">
+            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-xl mb-2">Join Live Battle</CardTitle>
-            <p className="text-muted-foreground mb-2">
-              Room: <span className="font-mono text-primary">{roomCode?.toUpperCase()}</span>
+            <CardTitle className="text-xl mb-4">Access Required</CardTitle>
+            <p className="text-muted-foreground mb-6">
+              Live quiz arenas require an account to track your progress and enable multiplayer features.
             </p>
-            <p className="text-muted-foreground mb-4">
-              Players: {players.length} {roomData && `of ${roomData.maxPlayers || 20}`}
+            <p className="text-sm text-muted-foreground">
+              Redirecting you to create an account...
             </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-sm flex items-center gap-2 mb-2">
-                <Users className="h-4 w-4 text-primary" />
-                Live multiplayer quiz battles require an account
-              </p>
-              <p className="text-sm flex items-center gap-2">
-                <Timer className="h-4 w-4 text-primary" />
-                Track your progress and compete in rankings
-              </p>
-            </div>
-
-            <div className="flex gap-2 justify-center">
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/login?redirect=${encodeURIComponent(window.location.pathname)}`}>
-                  Login
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href={`/signup?redirect=${encodeURIComponent(window.location.pathname)}`}>
-                  Sign Up
-                </Link>
-              </Button>
-            </div>
-
-            <div className="text-center">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/">
-                  ← Back Home
-                </Link>
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </div>

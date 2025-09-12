@@ -18,7 +18,7 @@ service cloud.firestore {
       // ✅ Host can update room state (start, next question, finish)
       // They can only update specific fields and must be the host
       allow update: if request.auth != null &&
-        request.resource.data.hostId == request.auth.uid &&
+        request.auth.uid == request.resource.data.hostId &&
         // Only allow updates to game state fields
         request.resource.data.keys().hasOnly([
           'started', 'finished', 'currentQuestion', 'startedAt', 'finishedAt'
@@ -35,14 +35,14 @@ service cloud.firestore {
       allow read: if true;
 
       // ✅ Authenticated players can join (only their own entry)
-      allow create: if request.auth != null &&
-        request.auth.uid == userId;
+      // Allow create for authenticated users trying to join
+      allow create: if request.auth != null;
 
-      // ✅ Players can ONLY update their own score
+      // ✅ Players can ONLY update their own score and join info
       allow update: if request.auth != null &&
         request.auth.uid == userId &&
-        // Only allow score updates
-        request.resource.data.diff(request.resource).keys().hasOnly(['score']);
+        // Only allow score and join info updates
+        request.resource.data.diff(request.resource).keys().hasOnly(['score', 'name']);
 
       // ❌ No deletions (players stay in room until game ends)
       allow delete: if false;

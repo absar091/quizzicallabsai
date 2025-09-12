@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -70,7 +71,8 @@ interface QuizArenaSetup {
 }
 
 export default function QuizArenaPage() {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
   const [setupMode, setSetupMode] = useState<'select' | 'create' | 'join' | 'room'>('select');
 
@@ -98,6 +100,42 @@ export default function QuizArenaPage() {
       document.head.removeChild(style);
     };
   }, []);
+
+  // Redirect unauthenticated users to signup with redirect
+  useEffect(() => {
+    if (!loading && !user) {
+      // Check if there's a redirect parameter in URL
+      const currentUrl = new URL(window.location.href);
+      const redirectParam = currentUrl.searchParams.get('redirect');
+      if (redirectParam) {
+        router.push(`/signup?redirect=${encodeURIComponent(redirectParam)}`);
+      } else {
+        router.push(`/signup?redirect=${encodeURIComponent(window.location.pathname)}`);
+      }
+    }
+  }, [user, loading, router]);
+
+  // Show loading while checking authentication
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Card className="max-w-md mx-4 border-slate-700 bg-slate-900/80 backdrop-blur-lg">
+          <CardContent className="p-8 text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-4">Live Quiz Arena Access</h2>
+            <p className="text-slate-400 mb-6">
+              Join the competition! Competitive learning requires an account to track your progress and enable multiplayer features.
+            </p>
+            <p className="text-slate-300 text-sm">
+              Redirecting you to create an account...
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const quizTemplates = [
     {
@@ -164,84 +202,120 @@ export default function QuizArenaPage() {
     setIsCreatingRoom(true);
 
     try {
-      console.log('🎯 Starting room creation process...');
+      console.log('🎯 Starting optimized room creation...');
+      const startTime = Date.now();
 
       let quizContent;
       const template = quizTemplates.find(t => t.id === 'mdcpharmacology');
 
       if (template) {
-        const response = await fetch('/api/generate-quiz', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            topic: template.topic,
-            difficulty: template.difficulty.toLowerCase() === 'medium' ? 'medium' : template.difficulty.toLowerCase(),
-            numberOfQuestions: template.questions,
-            questionTypes: ["Multiple Choice"],
-            questionStyles: ["Conceptual", "Numerical"],
-            timeLimit: Math.min(Math.max(Math.round((quizSetup.timePerQuestion * template.questions) / 60), 5), 120),
-            userClass: "MDCAT Student",
-            isPro: false,
-            specificInstructions: `Create ${template.questions} high-quality questions for ${template.topic} suitable for ${template.difficulty} level students.`
-          }),
-        });
+        // Optimize API call with better timeout and error handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-        if (!response.ok) {
-          throw new Error('Failed to generate quiz content');
+        try {
+          toast?.({
+            title: '🤖 Generating AI Questions...',
+            description: `Creating ${template.questions} questions for ${template.topic}`,
+          });
+
+          const response = await fetch('/api/generate-quiz', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              topic: template.topic,
+              difficulty: template.difficulty.toLowerCase() === 'medium' ? 'medium' : template.difficulty.toLowerCase(),
+              numberOfQuestions: template.questions,
+              questionTypes: ["Multiple Choice"],
+              questionStyles: ["Conceptual"],
+              timeLimit: 60, // Fixed time limit for consistency
+              userClass: "MDCAT Student",
+              isPro: false,
+              specificInstructions: `Create ${template.questions} high-quality questions for ${template.topic}. Be brief and focused.`
+            }),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
+          const result = await response.json();
+          quizContent = result.quiz;
+
+        } catch (fetchError: any) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            throw new Error('Quiz generation timed out. Please try again.');
+          }
+          throw fetchError;
         }
-
-        const result = await response.json();
-        quizContent = result.quiz;
       }
 
       if (!quizContent || quizContent.length === 0) {
         throw new Error('No quiz content generated. Please try again.');
       }
 
-      console.log('✅ Quiz generated successfully:', quizContent.length, 'questions');
+      console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
       const roomCode = generateRoomCode();
-      console.log('🔖 Room code generated:', roomCode);
+      console.log('🔖 Room code:', roomCode);
 
-      const quizArenaData = quizContent.map((q: any) => ({
-        question: q.question,
-        options: q.answers || [],
-        correctIndex: q.answers?.indexOf(q.correctAnswer) || 0,
+      // Transform data efficiently
+      const quizArenaData = quizContent.map((q: any, index: number) => ({
+        question: q.question || `Question ${index + 1}`,
+        options: Array.isArray(q.answers) ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'],
+        correctIndex: Array.isArray(q.answers) ? Math.max(0, q.answers.indexOf(q.correctAnswer || q.answers[0])) : 0,
         type: "multiple-choice"
       }));
 
-      console.log('🔄 Transformed quiz data for QuizArena');
-
-      const { QuizArena } = await import('@/lib/quiz-arena');
-
       toast?.({
-        title: '🏗️ Finalizing Arena...',
-        description: 'Almost done! Setting up your battle...',
+        title: '🏗️ Creating Battle Arena...',
+        description: `${template?.title || 'Arena'} setup complete!`,
       });
+
+      // Import and create room
+      const { QuizArena } = await import('@/lib/quiz-arena');
 
       await QuizArena.Host.createRoom(roomCode, user.uid, user.displayName || 'Anonymous', quizArenaData);
 
-      console.log('🚀 Arena created successfully:', roomCode);
+      const totalTime = Date.now() - startTime;
+      console.log(`🚀 Arena created in ${totalTime}ms:`, roomCode);
 
+      toast?.({
+        title: '🎉 Arena Ready!',
+        description: `Battle code: ${roomCode} - ${quizContent.length} questions loaded`,
+      });
+
+      // Use React Router instead of window.location for better UX
       window.location.href = `/quiz-arena/host/${roomCode}`;
-      return;
 
     } catch (error: any) {
       console.error('❌ Error creating arena:', error);
+
+      let errorTitle = 'Arena Creation Failed';
       let errorMessage = 'Failed to create quiz arena. Please try again.';
 
-      if (error.message?.includes('Failed to generate quiz content')) {
-        errorMessage = 'Failed to generate quiz questions. Please check your topic and try again.';
-      } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
-        errorMessage = 'AI service is busy. Please wait a moment and try again.';
+      if (error.message?.includes('timeout')) {
+        errorTitle = 'Generation Timeout';
+        errorMessage = 'Quiz generation took too long. Please check your connection and try again.';
+      } else if (error.message?.includes('API Error')) {
+        errorTitle = 'Service Unavailable';
+        errorMessage = 'AI quiz service is temporarily unavailable. Please try again later.';
       } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
-        errorMessage = 'Connection issue. Please check your internet and try again.';
+        errorTitle = 'Connection Issue';
+        errorMessage = 'Please check your internet connection and try again.';
+      } else if (error.message?.includes('quota')) {
+        errorTitle = 'Service Busy';
+        errorMessage = 'AI service is overloaded. Please wait a moment and try again.';
       }
 
       toast?.({
-        title: 'Arena Creation Failed',
+        title: errorTitle,
         description: errorMessage,
         variant: 'destructive'
       });
