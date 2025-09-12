@@ -987,7 +987,7 @@ export default function Home() {
                     <span className="text-muted-foreground">/forever</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4 relative z-10">
+                <CardContent className="space-y-4">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
@@ -1014,29 +1014,23 @@ export default function Home() {
                       <span className="text-muted-foreground">Basic Social Sharing</span>
                     </li>
                   </ul>
-                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90" asChild>
+                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent" asChild>
                     <Link href="/signup">Get Started Free</Link>
                   </Button>
                 </CardContent>
-
-                {/* Decorative element */}
-                <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
             </div>
 
             {/* Pro Plan */}
             <div>
-              <Card className="relative h-full shadow-2xl border-2 border-purple-500/20 overflow-hidden group hover:shadow-3xl transition-all duration-500">
-                {/* Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
+              <Card className="h-full shadow-2xl border-2 border-purple-500/20">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-2 shadow-lg">
                     🏆 MOST POPULAR
                   </Badge>
                 </div>
 
-                <CardHeader className="pb-8 relative z-10">
+                <CardHeader className="pb-8">
                   <div className="flex items-center justify-between mb-4">
                     <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">Pro</CardTitle>
                     <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20">Premium Plan</Badge>
@@ -1050,7 +1044,7 @@ export default function Home() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4 relative z-10">
+                <CardContent className="space-y-4">
                   <ul className="space-y-3">
                     <li className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
@@ -1078,13 +1072,10 @@ export default function Home() {
                     </li>
                   </ul>
 
-                  <Button className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600" asChild>
+                  <Button className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
                     <Link href="/pricing">Upgrade to Pro</Link>
                   </Button>
                 </CardContent>
-
-                {/* Decorative element */}
-                <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
             </div>
           </div>
