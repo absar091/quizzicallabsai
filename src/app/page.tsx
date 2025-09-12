@@ -101,7 +101,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={(e) => handleNavigation('/signup', 'Sign Up')}
                 instantaneous
                 disabled={!!navigatingTo}
@@ -112,6 +112,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
+                className="border-2 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-teal-500/20 hover:border-cyan-500/50 transition-all duration-300"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
                 loading={navigatingTo === '/quiz-arena'}
                 loadingText="Loading Arena..."
@@ -165,7 +166,7 @@ export default function Home() {
 
               <Button
                 size="lg"
-                className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600"
+                className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 hover:shadow-xl transition-all duration-300"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
                 disabled={!!navigatingTo}
               >

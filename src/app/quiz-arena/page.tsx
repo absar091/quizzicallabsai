@@ -190,7 +190,7 @@ export default function QuizArenaPage() {
       if (template) {
         // Optimize API call with better timeout and error handling
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
         try {
           toast?.({
