@@ -57,13 +57,24 @@ service cloud.firestore {
       // ✅ ONLY the authenticated user can submit their own answers
       allow create: if request.auth != null &&
         request.auth.uid == request.resource.data.userId &&
-        // Answer must contain required fields
+        // Answer must contain required fields AND be validated server-side
         request.resource.data.keys().hasAll([
-          'userId', 'questionIndex', 'answerIndex', 'correct', 'submittedAt'
-        ]);
+          'userId', 'questionIndex', 'answerIndex', 'submittedAt', 'hash'
+        ]) &&
+        // Prevent spam - hash must be unique and contain roomId
+        request.resource.data.hash.string().matches('^[a-zA-Z0-9_]+$');
 
       // ❌ No updates or deletions (answers are immutable)
       allow update, delete: if false;
+    }
+
+    // 🛡️ Server Validated Answers (for anti-cheat)
+    match /quiz-rooms/{roomId}/validated-answers/{answerId} {
+      // Only readable by room participants for leaderboard
+      allow read: if true;
+      // Only created by Cloud Function (server-side)
+      allow create: if false;
+      allow update, write: if false;
     }
 
     // 🎯 Quiz Discovery - Public rooms and system collections

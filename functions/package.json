@@ -1,0 +1,33 @@
+{
+  "name": "quiz-arena-functions",
+  "description": "Firebase Cloud Functions for Quiz Arena Anti-Cheat & Security",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:all": "firebase deploy --only functions,firestore:rules,database"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.10.1",
+    "firebase-functions": "^4.5.0",
+    "redis": "^4.6.8",
+    "@google-cloud/logging": "^10.5.0",
+    "@google-cloud/monitoring": "^4.0.0",
+    "axios": "^1.5.0",
+    "crypto-js": "^4.1.1",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}

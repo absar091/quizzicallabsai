@@ -127,22 +127,30 @@ export default function ParticipantArenaPage() {
     setIsAnswered(true);
 
     try {
-      const correct = selectedAnswer === currentQuestion.correctIndex;
+      // 🚫 REMOVE client-side correct calculation - handled server-side for security
       await QuizArena.Player.submitAnswer(
         roomCode.toUpperCase(),
         user.uid,
         roomData.currentQuestion,
-        selectedAnswer,
-        correct
+        selectedAnswer
       );
 
-      setShowResults(true);
+      // Show submitting feedback immediately
+      setShowResults(false);
 
-    } catch (error) {
+      toast?.({
+        title: 'Answer Submitted!',
+        description: 'Waiting for validation...',
+      });
+
+    } catch (error: any) {
       console.error('Error submitting answer:', error);
+      setHasSubmitted(false); // Allow retry on error
+      setIsAnswered(false);
+
       toast?.({
         title: 'Submission Failed',
-        description: 'Your answer may not have been recorded.',
+        description: error.message || 'Your answer may not have been recorded. Please try again.',
         variant: 'destructive'
       });
     }

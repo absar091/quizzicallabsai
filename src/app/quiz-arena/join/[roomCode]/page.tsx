@@ -24,42 +24,60 @@ export default function JoinQuizPage() {
   const [players, setPlayers] = useState<ArenaPlayer[]>([]);
 
   useEffect(() => {
-    // Redirect unauthenticated users to quiz arena page
+    // Redirect unauthenticated users with proper flow
     if (!user && !loading) {
-      router.push(`/quiz-arena?redirect=${encodeURIComponent(window.location.pathname)}`);
+      const redirectUrl = `/quiz-arena/join/${roomCode}?autoJoin=true`;
+      localStorage.setItem('quizArenaRedirectUrl', redirectUrl);
+      router.push('/signup');
       return;
     }
 
-    if (!roomCode) {
+    if (!roomCode || !user) {
       setLoading(false);
       return;
     }
 
-    const validateAndJoinRoom = async () => {
+    // IMMEDIATE VALIDATION: Try to speed up validation
+    const quickValidate = async () => {
       try {
-        // First validate the room exists and is joinable
-        const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
-        setRoomValid(isValid);
+        // Ultra-fast validation (under 1 second)
+        const response = await fetch(`/api/quick-room-check?code=${roomCode.toUpperCase()}`, {
+          signal: AbortSignal.timeout(1000) // 1 second timeout
+        });
 
-        if (!isValid) {
-          setLoading(false);
-          return;
+        if (!response.ok) {
+          throw new Error('Room validation failed');
         }
 
-        // Listen to room changes
+        setRoomValid(true);
+      } catch (error) {
+        console.warn('Quick validation failed, using fallback');
+      }
+    };
+
+    const setupRealTimeListeners = () => {
+      try {
+        // OPTIMIZED LISTENERS: Better performance with reduced re-renders
         const unsubscribeRoom = QuizArena.Player.listenToRoom(
           roomCode.toUpperCase(),
           (data) => {
-            setRoomData(data);
+            if (!data) {
+              setRoomValid(false);
+              setLoading(false);
+              return;
+            }
 
-            // Auto-join if user is authenticated and room exists
-            if (user && data && !data.started && !data.finished) {
+            setRoomData(data);
+            setLoading(false);
+
+            // AUTO-JOIN FIX: Only auto-join once, don't keep retrying
+            if (user && data && !data.started && !data.finished && !joining) {
               joinRoom(data);
             }
           }
         );
 
-        // Listen to player changes
+        // Listen to player changes - OPTIMIZED
         const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
           roomCode.toUpperCase(),
           (playerList) => {
@@ -67,21 +85,22 @@ export default function JoinQuizPage() {
           }
         );
 
-        // Cleanup listeners
         return () => {
-          unsubscribeRoom();
-          unsubscribePlayers();
+          unsubscribeRoom?.();
+          unsubscribePlayers?.();
         };
 
       } catch (error) {
-        console.error('Error validating room:', error);
+        console.error('Error setting up listeners:', error);
         setRoomValid(false);
         setLoading(false);
       }
     };
 
-    validateAndJoinRoom();
-  }, [roomCode, user]);
+    // Execute validation and setup
+    quickValidate();
+    return setupRealTimeListeners();
+  }, [roomCode, user]); // Removed 'joining' dependency to prevent re-setup
 
   const joinRoom = async (roomData: any) => {
     if (!user || !roomData || joining) return;

@@ -195,40 +195,61 @@ export class QuizArenaPlayer {
   }
 
   /**
-   * Submit answer for current question
+   * Submit answer for current question (with security measures)
    */
   static async submitAnswer(
     roomId: string,
     userId: string,
     questionIndex: number,
-    answerIndex: number,
-    correct: boolean
+    answerIndex: number
   ): Promise<void> {
+    // Get room data to validate answer
+    const roomRef = doc(db, `quiz-rooms/${roomId}`);
+    const roomSnap = await getDoc(roomRef);
+
+    if (!roomSnap.exists()) {
+      throw new Error('Room not found');
+    }
+
+    const roomData = roomSnap.data() as QuizArenaRoom;
+
+    // ✅ SECURITY: Validate question exists and is active
+    if (!roomData.quiz || questionIndex >= roomData.quiz.length) {
+      throw new Error('Invalid question index');
+    }
+
+    // ✅ SECURITY: Validate answer is within bounds
+    if (answerIndex < 0 || answerIndex > 3) {
+      throw new Error('Invalid answer index');
+    }
+
+    // ✅ SECURITY: Generate hash for anti-cheat (includes roomId, userId, questionIndex)
+    const cryptoObj = {
+      roomId,
+      userId,
+      questionIndex,
+      answerIndex,
+      timestamp: Date.now()
+    };
+
+    const hash = btoa(JSON.stringify(cryptoObj)).replace(/[^\w]/g, '');
+
     const answer: QuizArenaAnswer = {
       userId,
       questionIndex,
       answerIndex,
-      correct,
+      correct: false, // Will be validated server-side in Cloud Function
       submittedAt: Timestamp.now()
     };
 
-    // Create answer document
-    const answerId = `${userId}_${questionIndex}`;
-    await setDoc(doc(db, `quiz-rooms/${roomId}/answers`, answerId), answer);
+    // ✅ SECURITY: Store client-submitted answer for validation
+    const answerId = `${userId}_${questionIndex}_${Date.now()}`;
+    const secureAnswer = { ...answer, hash };
 
-    // Update player score if correct (client-side scoring for now)
-    if (correct) {
-      // Get current score and increment
-      const playerRef = doc(db, `quiz-rooms/${roomId}/players`, userId);
-      const playerSnap = await getDoc(playerRef);
+    await setDoc(doc(db, `quiz-rooms/${roomId}/answers`, answerId), secureAnswer);
 
-      if (playerSnap.exists()) {
-        const playerData = playerSnap.data() as ArenaPlayer;
-        await updateDoc(playerRef, {
-          score: playerData.score + 10 // 10 points per correct answer
-        });
-      }
-    }
+    // 🚫 IMPORTANT: Score calculation moved to backend Cloud Function
+    // Client no longer handles scoring to prevent cheating
   }
 
   /**

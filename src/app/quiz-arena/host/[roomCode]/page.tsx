@@ -248,6 +248,13 @@ export default function RoomHostPage() {
     }
   };
 
+  const handlePauseQuiz = async () => {
+    toast?.({
+      title: 'Pause/Unpause Feature',
+      description: 'This feature will be implemented with the buzzer system.',
+    });
+  };
+
   const copyRoomCode = () => {
     navigator.clipboard.writeText(roomCode);
     toast?.({
@@ -407,23 +414,34 @@ export default function RoomHostPage() {
               </Card>
             )}
 
-            {/* Host Controls */}
-            {isHost && quizStarted && (
+            {/* Host Controls - Show BEFORE and DURING quiz */}
+            {isHost && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Host Controls</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline">
-                      <Pause className="mr-2 h-4 w-4" />
-                      Pause Quiz
-                    </Button>
-                    <Button variant="outline">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
-                    </Button>
-                  </div>
+                  {!quizStarted ? (
+                    <div className="text-center">
+                      <p className="text-muted-foreground mb-4">
+                        {roomData?.playerCount > 2
+                          ? `${roomData.playerCount - 1} friends ready. Start the battle!`
+                          : "Waiting for more players to join..."
+                        }
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button variant="outline" onClick={() => handlePauseQuiz()}>
+                        <Pause className="mr-2 h-4 w-4" />
+                        Pause Quiz
+                      </Button>
+                      <Button variant="outline">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
