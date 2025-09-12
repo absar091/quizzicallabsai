@@ -950,7 +950,7 @@ export default function Home() {
                 delay: 0.4
               },
               {
-                icon: Sparkles,
+                icon: BrainCircuit,
                 title: "AI-Powered Insights",
                 description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
                 color: "from-indigo-500 to-purple-500",
