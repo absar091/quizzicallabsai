@@ -1,7 +1,7 @@
 
 'use client';
 
-import 'katex/dist/katex.min.css';
+import { useEffect } from 'react';
 import Latex from 'react-katex';
 
 type LatexRendererProps = {
@@ -11,6 +11,31 @@ type LatexRendererProps = {
 // This component will find and render LaTeX expressions within a string.
 export default function LatexRenderer({ text }: LatexRendererProps) {
     if (!text) return null;
+
+    // Dynamic loading of KaTeX CSS only when needed
+    useEffect(() => {
+        if (text && text.includes('$')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+            link.onload = () => {
+                // CSS loaded successfully
+            };
+            link.onerror = () => {
+                console.warn('Failed to load KaTeX CSS');
+            };
+            document.head.appendChild(link);
+
+            // Cleanup function
+            return () => {
+                try {
+                    document.head.removeChild(link);
+                } catch (e) {
+                    // Link might already be removed
+                }
+            };
+        }
+    }, [text]);
 
     // Regex to find all occurrences of $...$ (inline) and $$...$$ (display)
     const regex = /(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g;

@@ -1,7 +1,7 @@
 
 'use client';
 
-import 'katex/dist/katex.min.css';
+import { useEffect } from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
@@ -67,6 +67,31 @@ const processTextContent = (text: string) => {
 
 export default function RichContentRenderer({ content, smiles, chartData, chartType = 'line', placeholder, inline = false }: RichContentRendererProps) {
     if (!content && !smiles && !chartData && !placeholder) return null;
+
+    // Dynamic loading of KaTeX CSS only when needed
+    useEffect(() => {
+        if (processedContent && processedContent.includes('$')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+            link.onload = () => {
+                // CSS loaded successfully
+            };
+            link.onerror = () => {
+                console.warn('Failed to load KaTeX CSS');
+            };
+            document.head.appendChild(link);
+
+            // Cleanup function
+            return () => {
+                try {
+                    document.head.removeChild(link);
+                } catch (e) {
+                    // Link might already be removed
+                }
+            };
+        }
+    }, [content]);
 
     // Process and clean the content
     const processedContent = processTextContent(content);
