@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { GraduationCap, Loader2, BrainCircuit, Check, Trophy, Share2, GamepadIcon, Target, Zap, TrendingUp, BookOpen, FileText } from "lucide-react";
@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 
 
@@ -17,12 +18,38 @@ import { Badge } from "@/components/ui/badge";
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
+
+  // Navigation states to prevent multiple clicks and show feedback
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && user) {
       router.replace('/dashboard');
     }
   }, [user, loading, router]);
+
+  // Enhanced navigation with instant feedback
+  const handleNavigation = (path: string, buttonText: string, e?: React.MouseEvent) => {
+    if (navigatingTo) return; // Prevent multiple clicks
+
+    e?.preventDefault();
+    setNavigatingTo(path);
+
+    // Show immediate feedback
+    toast({
+      title: `🚀 Taking you there...`,
+      description: `Navigating to ${buttonText}`,
+      duration: 1000,
+    });
+
+    // Add a small delay for perceived responsiveness
+    setTimeout(() => {
+      router.push(path);
+      // Reset state after navigation (though component will unmount)
+      setNavigatingTo(null);
+    }, 100);
+  };
 
   if (loading) {
     return (
@@ -72,17 +99,26 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground" asChild>
-                <Link href="/signup">
-                  <Zap className="mr-2 h-5 w-5" />
-                  Start Free Trial
-                </Link>
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
+                onClick={(e) => handleNavigation('/signup', 'Sign Up')}
+                instantaneous
+                disabled={!!navigatingTo}
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                {navigatingTo === '/signup' ? 'Taking you there...' : 'Start Free Trial'}
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/quiz-arena">
-                  <GamepadIcon className="mr-2 h-5 w-5" />
-                  Play Live Quiz Arena
-                </Link>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
+                loading={navigatingTo === '/quiz-arena'}
+                loadingText="Loading Arena..."
+                disabled={!!navigatingTo}
+              >
+                <GamepadIcon className="mr-2 h-5 w-5" />
+                Play Live Quiz Arena
               </Button>
             </div>
           </div>
@@ -127,11 +163,23 @@ export default function Home() {
                 ))}
               </div>
 
-              <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
-                <Link href="/quiz-arena">
-                  Join Live Battles Now
-                  <TrendingUp className="ml-2 h-5 w-5" />
-                </Link>
+              <Button
+                size="lg"
+                className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600"
+                onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
+                disabled={!!navigatingTo}
+              >
+                {navigatingTo === '/quiz-arena' ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    Join Live Battles Now
+                    <TrendingUp className="ml-2 h-5 w-5" />
+                  </>
+                )}
               </Button>
             </div>
 
