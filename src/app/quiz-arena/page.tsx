@@ -41,22 +41,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-// Custom scrollbar styles
-const globalStyles = `
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #0f172a;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #0891b2, #0ea5e9);
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #0c7494, #0284c7);
-  }
-`;
+// Custom scrollbar styles removed to prevent conflicts
 
 interface QuizArenaSetup {
   title: string;
@@ -92,13 +77,7 @@ export default function QuizArenaPage() {
   const [roomCode, setRoomCode] = useState('');
 
   useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = globalStyles;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
+    // Custom styles removed to prevent conflicts
   }, []);
 
   // Redirect unauthenticated users to signup with redirect
