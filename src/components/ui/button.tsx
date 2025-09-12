@@ -47,10 +47,11 @@ export interface ButtonProps
   asChild?: boolean
   loading?: boolean
   loadingText?: string
+  instantaneous?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, loadingText, children, disabled, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading = false, loadingText, instantaneous, children, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
     const content = loading ? (
