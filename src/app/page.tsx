@@ -10,7 +10,7 @@ import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+
 
 
 
@@ -100,85 +100,73 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
-                    <GamepadIcon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Live Battles</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
+                  <GamepadIcon className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Compete with friends in real-time quiz competitions. See your ranking update instantly as you answer questions with time pressure.
-                  <strong className="text-primary">Experience the thrill of competitive learning!</strong>
-                </p>
-
-                <div className="space-y-4">
-                  {[
-                    "Real-time leaderboards update live with every answer",
-                    "Host controls for seamless session management",
-                    "Private rooms perfect for class competitions",
-                    "Achievement system with unlockable badges",
-                    "Comprehensive performance analytics per battle"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
-                  <Link href="/quiz-arena">
-                    Join Live Battles Now
-                    <TrendingUp className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
+                <h3 className="text-2xl font-bold">Live Battles</h3>
               </div>
-            </motion.div>
+              <p className="text-lg text-muted-foreground">
+                Compete with friends in real-time quiz competitions. See your ranking update instantly as you answer questions with time pressure.
+                <strong className="text-primary">Experience the thrill of competitive learning!</strong>
+              </p>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Live Match Stats</h4>
-                    <Badge className="bg-green-500">LIVE</Badge>
+              <div className="space-y-4">
+                {[
+                  "Real-time leaderboards update live with every answer",
+                  "Host controls for seamless session management",
+                  "Private rooms perfect for class competitions",
+                  "Achievement system with unlockable badges",
+                  "Comprehensive performance analytics per battle"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
+                    <span>{feature}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">47</div>
-                      <div className="text-xs text-muted-foreground">Active Players</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">35</div>
-                      <div className="text-xs text-muted-foreground">Battles Today</div>
-                    </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
+                <Link href="/quiz-arena">
+                  Join Live Battles Now
+                  <TrendingUp className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                <h4 className="font-semibold">Live Match Stats</h4>
+                  <Badge className="bg-green-500">LIVE</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">47</div>
+                    <div className="text-xs text-muted-foreground">Active Players</div>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Ahmed (1st)</span>
-                      <span className="font-semibold">2,450 pts</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Fatima (2nd)</span>
-                      <span className="font-semibold">2,320 pts</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">You (3rd)</span>
-                      <span className="font-semibold">2,185 pts</span>
-                    </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">35</div>
+                    <div className="text-xs text-muted-foreground">Battles Today</div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Ahmed (1st)</span>
+                    <span className="font-semibold">2,450 pts</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Fatima (2nd)</span>
+                    <span className="font-semibold">2,320 pts</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">You (3rd)</span>
+                    <span className="font-semibold">2,185 pts</span>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -194,88 +182,76 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Instant AI Quiz Generation</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Upload PDFs, DOCX files, PowerPoints, images, or even handwritten notes. Our AI extracts key concepts and generates comprehensive quizzes in seconds.
-                  <strong className="text-teal-600">No more manual quiz creation!</strong>
-                </p>
+                <h3 className="text-2xl font-bold">Instant AI Quiz Generation</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Upload PDFs, DOCX files, PowerPoints, images, or even handwritten notes. Our AI extracts key concepts and generates comprehensive quizzes in seconds.
+                <strong className="text-teal-600">No more manual quiz creation!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Upload any document format - PDFs, images, documents",
+                  "Advanced OCR for handwritten notes and images",
+                  "AI automatically identifies key concepts and knowledge gaps",
+                  "Instant quiz generation with difficulty adaptation",
+                  "Perfect for teachers, students, and professionals alike"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600" asChild>
+                <Link href="/generate-quiz">
+                  Transform Documents Now
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 p-8 rounded-2xl border border-teal-200 dark:border-teal-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">🎯 The Magic Happens Here</h4>
+                  <p className="text-muted-foreground">
+                    Upload any document and watch as our AI transforms it into educational excellence
+                  </p>
+                </div>
 
                 <div className="space-y-4">
-                  {[
-                    "Upload any document format - PDFs, images, documents",
-                    "Advanced OCR for handwritten notes and images",
-                    "AI automatically identifies key concepts and knowledge gaps",
-                    "Instant quiz generation with difficulty adaptation",
-                    "Perfect for teachers, students, and professionals alike"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full"></div>
-                      <span>{feature}</span>
+                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                      <span className="font-medium">Upload Document</span>
                     </div>
-                  ))}
-                </div>
-
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600" asChild>
-                  <Link href="/generate-quiz">
-                    Transform Documents Now
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 p-8 rounded-2xl border border-teal-200 dark:border-teal-800">
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">🎯 The Magic Happens Here</h4>
-                    <p className="text-muted-foreground">
-                      Upload any document and watch as our AI transforms it into educational excellence
-                    </p>
+                    <div className="text-sm text-teal-600 font-semibold">Instant</div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">1</div>
-                        <span className="font-medium">Upload Document</span>
-                      </div>
-                      <div className="text-sm text-teal-600 font-semibold">Instant</div>
+                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">2</div>
+                      <span className="font-medium">AI Analysis</span>
                     </div>
+                    <div className="text-sm text-cyan-600 font-semibold">30s</div>
+                  </div>
 
-                    <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">2</div>
-                        <span className="font-medium">AI Analysis</span>
-                      </div>
-                      <div className="text-sm text-cyan-600 font-semibold">30s</div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">3</div>
+                      <span className="font-medium">Perfect Quiz Ready</span>
                     </div>
-
-                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">3</div>
-                        <span className="font-medium">Perfect Quiz Ready</span>
-                      </div>
-                      <div className="text-sm text-blue-600 font-semibold">Done!</div>
-                    </div>
+                    <div className="text-sm text-blue-600 font-semibold">Done!</div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -292,99 +268,87 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <BrainCircuit className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Adaptive Learning Intelligence</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <BrainCircuit className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Smart tracking ensures you master concepts efficiently. No more wasting time on topics you know or struggling with overly difficult content.
-                  <strong className="text-blue-600">Learn at the perfect pace for YOU!</strong>
-                </p>
+                <h3 className="text-2xl font-bold">Adaptive Learning Intelligence</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Smart tracking ensures you master concepts efficiently. No more wasting time on topics you know or struggling with overly difficult content.
+                <strong className="text-blue-600">Learn at the perfect pace for YOU!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Real-time difficulty adjustment based on your performance",
+                  "Personalized study paths tailored to your learning style",
+                  "Smart content recommendations for optimal mastery",
+                  "Progress tracking with detailed analytics and insights",
+                  "Motivational feedback and achievement milestones"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" asChild>
+                <Link href="/generate-quiz">
+                  Experience AI Personalization
+                  <BrainCircuit className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-blue-200 dark:border-blue-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">🎓 Your AI Learning Journey</h4>
+                </div>
 
                 <div className="space-y-4">
-                  {[
-                    "Real-time difficulty adjustment based on your performance",
-                    "Personalized study paths tailored to your learning style",
-                    "Smart content recommendations for optimal mastery",
-                    "Progress tracking with detailed analytics and insights",
-                    "Motivational feedback and achievement milestones"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                      <span>{feature}</span>
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Current Difficulty Level</span>
+                      <span className="text-blue-600 font-semibold">Adaptive</span>
                     </div>
-                  ))}
-                </div>
-
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" asChild>
-                  <Link href="/generate-quiz">
-                    Experience AI Personalization
-                    <BrainCircuit className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-blue-200 dark:border-blue-800">
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">🎓 Your AI Learning Journey</h4>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full w-3/5"></div>
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">Adjusting based on your performance...</div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium">Current Difficulty Level</span>
-                        <span className="text-blue-600 font-semibold">Adaptive</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full w-3/5"></div>
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">Adjusting based on your performance...</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">85%</div>
+                      <div className="text-sm text-muted-foreground">Mastered Concepts</div>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">85%</div>
-                        <div className="text-sm text-muted-foreground">Mastered Concepts</div>
-                      </div>
-                      <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-600">15%</div>
-                        <div className="text-sm text-muted-foreground">Personalized Path</div>
-                      </div>
+                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">15%</div>
+                      <div className="text-sm text-muted-foreground">Personalized Path</div>
                     </div>
+                  </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Learning Speed</span>
-                        <span className="text-blue-600 font-semibold">Optimal</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Motivation Level</span>
-                        <span className="text-purple-600 font-semibold">High</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Study Efficiency</span>
-                        <span className="text-indigo-600 font-semibold">Maximum</span>
-                      </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Learning Speed</span>
+                      <span className="text-blue-600 font-semibold">Optimal</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Motivation Level</span>
+                      <span className="text-purple-600 font-semibold">High</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Study Efficiency</span>
+                      <span className="text-indigo-600 font-semibold">Maximum</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -401,89 +365,77 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+                  <Share2 className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Social Learning Revolution</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Connect learners worldwide through viral quiz sharing. Build your educational community while tracking engagement and helping students excel globally.
+                <strong className="text-purple-600">Turn learning into a social experience!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Viral sharing capabilities across all major platforms",
+                  "Advanced analytics for engagement tracking and insights",
+                  "Community building tools for connected learning",
+                  "Global reach to help students worldwide succeed",
+                  "Monetization opportunities for top content creators"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600" asChild>
+                <Link href="/generate-quiz">
+                  Create Shareable Content
+                  <Share2 className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 p-8 rounded-2xl border border-purple-200 dark:border-purple-800">
               <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
-                    <Share2 className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Social Learning Revolution</h3>
-                </div>
-                <p className="text-lg text-muted-foreground">
-                  Connect learners worldwide through viral quiz sharing. Build your educational community while tracking engagement and helping students excel globally.
-                  <strong className="text-purple-600">Turn learning into a social experience!</strong>
-                </p>
-
-                <div className="space-y-4">
-                  {[
-                    "Viral sharing capabilities across all major platforms",
-                    "Advanced analytics for engagement tracking and insights",
-                    "Community building tools for connected learning",
-                    "Global reach to help students worldwide succeed",
-                    "Monetization opportunities for top content creators"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full"></div>
-                      <span>{feature}</span>
-                    </div>
-                  ))}
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">📈 Global Impact Metrics</h4>
                 </div>
 
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600" asChild>
-                  <Link href="/generate-quiz">
-                    Create Shareable Content
-                    <Share2 className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="text-3xl font-bold text-purple-600">50K+</div>
+                    <div className="text-sm text-muted-foreground">Shared Quizzes</div>
+                  </div>
+                  <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                    <div className="text-3xl font-bold text-indigo-600">250K+</div>
+                    <div className="text-sm text-muted-foreground">Students Helped</div>
+                  </div>
+                </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 p-8 rounded-2xl border border-purple-200 dark:border-purple-800">
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">📈 Global Impact Metrics</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
+                    <span className="text-sm font-medium">Top Viral Reach:</span>
+                    <span className="text-purple-600 font-bold">100K+ Views</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                      <div className="text-3xl font-bold text-purple-600">50K+</div>
-                      <div className="text-sm text-muted-foreground">Shared Quizzes</div>
-                    </div>
-                    <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
-                      <div className="text-3xl font-bold text-indigo-600">250K+</div>
-                      <div className="text-sm text-muted-foreground">Students Helped</div>
-                    </div>
+                  <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
+                    <span className="text-sm font-medium">Average Engagement:</span>
+                    <span className="text-indigo-600 font-bold">85% Higher</span>
                   </div>
+                </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
-                      <span className="text-sm font-medium">Top Viral Reach:</span>
-                      <span className="text-purple-600 font-bold">100K+ Views</span>
-                    </div>
-
-                    <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
-                      <span className="text-sm font-medium">Average Engagement:</span>
-                      <span className="text-indigo-600 font-bold">85% Higher</span>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-muted-foreground text-sm">
-                      Share your knowledge and impact millions of learners worldwide!
-                    </p>
-                  </div>
+                <div className="text-center">
+                  <p className="text-muted-foreground text-sm">
+                    Share your knowledge and impact millions of learners worldwide!
+                  </p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -500,93 +452,81 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <Trophy className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Exam Mastery System</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <Trophy className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Comprehensive exam preparation that follows official curriculums and provides the competitive edge you need to excel in MDCAT, ECAT, NTS, and other major examinations.
-                  <strong className="text-indigo-600">Achieve your dream scores with science-backed techniques!</strong>
-                </p>
+                <h3 className="text-2xl font-bold">Exam Mastery System</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Comprehensive exam preparation that follows official curriculums and provides the competitive edge you need to excel in MDCAT, ECAT, NTS, and other major examinations.
+                <strong className="text-indigo-600">Achieve your dream scores with science-backed techniques!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Official MDCAT/ECAT/NTS syllabus coverage with updates",
+                  "Timed practice exams that mirror real test conditions",
+                  "Smart question generation from official exam patterns",
+                  "Detailed analytics comparing you against top performers",
+                  "Personalized study plans optimized for exam success"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600" asChild>
+                <Link href="/generate-quiz">
+                  Start Exam Preparation
+                  <Trophy className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">📈 Exam Success Roadmap</h4>
+                </div>
 
                 <div className="space-y-4">
-                  {[
-                    "Official MDCAT/ECAT/NTS syllabus coverage with updates",
-                    "Timed practice exams that mirror real test conditions",
-                    "Smart question generation from official exam patterns",
-                    "Detailed analytics comparing you against top performers",
-                    "Personalized study plans optimized for exam success"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
-                      <span>{feature}</span>
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">📚</div>
+                      <span className="font-medium">Syllabus Mastery</span>
                     </div>
-                  ))}
+                    <div className="text-sm text-indigo-600 font-semibold">150+ Topics</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Practice Exams</span>
+                    </div>
+                    <div className="text-sm text-purple-600 font-semibold">100+ Tests</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <span className="font-medium">Performance Analytics</span>
+                    </div>
+                    <div className="text-sm text-pink-600 font-semibold">Real-time</div>
+                  </div>
                 </div>
 
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600" asChild>
-                  <Link href="/generate-quiz">
-                    Start Exam Preparation
-                    <Trophy className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-indigo-200 dark:border-indigo-800">
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">📈 Exam Success Roadmap</h4>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">📚</div>
-                        <span className="font-medium">Syllabus Mastery</span>
-                      </div>
-                      <div className="text-sm text-indigo-600 font-semibold">150+ Topics</div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
-                        <span className="font-medium">Practice Exams</span>
-                      </div>
-                      <div className="text-sm text-purple-600 font-semibold">100+ Tests</div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
-                        <span className="font-medium">Performance Analytics</span>
-                      </div>
-                      <div className="text-sm text-pink-600 font-semibold">Real-time</div>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 px-4 py-2 rounded-lg">
-                      <span className="text-sm font-medium">Average Score Improvement:</span>
-                      <span className="text-indigo-600 font-bold">87% Higher</span>
-                    </div>
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 px-4 py-2 rounded-lg">
+                    <span className="text-sm font-medium">Average Score Improvement:</span>
+                    <span className="text-indigo-600 font-bold">87% Higher</span>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -603,93 +543,81 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Intelligent Content Generation</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Complex subjects made simple through AI-generated guides that use creative analogies, mind maps, and interactive assessments.
-                  <strong className="text-cyan-600">Learn faster and retain more than ever before!</strong>
-                </p>
+                <h3 className="text-2xl font-bold">Intelligent Content Generation</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Complex subjects made simple through AI-generated guides that use creative analogies, mind maps, and interactive assessments.
+                <strong className="text-cyan-600">Learn faster and retain more than ever before!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Perfect summaries with key concepts highlighted",
+                  "Creative analogies connecting complex ideas to familiar concepts",
+                  "Interactive mind maps for visual learning",
+                  "Integrated quizzes within each study guide",
+                  "Auto-generated practice questions for reinforcement"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
+                <Link href="/generate-quiz">
+                  Generate Study Guide
+                  <BookOpen className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">🎯 Learning Enhancement Stats</h4>
+                </div>
 
                 <div className="space-y-4">
-                  {[
-                    "Perfect summaries with key concepts highlighted",
-                    "Creative analogies connecting complex ideas to familiar concepts",
-                    "Interactive mind maps for visual learning",
-                    "Integrated quizzes within each study guide",
-                    "Auto-generated practice questions for reinforcement"
-                  ].map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
-                      <span>{feature}</span>
+                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">⏱️</div>
+                      <span className="font-medium">Study Time Reduction</span>
                     </div>
-                  ))}
-                </div>
-
-                <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
-                  <Link href="/generate-quiz">
-                    Generate Study Guide
-                    <BookOpen className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">🎯 Learning Enhancement Stats</h4>
+                    <div className="text-sm text-cyan-600 font-semibold">60% Faster</div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">⏱️</div>
-                        <span className="font-medium">Study Time Reduction</span>
-                      </div>
-                      <div className="text-sm text-cyan-600 font-semibold">60% Faster</div>
+                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🧠</div>
+                      <span className="font-medium">Knowledge Retention</span>
                     </div>
-
-                    <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🧠</div>
-                        <span className="font-medium">Knowledge Retention</span>
-                      </div>
-                      <div className="text-sm text-teal-600 font-semibold">89% Better</div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">✅</div>
-                        <span className="font-medium">Concept Mastery</span>
-                      </div>
-                      <div className="text-sm text-green-600 font-semibold">94% Rate</div>
-                    </div>
+                    <div className="text-sm text-teal-600 font-semibold">89% Better</div>
                   </div>
 
-                  <div className="text-center bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/10 dark:to-teal-950/10 p-4 rounded-lg">
-                    <p className="text-muted-foreground text-sm">
-                      <strong>AI Study Guides</strong> outperform traditional textbooks by making learning
-                      <span className="text-cyan-600 font-semibold">2x faster and 2.3x more effective!</span>
-                    </p>
+                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">✅</div>
+                      <span className="font-medium">Concept Mastery</span>
+                    </div>
+                    <div className="text-sm text-green-600 font-semibold">94% Rate</div>
                   </div>
                 </div>
+
+                <div className="text-center bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/10 dark:to-teal-950/10 p-4 rounded-lg">
+                  <p className="text-muted-foreground text-sm">
+                    <strong>AI Study Guides</strong> outperform traditional textbooks by making learning
+                    <span className="text-cyan-600 font-semibold">2x faster and 2.3x more effective!</span>
+                  </p>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -697,23 +625,12 @@ export default function Home() {
       {/* How It Works */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             How It Works
-          </motion.h2>
-          <motion.p
-            className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
             Transform your study routine in 3 simple steps
-          </motion.p>
+          </p>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -742,13 +659,7 @@ export default function Home() {
                 textColor: "text-teal-600"
               }
             ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
+              <div key={index}>
                 <Card className="relative h-full group hover:shadow-xl transition-all duration-300 overflow-hidden">
                   {/* Background gradient on hover */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${item.gradientFrom} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
@@ -769,7 +680,7 @@ export default function Home() {
                     <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -898,19 +809,14 @@ export default function Home() {
       {/* Key Features Section */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent">
               Learn Smarter with AI
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Discover the essential features that make studying more effective and engaging
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {[
@@ -957,15 +863,7 @@ export default function Home() {
                 delay: 0.5
               }
             ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: feature.delay, duration: 0.6 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group"
-              >
+              <div key={feature.title} className="group">
                 <Card className="h-full border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-950 hover:shadow-xl transition-all duration-300 overflow-hidden">
                   <CardContent className="p-8">
                     <div className="space-y-6">
@@ -989,17 +887,12 @@ export default function Home() {
                     <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
 
           {/* Feature highlights */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-16 text-center"
-          >
+          <div className="mt-16 text-center">
             <div className="inline-flex items-center gap-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
               <div className="text-center">
                 <div className="text-2xl font-bold text-cyan-600">⚡</div>
@@ -1018,32 +911,23 @@ export default function Home() {
                 <div className="text-sm font-semibold">AI-Powered Insights</div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Pricing Section */}
       <section className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Learning Journey</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Start free and unlock the full power of AI-powered education
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <Card className="relative h-full shadow-xl border-2 border-cyan-500/20 overflow-hidden group hover:shadow-2xl transition-all duration-500">
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-teal-500/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -1096,14 +980,10 @@ export default function Home() {
                 {/* Decorative element */}
                 <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
-            </motion.div>
+            </div>
 
             {/* Pro Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <Card className="relative h-full shadow-2xl border-2 border-purple-500/20 overflow-hidden group hover:shadow-3xl transition-all duration-500">
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -1164,7 +1044,7 @@ export default function Home() {
                 {/* Decorative element */}
                 <div className="absolute -bottom-2 -right-2 w-24 h-24 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -1172,12 +1052,7 @@ export default function Home() {
       {/* Final CTA */}
       <section className="py-16 md:py-24 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10">
         <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
+          <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
               Ready to Transform Your Learning Journey?
             </h2>
@@ -1212,7 +1087,7 @@ export default function Home() {
                 <span>🎮 Live multiplayer battles</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
