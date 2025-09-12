@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { GraduationCap, Loader2, BrainCircuit, Check, Trophy, Share2, GamepadIcon, Target, Zap, TrendingUp, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AppHeader } from "@/components/app-header";
-import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
-
-
+// Lazy load heavy components
+const AppHeader = lazy(() => import("@/components/app-header").then(mod => ({ default: mod.AppHeader })));
+const Footer = lazy(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -29,8 +28,8 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  // Enhanced navigation with instant feedback
-  const handleNavigation = (path: string, buttonText: string, e?: React.MouseEvent) => {
+  // Enhanced navigation with instant feedback - OPTIMIZED
+  const handleNavigation = useCallback((path: string, buttonText: string, e?: React.MouseEvent) => {
     if (navigatingTo) return; // Prevent multiple clicks
 
     e?.preventDefault();
@@ -40,16 +39,76 @@ export default function Home() {
     toast({
       title: `🚀 Taking you there...`,
       description: `Navigating to ${buttonText}`,
-      duration: 1000,
+      duration: 800, // Reduced duration for performance
     });
 
-    // Add a small delay for perceived responsiveness
-    setTimeout(() => {
-      router.push(path);
-      // Reset state after navigation (though component will unmount)
-      setNavigatingTo(null);
-    }, 100);
-  };
+    // Navigate immediately without delay
+    router.push(path);
+    setNavigatingTo(null);
+  }, [navigatingTo, router, toast]);
+
+  // OPTIMIZED: Memoize static data
+  const featuresList = useMemo(() => [
+    {
+      icon: BrainCircuit,
+      title: "Personalized Learning",
+      description: "Our AI adapts to your learning style and pace, creating custom study plans that optimize your retention and understanding.",
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: GamepadIcon,
+      title: "Live Quiz Battles",
+      description: "Challenge friends in real-time multiplayer quizzes. Turn studying into engaging competitions with instant scoring and leaderboards.",
+      color: "from-cyan-500 to-teal-500",
+    },
+    {
+      icon: FileText,
+      title: "Document Quiz Generator",
+      description: "Upload your notes, PDF files, or documents. Our AI automatically generates comprehensive quizzes to test your knowledge.",
+      color: "from-blue-500 to-purple-500",
+    },
+    {
+      icon: Share2,
+      title: "Social Learning",
+      description: "Share your quiz creations with friends and classmates. Learn together through collaborative educational experiences.",
+      color: "from-green-500 to-teal-500",
+    },
+    {
+      icon: TrendingUp,
+      title: "Progress Tracking",
+      description: "Monitor your improvement with detailed analytics and insights. See how your study habits improve over time.",
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      icon: BrainCircuit,
+      title: "AI-Powered Insights",
+      description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
+      color: "from-indigo-500 to-purple-500",
+    }
+  ], []);
+
+  // OPTIMIZED: State for lazy loading sections
+  const [visibleSections, setVisibleSections] = useState({ features: false });
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    // Observe sections lazily
+    const sectionsToObserve = document.querySelectorAll('[data-lazy-section]');
+    sectionsToObserve.forEach(section => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
 
   if (loading) {
     return (
@@ -845,8 +904,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Key Features Section */}
-      <section className="py-16 md:py-24 bg-background">
+      {/* Key Features Section - OPTIMIZED & LAZY LOADED */}
+      <section
+        id="features"
+        data-lazy-section
+        className="py-16 md:py-24 bg-background"
+        style={
+          visibleSections.features
+            ? { opacity: 1, transform: 'translateY(0)' }
+            : { opacity: 0, transform: 'translateY(20px)' }
+        }
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent">
@@ -857,78 +925,60 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {[
-              {
-                icon: BrainCircuit,
-                title: "Personalized Learning",
-                description: "Our AI adapts to your learning style and pace, creating custom study plans that optimize your retention and understanding.",
-                color: "from-purple-500 to-pink-500",
-                delay: 0
-              },
-              {
-                icon: GamepadIcon,
-                title: "Live Quiz Battles",
-                description: "Challenge friends in real-time multiplayer quizzes. Turn studying into engaging competitions with instant scoring and leaderboards.",
-                color: "from-cyan-500 to-teal-500",
-                delay: 0.1
-              },
-              {
-                icon: FileText,
-                title: "Document Quiz Generator",
-                description: "Upload your notes, PDF files, or documents. Our AI automatically generates comprehensive quizzes to test your knowledge.",
-                color: "from-blue-500 to-purple-500",
-                delay: 0.2
-              },
-              {
-                icon: Share2,
-                title: "Social Learning",
-                description: "Share your quiz creations with friends and classmates. Learn together through collaborative educational experiences.",
-                color: "from-green-500 to-teal-500",
-                delay: 0.3
-              },
-              {
-                icon: TrendingUp,
-                title: "Progress Tracking",
-                description: "Monitor your improvement with detailed analytics and insights. See how your study habits improve over time.",
-                color: "from-orange-500 to-red-500",
-                delay: 0.4
-              },
-              {
-                icon: BrainCircuit,
-                title: "AI-Powered Insights",
-                description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
-                color: "from-indigo-500 to-purple-500",
-                delay: 0.5
-              }
-            ].map((feature, index) => (
-              <div key={feature.title} className="group">
-                <Card className="h-full border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-950 hover:shadow-xl transition-all duration-300 overflow-hidden">
-                  <CardContent className="p-8">
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-center">
-                        <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <feature.icon className="w-8 h-8 text-white" />
+          {visibleSections.features ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {featuresList.map((feature, index) => {
+                const { icon: IconComponent } = feature;
+                return (
+                  <div key={feature.title} className="group">
+                    <Card className="h-full border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-950 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-8">
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-center">
+                            <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                              <IconComponent className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+
+                          <div className="text-center space-y-3">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                              {feature.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                              {feature.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Subtle gradient overlay */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // Placeholder while loading
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <Card className="h-full border border-gray-200 dark:border-gray-800">
+                    <CardContent className="p-8">
+                      <div className="space-y-6">
+                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-2xl mx-auto"></div>
+                        <div className="space-y-3">
+                          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-3/4"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-5/6"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-4/5"></div>
                         </div>
                       </div>
-
-                      <div className="text-center space-y-3">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
-                          {feature.title}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                          {feature.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Subtle gradient overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Feature highlights */}
           <div className="mt-16 text-center">
