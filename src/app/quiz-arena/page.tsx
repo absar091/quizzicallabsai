@@ -433,18 +433,20 @@ export default function QuizArenaPage() {
                           {template.description}
                         </p>
 
-                        <Button
-                          onClick={() => handleQuizTemplateSelect(template.id)}
-                          disabled={isCreatingRoom}
-                          className="w-full bg-gradient-to-r from-slate-700 to-slate-800 border border-slate-600 hover:border-slate-500 transition-all duration-200"
-                        >
-                          {isCreatingRoom ? (
-                            <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin mr-2" />
-                          ) : (
-                            <Play className="mr-2 h-4 w-4" />
-                          )}
-                          START BATTLE
-                        </Button>
+              <Button
+                onClick={() => handleQuizTemplateSelect(template.id)}
+                disabled={isCreatingRoom}
+                variant="featured"
+                size="lg"
+                className="w-full font-bold"
+              >
+                {isCreatingRoom ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                ) : (
+                  <Play className="mr-2 h-4 w-4" />
+                )}
+                START BATTLE
+              </Button>
                       </CardContent>
 
                       {/* Subtle hover effect */}

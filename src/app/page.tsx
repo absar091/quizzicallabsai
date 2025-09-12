@@ -100,26 +100,24 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
-                size="lg"
-                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300"
+                size="xl"
+                variant="featured"
                 onClick={(e) => handleNavigation('/signup', 'Sign Up')}
-                instantaneous
                 disabled={!!navigatingTo}
+                className="font-bold text-lg shadow-2xl"
               >
                 <Zap className="mr-2 h-5 w-5" />
                 {navigatingTo === '/signup' ? 'Taking you there...' : 'Start Free Trial'}
               </Button>
               <Button
-                size="lg"
-                variant="outline"
-                className="border-2 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-teal-500/20 hover:border-cyan-500/50 transition-all duration-300"
+                size="xl"
+                variant="cta"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
-                loading={navigatingTo === '/quiz-arena'}
-                loadingText="Loading Arena..."
                 disabled={!!navigatingTo}
+                className="font-bold text-lg shadow-2xl"
               >
                 <GamepadIcon className="mr-2 h-5 w-5" />
-                Play Live Quiz Arena
+                {navigatingTo === '/quiz-arena' ? 'Loading Arena...' : 'Play Live Quiz Arena'}
               </Button>
             </div>
           </div>
@@ -166,15 +164,13 @@ export default function Home() {
 
               <Button
                 size="lg"
-                className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 hover:shadow-xl transition-all duration-300"
+                variant="premium"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
                 disabled={!!navigatingTo}
+                className="font-bold"
               >
                 {navigatingTo === '/quiz-arena' ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Loading...
-                  </>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 ) : (
                   <>
                     Join Live Battles Now
