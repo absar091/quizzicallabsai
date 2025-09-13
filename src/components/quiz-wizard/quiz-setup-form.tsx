@@ -96,48 +96,116 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         title="Custom Quiz Generator"
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
-      <div className="space-y-6">
-        {/* Background Generation Info */}
-        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-            🚀 Smart Background Generation
-          </h3>
-          <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
-            Generate quizzes in the background! Continue using the app while AI creates your perfect quiz. Get notified when it's ready.
-          </p>
-          <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
-            <li>✅ Keep using other app features while generating</li>
-            <li>🔔 Get desktop/browser notifications when ready</li>
-            <li>🔄 Resume interrupted generations</li>
-            <li>📱 Works perfectly on mobile devices</li>
-          </ul>
-        </div>
 
-        <div className="flex gap-4">
-          <Button
-            type="button"
-            size="lg"
-            className="flex-1 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 shadow-xl border-0 font-bold"
-            onClick={form.handleSubmit(handleBackgroundSubmit)}
-          >
-            🔄 Generate in Background
-          </Button>
-          <Button
-            type="button"
-            size="lg"
-            variant="outline"
-            className="flex-1 border-2"
-            onClick={form.handleSubmit(onGenerateQuiz)}
-          >
-            ⚡ Quick Generate
-          </Button>
-        </div>
-
-        <div className="text-center text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
-          💡 <strong>Background Generation</strong> is perfect for complex topics that take longer to generate.
-          You'll be notified when ready!
-        </div>
+      {/* Background Generation Info */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          🚀 Smart Background Generation
+        </h3>
+        <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
+          Generate quizzes in the background! Continue using the app while AI creates your perfect quiz. Get notified when it's ready.
+        </p>
+        <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+          <li>✅ Keep using other app features while generating</li>
+          <li>🔔 Get desktop/browser notifications when ready</li>
+          <li>🔄 Resume interrupted generations</li>
+          <li>📱 Works perfectly on mobile devices</li>
+        </ul>
       </div>
+
+      <div className="flex gap-4 mb-6">
+        <Button
+          type="button"
+          size="lg"
+          className="flex-1 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 shadow-xl border-0 font-bold"
+          onClick={form.handleSubmit(handleBackgroundSubmit)}
+        >
+          🔄 Generate in Background
+        </Button>
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          className="flex-1 border-2"
+          onClick={form.handleSubmit(onGenerateQuiz)}
+        >
+          ⚡ Quick Generate
+        </Button>
+      </div>
+
+      <div className="text-center text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-6">
+        💡 <strong>Background Generation</strong> is perfect for complex topics that take longer to generate.
+        You'll be notified when ready!
+      </div>
+
+      {/* Form Structure */}
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onGenerateQuiz)} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>1. Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="topic"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quiz Topic</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., History of Renaissance, Quantum Physics, World War II" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Difficulty Level</FormLabel>
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-row space-x-6">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="easy" id="easy" />
+                          <Label htmlFor="easy">Easy</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="medium" id="medium" />
+                          <Label htmlFor="medium">Medium</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="hard" id="hard" />
+                          <Label htmlFor="hard">Hard</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="master" id="master" />
+                          <Label htmlFor="master">Master</Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>2. Quiz Configuration</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="questionTypes"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Question Types</FormLabel>
+                    <div className="grid grid-cols-1 gap-4 pt-2">
+                      {questionTypeOptions.map((item) => (
 
                       <FormField
                         key={item.id}
