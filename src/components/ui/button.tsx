@@ -22,9 +22,9 @@ const buttonVariants = cva(
         ghost: "text-primary hover:bg-primary/10 hover:shadow-md active:scale-[0.98] font-bold border border-primary/0 hover:border-primary/30",
         link: "text-primary underline-offset-4 hover:underline hover:bg-primary/10 active:scale-[0.98] font-bold",
         success: "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-lg border border-green-500/30 font-bold active:scale-[0.98]",
-        featured: "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 shadow-xl border-0 font-bold transform hover:scale-105 active:scale-[0.98]",
-        premium: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white hover:from-emerald-600 hover:via-teal-700 hover:to-cyan-700 shadow-xl border-0 font-bold text-base active:scale-[0.98]",
-        cta: "bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 shadow-xl border-0 font-bold text-lg px-8 py-4 active:scale-[0.98]",
+        featured: "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 shadow-lg border-0 font-bold hover:shadow-xl active:scale-[0.98]",
+        premium: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white hover:from-emerald-600 hover:via-teal-700 hover:to-cyan-700 shadow-lg border-0 font-bold hover:shadow-xl active:scale-[0.98]",
+        cta: "bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 shadow-lg border-0 font-bold px-6 py-3 active:scale-[0.98]",
       },
       size: {
         default: "h-11 px-6 py-2",

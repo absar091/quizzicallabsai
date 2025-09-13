@@ -61,84 +61,84 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
   const form = useFormContext<QuizFormValues>();
   const watchQuestionStyles = form.watch('questionStyles');
 
+  const handleBackgroundSubmit = async (values: QuizFormValues) => {
+    try {
+      // Use the new background generation system
+      const { useBackgroundJob } = await import('@/services/background-job-manager');
+      const { startBackgroundQuizGeneration } = useBackgroundJob();
+
+      const jobId = await startBackgroundQuizGeneration(values);
+      console.log('🎯 Background job started:', jobId);
+
+      // Let the user know
+      const { toast } = await import('@/hooks/use-toast');
+      toast({
+        title: "📤 Generation Started!",
+        description: "Your quiz is being generated in the background. You'll be notified when it's ready!",
+      });
+
+    } catch (error) {
+      console.error('Error starting background generation:', error);
+      const { toast } = await import('@/hooks/use-toast');
+      toast({
+        title: "❌ Failed to start generation",
+        description: "Please try again or use the regular generation method.",
+        variant: "destructive",
+      });
+      // Fallback to the original method
+      onGenerateQuiz(values);
+    }
+  };
+
   return (
     <div>
       <PageHeader
         title="Custom Quiz Generator"
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
-      <form onSubmit={form.handleSubmit(onGenerateQuiz)} className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>1. Quiz Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="topic"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Topic</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., The Solar System, React Hooks, The French Revolution" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="difficulty"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Difficulty Level</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2"
-                    >
-                      {["easy", "medium", "hard", "master"].map((level) => (
-                        <FormItem key={level} className="flex-1">
-                          <FormControl>
-                            <RadioGroupItem value={level} id={level} className="sr-only peer" />
-                          </FormControl>
-                          <Label
-                            htmlFor={level}
-                            className="flex h-full flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-4 hover:bg-secondary peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer capitalize"
-                          >
-                            {level}
-                          </Label>
-                        </FormItem>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        {/* Background Generation Info */}
+        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            🚀 Smart Background Generation
+          </h3>
+          <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
+            Generate quizzes in the background! Continue using the app while AI creates your perfect quiz. Get notified when it's ready.
+          </p>
+          <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+            <li>✅ Keep using other app features while generating</li>
+            <li>🔔 Get desktop/browser notifications when ready</li>
+            <li>🔄 Resume interrupted generations</li>
+            <li>📱 Works perfectly on mobile devices</li>
+          </ul>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>2. Question Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="questionTypes"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Question Types</FormLabel>
-                  <Alert className="mt-2 text-xs p-2">
-                    <ShieldAlert className="h-4 w-4"/>
-                    <AlertDescription>
-                      For entry test topics (MDCAT/ECAT/NTS), the AI will automatically generate 'Multiple Choice' questions only, regardless of your selection, to match the real exam format.
-                    </AlertDescription>
-                  </Alert>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {questionTypeOptions.map((item) => (
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            size="lg"
+            className="flex-1 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 hover:from-blue-700 hover:via-purple-700 hover:to-blue-900 shadow-xl border-0 font-bold"
+            onClick={form.handleSubmit(handleBackgroundSubmit)}
+          >
+            🔄 Generate in Background
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            variant="outline"
+            className="flex-1 border-2"
+            onClick={form.handleSubmit(onGenerateQuiz)}
+          >
+            ⚡ Quick Generate
+          </Button>
+        </div>
+
+        <div className="text-center text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+          💡 <strong>Background Generation</strong> is perfect for complex topics that take longer to generate.
+          You'll be notified when ready!
+        </div>
+      </div>
+
                       <FormField
                         key={item.id}
                         control={form.control}

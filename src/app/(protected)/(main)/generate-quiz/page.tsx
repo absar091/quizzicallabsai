@@ -46,8 +46,7 @@ const FlashcardViewer = dynamic(() => import('@/components/quiz-wizard/flashcard
 });
 
 // Import types and utilities
-import type { GenerateCustomQuizOutput } from "@/ai/flows/generate-custom-quiz";
-import type { GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards";
+import type { GenerateCustomQuizOutput, GenerateFlashcardsOutput } from "@/types/ai";
 import {
     getQuizState,
     saveQuizState,
@@ -230,6 +229,14 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     if (isSubmitting || showResults) return;
 
     setIsSubmitting(true);
+
+    // 🐛 BUG FIX: Clear timer SYNCHRONOUSLY BEFORE setting showResults
+    // This prevents race condition where timer fires again after setShowResults(true)
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null; // Explicitly set to null to prevent further executions
+    }
+
     setShowResults(true);
 
     try {
@@ -242,7 +249,6 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         const timeSpent = initialTimeSeconds - timeLeft;
         const timeTaken = Math.max(0, timeSpent); // Ensure non-negative time
 
-        // Debug log for study time tracking
         console.log('Study time calculation:', {
           initialTimeSeconds,
           timeLeft,
@@ -261,6 +267,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           date: new Date().toISOString(),
           timeTaken: timeTaken, // Track actual study time
         };
+
         const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
         await set(resultRef, newResult);
         await saveQuizResult(newResult);
@@ -272,7 +279,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     } finally {
       setIsSubmitting(false);
     }
-    window.scrollTo(0, 0);
+
+    // Scroll to top after a brief delay to ensure results are rendered
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
   }, [quiz, userAnswers, formValues, user, calculateScore, timeLeft, isSubmitting, showResults]);
 
 

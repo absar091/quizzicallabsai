@@ -125,7 +125,14 @@ class CloudSyncManager {
         await this.updateLocalData(remoteData);
       }
     } catch (error) {
-      errorLogger.logError(error as Error, {
+      // Properly handle different error types
+      const errorMessage = error instanceof Error ? error.message :
+                          typeof error === 'string' ? error :
+                          'Unknown error occurred during remote changes';
+
+      const errorObj = error instanceof Error ? error : new Error(errorMessage);
+
+      errorLogger.logError(errorObj, {
         operation: 'handle_remote_changes',
         component: 'cloud_sync',
         severity: 'medium',
@@ -327,7 +334,14 @@ class CloudSyncManager {
       });
 
     } catch (error) {
-      errorLogger.logError(error as Error, {
+      // Properly handle different error types
+      const errorMessage = error instanceof Error ? error.message :
+                          typeof error === 'string' ? error :
+                          'Unknown error occurred during sync performance';
+
+      const errorObj = error instanceof Error ? error : new Error(errorMessage);
+
+      errorLogger.logError(errorObj, {
         operation: 'perform_sync',
         component: 'cloud_sync',
         severity: 'high',
@@ -495,7 +509,14 @@ class CloudSyncManager {
       }
 
     } catch (error) {
-      errorLogger.logError(error as Error, {
+      // Properly handle different error types
+      const errorMessage = error instanceof Error ? error.message :
+                          typeof error === 'string' ? error :
+                          'Unknown error occurred during local data update';
+
+      const errorObj = error instanceof Error ? error : new Error(errorMessage);
+
+      errorLogger.logError(errorObj, {
         operation: 'update_local_data',
         component: 'cloud_sync',
         severity: 'high',
@@ -535,7 +556,14 @@ class CloudSyncManager {
 
       await update(userRef, updateData);
     } catch (error) {
-      errorLogger.logError(error as Error, {
+      // Properly handle different error types
+      const errorMessage = error instanceof Error ? error.message :
+                          typeof error === 'string' ? error :
+                          'Unknown error occurred during remote data update';
+
+      const errorObj = error instanceof Error ? error : new Error(errorMessage);
+
+      errorLogger.logError(errorObj, {
         operation: 'update_remote_data',
         component: 'cloud_sync',
         severity: 'high',

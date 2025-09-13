@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as admin from 'firebase-admin';
 import { backgroundJobService } from "@/services/background-job-service";
 import { generateCustomQuiz } from "@/ai/flows/generate-custom-quiz";
+import { notificationService } from "@/services/notification-service";
 
 // Initialize Firebase Admin
 if (!admin.apps.length) {
@@ -44,6 +45,28 @@ export async function POST(request: NextRequest) {
 
     // Extract quiz generation parameters from request body
     const body = await request.json();
+    const {
+      topic,
+      difficulty,
+      numberOfQuestions,
+      questionTypes,
+      questionStyles,
+      timeLimit,
+      specificInstructions,
+      isPro = false,
+      userAge,
+      userClass,
+      recentQuizHistory = []
+    } = body;
+
+    if (!topic || typeof topic !== 'string') {
+      return NextResponse.json(
+        { error: 'Topic is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    // Extract quiz generation parameters
     const {
       topic,
       difficulty,
@@ -158,9 +181,42 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error in quiz generation route:', error);
+    console.error('Error in background quiz generation:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
+// GET endpoint to retrieve job status
+export async function GET(request: NextRequest) {
+  const url = new URL(request.url);
+  const jobId = url.searchParams.get('jobId');
+  const userId = url.searchParams.get('userId');
+
+  if (!jobId || !userId) {
+    return NextResponse.json(
+      { error: 'Job ID and User ID are required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const job = await backgroundJobService.getJob(jobId, userId);
+
+    if (!job) {
+      return NextResponse.json(
+        { error: 'Job not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(job);
+  } catch (error) {
+    console.error('Error retrieving job:', error);
+    return NextResponse.json(
+      { error: 'Failed to retrieve job' },
       { status: 500 }
     );
   }

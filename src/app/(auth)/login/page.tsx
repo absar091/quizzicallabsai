@@ -7,10 +7,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import { Button } from "@/components/ui/button";
+import {
+  isLoginAllowed,
+  recordLoginFailure,
+  recordLoginSuccess,
+  getLoginRemainingAttempts,
+  getLoginLockoutStatus,
+  formatTimeRemaining,
+  getProgressiveDelay
+} from "@/lib/rate-limiting";
 import {
   Form,
   FormControl,
@@ -25,7 +34,7 @@ import { auth, db } from "@/lib/firebase";
 import { ref, get, set } from "firebase/database";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -42,6 +51,13 @@ export default function LoginPage() {
   const [isResending, setIsResending] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  // 🔐 Brute Force Protection State
+  const [remainingAttempts, setRemainingAttempts] = useState(5);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTimeRemaining, setLockoutTimeRemaining] = useState<number | undefined>();
+  const [nextAttemptDelay, setNextAttemptDelay] = useState(0);
+  const [canAttemptLogin, setCanAttemptLogin] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,25 +91,38 @@ export default function LoginPage() {
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // 🚨 BRUTE FORCE PROTECTION: Check if login is allowed
+    if (!canAttemptLogin || nextAttemptDelay > 0) {
+      toast({
+        title: "Too Many Attempts",
+        description: `Please wait ${Math.ceil(nextAttemptDelay / 1000)} seconds before trying again.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setShowVerificationAlert(false);
     setIsSubmitting(true);
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
-      
+
+      // 🔐 SUCCESSFUL LOGIN: Record success and reset counters
+      recordLoginSuccess(values.email);
+      setRemainingAttempts(5);
+      setNextAttemptDelay(0);
+
       // Check if user has ever verified their email
       if (!userCredential.user.emailVerified) {
-        // Check if this is a new user who hasn't verified yet
         const userRef = ref(db, `users/${userCredential.user.uid}/emailVerified`);
         const snapshot = await get(userRef);
-        
+
         if (!snapshot.exists()) {
-          // First time login without verification
           setShowVerificationAlert(true);
           setIsSubmitting(false);
           return;
         }
       } else {
-        // User is verified, update their verification status in database
         const userRef = ref(db, `users/${userCredential.user.uid}/emailVerified`);
         await set(userRef, true);
       }
@@ -102,21 +131,55 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
       });
-      // The AuthContext will handle the redirect
     } catch (error: any) {
-       let errorMessage = "An unknown error occurred.";
-        if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-            errorMessage = "Invalid email or password. Please check your credentials and try again.";
-        } else {
-            errorMessage = error.message;
-        }
+      // ❌ FAILED LOGIN: Record failure and show appropriate message
+      recordLoginFailure(values.email);
+      const newRemaining = getLoginRemainingAttempts(values.email);
+      setRemainingAttempts(newRemaining);
+
+      let errorMessage = "An unknown error occurred.";
+      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+        errorMessage = "Invalid email or password. Please check your credentials and try again.";
+      } else {
+        errorMessage = error.message;
+      }
+
+      // Add remaining attempts info to error message
+      if (newRemaining < 5) {
+        errorMessage += ` (${newRemaining} attempts remaining)`;
+      }
+
       toast({
         title: "Login Failed",
         description: errorMessage,
         variant: "destructive",
       });
+
+      // 🛑 ACCOUNT LOCKOUT: If no attempts remaining
+      if (newRemaining === 0) {
+        const lockoutStatus = getLoginLockoutStatus(values.email);
+        if (lockoutStatus.remainingLockTime) {
+          setLockoutTimeRemaining(lockoutStatus.remainingLockTime);
+          setNextAttemptDelay(lockoutStatus.remainingLockTime);
+          toast({
+            title: "Account Temporarily Locked",
+            description: `Too many failed attempts. Try again in ${formatTimeRemaining(lockoutStatus.remainingLockTime)}.`,
+            variant: "destructive",
+          });
+        }
+      } else {
+        // Progressive delay for remaining attempts
+        const delay = getProgressiveDelay(5 - newRemaining + 1);
+        setNextAttemptDelay(delay);
+        setCanAttemptLogin(false);
+
+        setTimeout(() => {
+          setCanAttemptLogin(true);
+          setNextAttemptDelay(0);
+        }, delay);
+      }
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -155,14 +218,46 @@ export default function LoginPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+              {/* 🔐 Brute Force Protection Alerts */}
+              {isLocked && lockoutTimeRemaining && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Account Temporarily Locked</AlertTitle>
+                  <AlertDescription>
+                    Too many failed login attempts. Try again in {formatTimeRemaining(lockoutTimeRemaining)}.
+                    <Clock className="h-3 w-3 inline ml-1" />
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {remainingAttempts < 5 && remainingAttempts > 0 && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    {remainingAttempts} login attempt{remainingAttempts !== 1 ? 's' : ''} remaining.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {!canAttemptLogin && nextAttemptDelay > 0 && (
+                <Alert>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Too Many Attempts</AlertTitle>
+                  <AlertDescription>
+                    Please wait {Math.ceil(nextAttemptDelay / 1000)} seconds before trying again.
+                  </AlertDescription>
+                </Alert>
+              )}
+
              {showVerificationAlert && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertTitle>Email Not Verified</AlertTitle>
                   <AlertDescription>
                     You must verify your email address before logging in.
-                    <Button 
-                        variant="link" 
+                    <Button
+                        variant="link"
                         className="p-0 h-auto ml-1 font-bold text-destructive"
                         onClick={handleResendVerification}
                         disabled={isResending}
