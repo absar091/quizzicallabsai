@@ -67,6 +67,93 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
 
+      {/* 🔍 MISSING TOPIC FIELD - THIS WAS CAUSING THE ISSUE! */}
+      <FormField
+        control={form.control}
+        name="topic"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Quiz Topic *</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="e.g., MDCAT Biology - Cell Structure, Algebra Basics, Newton's Laws..."
+                {...field}
+                className="text-base"
+              />
+            </FormControl>
+            <FormMessage />
+            <Alert className="mt-2 text-xs p-2">
+              <AlertTriangle className="h-4 w-4"/>
+              <AlertDescription>
+                Be specific! Include subject and chapter name for best results.
+              </AlertDescription>
+            </Alert>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="difficulty"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Difficulty Level</FormLabel>
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="flex flex-col space-y-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="easy" id="easy" />
+                  <Label htmlFor="easy" className="font-normal cursor-pointer">
+                    Easy - Basic concepts and simple applications
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="medium" id="medium" />
+                  <Label htmlFor="medium" className="font-normal cursor-pointer">
+                    Medium - Conceptual understanding and moderate complexity
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="hard" id="hard" />
+                  <Label htmlFor="hard" className="font-normal cursor-pointer">
+                    Hard - Complex problem-solving and advanced concepts
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="master" id="master" />
+                  <Label htmlFor="master" className="font-normal cursor-pointer">
+                    Master - Expert-level knowledge (MDCAT/ETEA exam standard)
+                  </Label>
+                </div>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="specificInstructions"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Specific Instructions (Optional)</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder="Any specific requirements, subtopics, or focus areas..."
+                {...field}
+                rows={3}
+                className="text-base resize-none"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="questionTypes"
