@@ -342,3 +342,12 @@ export async function updateUserStats(userId: string, quizResult: any) {
       const currentAvg = (existingStats as any).stats?.averageScore || 0;
       const currentCount = (existingStats as any).stats?.totalQuizzesTaken || 0;
       const newAvg = ((currentAvg * currentCount) + quizResult.percentage) / (currentCount + 1);
+      updates.$set['stats.averageScore'] = Math.round(newAvg * 100) / 100;
+    }
+
+    await UserModel.updateOne({ uid: userId }, updates);
+  } catch (error) {
+    console.error('Error updating user stats:', error);
+    throw error;
+  }
+}
