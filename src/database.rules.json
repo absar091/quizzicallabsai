@@ -12,8 +12,12 @@
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".validate": "newData.hasChildren(['score','date']) && newData.child('score').isNumber() && newData.child('date').isNumber()",
-        ".indexOn": ["date", "lastModified"]
+        ".validate": "newData.hasChildren(['score', 'totalQuestions', 'percentage']) && newData.child('score').isNumber() && newData.child('totalQuestions').isNumber() && newData.child('percentage').isNumber()",
+        ".indexOn": ["createdAt", "topic", "difficulty"],
+        "$quizId": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        }
       }
     },
     "bookmarks": {
