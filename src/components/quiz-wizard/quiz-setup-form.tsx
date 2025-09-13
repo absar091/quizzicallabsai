@@ -168,7 +168,7 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                           )
                         }}
                       />
-                    ))}
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>

@@ -85,7 +85,7 @@ class ErrorLogger {
   }
 
   logError(
-    error: Error | string,
+    error: Error | string | any,
     context: {
       operation: string;
       component: string;
@@ -98,7 +98,20 @@ class ErrorLogger {
       responseTime?: number;
     }
   ) {
-    const errorObj = typeof error === 'string' ? new Error(error) : error;
+    // Handle empty objects or undefined errors properly
+    let errorObj: Error;
+    if (!error || (typeof error === 'object' && Object.keys(error).length === 0)) {
+      // Handle empty objects or undefined errors
+      errorObj = new Error('Unknown error occurred');
+    } else if (typeof error === 'string') {
+      errorObj = new Error(error);
+    } else if (error instanceof Error) {
+      errorObj = error;
+    } else {
+      // Handle objects that aren't proper Error instances
+      const errorMsg = error?.message || error?.toString() || 'Unknown error occurred';
+      errorObj = new Error(errorMsg);
+    }
 
     const logEntry: ErrorLog = {
       id: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
