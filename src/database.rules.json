@@ -5,7 +5,7 @@
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified"]
+        ".indexOn": ["lastModified", "lastLogin"]
       }
     },
     "quizResults": {
@@ -70,6 +70,32 @@
       ".write": "auth != null && newData.child('ownerId').val() == auth.uid",
       ".validate": "newData.hasChildren(['title', 'questions', 'ownerId'])",
       ".indexOn": ["createdAt", "shareCode"]
+    },
+    "sharedQuizzes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "quiz-rooms": {
+      ".read": "auth != null",
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "players": {
+          ".read": "auth != null",
+          ".write": "auth != null",
+          "$userId": {
+            ".read": "auth != null",
+            ".write": "$userId === auth.uid"
+          }
+        },
+        "answers": {
+          ".read": "auth != null",
+          ".write": "auth != null",
+          "$answerId": {
+            ".write": "auth.uid === data.child('userId').val()"
+          }
+        }
+      }
     },
     "quiz_likes": {
       "$quizId": {

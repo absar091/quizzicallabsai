@@ -5,6 +5,9 @@
 
 import mongoose from 'mongoose';
 
+// Export getModel from the correct location
+export { getModel } from '@/lib/getModel';
+
 // User Model - For Firebase-authenticated users
 export interface IUser extends mongoose.Document {
   uid: string; // Firebase UID
@@ -232,16 +235,15 @@ const ApiUsageSchema = new mongoose.Schema<IApiUsage>({
   error: String
 });
 
-// Indexes for performance
-UserSchema.index({ uid: 1 }, { unique: true });
+// Indexes for performance - Single definition to avoid duplicate warnings
 UserSchema.index({ email: 1 });
 UserSchema.index({ lastLogin: -1 });
 
 QuizResultSchema.index({ userId: 1, createdAt: -1 });
 QuizResultSchema.index({ topic: 1, createdAt: -1 });
 
-FlashcardSchema.index({ userId: 1, nextReviewDate: 1 });
-FlashcardSchema.index({ userId: 1, createdAt: -1 });
+FlashcardSchema.index({ userId: 1 });
+FlashcardSchema.index({ nextReviewDate: 1 });
 
 BookmarkSchema.index({ userId: 1, createdAt: -1 });
 
@@ -351,3 +353,9 @@ export async function updateUserStats(userId: string, quizResult: any) {
     throw error;
   }
 }
+
+// Model Router Constants - Match environment variables
+export const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
+export const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-2.0-flash';
+export const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
+export const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-2.5-flash';

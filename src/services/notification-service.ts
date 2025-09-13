@@ -149,7 +149,52 @@ class NotificationService {
     }
     return null;
   }
+
+  // Schedule daily reminder notifications for inactive users
+  async sendDailyReminderNotifications(): Promise<void> {
+    // Implementation for daily reminders
+    console.log('Daily reminder notifications system - placeholder');
+  }
+
+  // Send engagement notifications to keep users engaged
+  async sendEngagementNotifications(): Promise<void> {
+    // Implementation for engagement notifications
+    console.log('Engagement notifications system - placeholder');
+  }
+
+  // Send notifications to inactive users to re-engage
+  async sendInactiveUserNotifications(): Promise<void> {
+    // Implementation for re-engagement notifications
+    console.log('Inactive user notifications system - placeholder');
+  }
+
+  // Send welcome notifications to new users
+  async sendWelcomeNotifications(): Promise<void> {
+    // Implementation for welcome notifications
+    console.log('Welcome notifications system - placeholder');
+  }
 }
 
 // Export singleton instance
 export const notificationService = new NotificationService();
+
+// Standalone functions for cron jobs and API routes
+export async function sendDailyReminderNotifications(): Promise<void> {
+  const service = new NotificationService();
+  return service.sendDailyReminderNotifications();
+}
+
+export async function sendEngagementNotifications(): Promise<void> {
+  const service = new NotificationService();
+  return service.sendEngagementNotifications();
+}
+
+export async function sendInactiveUserNotifications(): Promise<void> {
+  const service = new NotificationService();
+  return service.sendInactiveUserNotifications();
+}
+
+export async function sendWelcomeNotifications(): Promise<void> {
+  const service = new NotificationService();
+  return service.sendWelcomeNotifications();
+}

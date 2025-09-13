@@ -2,6 +2,9 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Eliminate workspace root inference warnings
+  outputFileTracingRoot: process.cwd(),
+
   // Performance optimizations
   poweredByHeader: false,
   compress: true,

@@ -66,28 +66,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract quiz generation parameters
-    const {
-      topic,
-      difficulty,
-      numberOfQuestions,
-      questionTypes,
-      questionStyles,
-      timeLimit,
-      specificInstructions,
-      isPro = false,
-      userAge,
-      userClass,
-      recentQuizHistory = []
-    } = body;
-
-    if (!topic || typeof topic !== 'string') {
-      return NextResponse.json(
-        { error: 'Topic is required and must be a string' },
-        { status: 400 }
-      );
-    }
-
     // Create form values object for the job
     const formValues = {
       topic,
