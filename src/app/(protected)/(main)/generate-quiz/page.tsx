@@ -338,14 +338,29 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         stack: error.stack
       });
       
-      // Show user-friendly error message
-      toast({
-        title: "Quiz Submission Error",
-        description: "There was an issue saving your quiz results. Your answers have been saved locally.",
-        variant: "destructive",
-      });
+      // Show user-friendly error message based on error type
+      if (error.code === 'PERMISSION_DENIED' || error.message?.includes('permission')) {
+        toast({
+          title: "Permission Error",
+          description: "Unable to save to cloud. Your results are saved locally. Please check your internet connection.",
+          variant: "destructive",
+        });
+      } else if (error.code === 'NETWORK_ERROR' || error.message?.includes('network')) {
+        toast({
+          title: "Network Error", 
+          description: "Connection issue detected. Your results are saved locally and will sync when online.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Quiz Submission Error",
+          description: "There was an issue saving your quiz results. Your answers have been saved locally.",
+          variant: "destructive",
+        });
+      }
       
-      setShowResults(false); // Reset to allow retry
+      // Don't reset showResults - let user see their results even if save failed
+      // setShowResults(false); // Reset to allow retry
     } finally {
       setIsSubmitting(false);
     }
