@@ -107,10 +107,10 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
             <FormControl>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                 {[
-                  { value: "easy", label: "Easy", description: "Basic concepts", color: "bg-green-50 border-green-200 text-green-800 hover:bg-green-100" },
-                  { value: "medium", label: "Medium", description: "Moderate complexity", color: "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100" },
-                  { value: "hard", label: "Hard", description: "Advanced concepts", color: "bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100" },
-                  { value: "master", label: "Master", description: "MDCAT/ETEA standard", color: "bg-red-50 border-red-200 text-red-800 hover:bg-red-100" }
+                  { value: "easy", label: "Easy", description: "Basic concepts", color: "bg-green-100 border-green-300 text-green-900 hover:bg-green-200" },
+                  { value: "medium", label: "Medium", description: "Moderate complexity", color: "bg-blue-100 border-blue-300 text-blue-900 hover:bg-blue-200" },
+                  { value: "hard", label: "Hard", description: "Advanced concepts", color: "bg-orange-100 border-orange-300 text-orange-900 hover:bg-orange-200" },
+                  { value: "master", label: "Master", description: "MDCAT/ETEA standard", color: "bg-red-100 border-red-300 text-red-900 hover:bg-red-200" }
                 ].map((difficulty) => (
                   <div key={difficulty.value}>
                     <input
@@ -230,11 +230,11 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
               {questionStyleOptions.map((item) => {
                 const isSelected = field.value?.includes(item.id);
                 const colorMap = {
-                  "Knowledge-based": "bg-purple-50 border-purple-200 text-purple-800 hover:bg-purple-100",
-                  "Conceptual": "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100", 
-                  "Numerical": "bg-green-50 border-green-200 text-green-800 hover:bg-green-100",
-                  "Past Paper Style": "bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100",
-                  "Comprehension-based MCQs": "bg-red-50 border-red-200 text-red-800 hover:bg-red-100"
+                  "Knowledge-based": "bg-purple-100 border-purple-300 text-purple-900 hover:bg-purple-200",
+                  "Conceptual": "bg-blue-100 border-blue-300 text-blue-900 hover:bg-blue-200", 
+                  "Numerical": "bg-green-100 border-green-300 text-green-900 hover:bg-green-200",
+                  "Past Paper Style": "bg-orange-100 border-orange-300 text-orange-900 hover:bg-orange-200",
+                  "Comprehension-based MCQs": "bg-red-100 border-red-300 text-red-900 hover:bg-red-200"
                 };
                 
                 return (
