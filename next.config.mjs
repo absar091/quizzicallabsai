@@ -46,6 +46,21 @@ const nextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
+    // Comprehensive warning suppression - this is the key fix
+    config.ignoreWarnings = [
+      // Ignore handlebars require.extensions warnings
+      {
+        module: /handlebars/,
+        message: /require\.extensions is not supported by webpack/,
+      },
+      {
+        module: /dotprompt/,
+        message: /require\.extensions is not supported by webpack/,
+      },
+      // Ignore other common warnings
+      /Critical dependency: the request of a dependency is an expression/,
+    ];
+
     // Handle Node.js modules that should not be bundled for client-side
     if (!isServer) {
       config.resolve.fallback = {
