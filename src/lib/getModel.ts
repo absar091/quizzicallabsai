@@ -3,7 +3,7 @@
  * Centralized model selection logic for different user plans
  */
 
-// Model Router Constants - Direct from environment
+// Model Router Constants - Original model names as requested
 const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
 const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-2.0-flash';
 const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
@@ -94,7 +94,8 @@ export function isModelAvailable(modelName: string): boolean {
     'gemini-1.5-pro',
     'gemini-2.0-flash',
     'gemini-2.5-pro',
-    'gemini-2.5-flash'
+    'gemini-2.5-flash',
+    'gemini-1.0-pro'
   ];
 
   return availableModels.includes(modelName);

@@ -198,7 +198,7 @@ export default function QuizArenaPage() {
             description: `Creating ${template.questions} questions for ${template.topic}`,
           });
 
-          const response = await fetch('/api/generate-quiz', {
+          const response = await fetch('/api/ai/custom-quiz', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 // API Key Rotation System for Google AI
-// Cycles through multiple API keys to prevent overloading
+// Automatically tries next key if current one fails
 
 class ApiKeyManager {
   private static instance: ApiKeyManager;
@@ -7,6 +7,7 @@ class ApiKeyManager {
   private currentKeyIndex: number = 0;
   private usageCount: number = 0;
   private readonly maxUsagePerKey: number = 50; // Rotate after 50 requests per key
+  private failedKeys: Set<number> = new Set(); // Track failed keys
 
   private constructor() {
     // Initialize with API keys from environment variables
@@ -40,7 +41,6 @@ class ApiKeyManager {
     if (keys.length === 0) {
       console.warn('⚠️ No valid Gemini API keys found in environment variables');
       console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('GEMINI')));
-      // Don't provide demo key - let it fail gracefully
       return [];
     }
 
@@ -84,6 +84,19 @@ class ApiKeyManager {
   }
 
   getCurrentKey(): string {
+    // Find next working key if current one has failed
+    let attempts = 0;
+    while (this.failedKeys.has(this.currentKeyIndex) && attempts < this.apiKeys.length) {
+      this.currentKeyIndex = (this.currentKeyIndex + 1) % this.apiKeys.length;
+      attempts++;
+    }
+    
+    if (attempts >= this.apiKeys.length) {
+      // All keys have failed, reset and try again
+      console.warn('🔄 All API keys failed, resetting failed keys list');
+      this.failedKeys.clear();
+    }
+    
     return this.apiKeys[this.currentKeyIndex];
   }
 
@@ -97,6 +110,18 @@ class ApiKeyManager {
     }
 
     this.saveState();
+    return this.getCurrentKey();
+  }
+
+  // Get next working key immediately (for error recovery)
+  getNextWorkingKey(): string {
+    // Mark current key as failed
+    this.failedKeys.add(this.currentKeyIndex);
+    console.log(`🔄 Marking API key ${this.currentKeyIndex + 1} as failed, trying next key`);
+    
+    // Move to next key
+    this.rotateToNextKey();
+    
     return this.getCurrentKey();
   }
 
@@ -131,10 +156,25 @@ class ApiKeyManager {
     this.saveState();
   }
 
-  // Handle API errors - rotate to next key
+  // Handle API errors - try next working key immediately
   handleApiError() {
-    console.warn(`⚠️ API Error detected, rotating to next key`);
-    this.forceRotate();
+    console.warn(`⚠️ API Error detected, trying next working key`);
+    return this.getNextWorkingKey();
+  }
+
+  // Reset failed keys (call this periodically or when keys are renewed)
+  resetFailedKeys() {
+    this.failedKeys.clear();
+    console.log('🔄 Reset failed keys list');
+  }
+
+  // Get status including failed keys info
+  getDetailedStatus() {
+    return {
+      ...this.getStatus(),
+      failedKeys: Array.from(this.failedKeys).map(i => i + 1),
+      workingKeys: this.apiKeys.length - this.failedKeys.size
+    };
   }
 }
 
@@ -144,6 +184,9 @@ export const apiKeyManager = ApiKeyManager.getInstance();
 // Utility functions for easy access
 export const getCurrentApiKey = () => apiKeyManager.getCurrentKey();
 export const getNextApiKey = () => apiKeyManager.getNextKey();
+export const getNextWorkingApiKey = () => apiKeyManager.getNextWorkingKey();
 export const rotateApiKey = () => apiKeyManager.forceRotate();
 export const getApiKeyStatus = () => apiKeyManager.getStatus();
+export const getDetailedApiKeyStatus = () => apiKeyManager.getDetailedStatus();
 export const handleApiKeyError = () => apiKeyManager.handleApiError();
+export const resetFailedApiKeys = () => apiKeyManager.resetFailedKeys();

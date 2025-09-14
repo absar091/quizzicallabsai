@@ -480,7 +480,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
-      const response = await fetch("/api/generate-quiz", {
+      const response = await fetch("/api/ai/custom-quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

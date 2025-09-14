@@ -1,6 +1,6 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
-import { getNextApiKey, handleApiKeyError } from '@/lib/api-key-manager';
+import { getNextApiKey, handleApiKeyError, getNextWorkingApiKey } from '@/lib/api-key-manager';
 
 // Check if we're in a server environment and API key is available
 const isServer = typeof process !== 'undefined';
@@ -50,11 +50,10 @@ const initializeAI = () => {
     return _ai;
   } catch (error) {
     console.error('Failed to initialize AI:', error);
-    // Try rotating to next key on initialization failure
+    // Try next working key on initialization failure
     try {
-      handleApiKeyError();
-      const fallbackKey = getNextApiKey();
-      console.log(`🔄 Fallback: Using next API key: ${fallbackKey.substring(0, 20)}...`);
+      const fallbackKey = getNextWorkingApiKey();
+      console.log(`🔄 Fallback: Using next working API key: ${fallbackKey.substring(0, 20)}...`);
 
       _ai = genkit({
         plugins: [

@@ -228,16 +228,21 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
         
         if (retryCount > maxRetries) {
           // Provide specific error messages based on error type
-          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
-            // Rotate to next API key for quota issues
+          if (errorMsg.includes('quota') || errorMsg.includes('rate limit') || errorMsg.includes('expired') || errorMsg.includes('invalid')) {
+            // Try next working API key for quota/expired key issues
             try {
-              const { handleApiKeyError } = await import('@/lib/api-key-manager');
-              handleApiKeyError();
-              console.log('🔄 Rotated API key due to quota limit');
+              const { getNextWorkingApiKey } = await import('@/lib/api-key-manager');
+              const newKey = getNextWorkingApiKey();
+              console.log('🔄 Switched to next working API key due to error:', errorMsg.substring(0, 50));
+              
+              // If we're not on the last retry, continue with new key
+              if (retryCount < maxRetries) {
+                continue; // This will retry with the new key
+              }
             } catch (rotateError) {
-              console.warn('Failed to rotate API key:', rotateError);
+              console.warn('Failed to get next working API key:', rotateError);
             }
-            throw new Error('API quota exceeded. Please try again in a few minutes.');
+            throw new Error('API issue detected. Trying alternative API key...');
           } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
             throw new Error('Request timeout. The AI service is busy. Please try again.');
           } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {

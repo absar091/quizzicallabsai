@@ -5,7 +5,7 @@
 
 import mongoose from 'mongoose';
 
-// Model Router Constants - Match environment variables
+// Model Router Constants - Original model names as requested
 export const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
 export const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-2.0-flash';
 export const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
