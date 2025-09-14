@@ -241,6 +241,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
     try {
       if (quiz && formValues && user) {
+        console.log('🎯 Starting quiz submission for user:', user.uid);
+        
         const { score, percentage } = calculateScore();
         const resultId = `${user.uid}-${Date.now()}`;
 
@@ -266,15 +268,70 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           percentage,
           date: new Date().toISOString(),
           timeTaken: timeTaken, // Track actual study time
+          createdAt: Date.now(), // Add timestamp for indexing
         };
 
-        const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
-        await set(resultRef, newResult);
-        await saveQuizResult(newResult);
-        await deleteQuizState(user.uid);
+        console.log('📝 Saving quiz result:', { resultId, score, percentage, topic: formValues.topic });
+
+        // Try to save to Firebase first
+        try {
+          const resultRef = ref(db, `quizResults/${user.uid}/${resultId}`);
+          await set(resultRef, newResult);
+          console.log('✅ Firebase save successful');
+        } catch (firebaseError: any) {
+          console.error('❌ Firebase save failed:', firebaseError);
+          console.error('Firebase error details:', {
+            code: firebaseError.code,
+            message: firebaseError.message,
+            userId: user.uid,
+            path: `quizResults/${user.uid}/${resultId}`
+          });
+          
+          // Continue with local save even if Firebase fails
+        }
+
+        // Save to local IndexedDB (this should always work)
+        try {
+          await saveQuizResult(newResult);
+          console.log('✅ Local IndexedDB save successful');
+        } catch (localError) {
+          console.error('❌ Local save failed:', localError);
+        }
+
+        // Clean up quiz state
+        try {
+          await deleteQuizState(user.uid);
+          console.log('✅ Quiz state cleanup successful');
+        } catch (cleanupError) {
+          console.error('⚠️ Quiz state cleanup failed:', cleanupError);
+        }
+
+        console.log('🎉 Quiz submission completed successfully');
+      } else {
+        console.error('❌ Missing required data for quiz submission:', {
+          hasQuiz: !!quiz,
+          hasFormValues: !!formValues,
+          hasUser: !!user,
+          userUid: user?.uid
+        });
+        throw new Error('Missing required data for quiz submission');
       }
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
+    } catch (error: any) {
+      console.error('❌ Error submitting quiz:', error);
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      
+      // Show user-friendly error message
+      toast({
+        title: "Quiz Submission Error",
+        description: "There was an issue saving your quiz results. Your answers have been saved locally.",
+        variant: "destructive",
+      });
+      
       setShowResults(false); // Reset to allow retry
     } finally {
       setIsSubmitting(false);
