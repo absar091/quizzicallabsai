@@ -80,9 +80,8 @@ const generateSimpleExplanationFlow = (aiInstance: any) => aiInstance.defineFlow
 
     while (retryCount <= maxRetries) {
       try {
-        const model = getModel(input.isPro, retryCount > 0);
         const prompt = createPrompt(aiInstance, input.isPro, retryCount > 0);
-        const result = await prompt(input, { model });
+        const result = await prompt(input);
         output = result.output;
 
         if (output && output.explanation && output.explanation.trim() !== '') {

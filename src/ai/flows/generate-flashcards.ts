@@ -74,9 +74,9 @@ const promptText = `You are an expert educator specializing in creating effectiv
 Generate the flashcards now.
 `;
 
-const prompt = ai!.definePrompt({
+const createPrompt = (isPro: boolean) => ai!.definePrompt({
     name: "generateFlashcardsPrompt",
-    model: `googleai/${getModel(false, false)}`, // Use free model for flashcards
+    model: `googleai/${getModel(isPro, false)}`,
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
@@ -89,13 +89,13 @@ const generateFlashcardsFlow = ai!.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async (input) => {
-    const model = getModel(input.isPro);
     const maxRetries = 3;
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const result = await prompt(input, { model });
+        const prompt = createPrompt(input.isPro || false);
+        const result = await prompt(input);
         const output = result.output;
 
         if (!output || !output.flashcards) {
