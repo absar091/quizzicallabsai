@@ -66,7 +66,7 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
     }
   };
 
-  const appUrl = 'https://quizzicallabs.vercel.app';
+  const appUrl = 'https://quizzicallabz.qzz.io';
   const shareableLink = shareCode ? `${appUrl}/shared-quiz?code=${shareCode}` : '';
 
   const copyShareCode = () => {
