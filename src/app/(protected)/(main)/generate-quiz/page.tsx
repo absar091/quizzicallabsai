@@ -228,6 +228,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     // Prevent multiple submissions if already submitting
     if (isSubmitting || showResults) return;
 
+    console.log('🎯 Quiz submission started');
     setIsSubmitting(true);
 
     // 🐛 BUG FIX: Clear timer SYNCHRONOUSLY BEFORE setting showResults
@@ -235,6 +236,18 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null; // Explicitly set to null to prevent further executions
+    }
+
+    // Check authentication state before proceeding
+    if (!user) {
+      console.error('❌ User not authenticated during quiz submission');
+      toast({
+        title: "Authentication Error",
+        description: "Please log in again to save your quiz results.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
     }
 
     setShowResults(true);
