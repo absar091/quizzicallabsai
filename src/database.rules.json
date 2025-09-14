@@ -1,17 +1,24 @@
 {
   "rules": {
-    "users": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified", "lastLogin"]
-      }
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "shared_quizzes": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["shareCode", "createdAt", "ownerId"]
     },
     "quizResults": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
         ".indexOn": ["createdAt", "topic", "difficulty"]
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "lastLogin"]
       }
     },
     "bookmarks": {
@@ -63,44 +70,14 @@
         ".indexOn": ["lastSync"]
       }
     },
-    "shared_quizzes": {
-      ".read": true,
-      ".write": "auth != null",
-      ".indexOn": ["createdAt", "shareCode", "ownerId"]
-    },
-    "sharedQuizzes": {
+    "quiz-rooms": {
       ".read": "auth != null",
       ".write": "auth != null"
     },
-    "quiz-rooms": {
-      ".read": "auth != null",
-      "$roomId": {
-        ".read": "auth != null",
-        ".write": "auth != null",
-        "players": {
-          ".read": "auth != null",
-          ".write": "auth != null",
-          "$userId": {
-            ".read": "auth != null",
-            ".write": "$userId === auth.uid"
-          }
-        },
-        "answers": {
-          ".read": "auth != null",
-          ".write": "auth != null",
-          "$answerId": {
-            ".write": "auth.uid === data.child('userId').val()"
-          }
-        }
-      }
-    },
     "quiz_likes": {
-      "$quizId": {
-        ".read": true,
-        ".write": "auth != null && newData.child('userId').val() == auth.uid",
-        ".validate": "newData.hasChildren(['userId'])",
-        ".indexOn": ["userId"]
-      }
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["userId"]
     },
     "questionBank": {
       "$uid": {
