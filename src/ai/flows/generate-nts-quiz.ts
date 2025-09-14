@@ -125,6 +125,7 @@ Generate the quiz now.
 
 const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateNtsQuizPrompt',
+  model: `googleai/${getModel(isPro, useFallback)}`,
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: getPromptText(isPro),

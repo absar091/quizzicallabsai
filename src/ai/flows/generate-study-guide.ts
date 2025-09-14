@@ -115,16 +115,18 @@ const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
     while (retryCount <= maxRetries) {
       try {
         // Use fallback model on retry
-        const model = getModel(input.isPro, retryCount > 0);
+        const modelName = getModel(input.isPro, retryCount > 0);
+        const model = `googleai/${modelName}`;
         
         const prompt = aiInstance.definePrompt({
           name: 'generateStudyGuidePrompt',
+          model: model,
           input: {schema: GenerateStudyGuideInputSchema},
           output: {schema: GenerateStudyGuideOutputSchema},
           prompt: getPromptText(input.isPro),
         });
         
-        const result = await prompt(input, { model });
+        const result = await prompt(input);
         output = result.output;
         
         if (

@@ -9,6 +9,7 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/getModel';
 import {z} from 'genkit';
 
 export const ExplainImageInputSchema = z.object({
@@ -56,7 +57,7 @@ const promptText = `You are an expert AI tutor and subject matter specialist. Yo
 
 const prompt = ai!.definePrompt({
     name: 'explainImagePrompt',
-    model: 'googleai/gemini-2.5-pro',
+    model: `googleai/${getModel(true, false)}`, // Use pro model for image explanation
     prompt: promptText,
     input: { schema: ExplainImageInputSchema },
     output: { schema: ExplainImageOutputSchema },

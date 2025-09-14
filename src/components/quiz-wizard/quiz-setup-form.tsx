@@ -68,18 +68,18 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
 
-      {/* Topic Input Field - Enhanced */}
+      {/* Topic Input Field - Enhanced with Larger Size */}
       <FormField
         control={form.control}
         name="topic"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-lg font-semibold">Quiz Topic *</FormLabel>
+            <FormLabel className="text-xl font-semibold">Quiz Topic *</FormLabel>
             <FormControl>
               <Input
                 placeholder="e.g., MDCAT Biology - Cell Structure, Algebra Basics, Newton's Laws..."
                 {...field}
-                className="text-lg py-3 px-4 h-14 border-2 focus:border-primary transition-colors"
+                className="text-xl py-4 px-5 h-16 border-2 focus:border-primary transition-colors font-medium"
               />
             </FormControl>
             <FormMessage />
@@ -159,41 +159,48 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
       <FormField
         control={form.control}
         name="questionTypes"
-        render={() => (
+        render={({ field }) => (
           <FormItem>
-            <FormLabel>Question Types</FormLabel>
-            <div className="grid grid-cols-1 gap-4 pt-2">
-              {questionTypeOptions.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="questionTypes"
-                  render={({ field }) => {
-                    return (
-                      <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...(field.value || []), item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                          <item.icon className="h-4 w-4"/>
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
+            <FormLabel className="text-lg font-semibold">Question Types</FormLabel>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {questionTypeOptions.map((item) => {
+                const isSelected = field.value?.includes(item.id);
+                const colorMap = {
+                  "Multiple Choice": "bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100",
+                  "Descriptive": "bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100"
+                };
+                
+                return (
+                  <div key={item.id}>
+                    <input
+                      type="checkbox"
+                      id={item.id}
+                      checked={isSelected}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        return checked
+                          ? field.onChange([...(field.value || []), item.id])
+                          : field.onChange(
+                              field.value?.filter((value) => value !== item.id)
+                            )
+                      }}
+                      className="sr-only"
+                    />
+                    <Label
+                      htmlFor={item.id}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px]",
+                        isSelected
+                          ? "border-primary bg-primary/10 shadow-md"
+                          : colorMap[item.id as keyof typeof colorMap]
+                      )}
+                    >
+                      <item.icon className="h-5 w-5 mb-2" />
+                      <span className="font-semibold text-sm text-center leading-tight">{item.label}</span>
+                    </Label>
+                  </div>
+                );
+              })}
             </div>
             <FormMessage />
           </FormItem>
@@ -203,9 +210,9 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
       <FormField
         control={form.control}
         name="questionStyles"
-        render={() => (
+        render={({ field }) => (
           <FormItem>
-            <FormLabel>Question Styles</FormLabel>
+            <FormLabel className="text-lg font-semibold">Question Styles</FormLabel>
             {watchQuestionStyles?.includes('Comprehension-based MCQs') && (
               <Alert className="mt-2 text-xs p-2">
                 <AlertTriangle className="h-4 w-4"/>
@@ -214,38 +221,48 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
                 </AlertDescription>
               </Alert>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-              {questionStyleOptions.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="questionStyles"
-                  render={({ field }) => {
-                    return (
-                      <FormItem key={item.id} className="flex flex-row items-center space-x-3 space-y-0 rounded-xl border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...(field.value || []), item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  )
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal cursor-pointer flex-1 flex items-center gap-2">
-                          <item.icon className="h-4 w-4"/>
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+              {questionStyleOptions.map((item) => {
+                const isSelected = field.value?.includes(item.id);
+                const colorMap = {
+                  "Knowledge-based": "bg-purple-50 border-purple-200 text-purple-800 hover:bg-purple-100",
+                  "Conceptual": "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100", 
+                  "Numerical": "bg-green-50 border-green-200 text-green-800 hover:bg-green-100",
+                  "Past Paper Style": "bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100",
+                  "Comprehension-based MCQs": "bg-red-50 border-red-200 text-red-800 hover:bg-red-100"
+                };
+                
+                return (
+                  <div key={item.id}>
+                    <input
+                      type="checkbox"
+                      id={item.id}
+                      checked={isSelected}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        return checked
+                          ? field.onChange([...(field.value || []), item.id])
+                          : field.onChange(
+                              field.value?.filter((value) => value !== item.id)
+                            )
+                      }}
+                      className="sr-only"
+                    />
+                    <Label
+                      htmlFor={item.id}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px]",
+                        isSelected
+                          ? "border-primary bg-primary/10 shadow-md"
+                          : colorMap[item.id as keyof typeof colorMap]
+                      )}
+                    >
+                      <item.icon className="h-5 w-5 mb-2" />
+                      <span className="font-semibold text-sm text-center leading-tight">{item.label}</span>
+                    </Label>
+                  </div>
+                );
+              })}
             </div>
             <FormMessage />
           </FormItem>

@@ -9,6 +9,7 @@
 
 import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/getModel';
+import { getModel } from '@/lib/getModel';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
 
@@ -80,6 +81,7 @@ ${isPro ? '**PRO USER - PREMIUM DOCUMENT ANALYSIS:**\r\n- Provide more sophistic
 
 const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
     name: 'generateQuizFromDocumentPrompt',
+    model: `googleai/${getModel(isPro, useFallback)}`,
     prompt: getPromptText(isPro),
     input: { schema: GenerateQuizFromDocumentInputSchema },
     output: { schema: GenerateQuizFromDocumentOutputSchema },

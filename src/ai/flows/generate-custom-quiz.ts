@@ -203,7 +203,10 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
     while (retryCount <= maxRetries) {
       try {
         // Use fallback model on retry
-        const model = getModel(input.isPro, retryCount > 0);
+        const modelName = getModel(input.isPro, retryCount > 0);
+        
+        // Convert model name to genkit model reference
+        const model = `googleai/${modelName}`;
         
         const prompt = aiInstance.definePrompt({
           name: "generateCustomQuizPrompt",
@@ -213,7 +216,7 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
           output: { schema: GenerateCustomQuizOutputSchema },
         });
         
-        const result = await prompt(input, { model });
+        const result = await prompt(input);
         output = result.output;
         
         if (output && output.quiz && output.quiz.length > 0) {

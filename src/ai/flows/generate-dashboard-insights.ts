@@ -112,7 +112,7 @@ Now, generate the output for the provided student data.`;
 
 const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
     name: 'generateDashboardInsightsPrompt',
-    model: getModel(isPro, useFallback),
+    model: `googleai/${getModel(isPro, useFallback)}`,
     prompt: getPromptText(isPro),
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },

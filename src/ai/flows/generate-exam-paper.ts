@@ -179,10 +179,12 @@ const generateExamPaperFlow = (aiInstance: any) => aiInstance.defineFlow(
     outputSchema: GenerateExamPaperOutputSchema,
   },
   async (input) => {
-    const model = getModel(input.isPro);
+    const modelName = getModel(input.isPro);
+    const model = `googleai/${modelName}`;
     
     const prompt = aiInstance.definePrompt({
       name: "generateExamPaperPrompt",
+      model: model,
       prompt: promptText,
       input: { schema: GenerateExamPaperInputSchema },
       output: { schema: GenerateExamPaperOutputSchema },

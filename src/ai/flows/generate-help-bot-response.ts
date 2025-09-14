@@ -9,6 +9,7 @@
  */
 
 import {ai, isAiAvailable} from '@/ai/genkit';
+import { getModel } from '@/lib/getModel';
 import {z} from 'genkit';
 
 const GenerateHelpBotResponseInputSchema = z.object({
@@ -58,6 +59,7 @@ ${userPlan === 'Pro' ? '**PRO USER BENEFITS:**\r\n- Unlimited bookmarks\r\n- No 
 // Dynamic prompt creation based on user plan
 const createPrompt = (userPlan: string) => ai!.definePrompt({
     name: 'generateHelpBotResponsePrompt',
+    model: `googleai/${getModel(userPlan === 'pro', false)}`,
     prompt: getPromptText(userPlan),
     input: { schema: GenerateHelpBotResponseInputSchema },
     output: { schema: GenerateHelpBotResponseOutputSchema },

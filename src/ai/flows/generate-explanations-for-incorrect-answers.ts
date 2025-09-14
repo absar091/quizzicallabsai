@@ -9,6 +9,7 @@
 
 import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/getModel';
+import { getModel } from '@/lib/getModel';
 import {z} from 'genkit';
 
 const GenerateExplanationsInputSchema = z.object({
@@ -68,6 +69,7 @@ Generate an explanation that does the following, in this order:
 // Dynamic prompt creation based on user plan
 const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateExplanationsPrompt',
+  model: `googleai/${getModel(isPro, useFallback)}`,
   input: {schema: GenerateExplanationsInputSchema},
   output: {schema: GenerateExplanationsOutputSchema},
   prompt: getPromptText(isPro),
