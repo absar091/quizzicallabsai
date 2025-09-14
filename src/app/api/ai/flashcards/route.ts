@@ -3,19 +3,46 @@ import { generateFlashcardsServer } from '@/ai/server-only';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🃏 Flashcards generation API called');
+    
     const body = await request.json();
     const { topic, incorrectQuestions } = body;
-
-    const result = await generateFlashcardsServer({
-      topic,
-      incorrectQuestions
+    
+    console.log('📝 Flashcards input:', { 
+      topic: topic?.substring(0, 50), 
+      incorrectQuestionsCount: incorrectQuestions?.length 
     });
 
+    // Add timeout wrapper
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Flashcards generation timed out after 90 seconds')), 90000);
+    });
+
+    const result = await Promise.race([
+      generateFlashcardsServer({
+        topic,
+        incorrectQuestions
+      }),
+      timeoutPromise
+    ]);
+
+    console.log('✅ Flashcards generated successfully:', result.flashcards?.length, 'cards');
     return NextResponse.json(result);
-  } catch (error) {
-    console.error('Error generating flashcards:', error);
+  } catch (error: any) {
+    console.error('❌ Flashcards generation error:', error.message);
+    
+    let errorMessage = error.message || 'Failed to generate flashcards';
+    
+    if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
+      errorMessage = 'Flashcards generation is taking longer than expected. Please try again.';
+    } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
+      errorMessage = 'AI service is currently busy. Please wait a moment and try again.';
+    } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+      errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+    }
+
     return NextResponse.json(
-      { error: 'Failed to generate flashcards' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
