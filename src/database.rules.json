@@ -11,12 +11,7 @@
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["createdAt", "topic", "difficulty"],
-        "$resultId": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid",
-          ".validate": "newData.hasChildren(['score', 'totalQuestions', 'percentage']) && newData.child('score').isNumber() && newData.child('totalQuestions').isNumber() && newData.child('percentage').isNumber()"
-        }
+        ".indexOn": ["createdAt", "topic", "difficulty"]
       }
     },
     "bookmarks": {
@@ -71,20 +66,11 @@
     "shared_quizzes": {
       ".read": true,
       ".write": "auth != null",
-      "$quizId": {
-        ".read": true,
-        ".write": "auth != null && (newData.child('ownerId').val() == auth.uid || !data.exists())",
-        ".validate": "newData.hasChildren(['title', 'questions', 'ownerId']) && newData.child('ownerId').val() == auth.uid"
-      },
       ".indexOn": ["createdAt", "shareCode", "ownerId"]
     },
     "sharedQuizzes": {
       ".read": "auth != null",
-      ".write": "auth != null",
-      "$quizId": {
-        ".read": "auth != null",
-        ".write": "auth != null && (newData.child('ownerId').val() == auth.uid || !data.exists())"
-      }
+      ".write": "auth != null"
     },
     "quiz-rooms": {
       ".read": "auth != null",
