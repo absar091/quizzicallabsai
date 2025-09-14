@@ -14,6 +14,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -67,24 +68,24 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
 
-      {/* Topic Input Field */}
+      {/* Topic Input Field - Enhanced */}
       <FormField
         control={form.control}
         name="topic"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Quiz Topic *</FormLabel>
+            <FormLabel className="text-lg font-semibold">Quiz Topic *</FormLabel>
             <FormControl>
               <Input
                 placeholder="e.g., MDCAT Biology - Cell Structure, Algebra Basics, Newton's Laws..."
                 {...field}
-                className="text-base"
+                className="text-lg py-3 px-4 h-14 border-2 focus:border-primary transition-colors"
               />
             </FormControl>
             <FormMessage />
-            <Alert className="mt-2 text-xs p-2">
-              <AlertTriangle className="h-4 w-4"/>
-              <AlertDescription>
+            <Alert className="mt-3 p-3 bg-blue-50 border-blue-200">
+              <AlertTriangle className="h-4 w-4 text-blue-600"/>
+              <AlertDescription className="text-blue-800">
                 Be specific! Include subject and chapter name for best results.
               </AlertDescription>
             </Alert>
@@ -97,38 +98,39 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         name="difficulty"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Difficulty Level</FormLabel>
+            <FormLabel className="text-lg font-semibold">Difficulty Level</FormLabel>
             <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="easy" id="easy" />
-                  <Label htmlFor="easy" className="font-normal cursor-pointer">
-                    Easy - Basic concepts and simple applications
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="medium" id="medium" />
-                  <Label htmlFor="medium" className="font-normal cursor-pointer">
-                    Medium - Conceptual understanding and moderate complexity
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="hard" id="hard" />
-                  <Label htmlFor="hard" className="font-normal cursor-pointer">
-                    Hard - Complex problem-solving and advanced concepts
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="master" id="master" />
-                  <Label htmlFor="master" className="font-normal cursor-pointer">
-                    Master - Expert-level knowledge (MDCAT/ETEA exam standard)
-                  </Label>
-                </div>
-              </RadioGroup>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                {[
+                  { value: "easy", label: "Easy", description: "Basic concepts", color: "bg-green-50 border-green-200 text-green-800 hover:bg-green-100" },
+                  { value: "medium", label: "Medium", description: "Moderate complexity", color: "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100" },
+                  { value: "hard", label: "Hard", description: "Advanced concepts", color: "bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100" },
+                  { value: "master", label: "Master", description: "MDCAT/ETEA standard", color: "bg-red-50 border-red-200 text-red-800 hover:bg-red-100" }
+                ].map((difficulty) => (
+                  <div key={difficulty.value}>
+                    <input
+                      type="radio"
+                      id={difficulty.value}
+                      value={difficulty.value}
+                      checked={field.value === difficulty.value}
+                      onChange={() => field.onChange(difficulty.value)}
+                      className="sr-only"
+                    />
+                    <Label
+                      htmlFor={difficulty.value}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105",
+                        field.value === difficulty.value
+                          ? "border-primary bg-primary/10 shadow-md"
+                          : difficulty.color
+                      )}
+                    >
+                      <span className="font-semibold text-base">{difficulty.label}</span>
+                      <span className="text-xs mt-1 text-center opacity-80">{difficulty.description}</span>
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -140,13 +142,13 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         name="specificInstructions"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Specific Instructions (Optional)</FormLabel>
+            <FormLabel className="text-base font-medium">Specific Instructions (Optional)</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Any specific requirements, subtopics, or focus areas..."
                 {...field}
-                rows={3}
-                className="text-base resize-none"
+                rows={4}
+                className="text-base resize-none border-2 focus:border-primary transition-colors"
               />
             </FormControl>
             <FormMessage />

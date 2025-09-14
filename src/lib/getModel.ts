@@ -6,8 +6,8 @@
 // Model Router Constants - Working model names confirmed by API
 const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
 const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-1.5-flash-8b';
-const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-1.5-pro';
-const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-1.5-flash';
+const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
+const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-2.0-flash';
 
 interface ModelConfig {
   model: string;
