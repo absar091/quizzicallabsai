@@ -61,8 +61,13 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
   const form = useFormContext<QuizFormValues>();
   const watchQuestionStyles = form.watch('questionStyles');
 
+  const handleSubmit = (values: QuizFormValues) => {
+    console.log('🎯 Form submitted with values:', values);
+    onGenerateQuiz(values);
+  };
+
   return (
-    <div className="space-y-6">
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
       <PageHeader
         title="Custom Quiz Generator"
         description="Create personalized tests on any topic, with custom difficulty and question styles."
@@ -166,8 +171,8 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
               {questionTypeOptions.map((item) => {
                 const isSelected = field.value?.includes(item.id);
                 const colorMap = {
-                  "Multiple Choice": "bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100",
-                  "Descriptive": "bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100"
+                  "Multiple Choice": "bg-indigo-100 border-indigo-300 text-indigo-900 hover:bg-indigo-200",
+                  "Descriptive": "bg-teal-100 border-teal-300 text-teal-900 hover:bg-teal-200"
                 };
                 
                 return (
@@ -305,6 +310,6 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         <Sparkles className="mr-2 h-5 w-5"/>
         Generate Quiz
       </Button>
-    </div>
+    </form>
   );
 }
