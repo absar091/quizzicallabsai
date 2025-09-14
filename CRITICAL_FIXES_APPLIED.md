@@ -97,3 +97,20 @@ The main issues stemmed from the changelog's "comprehensive fixes" that actually
 **Status:** 🟢 READY FOR TESTING
 **Confidence:** HIGH - Core issues resolved
 **Risk:** LOW - Simplified, more stable codebase
+
+## Additional Fixes Applied
+
+### ✅ 6. IMPORT PATH CORRECTIONS (MEDIUM)
+**Problem:** All AI flows were importing `getModel` from wrong path after circular dependency fix
+**Fix:** Updated all AI flow imports to use `@/lib/getModel` instead of `@/lib/models`
+**Impact:** Resolves TypeScript compilation errors
+
+### Files Updated (Additional):
+- `src/ai/flows/generate-dashboard-insights.ts`
+- `src/ai/flows/generate-exam-paper.ts`
+- `src/ai/flows/generate-explanations-for-incorrect-answers.ts`
+- `src/ai/flows/generate-flashcards.ts`
+- `src/ai/flows/generate-nts-quiz.ts`
+- `src/ai/flows/generate-quiz-from-document.ts`
+- `src/ai/flows/generate-simple-explanation.ts`
+- `src/ai/flows/generate-study-guide.ts`

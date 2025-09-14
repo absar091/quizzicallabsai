@@ -16,11 +16,7 @@ interface ModelConfig {
   topP?: number;
 }
 
-interface UserPlanInfo {
-  isPro: boolean;
-  hasQuota: boolean;
-  modelPreference?: string;
-}
+
 
 /**
  * Get the appropriate AI model for a user's request
@@ -53,31 +49,39 @@ export function getModelConfig(isPro: boolean = false, useFallback: boolean = fa
  * Get model configuration optimized for specific use cases
  */
 export function getModelForUseCase(useCase: 'quiz' | 'flashcard' | 'explanation' | 'general', isPro: boolean = false): ModelConfig {
-  const baseConfig = getModel(isPro);
+  const selectedModel = getModel(isPro);
 
   // Adjust parameters based on use case
   switch (useCase) {
     case 'quiz':
       return {
-        ...baseConfig,
+        model: selectedModel,
         temperature: 0.2, // More deterministic for quiz generation
-        maxTokens: isPro ? 8000 : 4000
+        maxTokens: isPro ? 8000 : 4000,
+        topP: 0.9
       };
     case 'flashcard':
       return {
-        ...baseConfig,
+        model: selectedModel,
         temperature: 0.3,
-        maxTokens: isPro ? 4000 : 2000
+        maxTokens: isPro ? 4000 : 2000,
+        topP: 0.9
       };
     case 'explanation':
       return {
-        ...baseConfig,
+        model: selectedModel,
         temperature: 0.4, // More creative for explanations
-        maxTokens: isPro ? 6000 : 3000
+        maxTokens: isPro ? 6000 : 3000,
+        topP: 0.9
       };
     case 'general':
     default:
-      return baseConfig;
+      return {
+        model: selectedModel,
+        temperature: 0.3,
+        maxTokens: isPro ? 4000 : 2000,
+        topP: 0.9
+      };
   }
 }
 
