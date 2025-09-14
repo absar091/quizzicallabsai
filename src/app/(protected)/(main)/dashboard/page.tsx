@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
 import { sanitizeString } from "@/lib/sanitize";
+import { EmailTestButton } from "@/components/email-test-button";
 import { StudyStreakWidget } from "@/components/study-streak-widget";
 import { QuizAccessDialog } from "@/components/quiz-sharing";
 import { AdminAccess } from "@/components/admin-access";
@@ -512,6 +513,7 @@ export default function HomePage() {
                 </Button>
                 <QuizAccessDialog />
                 <AdminAccess />
+                <EmailTestButton />
               </div>
             </CardContent>
           </Card>
