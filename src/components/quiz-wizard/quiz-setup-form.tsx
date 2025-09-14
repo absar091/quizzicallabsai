@@ -63,6 +63,7 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
 
   const handleSubmit = (values: QuizFormValues) => {
     console.log('🎯 Form submitted with values:', values);
+    console.log('🔥 Generate button clicked - form is working!');
     onGenerateQuiz(values);
   };
 
@@ -306,7 +307,12 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         )}
       />
 
-      <Button type="submit" size="lg" className="w-full bg-primary">
+      <Button 
+        type="submit" 
+        size="lg" 
+        className="w-full bg-primary hover:bg-primary/90 transition-colors"
+        onClick={() => console.log('🔥 Generate button clicked!')}
+      >
         <Sparkles className="mr-2 h-5 w-5"/>
         Generate Quiz
       </Button>

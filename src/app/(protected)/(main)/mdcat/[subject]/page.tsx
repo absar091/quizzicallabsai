@@ -16,8 +16,8 @@ type SubjectPageProps = {
   };
 };
 
-export default function MdcatSubjectPage({ params }: SubjectPageProps) {
-  const { subject: subjectKey } = params;
+export default async function MdcatSubjectPage({ params }: SubjectPageProps) {
+  const { subject: subjectKey } = await params;
   const subject = mdcatSyllabus[subjectKey];
 
   if (!subject) {

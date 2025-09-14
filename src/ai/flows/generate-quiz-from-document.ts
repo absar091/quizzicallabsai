@@ -9,7 +9,6 @@
 
 import {ai, isAiAvailable} from '@/ai/genkit';
 import { getModel } from '@/lib/getModel';
-import { getModel } from '@/lib/getModel';
 import {z} from 'genkit';
 import { sanitizeLogInput } from '@/lib/security';
 

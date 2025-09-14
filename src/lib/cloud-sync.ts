@@ -207,9 +207,15 @@ class CloudSyncManager {
     // Strategy 2: Field-specific merging
     switch (field) {
       case 'quizResults':
-        return this.resolveQuizResultsConflict(localValue, remoteValue);
+        // Ensure values are arrays before passing to conflict resolution
+        const safeLocalResults = Array.isArray(localValue) ? localValue : [];
+        const safeRemoteResults = Array.isArray(remoteValue) ? remoteValue : [];
+        return this.resolveQuizResultsConflict(safeLocalResults, safeRemoteResults);
       case 'bookmarks':
-        return this.resolveBookmarksConflict(localValue, remoteValue);
+        // Ensure values are arrays before passing to conflict resolution
+        const safeLocalBookmarks = Array.isArray(localValue) ? localValue : [];
+        const safeRemoteBookmarks = Array.isArray(remoteValue) ? remoteValue : [];
+        return this.resolveBookmarksConflict(safeLocalBookmarks, safeRemoteBookmarks);
       case 'studyStreaks':
         return this.resolveStudyStreaksConflict(localValue, remoteValue);
       case 'studyTime':
@@ -224,11 +230,15 @@ class CloudSyncManager {
     resolvedData: any;
     updateLocal: boolean;
   }> {
+    // Ensure both parameters are arrays
+    const safeLocalResults = Array.isArray(localResults) ? localResults : [];
+    const safeRemoteResults = Array.isArray(remoteResults) ? remoteResults : [];
+    
     // Merge quiz results by combining unique entries
-    const merged = [...localResults];
+    const merged = [...safeLocalResults];
     const existingIds = new Set(merged.map(r => r.id));
 
-    for (const remoteResult of remoteResults) {
+    for (const remoteResult of safeRemoteResults) {
       if (!existingIds.has(remoteResult.id)) {
         merged.push(remoteResult);
       } else {
@@ -250,11 +260,15 @@ class CloudSyncManager {
     resolvedData: any;
     updateLocal: boolean;
   }> {
+    // Ensure both parameters are arrays
+    const safeLocalBookmarks = Array.isArray(localBookmarks) ? localBookmarks : [];
+    const safeRemoteBookmarks = Array.isArray(remoteBookmarks) ? remoteBookmarks : [];
+    
     // Combine unique bookmarks
-    const merged = [...localBookmarks];
+    const merged = [...safeLocalBookmarks];
     const existingQuestions = new Set(merged.map(b => b.question));
 
-    for (const remoteBookmark of remoteBookmarks) {
+    for (const remoteBookmark of safeRemoteBookmarks) {
       if (!existingQuestions.has(remoteBookmark.question)) {
         merged.push(remoteBookmark);
       }
