@@ -3,7 +3,11 @@
  * Centralized model selection logic for different user plans
  */
 
-import { MODEL_ROUTER_FREE_PRIMARY, MODEL_ROUTER_FREE_FALLBACK, MODEL_ROUTER_PRO_PRIMARY, MODEL_ROUTER_PRO_FALLBACK } from '@/lib/models';
+// Model Router Constants - Direct from environment
+const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
+const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-2.0-flash';
+const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
+const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-2.5-flash';
 
 interface ModelConfig {
   model: string;
@@ -20,14 +24,22 @@ interface UserPlanInfo {
 
 /**
  * Get the appropriate AI model for a user's request
+ * Returns model name string for compatibility with AI flows
  */
-export function getModel(isPro: boolean = false, useFallback: boolean = false): ModelConfig {
+export function getModel(isPro: boolean = false, useFallback: boolean = false): string {
   // Determine which model set to use
   const primaryModel = isPro ? MODEL_ROUTER_PRO_PRIMARY : MODEL_ROUTER_FREE_PRIMARY;
   const fallbackModel = isPro ? MODEL_ROUTER_PRO_FALLBACK : MODEL_ROUTER_FREE_FALLBACK;
 
   // Use fallback if requested or if primary is unavailable
-  const selectedModel = useFallback ? fallbackModel : primaryModel;
+  return useFallback ? fallbackModel : primaryModel;
+}
+
+/**
+ * Get model configuration object (for advanced use cases)
+ */
+export function getModelConfig(isPro: boolean = false, useFallback: boolean = false): ModelConfig {
+  const selectedModel = getModel(isPro, useFallback);
 
   return {
     model: selectedModel,

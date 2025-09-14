@@ -67,7 +67,7 @@ export default function QuizSetupForm({ onGenerateQuiz }: QuizSetupFormProps) {
         description="Create personalized tests on any topic, with custom difficulty and question styles."
       />
 
-      {/* 🔍 MISSING TOPIC FIELD - THIS WAS CAUSING THE ISSUE! */}
+      {/* Topic Input Field */}
       <FormField
         control={form.control}
         name="topic"

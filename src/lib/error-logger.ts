@@ -99,61 +99,20 @@ class ErrorLogger {
     }
   ) {
     try {
-      // Enhanced error handling for various error types
+      // Simplified error handling
       let errorObj: Error;
 
       if (!error) {
-        // Handle null/undefined
-        errorObj = new Error('Unknown error occurred (received null/undefined)');
-      } else if (typeof error === 'object' && Object.keys(error).length === 0) {
-        // Handle empty objects - this is specifically the issue we're seeing
-        errorObj = new Error('Empty error object received');
+        errorObj = new Error('Unknown error occurred');
       } else if (typeof error === 'string') {
         errorObj = new Error(error);
       } else if (error instanceof Error) {
         errorObj = error;
       } else {
-        // Handle objects that aren't proper Error instances
-        let errorMsg = '';
-        try {
-          // Try to extract meaningful information from the object
-          if (error?.message) {
-            errorMsg = error.message;
-          } else if (error?.toString && error.toString !== Object.prototype.toString) {
-            errorMsg = error.toString();
-          } else {
-            // If object has properties, try to stringify them
-            errorMsg = `Object error: ${JSON.stringify(error).slice(0, 200)}`;
-          }
-
-          if (!errorMsg || errorMsg === '{}' || errorMsg === '[object Object]') {
-            errorMsg = 'Object error without meaningful message';
-          }
-        } catch (stringifyError) {
-          errorMsg = `Unparseable error object: ${typeof error}`;
-        }
-
+        // Simple fallback for objects
+        const errorMsg = error?.message || error?.toString?.() || 'Unknown error object';
         errorObj = new Error(errorMsg);
-        // Create a more detailed stack trace
-        errorObj.stack = `Error object details: ${JSON.stringify(error, null, 2)}\nOriginal stack: ${new Error().stack}`;
       }
-
-      // Ensure we have valid error properties
-      if (!errorObj.name || errorObj.name === 'Error') {
-        errorObj.name = 'QuizzicallabsError';
-      }
-
-      if (!errorObj.message || errorObj.message.length === 0) {
-        errorObj.message = 'An error occurred without a message';
-      }
-
-      console.log('🔍 Debug: Error processing result:', {
-        originalError: error,
-        processedErrorName: errorObj.name,
-        processedErrorMessage: errorObj.message,
-        errorType: typeof error,
-        isEmptyObject: error && typeof error === 'object' && Object.keys(error).length === 0
-      });
 
       const logEntry: ErrorLog = {
         id: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
