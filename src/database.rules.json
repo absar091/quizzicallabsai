@@ -70,13 +70,21 @@
     },
     "shared_quizzes": {
       ".read": true,
-      ".write": "auth != null && newData.child('ownerId').val() == auth.uid",
-      ".validate": "newData.hasChildren(['title', 'questions', 'ownerId'])",
-      ".indexOn": ["createdAt", "shareCode"]
+      ".write": "auth != null",
+      "$quizId": {
+        ".read": true,
+        ".write": "auth != null && (newData.child('ownerId').val() == auth.uid || !data.exists())",
+        ".validate": "newData.hasChildren(['title', 'questions', 'ownerId']) && newData.child('ownerId').val() == auth.uid"
+      },
+      ".indexOn": ["createdAt", "shareCode", "ownerId"]
     },
     "sharedQuizzes": {
       ".read": "auth != null",
-      ".write": "auth != null"
+      ".write": "auth != null",
+      "$quizId": {
+        ".read": "auth != null",
+        ".write": "auth != null && (newData.child('ownerId').val() == auth.uid || !data.exists())"
+      }
     },
     "quiz-rooms": {
       ".read": "auth != null",

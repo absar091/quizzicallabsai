@@ -302,14 +302,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             userEmail: user.email
           });
           
-          // Test Firebase permissions to help diagnose the issue
-          try {
-            const { testFirebaseConnection } = await import('@/lib/firebase-test');
-            const connectionTest = await testFirebaseConnection(user.uid);
-            console.log('🧪 Firebase connection test results:', connectionTest);
-          } catch (testError) {
-            console.error('Failed to run Firebase connection test:', testError);
-          }
+          // Log additional context for debugging
+          console.log('🔍 Additional context:', {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            online: navigator.onLine
+          });
           
           // Continue with local save even if Firebase fails
         }
