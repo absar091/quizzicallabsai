@@ -3,9 +3,16 @@
     ".read": "auth != null",
     ".write": "auth != null",
     "shared_quizzes": {
-      ".read": "auth != null",
+      ".read": true,
       ".write": "auth != null",
-      ".indexOn": ["shareCode", "createdAt", "ownerId"]
+      "$quizId": {
+        ".read": "auth != null || (data.exists() && data.child('isPublic').val() == true)",
+        ".write": "auth != null",
+        "$child": {
+          ".read": "auth != null || (data.exists() && data.parent().child('isPublic').val() == true)"
+        },
+        ".indexOn": ["shareCode", "createdAt", "ownerId"]
+      }
     },
     "quizResults": {
       "$uid": {
