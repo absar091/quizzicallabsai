@@ -1,3 +1,70 @@
+import * as nodemailer from 'nodemailer';
+
+interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}
+
+interface QuizResultEmailData {
+  userName: string;
+  topic: string;
+  score: number;
+  total: number;
+  percentage: number;
+  timeTaken: number;
+  date: string;
+}
+
+export async function sendEmail({ to, subject, html, text }: EmailOptions) {
+  try {
+    // Validate environment variables
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      throw new Error('Missing email configuration. Please check SMTP environment variables.');
+    }
+
+    console.log('📧 Creating email transporter...');
+    const transporter = nodemailer.createTransporter({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false, // TLS
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      // Add additional options for better compatibility
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    console.log('📧 Verifying transporter connection...');
+    await transporter.verify();
+
+    console.log('📧 Sending email...');
+    const result = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      to,
+      subject,
+      html,
+      text,
+    });
+
+    console.log('📧 Email sent successfully:', result.messageId);
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error('❌ Email sending failed:', error);
+    console.error('❌ Error details:', {
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode
+    });
+    throw error;
+  }
+}
+
 export async function sendWelcomeEmail(to: string, userName: string) {
   const subject = 'Welcome to Quizzicallabz - Your AI Learning Journey Begins';
 
@@ -64,8 +131,6 @@ export async function sendWelcomeEmail(to: string, userName: string) {
           font-size: 18px;
           opacity: 0.95;
         }
-
-        .content { padding: 0; }
 
         .hero-section {
           padding: 50px 30px;
@@ -239,10 +304,6 @@ export async function sendWelcomeEmail(to: string, userName: string) {
           background: #374151;
           box-shadow: 0 4px 6px -1px rgba(55, 65, 81, 0.1), 0 2px 4px -1px rgba(55, 65, 81, 0.06);
         }
-        .btn-secondary:hover {
-          background: #4b5563;
-          box-shadow: 0 10px 15px -3px rgba(55, 65, 81, 0.2), 0 4px 6px -2px rgba(55, 65, 81, 0.05);
-        }
 
         .footer {
           background: #111827;
@@ -273,29 +334,9 @@ export async function sendWelcomeEmail(to: string, userName: string) {
           text-decoration: none;
           font-weight: 500;
           font-size: 14px;
-          transition: color 0.3s ease;
-        }
-        .footer-links a:hover {
-          color: #ffffff;
-        }
-        .footer-divider {
-          border-top: 1px solid #374151;
-          padding-top: 30px;
-          margin-top: 30px;
-        }
-        .footer-bottom {
-          font-size: 13px;
-          color: #6b7280;
-        }
-        .footer-bottom p {
-          margin-bottom: 8px;
         }
 
         @media (max-width: 600px) {
-          .header, .content, .footer { padding: 30px 20px; }
-          .hero-section, .features-section, .stats-section, .cta-section {
-            padding: 40px 20px;
-          }
           .features-grid { grid-template-columns: 1fr; }
           .stats-grid { grid-template-columns: repeat(2, 1fr); }
           .btn-group { flex-direction: column; }
@@ -412,7 +453,6 @@ export async function sendWelcomeEmail(to: string, userName: string) {
             <div class="footer-bottom">
               <p>&copy; ${new Date().getFullYear()} Quizzicallabz. All rights reserved.</p>
               <p>Powered by Advanced AI Technology | Made with ❤️ for Students</p>
-              <p>This email was sent to ${to}</p>
             </div>
           </div>
         </div>
