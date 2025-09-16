@@ -10,9 +10,9 @@ export async function POST(request: NextRequest) {
 
     console.log('📝 Dashboard input:', { userName, historyLength: quizHistory?.length, isPro });
 
-    // Add timeout for dashboard insights too
+    // Reduced timeout from 60s to 30s due to optimizations
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Dashboard insights generation timed out')), 60000);
+      setTimeout(() => reject(new Error('Dashboard insights generation timed out')), 30000);
     });
 
     const result = await Promise.race([

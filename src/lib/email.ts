@@ -65,8 +65,13 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
   }
 }
 
-export async function sendWelcomeEmail(to: string, userName: string) {
-  const subject = 'Welcome to Quizzicallabz - Your AI Learning Journey Begins';
+export async function sendWelcomeEmail(to: string, userName: string, emailDetails: {
+  userEmail: string;
+  accountType?: string;
+  signUpDate?: string;
+  preferredLanguage?: string;
+}) {
+  const subject = `🚀 Welcome ${userName}! Your AI Learning Journey Begins Today`;
 
   const html = `
     <!DOCTYPE html>
@@ -74,386 +79,809 @@ export async function sendWelcomeEmail(to: string, userName: string) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Welcome to Quizzicallabz</title>
+      <title>Welcome to Quizzicallabs AI</title>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
         body {
-          font-family: 'Inter', sans-serif;
-          line-height: 1.6;
-          color: #4b5563;
-          background-color: #f9fafb;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          line-height: 1.65;
+          color: #1f2937;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
           -webkit-font-smoothing: antialiased;
         }
 
         .email-container {
-          max-width: 700px;
-          margin: 20px auto;
+          max-width: 720px;
+          margin: 0 auto;
           background: #ffffff;
-          border-radius: 8px;
+          border-radius: 24px;
           overflow: hidden;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          position: relative;
         }
 
-        .header {
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-          color: white;
-          padding: 50px 30px;
+        .email-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 8px;
+          background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+        }
+
+        .hero-header {
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 25%, #ec4899 50%, #f59e0b 75%, #10b981 100%);
+          background-size: 400% 400%;
+          animation: gradientShift 8s ease infinite;
+          padding: 60px 40px;
           text-align: center;
+          position: relative;
+          overflow: hidden;
         }
-        .logo {
-          font-size: 28px;
-          font-weight: 800;
-          margin-bottom: 12px;
-          color: #ffffff;
+
+        .hero-header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" opacity=".25"></path><path d="M0,0V15.81C13.64,36.92,27.77,56.86,41.68,77.13,55.59,97.4,69.47,118,83.38,138.26c.6-.83,1.19-1.67,1.79-2.5C140.77,96.83,193.22,48.08,250.09,15.89c56.88-32.2,119.68-60.86,185.69-60.86,65.77,0,131.58,28.73,195,60.86,63.43,32.13,124.27,71.92,186.05,95.83l1.81,2.5c13.92-20.26,27.8-41,41.71-61.27,13.91-20.27,27.77-40.21,41.42-61.32V0Z" opacity=".1"></path></svg>');
+          background-size: cover;
+          background-repeat: no-repeat;
+          z-index: 1;
         }
+
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 2;
+        }
+
         .welcome-badge {
-          background: rgba(255, 255, 255, 0.2);
-          color: #ffffff;
-          padding: 6px 16px;
-          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(12px);
+          color: #7c3aed;
+          padding: 12px 24px;
+          border-radius: 50px;
           display: inline-block;
-          font-size: 12px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        .header h1 {
-          font-size: 32px;
-          margin: 16px 0 12px;
+          font-size: 14px;
           font-weight: 700;
-          letter-spacing: -0.025em;
-        }
-        .header p {
-          font-size: 18px;
-          opacity: 0.95;
+          margin-bottom: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
-        .hero-section {
-          padding: 50px 30px;
-          text-align: center;
-          background: #ffffff;
-          border-bottom: 1px solid #e5e7eb;
+        .hero-title {
+          font-size: 42px;
+          font-weight: 900;
+          color: #ffffff;
+          margin: 16px 0 8px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+          background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
-        .hero-content h2 {
-          font-size: 28px;
+
+        .hero-subtitle {
+          font-size: 18px;
+          color: rgba(255, 255, 255, 0.9);
+          margin-bottom: 20px;
+          font-weight: 400;
+        }
+
+        .user-avatar {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          font-size: 32px;
+          color: white;
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info-card {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-radius: 16px;
+          padding: 24px;
+          margin: 30px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-details {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          font-family: 'JetBrains Mono', monospace;
+        }
+
+        .detail-item {
+          background: #f8fafc;
+          padding: 12px 16px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .detail-label {
+          font-size: 11px;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 4px;
           font-weight: 600;
-          color: #111827;
-          margin-bottom: 16px;
-          line-height: 1.2;
         }
-        .hero-content p {
+
+        .detail-value {
+          font-size: 14px;
+          color: #1f2937;
+          font-weight: 500;
+        }
+
+        .personal-greeting {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+
+        .greeting-emoji {
+          font-size: 48px;
+          margin-bottom: 16px;
+          display: block;
+        }
+
+        .greeting-title {
+          font-size: 32px;
+          font-weight: 800;
+          color: #1f2937;
+          margin-bottom: 8px;
+        }
+
+        .greeting-message {
           font-size: 18px;
           color: #6b7280;
-          line-height: 1.7;
+          line-height: 1.6;
           max-width: 500px;
           margin: 0 auto;
         }
 
-        .features-section {
-          padding: 50px 30px;
-          background: #ffffff;
+        .features-showcase {
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+          padding: 60px 40px;
         }
-        .section-title {
-          font-size: 24px;
-          font-weight: 600;
-          color: #111827;
+
+        .section-header {
           text-align: center;
           margin-bottom: 40px;
-          position: relative;
         }
-        .section-title::after {
-          content: '';
-          position: absolute;
-          bottom: -10px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60px;
-          height: 3px;
-          background: #4f46e5;
+
+        .section-title {
+          font-size: 28px;
+          font-weight: 800;
+          color: #1f2937;
+          margin-bottom: 8px;
         }
+
+        .section-subtitle {
+          font-size: 16px;
+          color: #6b7280;
+          max-width: 400px;
+          margin: 0 auto;
+        }
+
         .features-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 24px;
+          margin-top: 40px;
         }
+
         .feature-card {
-          background: #f8fafc;
-          padding: 32px 30px;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s ease;
+          background: white;
+          padding: 32px;
+          border-radius: 16px;
+          border: 1px solid #e5e7eb;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           text-align: center;
+          position: relative;
+          overflow: hidden;
         }
+
+        .feature-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          transform: scaleX(0);
+          transition: all 0.3s ease;
+        }
+
         .feature-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          transform: translateY(-8px);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+          border-color: #d1d5db;
         }
+
+        .feature-card:hover::before {
+          transform: scaleX(1);
+        }
+
         .feature-icon {
-          width: 64px;
-          height: 64px;
+          width: 72px;
+          height: 72px;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+          color: white;
           margin: 0 auto 24px;
-          background: #4f46e5;
+          position: relative;
+          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 12px;
+        }
+
+        .feature-description {
+          font-size: 14px;
+          color: #6b7280;
+          line-height: 1.6;
+        }
+
+        .stats-highlight {
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+          padding: 50px 40px;
+          text-align: center;
+          color: white;
+        }
+
+        .stats-mascot {
+          width: 100px;
+          height: 100px;
+          background: rgba(255, 255, 255, 0.1);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 28px;
-          color: #ffffff;
-        }
-        .feature-card h3 {
-          color: #111827;
-          font-size: 20px;
-          margin-bottom: 16px;
-          font-weight: 600;
-        }
-        .feature-card p {
-          color: #6b7280;
-          font-size: 16px;
-          line-height: 1.6;
+          font-size: 50px;
+          margin: 0 auto 20px;
+          border: 3px solid rgba(255, 255, 255, 0.2);
         }
 
-        .stats-section {
-          background: #f9fafb;
-          padding: 50px 30px;
-          text-align: center;
-        }
-        .stats-section h3 {
-          font-size: 24px;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 20px;
-        }
-        .stats-section p {
-          font-size: 16px;
-          color: #6b7280;
-          margin-bottom: 30px;
-        }
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 30px;
-        }
-        .stat-item {
-          background: #ffffff;
-          padding: 30px 20px;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-        }
-        .stat-number {
-          font-size: 36px;
-          font-weight: 700;
-          color: #4f46e5;
-          display: block;
+        .stats-title {
+          font-size: 28px;
+          font-weight: 800;
           margin-bottom: 8px;
         }
-        .stat-label {
-          font-size: 14px;
-          color: #6b7280;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+
+        .stats-description {
+          font-size: 16px;
+          opacity: 0.9;
+          max-width: 400px;
+          margin: 0 auto;
+          margin-bottom: 30px;
         }
 
-        .cta-section {
-          background: #f8fafc;
-          padding: 50px 30px;
-          text-align: center;
-          border-top: 1px solid #e2e8f0;
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 24px;
+          margin-top: 40px;
         }
-        .cta-section h3 {
-          color: #111827;
-          margin-bottom: 16px;
-          font-size: 24px;
-          font-weight: 600;
+
+        .stat-item {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 24px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
         }
-        .cta-section p {
-          color: #6b7280;
-          margin-bottom: 30px;
+
+        .stat-number {
+          font-size: 48px;
+          font-weight: 900;
+          color: #fbbf24;
+          display: block;
+          margin-bottom: 8px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
           font-size: 16px;
+          opacity: 0.8;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
-        .btn-group {
+
+        .action-section {
+          background: white;
+          padding: 50px 40px;
+          text-align: center;
+        }
+
+        .action-title {
+          font-size: 32px;
+          font-weight: 800;
+          color: #1f2937;
+          margin-bottom: 12px;
+        }
+
+        .action-subtitle {
+          font-size: 18px;
+          color: #6b7280;
+          margin-bottom: 40px;
+          max-width: 500px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .cta-buttons {
           display: flex;
           gap: 20px;
           justify-content: center;
           flex-wrap: wrap;
+          margin-bottom: 30px;
         }
-        .btn {
+
+        .cta-button {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          background: #4f46e5;
-          color: white;
-          padding: 16px 32px;
-          text-decoration: none;
-          border-radius: 6px;
-          font-weight: 600;
+          gap: 12px;
+          padding: 18px 32px;
+          border-radius: 12px;
+          font-weight: 700;
           font-size: 16px;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+          text-decoration: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 2px solid transparent;
+          position: relative;
+          overflow: hidden;
         }
-        .btn:hover {
-          background: #4338ca;
-          box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+
+        .cta-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s;
         }
-        .btn-secondary {
-          background: #374151;
-          box-shadow: 0 4px 6px -1px rgba(55, 65, 81, 0.1), 0 2px 4px -1px rgba(55, 65, 81, 0.06);
+
+        .cta-button:hover::before {
+          left: 100%;
+        }
+
+        .cta-button-primary {
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: white;
+          box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .cta-button-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .cta-button-secondary {
+          background: white;
+          color: #6366f1;
+          border-color: #6366f1;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button-secondary:hover {
+          background: #6366f1;
+          color: white;
+          transform: translateY(-2px);
+        }
+
+        .next-steps {
+          background: #f8fafc;
+          padding: 32px;
+          text-align: center;
+        }
+
+        .next-steps-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 8px;
+        }
+
+        .next-steps-description {
+          font-size: 16px;
+          color: #6b7280;
+          margin-bottom: 20px;
+        }
+
+        .steps-list {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .step-item {
+          background: white;
+          padding: 16px 20px;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          font-size: 14px;
+          color: #374151;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
 
         .footer {
-          background: #111827;
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
           color: #9ca3af;
-          padding: 50px 30px;
+          padding: 40px 40px;
           text-align: center;
         }
+
         .footer-logo {
           color: #ffffff;
-          font-size: 24px;
-          font-weight: 800;
-          margin-bottom: 20px;
+          font-size: 28px;
+          font-weight: 900;
+          margin-bottom: 12px;
         }
+
         .footer-tagline {
           font-size: 16px;
-          margin-bottom: 30px;
-          color: #d1d5db;
+          opacity: 0.8;
+          margin-bottom: 24px;
         }
+
         .footer-links {
           display: flex;
           justify-content: center;
-          gap: 40px;
-          margin: 30px 0;
+          gap: 32px;
+          margin: 24px 0;
           flex-wrap: wrap;
         }
-        .footer-links a {
-          color: #9ca3af;
+
+        .footer-link {
+          color: #e2e8f0;
           text-decoration: none;
-          font-weight: 500;
+          font-weight: 600;
           font-size: 14px;
+          transition: all 0.2s ease;
         }
 
-        @media (max-width: 600px) {
-          .features-grid { grid-template-columns: 1fr; }
-          .stats-grid { grid-template-columns: repeat(2, 1fr); }
-          .btn-group { flex-direction: column; }
-          .btn { width: 100%; max-width: 300px; justify-content: center; }
-          .footer-links { flex-direction: column; gap: 20px; }
+        .footer-link:hover {
+          color: #60a5fa;
+        }
+
+        .social-links {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          margin: 24px 0;
+        }
+
+        .social-link {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          text-decoration: none;
+          transition: all 0.2s ease;
+        }
+
+        .social-link:hover {
+          background: #60a5fa;
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          .email-container {
+            margin: 0;
+            border-radius: 0;
+          }
+
+          .hero-header {
+            padding: 40px 20px;
+          }
+
+          .hero-title {
+            font-size: 32px;
+          }
+
+          .features-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .cta-button {
+            width: 100%;
+            max-width: 280px;
+          }
+
+          .footer-links {
+            flex-direction: column;
+            gap: 12px;
+          }
+
+          .user-details {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero-title {
+            font-size: 28px;
+          }
+
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .steps-list {
+            flex-direction: column;
+          }
         }
       </style>
     </head>
     <body>
       <div class="email-container">
-        <div class="header">
-          <div class="header-content">
-            <div class="logo">Quizzicallabz</div>
-            <div class="welcome-badge">NEW MEMBER</div>
-            <h1>Welcome Aboard!</h1>
-            <p>Your AI-powered learning journey starts now</p>
+        <div class="hero-header">
+          <div class="hero-content">
+            <div class="user-avatar">
+              ${userName.charAt(0).toUpperCase()}
+            </div>
+            <div class="welcome-badge">
+              🎉 New Member
+            </div>
+            <div class="hero-title">
+              Welcome ${userName}!
+            </div>
+            <div class="hero-subtitle">
+              Your AI-powered learning adventure begins now
+            </div>
           </div>
         </div>
 
-        <div class="content">
-          <div class="hero-section">
-            <div class="hero-content">
-              <h2>Hello ${userName}!</h2>
-              <p>Welcome to Quizzicallabz, where advanced AI meets personalized learning to help you achieve academic excellence.</p>
+        <div class="user-info-card">
+          <div class="user-details">
+            <div class="detail-item">
+              <div class="detail-label">✉️ Email</div>
+              <div class="detail-value">${emailDetails.userEmail}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">📅 Joined On</div>
+              <div class="detail-value">${emailDetails.signUpDate || new Date().toLocaleDateString()}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">🌐 Account Type</div>
+              <div class="detail-value">${emailDetails.accountType || 'Free'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">🗣️ Language</div>
+              <div class="detail-value">${emailDetails.preferredLanguage || 'English'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="personal-greeting">
+          <div class="greeting-emoji">🎯</div>
+          <div class="greeting-title">
+            Your Learning Journey Starts Here!
+          </div>
+          <div class="greeting-message">
+            Congratulations ${userName}! You've just unlocked a world of intelligent learning.
+            Our AI-powered platform is ready to help you excel in your studies.
+          </div>
+        </div>
+
+        <div class="features-showcase">
+          <div class="section-header">
+            <div class="section-title">
+              🚀 Your AI Learning Toolkit
+            </div>
+            <div class="section-subtitle">
+              Powerful features designed to accelerate your learning and boost your grades
             </div>
           </div>
 
-          <div class="features-section">
-            <h2 class="section-title">Platform Features</h2>
-            <div class="features-grid">
-              <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3>Smart Quiz Generation</h3>
-                <p>Create personalized quizzes on any topic using advanced AI. Get questions tailored to your learning level and goals.</p>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">🧠</div>
+              <div class="feature-title">AI Quiz Generation</div>
+              <div class="feature-description">
+                Create intelligent quizzes tailored to your learning level and goals.
+                Our AI analyzes your progress to generate questions that challenge you just right.
               </div>
-              <div class="feature-card">
-                <div class="feature-icon">🎓</div>
-                <h3>MDCAT/ECAT Preparation</h3>
-                <p>Specialized preparation modules for Pakistani entrance exams with authentic question patterns and detailed explanations.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">📚</div>
+              <div class="feature-title">MDCAT & ECAT Prep</div>
+              <div class="feature-description">
+                Specialized preparation modules with authentic question patterns and
+                detailed explanations designed for Pakistani entrance exams.
               </div>
-              <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3>AI-Powered Explanations</h3>
-                <p>Get instant, detailed explanations for every question. Learn from mistakes with intelligent tutoring system.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">💡</div>
+              <div class="feature-title">Smart Explanations</div>
+              <div class="feature-description">
+                Get instant, personalized explanations for every question. Learn from
+                your mistakes with our intelligent tutoring system.
               </div>
-              <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Advanced Analytics</h3>
-                <p>Track your progress with comprehensive performance analytics, identify weak areas, and monitor improvement over time.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">📊</div>
+              <div class="feature-title">Performance Analytics</div>
+              <div class="feature-description">
+                Track your progress with detailed analytics, identify weak areas,
+                and monitor your improvement over time with beautiful visualizations.
               </div>
-              <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Instant Results</h3>
-                <p>Get immediate feedback on your performance with detailed score breakdowns and personalized recommendations.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">⚡</div>
+              <div class="feature-title">Instant Feedback</div>
+              <div class="feature-description">
+                Get immediate feedback with score breakdowns, time analysis,
+                and personalized recommendations for improvement.
               </div>
-              <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Multiple Question Types</h3>
-                <p>Practice with MCQs, true/false, descriptive questions, and more. Variety keeps learning engaging and effective.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">🎯</div>
+              <div class="feature-title">Multiple Formats</div>
+              <div class="feature-description">
+                Practice with MCQs, true/false, descriptive questions, and more.
+                Variety keeps learning engaging and helps you retain information better.
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="stats-section">
-            <h3>Join Our Growing Community</h3>
-            <p>See what our community has achieved with Quizzicallabz</p>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <span class="stat-number">50K+</span>
-                <span class="stat-label">Quizzes Generated</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">10K+</span>
-                <span class="stat-label">Active Students</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">95%</span>
-                <span class="stat-label">Success Rate</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number">24/7</span>
-                <span class="stat-label">AI Support</span>
-              </div>
-            </div>
+        <div class="stats-highlight">
+          <div class="stats-mascot">
+            📈
+          </div>
+          <div class="stats-title">
+            Join Our Growing Community
+          </div>
+          <div class="stats-description">
+            You're now part of a thriving community of learners who are achieving academic excellence
           </div>
 
-          <div class="cta-section">
-            <h3>Ready to Start Learning?</h3>
-            <p>Take your first step towards academic excellence. Create your first quiz or explore our specialized exam preparation modules.</p>
-            <div class="btn-group">
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="btn">
-                Create Your First Quiz
-              </a>
-              <a href="https://quizzicallabz.qzz.io/mdcat" class="btn btn-secondary">
-                Start MDCAT Prep
-              </a>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-number">50K+</span>
+              <span class="stat-label">Quizzes Generated</span>
             </div>
+            <div class="stat-item">
+              <span class="stat-number">10K+</span>
+              <span class="stat-label">Active Learners</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">95%</span>
+              <span class="stat-label">Success Rate</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">AI Support</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-section">
+          <div class="action-title">
+            Ready to Excel?
+          </div>
+          <div class="action-subtitle">
+            Take your learning to the next level with personalized AI-powered education
+          </div>
+
+          <div class="cta-buttons">
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button cta-button-primary">
+              🚀 Create Your First Quiz
+            </a>
+            <a href="https://quizzicallabz.qzz.io/mdcat" class="cta-button cta-button-secondary">
+              🎓 Start MDCAT Prep
+            </a>
+          </div>
+        </div>
+
+        <div class="next-steps">
+          <div class="next-steps-title">
+            📝 Your Next Steps
+          </div>
+          <div class="next-steps-description">
+            Getting started is easy - here's what you can do right now
+          </div>
+
+          <div class="steps-list">
+            <div class="step-item">🎯 Complete your profile</div>
+            <div class="step-item">📝 Create your first quiz</div>
+            <div class="step-item">📊 Track your progress</div>
+            <div class="step-item">🏆 Start building streaks</div>
           </div>
         </div>
 
         <div class="footer">
-          <div class="footer-logo">Quizzicallabz</div>
-          <div class="footer-tagline">Your Ultimate AI-Powered Study Partner</div>
-
-          <div class="footer-links">
-            <a href="https://quizzicallabz.qzz.io">Home</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz">Create Quiz</a>
-            <a href="https://quizzicallabz.qzz.io/mdcat">MDCAT Prep</a>
-            <a href="https://quizzicallabz.qzz.io/dashboard">Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/help">Help Center</a>
+          <div class="footer-logo">
+            Quizzicallabs AI
+          </div>
+          <div class="footer-tagline">
+            Your Ultimate AI-Powered Study Partner
           </div>
 
-          <div class="footer-divider">
-            <div class="footer-bottom">
-              <p>&copy; ${new Date().getFullYear()} Quizzicallabz. All rights reserved.</p>
-              <p>Powered by Advanced AI Technology | Made with ❤️ for Students</p>
-            </div>
+          <div class="footer-links">
+            <a href="https://quizzicallabz.qzz.io" class="footer-link">Home</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="footer-link">Create Quiz</a>
+            <a href="https://quizzicallabz.qzz.io/mdcat" class="footer-link">MDCAT Prep</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="footer-link">Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/help" class="footer-link">Help Center</a>
+          </div>
+
+          <div class="social-links">
+            <a href="#" class="social-link">📘</a>
+            <a href="#" class="social-link">🐦</a>
+            <a href="#" class="social-link">💼</a>
+            <a href="#" class="social-link">📷</a>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <p style="font-size: 12px; opacity: 0.7; margin: 0;">
+              © ${new Date().getFullYear()} Quizzicallabz AI. All rights reserved. |
+              Powered by Advanced AI Technology • Made with ❤️ for Students
+            </p>
           </div>
         </div>
       </div>
@@ -462,44 +890,51 @@ export async function sendWelcomeEmail(to: string, userName: string) {
   `;
 
   const text = `
-QUIZZICALLABZ - PLATFORM FEATURES
+QUIZZICALLABS AI - WELCOME ${userName.toUpperCase()}
 
 Hello ${userName}!
 
-Welcome to Quizzicallabz, where advanced AI meets personalized learning to help you achieve academic excellence.
+Welcome to Quizzicallabs AI, where advanced AI meets personalized learning to help you achieve academic excellence.
+
+ACCOUNT DETAILS:
+---------------
+✉️ Email: ${emailDetails.userEmail}
+📅 Joined On: ${emailDetails.signUpDate || new Date().toLocaleDateString()}
+🌐 Account Type: ${emailDetails.accountType || 'Free'}
+🗣️ Language: ${emailDetails.preferredLanguage || 'English'}
 
 PLATFORM FEATURES:
 ------------------
-• Smart Quiz Generation - Create personalized quizzes on any topic using advanced AI
-• MDCAT/ECAT Preparation - Specialized preparation modules for Pakistani entrance exams
-• AI-Powered Explanations - Get instant, detailed explanations for every question
-• Advanced Analytics - Track progress and identify weak areas
-• Instant Results - Get immediate feedback and recommendations
-• Multiple Question Types - Practice with MCQs, descriptive questions, and more
+🚀 AI Quiz Generation - Create intelligent quizzes tailored to your learning level
+📚 MDCAT & ECAT Prep - Specialized modules for Pakistani entrance exams
+💡 Smart Explanations - Instant, personalized explanations for every question
+📊 Performance Analytics - Track progress and identify weak areas
+⚡ Instant Feedback - Immediate score breakdowns and recommendations
+🎯 Multiple Formats - MCQs, descriptive questions, and more
 
 COMMUNITY ACHIEVEMENTS:
 ----------------------
 • 50K+ Quizzes Generated
-• 10K+ Active Students
+• 10K+ Active Learners
 • 95% Success Rate
 • 24/7 AI Support
 
 GET STARTED:
 ------------
-Create Your First Quiz: https://quizzicallabz.qzz.io/generate-quiz
-Start MDCAT Prep: https://quizzicallabz.qzz.io/mdcat
-View Dashboard: https://quizzicallabz.qzz.io/dashboard
+🚀 Create Your First Quiz: https://quizzicallabz.qzz.io/generate-quiz
+🎓 Start MDCAT Prep: https://quizzicallabz.qzz.io/mdcat
+📊 View Dashboard: https://quizzicallabz.qzz.io/dashboard
 
 Need help? Reply to this email or visit our help center.
 
-Thank you for joining Quizzicallabz!
+Thank you for joining Quizzicallabs AI!
 
 Best regards,
-The Quizzicallabz Team
+The Quizzicallabs AI Team
 
 ---
-Quizzicallabz - Your Ultimate AI-Powered Study Partner
-© ${new Date().getFullYear()} Quizzicallabz. All rights reserved.
+Quizzicallabs AI - Your Ultimate AI-Powered Study Partner
+© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
   `;
 
   return sendEmail({ to, subject, html, text });

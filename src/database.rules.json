@@ -46,14 +46,7 @@
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified"]
-      }
-    },
-    "quizStates": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified"]
+      ".indexOn": ["lastModified"]
       }
     },
     "userPreferences": {

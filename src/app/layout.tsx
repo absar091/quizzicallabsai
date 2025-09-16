@@ -44,14 +44,14 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
     apple: [{ url: "/apple-icon.svg", sizes: "180x180", type: "image/svg+xml" }],
   },
-  metadataBase: new URL('https://quizzicallabs.com'),
+metadataBase: new URL('https://quizzicallabz.qzz.io'),
   verification: {
     google: "m8xmix3Yw61Pyy6JWF91A7ukaR2WTRjD_fYL9TVBRoo",
   },
   openGraph: {
     title: "Quizzicallabs AI - The Ultimate AI Study Platform for MDCAT, ECAT & NTS",
     description: "Generate tailored quizzes, practice questions from documents, track your progress, and get AI-powered study guides. Specialized prep for MDCAT, ECAT, and NTS exams. Perfect for students and educators.",
-    url: "https://quizzicallabs.com",
+    url: "https://quizzicallabz.qzz.io",
     siteName: "Quizzicallabs AI",
     images: [
       {

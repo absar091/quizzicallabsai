@@ -70,45 +70,20 @@ export async function generateDashboardInsights(
 }
 
 
-const getPromptText = (isPro: boolean) => `You are an AI-powered academic coach named 'Quizzical'. Your goal is to provide encouraging, insightful, and actionable feedback to a student based on their recent quiz performance. Be friendly, positive, and concise.
+const getPromptText = (isPro: boolean) => `You are a smart academic coach. Give encouraging, concise feedback based on quiz history.
 
-${isPro ? '**PRO USER - ENHANCED INSIGHTS:**\r\n- Provide more detailed performance analysis\r\n- Offer advanced study strategies\r\n- Include deeper learning recommendations\r\n- Focus on mastery and excellence\r\n\r\n' : '**STANDARD INSIGHTS:**\r\n- Focus on core performance feedback\r\n- Provide clear, actionable suggestions\r\n- Keep recommendations accessible\r\n\r\n'}
+${isPro ? 'PRO: Detailed analysis + advanced strategies.' : 'STANDARD: Clear feedback + actionable tips.'}
 
-**CONTEXT:**
-- Student Name: {{{userName}}}
-- Recent Quiz History (last 10 quizzes):
-{{#each quizHistory}}
-  - Topic: {{this.topic}}, Score: {{this.percentage}}%, Date: {{this.date}}
-{{/each}}
+NAME: {{{userName}}}
+QUIZZES: {{#each quizHistory}}- {{this.topic}} {{this.percentage}}%{{/each}}
 
-**YOUR TASK:**
-Analyze the student's quiz history and generate a response in the specified JSON format. Your analysis must be brief and to the point.
+INSTRUCTIONS:
+1: Short greeting with name
+2: One sentence - strongest topic (if >80% avg) OR weakest topic (if <60% avg) OR general trend
+3: One sentence suggestion based on observation
+4: Optional action button with relevant URL
 
-1.  **Greeting:** Create a short, positive greeting. Use the user's name.
-
-2.  **Observation (Max 1 Sentence):** Identify the SINGLE most important trend.
-    - **Strongest Topic:** Find the topic with the highest average score (must have at least 2 quizzes). If their average is over 80%, congratulate them (e.g., "You're consistently acing your Physics quizzes!").
-    - **Weakest Topic:** Find the topic with the lowest average score (must have at least 2 quizzes). If their average is below 50%, gently point it out (e.g., "It looks like Chemistry is a bit of a challenge right now.").
-    - **General Improvement:** If no clear strongest/weakest topic, but scores are trending up, mention their improvement.
-    - **General Encouragement:** If the data is mixed, provide a general encouraging observation.
-
-3.  **Suggestion (Max 1 Sentence):** Based on your observation, provide a clear, single-sentence suggestion for their next step.
-    - If strong in a topic, suggest a harder difficulty level.
-    - If weak in a topic, suggest practicing it or reviewing a study guide for it.
-    - If improving, encourage them to keep the momentum going.
-
-4.  **Suggested Action (Optional but recommended):**
-    - Create a practical call-to-action button based on your suggestion.
-    - 'buttonText' should be short and action-oriented (e.g., "Practice Chemistry", "Master Physics").
-    - 'link' should be a functional URL. For a topic-specific quiz, use '/generate-quiz?topic=TOPIC_NAME'. For a study guide, use '/generate-study-guide?topic=TOPIC_NAME'.
-
-**Example (Weak in Chemistry):**
-*   Greeting: "Keep up the great effort, {{{userName}}}!"
-*   Observation: "Your recent results show Chemistry has been a tough spot."
-*   Suggestion: "A focused practice session could make a big difference."
-*   Action: { buttonText: "Practice Chemistry", link: "/generate-quiz?topic=Chemistry" }
-
-Now, generate the output for the provided student data.`;
+Keep it brief. Focus on positives.`;
 
 const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
     name: 'generateDashboardInsightsPrompt',
@@ -134,15 +109,17 @@ const generateDashboardInsightsFlow = ai!.defineFlow(
     
     let output;
     let retryCount = 0;
-    const maxRetries = 2;
+    const maxRetries = 1; // Reduced from 2 to 1
 
     while (retryCount <= maxRetries) {
       try {
+        // Pre-create prompts instead of regenerating
         const prompt = createPrompt(input.isPro, retryCount > 0);
         const result = await prompt(recentHistory);
         output = result.output;
 
-        if (output && output.greeting && output.observation && output.suggestion) {
+        // Quick validation
+        if (output?.greeting && output?.observation && output?.suggestion) {
           return output;
         } else {
           throw new Error("AI returned invalid insights structure");
@@ -150,11 +127,10 @@ const generateDashboardInsightsFlow = ai!.defineFlow(
       } catch (error: any) {
         retryCount++;
         const errorMsg = error?.message || 'Unknown error';
-        console.error(`Dashboard insights generation attempt ${retryCount} failed:`, errorMsg);
 
         if (retryCount > maxRetries) {
+          // Fail fast for non-quota errors
           if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
-            // Rotate to next API key for quota issues
             try {
               const { handleApiKeyError } = await import('@/lib/api-key-manager');
               handleApiKeyError();
@@ -163,17 +139,12 @@ const generateDashboardInsightsFlow = ai!.defineFlow(
               console.warn('Failed to rotate API key:', rotateError);
             }
             throw new Error('AI service quota exceeded. Please try again in a few minutes.');
-          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
-            throw new Error('Request timeout. The AI service is busy. Please try again.');
-          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
-            throw new Error('Network connection issue. Please check your internet connection.');
-          } else {
-            throw new Error('Failed to generate dashboard insights. Please try again.');
           }
+          throw new Error('Failed to generate dashboard insights. Please try again.');
         }
 
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+        // Reduced backoff: 500ms instead of 2^retry * 1000ms
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
