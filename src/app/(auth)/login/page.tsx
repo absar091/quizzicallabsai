@@ -213,7 +213,7 @@ export default function LoginPage() {
     <Card>
       <CardHeader>
         <CardTitle>Welcome Back</CardTitle>
-        <CardDescription>Sign in to continue to Quizzicallabs AI.</CardDescription>
+        <CardDescription>Sign in to continue to Quizzicallabzᴬᴵ.</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

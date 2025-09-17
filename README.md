@@ -1,4 +1,4 @@
-# 🎯 **Quizzicallabs AI** - The Future of Education is Here
+# 🎯 **Quizzicallabzᴬᴵ** - The Future of Education is Here
 
 <p align="center">
   <a href="#demo">
@@ -14,7 +14,7 @@
 </p>
 
 <div align="center">
-  <img src="./demo/hero-screenshot.png" alt="Quizzicallabs AI Dashboard" width="80%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);" />
+  <img src="./demo/hero-screenshot.png" alt="Quizzicallabzᴬᴵ Dashboard" width="80%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);" />
   <p><em>Transform 3 hours of study material into 30 seconds of personalized learning ✨</em></p>
 </div>
 

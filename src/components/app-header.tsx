@@ -38,7 +38,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground flex-shrink-0">
                       <BrainCircuit className="h-5 w-5" />
                   </div>
-                  <span className="hidden sm:inline">Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
+                  <span className="hidden sm:inline">Quizzicallabzᴬᴵ</span>
                   <span className="sm:hidden truncate">QC<sup className="text-xs text-primary -top-2 relative">AI</sup></span>
               </Link>
 
@@ -112,7 +112,7 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
         <div className="flex-1 md:hidden">
           {!showAppBackButton && (
             <Link href="/" className="font-semibold text-lg truncate block">
-              Quizzicallabs<sup className="text-xs text-primary -top-2 relative">AI</sup>
+              Quizzicallabzᴬᴵ
             </Link>
           )}
         </div>
