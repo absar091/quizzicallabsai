@@ -136,7 +136,7 @@ export default function Home() {
                 <BrainCircuit className="h-5 w-5" />
                 AI-Powered Learning
               </div>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 text-orange-700 px-5 py-3 rounded-full text-sm font-semibold border border-orange-200">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-teal-500/10 text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold border border-cyan-200">
                 <Zap className="h-5 w-5" />
                 Smart Quiz Generation
               </div>
@@ -240,33 +240,37 @@ export default function Home() {
             </div>
 
             <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                <h4 className="font-semibold">Live Match Stats</h4>
-                  <Badge className="bg-green-500">LIVE</Badge>
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📧 Quiz Result Email Reports</h4>
+                  <p className="text-muted-foreground">
+                    Receive comprehensive quiz performance reports with detailed analysis, personalized recommendations, and learning insights delivered via email.
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">47</div>
-                    <div className="text-xs text-muted-foreground">Active Players</div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <span className="font-medium">Performance Analysis</span>
+                    </div>
+                    <div className="text-sm text-cyan-600 font-semibold">Detailed Breakdown</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">35</div>
-                    <div className="text-xs text-muted-foreground">Battles Today</div>
+
+                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Personalized Feedback</span>
+                    </div>
+                    <div className="text-sm text-teal-600 font-semibold">AI-Generated Tips</div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Ahmed (1st)</span>
-                    <span className="font-semibold">2,450 pts</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Fatima (2nd)</span>
-                    <span className="font-semibold">2,320 pts</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">You (3rd)</span>
-                    <span className="font-semibold">2,185 pts</span>
+
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">⏰</div>
+                      <span className="font-medium">Scheduled Delivery</span>
+                    </div>
+                    <div className="text-sm text-blue-600 font-semibold">Immediate After Quiz</div>
                   </div>
                 </div>
               </div>
@@ -425,29 +429,29 @@ export default function Home() {
                     <div className="text-sm text-muted-foreground mt-1">Adjusting based on your performance...</div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">85%</div>
-                      <div className="text-sm text-muted-foreground">Mastered Concepts</div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">📘</div>
+                        <span className="font-medium">Content Adaptation</span>
+                      </div>
+                      <div className="text-sm text-blue-600 font-semibold">Real-time</div>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">15%</div>
-                      <div className="text-sm text-muted-foreground">Personalized Path</div>
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Learning Speed</span>
-                      <span className="text-blue-600 font-semibold">Optimal</span>
+                    <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                        <span className="font-medium">Difficulty Adjustment</span>
+                      </div>
+                      <div className="text-sm text-purple-600 font-semibold">Auto-Optimized</div>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Motivation Level</span>
-                      <span className="text-purple-600 font-semibold">High</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Study Efficiency</span>
-                      <span className="text-indigo-600 font-semibold">Maximum</span>
+
+                    <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">🏆</div>
+                        <span className="font-medium">Achievement Tracking</span>
+                      </div>
+                      <div className="text-sm text-indigo-600 font-semibold">Comprehensive</div>
                     </div>
                   </div>
                 </div>
@@ -507,36 +511,36 @@ export default function Home() {
             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 p-8 rounded-2xl border border-purple-200 dark:border-purple-800">
               <div className="space-y-6">
                 <div className="text-center">
-                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">📈 Global Impact Metrics</h4>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
-                    <div className="text-3xl font-bold text-purple-600">50K+</div>
-                    <div className="text-sm text-muted-foreground">Shared Quizzes</div>
-                  </div>
-                  <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
-                    <div className="text-3xl font-bold text-indigo-600">250K+</div>
-                    <div className="text-sm text-muted-foreground">Students Helped</div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
-                    <span className="text-sm font-medium">Top Viral Reach:</span>
-                    <span className="text-purple-600 font-bold">100K+ Views</span>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-4 py-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
-                    <span className="text-sm font-medium">Average Engagement:</span>
-                    <span className="text-indigo-600 font-bold">85% Higher</span>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <p className="text-muted-foreground text-sm">
-                    Share your knowledge and impact millions of learners worldwide!
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">📬 Quiz Sharing Features</h4>
+                  <p className="text-muted-foreground">
+                    Share your quiz creations and results across social platforms with customizable settings and advanced engagement tracking.
                   </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🖥️</div>
+                      <span className="font-medium">Dashboard Sharing</span>
+                    </div>
+                    <div className="text-sm text-purple-600 font-semibold">Easy Export</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">🎨</div>
+                      <span className="font-medium">Custom Branding</span>
+                    </div>
+                    <div className="text-sm text-indigo-600 font-semibold">Professional Results</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-violet-50 dark:bg-violet-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-violet-500 rounded-full flex items-center justify-center text-white font-semibold">🔗</div>
+                      <span className="font-medium">Direct Links</span>
+                    </div>
+                    <div className="text-sm text-violet-600 font-semibold">One-Click Share</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -601,32 +605,25 @@ export default function Home() {
                   <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">📚</div>
-                      <span className="font-medium">Syllabus Mastery</span>
+                      <span className="font-medium">Comprehensive Coverage</span>
                     </div>
-                    <div className="text-sm text-indigo-600 font-semibold">150+ Topics</div>
+                    <div className="text-sm text-indigo-600 font-semibold">Complete Syllabus</div>
                   </div>
 
                   <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
-                      <span className="font-medium">Practice Exams</span>
+                      <span className="font-medium">Exam Practice Mode</span>
                     </div>
-                    <div className="text-sm text-purple-600 font-semibold">100+ Tests</div>
+                    <div className="text-sm text-purple-600 font-semibold">Timed Sessions</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
-                      <span className="font-medium">Performance Analytics</span>
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <span className="font-medium">Progress Tracking</span>
                     </div>
-                    <div className="text-sm text-pink-600 font-semibold">Real-time</div>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 px-4 py-2 rounded-lg">
-                    <span className="text-sm font-medium">Average Score Improvement:</span>
-                    <span className="text-indigo-600 font-bold">87% Higher</span>
+                    <div className="text-sm text-blue-600 font-semibold">Detailed Insights</div>
                   </div>
                 </div>
               </div>
@@ -685,39 +682,39 @@ export default function Home() {
             <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
               <div className="space-y-6">
                 <div className="text-center">
-                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">🎯 Learning Enhancement Stats</h4>
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📝 Study Guide Features</h4>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">⏱️</div>
-                      <span className="font-medium">Study Time Reduction</span>
+                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">📋</div>
+                      <span className="font-medium">Smart Summaries</span>
                     </div>
-                    <div className="text-sm text-cyan-600 font-semibold">60% Faster</div>
+                    <div className="text-sm text-cyan-600 font-semibold">Key Concepts Only</div>
                   </div>
 
                   <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🧠</div>
-                      <span className="font-medium">Knowledge Retention</span>
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🔗</div>
+                      <span className="font-medium">Visual Mind Maps</span>
                     </div>
-                    <div className="text-sm text-teal-600 font-semibold">89% Better</div>
+                    <div className="text-sm text-teal-600 font-semibold">Interactive Design</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">✅</div>
-                      <span className="font-medium">Concept Mastery</span>
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Built-in Assessments</span>
                     </div>
-                    <div className="text-sm text-green-600 font-semibold">94% Rate</div>
+                    <div className="text-sm text-blue-600 font-semibold">Progress Tracking</div>
                   </div>
                 </div>
 
                 <div className="text-center bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/10 dark:to-teal-950/10 p-4 rounded-lg">
                   <p className="text-muted-foreground text-sm">
-                    <strong>AI Study Guides</strong> outperform traditional textbooks by making learning
-                    <span className="text-cyan-600 font-semibold">2x faster and 2.3x more effective!</span>
+                    <strong>AI generates study materials</strong> 10x faster than manual creation
+                    <span className="text-cyan-600 font-semibold">Perfect for last-minute studying!</span>
                   </p>
                 </div>
               </div>
@@ -880,27 +877,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Key Stats Comparison */}
-          <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-8 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/20 dark:to-blue-950/20 rounded-2xl border border-cyan-200 dark:border-cyan-800">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-cyan-600">89%</div>
-                <div className="text-sm text-muted-foreground">Better Retention</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">2,300%</div>
-                <div className="text-sm text-muted-foreground">Study Engagement</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">60%</div>
-                <div className="text-sm text-muted-foreground">Less Study Time</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600">85%</div>
-                <div className="text-sm text-muted-foreground">User Satisfaction</div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </section>
 
