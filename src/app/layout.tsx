@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import AppProviders from "@/components/app-providers";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -111,6 +112,7 @@ export default function RootLayout({
           <AppProviders>
             {children}
             <Analytics />
+            <SpeedInsights />
           </AppProviders>
         </ErrorBoundary>
       </body>

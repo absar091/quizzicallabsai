@@ -43,6 +43,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@types/mongoose": "^5.11.96",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
