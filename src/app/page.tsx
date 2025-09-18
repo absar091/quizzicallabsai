@@ -81,7 +81,7 @@ export default function Home() {
     },
     {
       icon: BrainCircuit,
-      title: "AI-Powered Insights",
+      title: '<span className="text-yellow-600">AI</span>-Powered Insights',
       description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
       color: "from-indigo-500 to-purple-500",
     }
@@ -134,7 +134,7 @@ export default function Home() {
             <div className="flex justify-center gap-3 mb-8 flex-wrap">
               <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold border border-cyan-200">
                 <BrainCircuit className="h-5 w-5" />
-                AI-Powered Learning
+                <span className="text-yellow-600">AI</span>-Powered Learning
               </div>
               <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-teal-500/10 text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold border border-cyan-200">
                 <Zap className="h-5 w-5" />
@@ -150,7 +150,7 @@ export default function Home() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Study Smarter, <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Not Longer</span>
               <span className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
-              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1">with AI-Powered Quizzes</span>
+              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1">with <span className="text-yellow-600">AI</span>-Powered Quizzes</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
@@ -636,7 +636,7 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-gradient-to-br from-cyan-500/5 via-teal-500/3 to-green-500/5">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📖 AI-Powered Study Guides</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📖 <span className="text-yellow-600">AI</span>-Powered Study Guides</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Instantly transform complex topics into crystal-clear understanding! Our AI generates comprehensive guides with perfect summaries, creative analogies, mind maps, and built-in smart assessments.
               <span className="font-semibold text-cyan-600">Master ANY subject in record time with content that's actually engaging!</span>
