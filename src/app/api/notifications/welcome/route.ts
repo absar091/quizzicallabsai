@@ -22,22 +22,37 @@ export async function POST(request: NextRequest) {
 
         // Initialize Firebase Admin if not already done
         if (getApps().length === 0) {
-            // Firebase Admin should already be initialized in the notification service
+            // Re-initialize if needed - this handles serverless cold starts
+            const admin = await import('firebase-admin');
+            admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId: process.env.FIREBASE_PROJECT_ID,
+                    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+                }),
+                databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
+            });
         }
 
         try {
             await getAuth().verifyIdToken(token); // Changed usage
-        } catch (error) {
-            return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
+        } catch (error: any) {
+            console.error('Token verification failed:', error?.message);
+            return NextResponse.json({
+                success: false,
+                error: 'Token verification failed',
+                details: error?.message
+            }, { status: 401 });
         }
 
-        const result = await sendWelcomeNotifications(userId);
+        // The function doesn't return a result object, so we just call it
+        // Note: userId parameter is not actually used in the current implementation
+        await sendWelcomeNotifications();
 
-        if (result.success) {
-            return NextResponse.json({ success: true, message: 'Welcome notifications scheduled' });
-        } else {
-            return NextResponse.json({ success: false, error: result.error }, { status: 500 });
-        }
+        return NextResponse.json({
+            success: true,
+            message: 'Welcome notifications processed'
+        });
 
     } catch (error: any) {
         console.error('Welcome notification API error:', error);
@@ -47,4 +62,3 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
     }
 }
-
