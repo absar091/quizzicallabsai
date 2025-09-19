@@ -71,7 +71,7 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
   signUpDate?: string;
   preferredLanguage?: string;
 }) {
-  const subject = `🚀 Welcome ${userName}! Your AI Learning Journey Begins Today`;
+  const subject = `🎉 Welcome ${userName}! Your AI Learning Adventure Starts Now`;
 
   const html = `
     <!DOCTYPE html>
@@ -82,7 +82,22 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
       <title>Welcome to Quizzicallabs AI</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+          --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          --dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+          --glass-bg: rgba(255, 255, 255, 0.1);
+          --glass-border: rgba(255, 255, 255, 0.2);
+          --text-primary: #1f2937;
+          --text-secondary: #6b7280;
+          --text-light: rgba(255, 255, 255, 0.9);
+          --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+          --shadow-strong: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          --border-radius: 16px;
+          --border-radius-lg: 24px;
+        }
 
         * {
           margin: 0;
@@ -92,21 +107,23 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
 
         body {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          line-height: 1.65;
-          color: #1f2937;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          line-height: 1.7;
+          color: var(--text-primary);
+          background: var(--primary-gradient);
           min-height: 100vh;
           -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
 
         .email-container {
-          max-width: 720px;
-          margin: 0 auto;
+          max-width: 680px;
+          margin: 20px auto;
           background: #ffffff;
-          border-radius: 24px;
+          border-radius: var(--border-radius-lg);
           overflow: hidden;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          box-shadow: var(--shadow-strong);
           position: relative;
+          backdrop-filter: blur(20px);
         }
 
         .email-container::before {
@@ -115,15 +132,20 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
           top: 0;
           left: 0;
           right: 0;
-          height: 8px;
-          background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          height: 6px;
+          background: var(--accent-gradient);
+          background-size: 200% 200%;
+          animation: gradientFlow 4s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
 
         .hero-header {
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 25%, #ec4899 50%, #f59e0b 75%, #10b981 100%);
-          background-size: 400% 400%;
-          animation: gradientShift 8s ease infinite;
-          padding: 60px 40px;
+          background: var(--dark-gradient);
+          padding: 80px 40px;
           text-align: center;
           position: relative;
           overflow: hidden;
@@ -136,80 +158,95 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
           left: 0;
           right: 0;
           bottom: 0;
-          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" opacity=".25"></path><path d="M0,0V15.81C13.64,36.92,27.77,56.86,41.68,77.13,55.59,97.4,69.47,118,83.38,138.26c.6-.83,1.19-1.67,1.79-2.5C140.77,96.83,193.22,48.08,250.09,15.89c56.88-32.2,119.68-60.86,185.69-60.86,65.77,0,131.58,28.73,195,60.86,63.43,32.13,124.27,71.92,186.05,95.83l1.81,2.5c13.92-20.26,27.8-41,41.71-61.27,13.91-20.27,27.77-40.21,41.42-61.32V0Z" opacity=".1"></path></svg>');
-          background-size: cover;
-          background-repeat: no-repeat;
+          background: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.2) 0%, transparent 50%);
           z-index: 1;
         }
 
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+        .hero-header::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 100px;
+          background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+          z-index: 2;
         }
 
         .hero-content {
           position: relative;
-          z-index: 2;
+          z-index: 3;
         }
 
         .welcome-badge {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(12px);
-          color: #7c3aed;
-          padding: 12px 24px;
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          color: #ffffff;
+          padding: 14px 28px;
           border-radius: 50px;
           display: inline-block;
-          font-size: 14px;
-          font-weight: 700;
-          margin-bottom: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 24px;
+          border: 1px solid var(--glass-border);
           text-transform: uppercase;
-          letter-spacing: 1px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          letter-spacing: 1.5px;
+          box-shadow: var(--shadow-soft);
+          font-family: 'Space Grotesk', sans-serif;
         }
 
         .hero-title {
-          font-size: 42px;
-          font-weight: 900;
+          font-size: 48px;
+          font-weight: 800;
           color: #ffffff;
-          margin: 16px 0 8px;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-          background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          margin: 20px 0 12px;
+          text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          font-family: 'Space Grotesk', sans-serif;
+          letter-spacing: -0.02em;
         }
 
         .hero-subtitle {
-          font-size: 18px;
-          color: rgba(255, 255, 255, 0.9);
-          margin-bottom: 20px;
+          font-size: 20px;
+          color: var(--text-light);
+          margin-bottom: 24px;
           font-weight: 400;
+          max-width: 480px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
         .user-avatar {
-          width: 80px;
-          height: 80px;
+          width: 100px;
+          height: 100px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          background: var(--accent-gradient);
+          background-size: 200% 200%;
+          animation: gradientFlow 6s ease infinite;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 0 auto 20px;
-          font-size: 32px;
+          margin: 0 auto 24px;
+          font-size: 40px;
           color: white;
-          border: 4px solid rgba(255, 255, 255, 0.3);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          border: 3px solid var(--glass-border);
+          box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          font-weight: 700;
+          font-family: 'Space Grotesk', sans-serif;
         }
 
         .user-info-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border-radius: 16px;
-          padding: 24px;
-          margin: 30px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+          background: var(--glass-bg);
+          backdrop-filter: blur(30px);
+          border-radius: var(--border-radius);
+          padding: 32px;
+          margin: 40px;
+          border: 1px solid var(--glass-border);
+          box-shadow: var(--shadow-soft);
         }
 
         .user-details {
@@ -942,7 +979,13 @@ Quizzicallabs AI - Your Ultimate AI-Powered Study Partner
 
 export async function sendQuizResultEmail(to: string, quizData: {
   userName: string;
+  userClass?: string;
+  userGrade?: string;
+  userSchool?: string;
+  userAge?: number;
   topic: string;
+  subject?: string;
+  difficulty?: string;
   score: number;
   total?: number;
   percentage?: number;
@@ -950,10 +993,1078 @@ export async function sendQuizResultEmail(to: string, quizData: {
   date?: string;
   incorrectAnswers?: number;
   totalQuestions?: number;
+  weakAreas?: string[];
+  strongAreas?: string[];
+  detailedResults?: Array<{
+    question: string;
+    userAnswer: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    explanation?: string;
+    topic?: string;
+    difficulty?: string;
+  }>;
+  recommendations?: string[];
+  nextSteps?: string[];
+  studyPlan?: string[];
+  performanceHistory?: Array<{
+    date: string;
+    topic: string;
+    score: number;
+    percentage: number;
+  }>;
+  streakInfo?: {
+    currentStreak: number;
+    longestStreak: number;
+    totalQuizzes: number;
+  };
+  badges?: string[];
+  achievements?: string[];
 }) {
-  const subject = `Quiz Results: ${quizData.topic} - ${quizData.percentage || Math.round((quizData.score / (quizData.total || 10)) * 100)}%`;
+  const subject = `📊 Quiz Results: ${quizData.topic} - ${quizData.percentage || Math.round((quizData.score / (quizData.total || 10)) * 100)}% | ${quizData.userName}`;
 
   const percentage = quizData.percentage || Math.round((quizData.score / (quizData.total || 10)) * 100);
+  const performanceLevel = percentage >= 90 ? 'Excellent' : percentage >= 80 ? 'Very Good' : percentage >= 70 ? 'Good' : percentage >= 60 ? 'Fair' : 'Needs Improvement';
+  const performanceEmoji = percentage >= 90 ? '🏆' : percentage >= 80 ? '🌟' : percentage >= 70 ? '👍' : percentage >= 60 ? '📈' : '💪';
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Quiz Results - ${quizData.topic}</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        :root {
+          --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          --success-gradient: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+          --warning-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+          --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+          --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+          --dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+          --glass-bg: rgba(255, 255, 255, 0.1);
+          --glass-border: rgba(255, 255, 255, 0.2);
+          --text-primary: #1f2937;
+          --text-secondary: #6b7280;
+          --text-light: rgba(255, 255, 255, 0.9);
+          --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+          --shadow-strong: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          --border-radius: 16px;
+          --border-radius-lg: 24px;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          line-height: 1.7;
+          color: var(--text-primary);
+          background: var(--primary-gradient);
+          min-height: 100vh;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        .email-container {
+          max-width: 800px;
+          margin: 20px auto;
+          background: #ffffff;
+          border-radius: var(--border-radius-lg);
+          overflow: hidden;
+          box-shadow: var(--shadow-strong);
+          position: relative;
+          backdrop-filter: blur(20px);
+        }
+
+        .email-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 6px;
+          background: var(--accent-gradient);
+          background-size: 200% 200%;
+          animation: gradientFlow 4s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
+        .hero-header {
+          background: var(--dark-gradient);
+          padding: 60px 40px;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero-header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.2) 0%, transparent 50%);
+          z-index: 1;
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 3;
+        }
+
+        .performance-badge {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          color: #ffffff;
+          padding: 12px 24px;
+          border-radius: 50px;
+          display: inline-block;
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 20px;
+          border: 1px solid var(--glass-border);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          box-shadow: var(--shadow-soft);
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .hero-title {
+          font-size: 36px;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 16px 0 8px;
+          text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          font-family: 'Space Grotesk', sans-serif;
+          letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+          font-size: 18px;
+          color: var(--text-light);
+          margin-bottom: 20px;
+          font-weight: 400;
+        }
+
+        .score-display {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          margin: 30px 0;
+          flex-wrap: wrap;
+        }
+
+        .score-circle {
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          background: ${percentage >= 80 ? 'var(--success-gradient)' : percentage >= 60 ? 'var(--warning-gradient)' : 'var(--danger-gradient)'};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+          color: white;
+          font-weight: 900;
+          border: 4px solid var(--glass-border);
+          box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .score-details {
+          color: white;
+          text-align: left;
+        }
+
+        .score-main {
+          font-size: 48px;
+          font-weight: 900;
+          margin-bottom: 8px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-label {
+          font-size: 16px;
+          opacity: 0.9;
+          font-weight: 600;
+        }
+
+        .user-info-section {
+          background: #f8fafc;
+          padding: 40px;
+        }
+
+        .section-title {
+          font-size: 24px;
+          font-weight: 800;
+          color: #1f2937;
+          margin-bottom: 24px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .user-details-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        .detail-card {
+          background: white;
+          padding: 24px;
+          border-radius: 12px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+
+        .detail-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #374151;
+        }
+
+        .detail-content {
+          font-size: 14px;
+          color: #6b7280;
+          line-height: 1.6;
+        }
+
+        .quiz-details-section {
+          background: white;
+          padding: 40px;
+        }
+
+        .quiz-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        .stat-card {
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+          padding: 24px;
+          border-radius: 12px;
+          text-align: center;
+          border: 1px solid #e5e7eb;
+        }
+
+        .stat-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+          display: block;
+        }
+
+        .stat-value {
+          font-size: 28px;
+          font-weight: 900;
+          color: #1f2937;
+          margin-bottom: 4px;
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-label {
+          font-size: 14px;
+          color: #6b7280;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .performance-analysis {
+          background: #f8fafc;
+          padding: 40px;
+        }
+
+        .analysis-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 24px;
+        }
+
+        .analysis-card {
+          background: white;
+          padding: 28px;
+          border-radius: 16px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .analysis-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+
+        .analysis-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1f2937;
+        }
+
+        .weakness-list, .strength-list, .recommendation-list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .weakness-item, .strength-item, .recommendation-item {
+          padding: 12px 16px;
+          margin-bottom: 8px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .weakness-item {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+        }
+
+        .strength-item {
+          background: #f0fdf4;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+        }
+
+        .recommendation-item {
+          background: #eff6ff;
+          color: #2563eb;
+          border: 1px solid #bfdbfe;
+        }
+
+        .detailed-results {
+          background: white;
+          padding: 40px;
+        }
+
+        .question-card {
+          background: #f8fafc;
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+          padding: 24px;
+          margin-bottom: 20px;
+        }
+
+        .question-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .question-number {
+          background: #6366f1;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .question-status {
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .correct {
+          background: #dcfce7;
+          color: #16a34a;
+        }
+
+        .incorrect {
+          background: #fef2f2;
+          color: #dc2626;
+        }
+
+        .question-text {
+          font-size: 16px;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 16px;
+          line-height: 1.6;
+        }
+
+        .answer-section {
+          display: grid;
+          gap: 12px;
+        }
+
+        .answer-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+
+        .user-answer {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+        }
+
+        .correct-answer {
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+        }
+
+        .explanation {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          padding: 16px;
+          border-radius: 8px;
+          margin-top: 12px;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .study-plan {
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+          padding: 40px;
+          color: white;
+          text-align: center;
+        }
+
+        .study-plan-title {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 16px;
+        }
+
+        .study-plan-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+          margin-bottom: 30px;
+          max-width: 500px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .study-steps {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          margin-top: 30px;
+        }
+
+        .study-step {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          padding: 24px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          text-align: left;
+        }
+
+        .step-number {
+          background: rgba(255, 255, 255, 0.2);
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .step-title {
+          font-size: 16px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+
+        .step-description {
+          font-size: 14px;
+          opacity: 0.9;
+          line-height: 1.5;
+        }
+
+        .achievements-section {
+          background: white;
+          padding: 40px;
+          text-align: center;
+        }
+
+        .badges-grid {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        }
+
+        .badge {
+          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+          color: white;
+          padding: 12px 20px;
+          border-radius: 25px;
+          font-size: 14px;
+          font-weight: 700;
+          box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .streak-info {
+          background: #f8fafc;
+          padding: 24px;
+          border-radius: 12px;
+          margin: 24px 0;
+          border: 1px solid #e5e7eb;
+        }
+
+        .streak-stats {
+          display: flex;
+          justify-content: center;
+          gap: 32px;
+          flex-wrap: wrap;
+        }
+
+        .streak-stat {
+          text-align: center;
+        }
+
+        .streak-number {
+          font-size: 32px;
+          font-weight: 900;
+          color: #6366f1;
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .streak-label {
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+
+        .cta-section {
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          padding: 40px;
+          text-align: center;
+          color: white;
+        }
+
+        .cta-title {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 12px;
+        }
+
+        .cta-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+          margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .cta-button {
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          text-decoration: none;
+          font-weight: 700;
+          font-size: 14px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .cta-button:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: translateY(-2px);
+        }
+
+        .footer {
+          background: #1f2937;
+          color: #9ca3af;
+          padding: 30px 40px;
+          text-align: center;
+        }
+
+        .footer-content {
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+          .email-container {
+            margin: 0;
+            border-radius: 0;
+          }
+
+          .hero-header, .user-info-section, .quiz-details-section, 
+          .performance-analysis, .detailed-results, .study-plan, 
+          .achievements-section, .cta-section {
+            padding: 24px 20px;
+          }
+
+          .user-details-grid, .quiz-stats, .analysis-grid, .study-steps {
+            grid-template-columns: 1fr;
+          }
+
+          .score-display {
+            flex-direction: column;
+          }
+
+          .hero-title {
+            font-size: 28px;
+          }
+
+          .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .cta-button {
+            width: 100%;
+            max-width: 280px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <!-- Hero Header -->
+        <div class="hero-header">
+          <div class="hero-content">
+            <div class="performance-badge">
+              ${performanceEmoji} ${performanceLevel}
+            </div>
+            <div class="hero-title">
+              Quiz Results: ${quizData.topic}
+            </div>
+            <div class="hero-subtitle">
+              Completed on ${quizData.date || new Date().toLocaleDateString()}
+            </div>
+            
+            <div class="score-display">
+              <div class="score-circle">
+                ${percentage}%
+              </div>
+              <div class="score-details">
+                <div class="score-main">${quizData.score}/${quizData.total || 10}</div>
+                <div class="score-label">Questions Correct</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Information Section -->
+        <div class="user-info-section">
+          <div class="section-title">
+            👤 Student Information
+          </div>
+          <div class="user-details-grid">
+            <div class="detail-card">
+              <div class="detail-header">
+                <span>📝</span>
+                <div class="detail-title">Student Details</div>
+              </div>
+              <div class="detail-content">
+                <strong>Name:</strong> ${quizData.userName}<br>
+                ${quizData.userClass ? `<strong>Class:</strong> ${quizData.userClass}<br>` : ''}
+                ${quizData.userGrade ? `<strong>Grade:</strong> ${quizData.userGrade}<br>` : ''}
+                ${quizData.userSchool ? `<strong>School:</strong> ${quizData.userSchool}<br>` : ''}
+                ${quizData.userAge ? `<strong>Age:</strong> ${quizData.userAge} years<br>` : ''}
+              </div>
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-header">
+                <span>📚</span>
+                <div class="detail-title">Quiz Information</div>
+              </div>
+              <div class="detail-content">
+                <strong>Topic:</strong> ${quizData.topic}<br>
+                ${quizData.subject ? `<strong>Subject:</strong> ${quizData.subject}<br>` : ''}
+                ${quizData.difficulty ? `<strong>Difficulty:</strong> ${quizData.difficulty}<br>` : ''}
+                <strong>Date:</strong> ${quizData.date || new Date().toLocaleDateString()}<br>
+                ${quizData.timeTaken ? `<strong>Time Taken:</strong> ${Math.floor(quizData.timeTaken / 60)}m ${quizData.timeTaken % 60}s` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Statistics -->
+        <div class="quiz-details-section">
+          <div class="section-title">
+            📊 Performance Statistics
+          </div>
+          <div class="quiz-stats">
+            <div class="stat-card">
+              <span class="stat-icon">🎯</span>
+              <div class="stat-value">${percentage}%</div>
+              <div class="stat-label">Overall Score</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">✅</span>
+              <div class="stat-value">${quizData.score}</div>
+              <div class="stat-label">Correct Answers</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">❌</span>
+              <div class="stat-value">${(quizData.total || 10) - quizData.score}</div>
+              <div class="stat-label">Incorrect Answers</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">⏱️</span>
+              <div class="stat-value">${quizData.timeTaken ? `${Math.floor(quizData.timeTaken / 60)}:${String(quizData.timeTaken % 60).padStart(2, '0')}` : 'N/A'}</div>
+              <div class="stat-label">Time Taken</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Analysis -->
+        <div class="performance-analysis">
+          <div class="section-title">
+            🔍 Performance Analysis
+          </div>
+          <div class="analysis-grid">
+            ${quizData.weakAreas && quizData.weakAreas.length > 0 ? `
+            <div class="analysis-card">
+              <div class="analysis-header">
+                <span>⚠️</span>
+                <div class="analysis-title">Areas for Improvement</div>
+              </div>
+              <ul class="weakness-list">
+                ${quizData.weakAreas.map(area => `
+                  <li class="weakness-item">
+                    <span>📌</span>
+                    ${area}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+            ` : ''}
+            
+            ${quizData.strongAreas && quizData.strongAreas.length > 0 ? `
+            <div class="analysis-card">
+              <div class="analysis-header">
+                <span>💪</span>
+                <div class="analysis-title">Strong Areas</div>
+              </div>
+              <ul class="strength-list">
+                ${quizData.strongAreas.map(area => `
+                  <li class="strength-item">
+                    <span>⭐</span>
+                    ${area}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+            ` : ''}
+            
+            ${quizData.recommendations && quizData.recommendations.length > 0 ? `
+            <div class="analysis-card">
+              <div class="analysis-header">
+                <span>💡</span>
+                <div class="analysis-title">Recommendations</div>
+              </div>
+              <ul class="recommendation-list">
+                ${quizData.recommendations.map(rec => `
+                  <li class="recommendation-item">
+                    <span>🎯</span>
+                    ${rec}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${quizData.detailedResults && quizData.detailedResults.length > 0 ? `
+        <!-- Detailed Question Results -->
+        <div class="detailed-results">
+          <div class="section-title">
+            📝 Detailed Question Analysis
+          </div>
+          ${quizData.detailedResults.map((result, index) => `
+            <div class="question-card">
+              <div class="question-header">
+                <div class="question-number">Question ${index + 1}</div>
+                <div class="question-status ${result.isCorrect ? 'correct' : 'incorrect'}">
+                  ${result.isCorrect ? '✅ Correct' : '❌ Incorrect'}
+                </div>
+              </div>
+              
+              <div class="question-text">
+                ${result.question}
+              </div>
+              
+              <div class="answer-section">
+                ${!result.isCorrect ? `
+                <div class="answer-row user-answer">
+                  <strong>Your Answer:</strong> ${result.userAnswer}
+                </div>
+                ` : ''}
+                <div class="answer-row correct-answer">
+                  <strong>Correct Answer:</strong> ${result.correctAnswer}
+                </div>
+              </div>
+              
+              ${result.explanation ? `
+              <div class="explanation">
+                <strong>💡 Explanation:</strong> ${result.explanation}
+              </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+
+        <!-- Personalized Study Plan -->
+        <div class="study-plan">
+          <div class="study-plan-title">
+            📚 Your Personalized Study Plan
+          </div>
+          <div class="study-plan-subtitle">
+            Based on your performance, here's what we recommend for ${quizData.userName}
+          </div>
+          
+          <div class="study-steps">
+            ${quizData.studyPlan && quizData.studyPlan.length > 0 ? 
+              quizData.studyPlan.map((step, index) => `
+                <div class="study-step">
+                  <div class="step-number">${index + 1}</div>
+                  <div class="step-title">Step ${index + 1}</div>
+                  <div class="step-description">${step}</div>
+                </div>
+              `).join('') : `
+                <div class="study-step">
+                  <div class="step-number">1</div>
+                  <div class="step-title">Review Weak Areas</div>
+                  <div class="step-description">Focus on topics where you scored below 70%</div>
+                </div>
+                <div class="study-step">
+                  <div class="step-number">2</div>
+                  <div class="step-title">Practice More</div>
+                  <div class="step-description">Take additional quizzes on ${quizData.topic}</div>
+                </div>
+                <div class="study-step">
+                  <div class="step-number">3</div>
+                  <div class="step-title">Seek Help</div>
+                  <div class="step-description">Ask teachers or use our AI tutor for difficult concepts</div>
+                </div>
+              `
+            }
+          </div>
+        </div>
+
+        <!-- Achievements & Streaks -->
+        <div class="achievements-section">
+          <div class="section-title">
+            🏆 Achievements & Progress
+          </div>
+          
+          ${quizData.badges && quizData.badges.length > 0 ? `
+          <div class="badges-grid">
+            ${quizData.badges.map(badge => `
+              <div class="badge">${badge}</div>
+            `).join('')}
+          </div>
+          ` : ''}
+          
+          ${quizData.streakInfo ? `
+          <div class="streak-info">
+            <div class="streak-stats">
+              <div class="streak-stat">
+                <span class="streak-number">${quizData.streakInfo.currentStreak}</span>
+                <span class="streak-label">Current Streak</span>
+              </div>
+              <div class="streak-stat">
+                <span class="streak-number">${quizData.streakInfo.longestStreak}</span>
+                <span class="streak-label">Longest Streak</span>
+              </div>
+              <div class="streak-stat">
+                <span class="streak-number">${quizData.streakInfo.totalQuizzes}</span>
+                <span class="streak-label">Total Quizzes</span>
+              </div>
+            </div>
+          </div>
+          ` : ''}
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+          <div class="cta-title">
+            Keep Learning, ${quizData.userName}! 🚀
+          </div>
+          <div class="cta-subtitle">
+            Continue your learning journey with personalized AI-powered education
+          </div>
+          
+          <div class="cta-buttons">
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">
+              📝 Take Another Quiz
+            </a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">
+              📊 View Dashboard
+            </a>
+            <a href="https://quizzicallabz.qzz.io/study-plan" class="cta-button">
+              📚 Get Study Plan
+            </a>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+          <div class="footer-content">
+            <p><strong>Quizzicallabs AI</strong> - Your Ultimate AI-Powered Study Partner</p>
+            <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
+            <p>This email was sent to you because you completed a quiz on our platform.</p>
+            <p>Need help? Reply to this email or visit our help center.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  `;
+
+  const text = `
+QUIZ RESULTS - ${quizData.topic.toUpperCase()}
+${performanceEmoji} ${performanceLevel} Performance
+
+STUDENT INFORMATION:
+-------------------
+👤 Name: ${quizData.userName}
+${quizData.userClass ? `📚 Class: ${quizData.userClass}` : ''}
+${quizData.userGrade ? `🎓 Grade: ${quizData.userGrade}` : ''}
+${quizData.userSchool ? `🏫 School: ${quizData.userSchool}` : ''}
+${quizData.userAge ? `👶 Age: ${quizData.userAge} years` : ''}
+
+QUIZ DETAILS:
+------------
+📝 Topic: ${quizData.topic}
+${quizData.subject ? `📖 Subject: ${quizData.subject}` : ''}
+${quizData.difficulty ? `⚡ Difficulty: ${quizData.difficulty}` : ''}
+📅 Date: ${quizData.date || new Date().toLocaleDateString()}
+${quizData.timeTaken ? `⏱️ Time Taken: ${Math.floor(quizData.timeTaken / 60)}m ${quizData.timeTaken % 60}s` : ''}
+
+PERFORMANCE STATISTICS:
+----------------------
+🎯 Overall Score: ${percentage}%
+✅ Correct Answers: ${quizData.score}
+❌ Incorrect Answers: ${(quizData.total || 10) - quizData.score}
+📊 Total Questions: ${quizData.total || 10}
+
+${quizData.weakAreas && quizData.weakAreas.length > 0 ? `
+AREAS FOR IMPROVEMENT:
+---------------------
+${quizData.weakAreas.map(area => `⚠️ ${area}`).join('\n')}
+` : ''}
+
+${quizData.strongAreas && quizData.strongAreas.length > 0 ? `
+STRONG AREAS:
+------------
+${quizData.strongAreas.map(area => `💪 ${area}`).join('\n')}
+` : ''}
+
+${quizData.recommendations && quizData.recommendations.length > 0 ? `
+RECOMMENDATIONS:
+---------------
+${quizData.recommendations.map(rec => `💡 ${rec}`).join('\n')}
+` : ''}
+
+${quizData.detailedResults && quizData.detailedResults.length > 0 ? `
+DETAILED QUESTION ANALYSIS:
+---------------------------
+${quizData.detailedResults.map((result, index) => `
+Question ${index + 1}: ${result.isCorrect ? '✅ CORRECT' : '❌ INCORRECT'}
+Q: ${result.question}
+${!result.isCorrect ? `Your Answer: ${result.userAnswer}` : ''}
+Correct Answer: ${result.correctAnswer}
+${result.explanation ? `Explanation: ${result.explanation}` : ''}
+`).join('\n')}
+` : ''}
+
+PERSONALIZED STUDY PLAN:
+-----------------------
+${quizData.studyPlan && quizData.studyPlan.length > 0 ? 
+  quizData.studyPlan.map((step, index) => `${index + 1}. ${step}`).join('\n') : 
+  `1. Review weak areas and focus on topics where you scored below 70%
+2. Take additional practice quizzes on ${quizData.topic}
+3. Seek help from teachers or use our AI tutor for difficult concepts`
+}
+
+${quizData.streakInfo ? `
+ACHIEVEMENTS & PROGRESS:
+-----------------------
+🔥 Current Streak: ${quizData.streakInfo.currentStreak} days
+🏆 Longest Streak: ${quizData.streakInfo.longestStreak} days
+📊 Total Quizzes: ${quizData.streakInfo.totalQuizzes}
+` : ''}
+
+${quizData.badges && quizData.badges.length > 0 ? `
+BADGES EARNED:
+-------------
+${quizData.badges.map(badge => `🏅 ${badge}`).join('\n')}
+` : ''}
+
+NEXT STEPS:
+----------
+📝 Take Another Quiz: https://quizzicallabz.qzz.io/generate-quiz
+📊 View Dashboard: https://quizzicallabz.qzz.io/dashboard
+📚 Get Study Plan: https://quizzicallabz.qzz.io/study-plan
+
+Keep learning, ${quizData.userName}! 🚀
+
+---
+Quizzicallabs AI - Your Ultimate AI-Powered Study Partner
+© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
+
+Need help? Reply to this email or visit our help center.
+  `;
+
+  return sendEmail({ to, subject, html, text });
+}ata.score / (quizData.total || 10)) * 100);
   const totalQuestions = quizData.totalQuestions || quizData.total || 10;
   const timeTaken = quizData.timeTaken ? `${Math.round(quizData.timeTaken / 60)}m ${quizData.timeTaken % 60}s` : 'N/A';
   const date = quizData.date ? new Date(quizData.date).toLocaleDateString('en-US', {
