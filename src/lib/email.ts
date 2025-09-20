@@ -7,15 +7,7 @@ interface EmailOptions {
   text?: string;
 }
 
-interface QuizResultEmailData {
-  userName: string;
-  topic: string;
-  score: number;
-  total: number;
-  percentage: number;
-  timeTaken: number;
-  date: string;
-}
+// Removed unused interface - using inline type definitions instead
 
 export async function sendEmail({ to, subject, html, text }: EmailOptions) {
   try {
