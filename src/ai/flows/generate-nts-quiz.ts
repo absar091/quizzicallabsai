@@ -62,6 +62,11 @@ ${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**\r\n- Generate more sophistica
     - Zero tolerance for content outside the specified curriculum scope
     - **CRITICAL FOR MDCAT:** DO NOT include any questions about plants, botany, or plant-related topics in MDCAT quizzes
     - **MDCAT SPECIFIC:** Use only past papers and create new questions based on the given syllabus - focus on human biology, chemistry, physics, and logical reasoning
+    - **QUESTION DIFFICULTY DISTRIBUTION:** 15% easy (basic concepts, direct application), 70% moderate (conceptual understanding, multi-step reasoning), 15% difficult (complex analysis, tricky scenarios)
+    - **QUESTION STYLES:** Include trap questions (common misconceptions), tricky questions (clever distractors), knowledge-based (facts and definitions), conceptual (understanding principles), numerical (calculations), and analytical questions
+    - **PHYSICS FOCUS:** Emphasize reactions, conditions, intermediates, equilibrium, thermodynamics, and practical applications
+    - **CHEMISTRY FOCUS:** Focus on reactions, reactants, products, mechanisms, organic transformations, and chemical principles
+    - **EXAM AUTHENTICITY:** Create questions that feel like actual MDCAT exam - realistic difficulty, proper formatting, and genuine testing of FSc curriculum knowledge
 
 2.  **EXAMINATION AUTHENTICITY:**
     - Mirror the exact style, complexity, and format of actual NTS/NAT questions
