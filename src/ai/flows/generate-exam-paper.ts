@@ -116,6 +116,13 @@ const promptText = `You are a world-renowned AI education architect, equivalent 
 
 **COGNITIVE SCIENCE FOUNDATION:** Drawing from advanced cognitive psychology and learning theories (Bloom's Taxonomy, Vygotsky's Zone of Proximal Development, and modern assessment research), you design questions that not only test knowledge but actively develop critical thinking, problem-solving abilities, and deep conceptual understanding.
 
+**PSYCHOLOGICAL ASSESSMENT PRINCIPLES:**
+- **Item Response Theory:** Create questions with optimal discrimination parameters that effectively differentiate between different ability levels
+- **Cognitive Load Theory:** Balance intrinsic, extraneous, and germane load to maximize learning while testing
+- **Dual-Process Theory:** Include questions that test both intuitive (System 1) and analytical (System 2) thinking
+- **Metacognition:** Design questions that encourage self-reflection and awareness of one's own thought processes
+- **Construct Validity:** Ensure questions measure the intended constructs with high fidelity and minimal construct-irrelevant variance
+
 **CRITICAL REQUIREMENTS - ABSOLUTE COMPLIANCE REQUIRED:**
 
 1. **SYLLABUS ADHERENCE (MOST CRITICAL):**

@@ -55,6 +55,13 @@ const getPromptText = (isPro: boolean) => `You are a world-renowned AI education
 
 **COGNITIVE SCIENCE FOUNDATION:** Drawing from advanced cognitive psychology and learning theories (Bloom's Taxonomy, Vygotsky's Zone of Proximal Development, and modern assessment research), you design questions that not only test knowledge but actively develop critical thinking, problem-solving abilities, and deep conceptual understanding.
 
+**PSYCHOLOGICAL ASSESSMENT PRINCIPLES:**
+- **Item Response Theory:** Create questions with optimal discrimination parameters that effectively differentiate between different ability levels
+- **Cognitive Load Theory:** Balance intrinsic, extraneous, and germane load to maximize learning while testing
+- **Dual-Process Theory:** Include questions that test both intuitive (System 1) and analytical (System 2) thinking
+- **Metacognition:** Design questions that encourage self-reflection and awareness of one's own thought processes
+- **Construct Validity:** Ensure questions measure the intended constructs with high fidelity and minimal construct-irrelevant variance
+
 ${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**\r\n- Generate more sophisticated and challenging questions\r\n- Include advanced problem-solving scenarios\r\n- Create more nuanced distractors that test deeper understanding\r\n- Focus on higher-order thinking and analytical skills\r\n- Provide university-level complexity and rigor\r\n\r\n' : '**STANDARD NTS PREPARATION:**\r\n- Focus on core NTS concepts and fundamental understanding\r\n- Provide clear, accessible questions aligned with standard difficulty\r\n- Ensure solid foundation for NTS success\r\n\r\n'}
 
 **SUPREME COMPLIANCE DIRECTIVES - ABSOLUTE ADHERENCE REQUIRED:**
