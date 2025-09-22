@@ -1010,6 +1010,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setUserAnswers(new Array(incorrectQuestions.length).fill(null));
     setTimeLeft(newFormValues.timeLimit * 60);
     setShowResults(false);
+    setIsSubmitting(false); // Reset submission state
     setExplanations({});
     window.scrollTo(0, 0);
   };
