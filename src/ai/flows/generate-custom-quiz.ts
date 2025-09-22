@@ -110,11 +110,13 @@ const getPromptText = (isPro: boolean) => `You are an elite AI educator and curr
 
 ${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**\r\n- Generate more sophisticated and nuanced questions\r\n- Provide deeper conceptual understanding\r\n- Include advanced problem-solving scenarios\r\n- Create more challenging distractors for MCQs\r\n- Focus on higher-order thinking skills\r\n- Ensure professional-grade academic rigor\r\n\r\n' : '**STANDARD USER - QUALITY EDUCATION:**\r\n- Focus on fundamental concepts and core understanding\r\n- Provide clear, straightforward questions\r\n- Ensure accessibility for all learning levels\r\n\r\n'}**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
 
-1.  **SYLLABUS ADHERENCE (SUPREME RULE):** 
+1.  **SYLLABUS ADHERENCE (SUPREME RULE):**
     - For MDCAT/ECAT students: Generate questions EXCLUSIVELY from the official Pakistani FSc/ICS curriculum for the specified topic
     - Every question must be verifiable against the official syllabus content
     - Questions must reflect the exact depth and complexity expected at the specified educational level
     - FORBIDDEN: Any content outside the specified curriculum scope
+    - **CRITICAL FOR MDCAT:** DO NOT include any questions about plants, botany, or plant-related topics in MDCAT quizzes
+    - **MDCAT SPECIFIC:** Use only past papers and create new questions based on the given syllabus - focus on human biology, chemistry, physics, and logical reasoning
     - This rule supersedes all other considerations
 
 2.  **ACADEMIC EXCELLENCE & ACCURACY:**

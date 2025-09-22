@@ -120,6 +120,8 @@ const promptText = `You are a professional exam paper creator with expertise in 
    - Every question must be directly traceable to the specified syllabus content
    - Do NOT include any topics outside the specified chapters
    - Questions must reflect the depth and complexity appropriate for {{examLevel}} level
+   - **CRITICAL FOR MDCAT:** DO NOT include any questions about plants, botany, or plant-related topics in MDCAT exam papers
+   - **MDCAT SPECIFIC:** Use only past papers and create new questions based on the given syllabus - focus on human biology, chemistry, physics, and logical reasoning
 
 2. **PROFESSIONAL EXAM FORMAT:**
    - Create a properly formatted exam paper with clear sections
