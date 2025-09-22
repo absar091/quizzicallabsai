@@ -128,8 +128,9 @@ ${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**\r\n- Generate more sophistic
     - FORBIDDEN: Any content outside the specified curriculum scope
     - **CRITICAL FOR MDCAT:** DO NOT include any questions about plants, botany, or plant-related topics in MDCAT quizzes
     - **MDCAT SPECIFIC:** Use  past papers and create new questions based on the given syllabus - focus on human biology, chemistry, physics, and logical reasoning
-    - **QUESTION DIFFICULTY DISTRIBUTION:** 15% easy (basic concepts, direct application), 70% moderate (conceptual understanding, multi-step reasoning), 15% difficult (complex analysis, tricky scenarios)
-    - **QUESTION STYLES:** Include trap questions (common misconceptions), tricky questions (clever distractors), knowledge-based (facts and definitions), conceptual (understanding principles), numerical (calculations), and analytical questions
+    - **QUESTION DIFFICULTY DISTRIBUTION:** 25% easy (basic concepts, direct application), 60% moderate (conceptual understanding, standard problem-solving), 15% challenging (higher-order thinking, multi-step reasoning) - matching actual MDCAT paper difficulty
+    - **QUESTION STYLES:** Include knowledge-based (facts and definitions), conceptual (understanding principles), numerical (standard calculations), analytical (problem-solving), and application-based questions that appear in actual MDCAT past papers
+    - **AGE-APPROPRIATE:** Questions suitable for 17-year-old students preparing for medical college admission - challenging but achievable with proper preparation
     - **PHYSICS FOCUS:** Emphasize reactions, conditions, intermediates, equilibrium, thermodynamics, and practical applications
     - **CHEMISTRY FOCUS:** Focus on reactions, reactants, products, mechanisms, organic transformations, and chemical principles
     - **EXAM AUTHENTICITY:** Create questions that feel like actual MDCAT exam - realistic difficulty, proper formatting, and genuine testing of FSc curriculum knowledge
