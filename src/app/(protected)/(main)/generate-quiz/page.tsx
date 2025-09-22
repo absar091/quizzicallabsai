@@ -1210,12 +1210,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                             <div className="text-sm mt-2 space-y-1">
                                                  <p className={cn("flex items-start gap-2", isCorrect ? 'text-primary' : 'text-destructive')}>
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
-                                                    <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} /></span>
+                                                    <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} inline /></span>
                                                  </p>
                                                  {!isCorrect && q.correctAnswer && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} /></span>
+                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} inline /></span>
                                                      </p>
                                                  )}
                                                  {q.type === 'descriptive' && !q.correctAnswer && (
