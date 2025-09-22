@@ -60,6 +60,8 @@ ${isPro ? '**PRO USER - PREMIUM NTS PREPARATION:**\r\n- Generate more sophistica
     - Every question must be traceable to specific syllabus content
     - Maintain strict alignment with NTS/NAT examination patterns and difficulty levels
     - Zero tolerance for content outside the specified curriculum scope
+    - **CRITICAL FOR MDCAT:** DO NOT include any questions about plants, botany, or plant-related topics in MDCAT quizzes
+    - **MDCAT SPECIFIC:** Use only past papers and create new questions based on the given syllabus - focus on human biology, chemistry, physics, and logical reasoning
 
 2.  **EXAMINATION AUTHENTICITY:**
     - Mirror the exact style, complexity, and format of actual NTS/NAT questions
