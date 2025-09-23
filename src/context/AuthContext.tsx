@@ -91,8 +91,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Trigger welcome notifications for new users
           if (isNewUser) {
             console.log('🎉 NEW USER DETECTED - TRIGGERING WELCOME NOTIFICATIONS');
+            console.log('🎉 User details:', {
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              uid: firebaseUser.uid
+            });
+            
             try {
               const idToken = await firebaseUser.getIdToken();
+              console.log('🎉 Got ID token, sending welcome email...');
+              
               const response = await fetch('/api/notifications/welcome', {
                 method: 'POST',
                 headers: {
@@ -105,14 +113,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 })
               });
 
-              if (response.ok) {
-                console.log('✅ Welcome email sent to new user');
+              console.log('🎉 Welcome email response status:', response.status);
+              const responseData = await response.json();
+              console.log('🎉 Welcome email response data:', responseData);
+
+              if (response.ok && responseData.success) {
+                console.log('✅ Welcome email sent successfully to new user');
               } else {
-                const errorData = await response.json();
-                console.warn('⚠️ Failed to send welcome email:', errorData.error);
+                console.error('❌ Failed to send welcome email:', {
+                  status: response.status,
+                  error: responseData.error,
+                  details: responseData
+                });
               }
-            } catch (error) {
-              console.warn('⚠️ Error sending welcome email:', error);
+            } catch (error: any) {
+              console.error('❌ Welcome email network error:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+              });
             }
           }
 
