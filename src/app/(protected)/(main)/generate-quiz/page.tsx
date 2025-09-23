@@ -328,6 +328,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           console.error('⚠️ Quiz state cleanup failed:', cleanupError);
         }
 
+        console.log('🔄 About to send quiz result email...');
+        console.log('🔄 User email:', user.email);
+        console.log('🔄 Form values:', formValues);
+        
         // Send quiz result email
         try {
           console.log('📧 Sending quiz result email...');
