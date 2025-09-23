@@ -35,7 +35,12 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        result = await sendWelcomeEmail(to, data.userName);
+        result = await sendWelcomeEmail(to, data.userName, {
+          userEmail: data.userEmail || to,
+          accountType: data.accountType || 'Free',
+          signUpDate: data.signUpDate || new Date().toLocaleDateString(),
+          preferredLanguage: data.preferredLanguage || 'English'
+        });
         break;
 
       case 'study-reminder':
