@@ -1,4 +1,4 @@
-import * as nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 import { welcomeEmailTemplate, quizResultEmailTemplate, studyReminderEmailTemplate } from './email-templates';
 
 interface EmailOptions {
@@ -16,7 +16,7 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
     }
 
     console.log('📧 Creating email transporter...');
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false, // TLS
