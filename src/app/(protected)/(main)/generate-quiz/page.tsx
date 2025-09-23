@@ -331,6 +331,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         // Send quiz result email
         try {
           console.log('📧 Sending quiz result email...');
+          console.log('📧 Email data:', {
+            type: 'quiz-result',
+            to: user.email,
+            userName: user.displayName || user.email?.split('@')[0] || 'Student',
+            topic: formValues.topic,
+            score,
+            total: quiz.length,
+            percentage
+          });
+
           const emailResponse = await fetch('/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -347,8 +357,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             })
           });
           
+          console.log('📧 Email response status:', emailResponse.status);
+          const emailResult = await emailResponse.json();
+          console.log('📧 Email response data:', emailResult);
+          
           if (emailResponse.ok) {
-            const emailResult = await emailResponse.json();
             console.log('✅ Quiz result email sent successfully:', emailResult.messageId);
             toast({
               title: "Quiz Complete! 📧",
@@ -356,19 +369,18 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               duration: 5000,
             });
           } else {
-            const emailError = await emailResponse.json();
-            console.log('⚠️ Email sending failed:', emailError.error);
+            console.error('❌ Email sending failed:', emailResult.error);
             toast({
               title: "Quiz Complete!",
-              description: "Quiz saved successfully. Email delivery failed - please check your email settings.",
+              description: `Quiz saved successfully. Email error: ${emailResult.error}`,
               variant: "default",
             });
           }
-        } catch (emailError) {
-          console.log('⚠️ Email sending error:', emailError);
+        } catch (emailError: any) {
+          console.error('❌ Email sending error:', emailError);
           toast({
             title: "Quiz Complete!",
-            description: "Quiz saved successfully. Email feature temporarily unavailable.",
+            description: `Quiz saved successfully. Email error: ${emailError.message}`,
             variant: "default",
           });
         }
@@ -440,22 +452,35 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         if (sharedQuizData && isSharedAccess) {
             try {
                 const sharedData = JSON.parse(sharedQuizData) as {
-                    quiz: Quiz;
+                    quiz: any;
                     formValues: QuizFormValues;
                     isShared?: boolean;
                 };
 
-                setQuiz(sharedData.quiz);
-                setFormValues(sharedData.formValues);
-                setComprehensionText(null); // Shared quizzes don't have comprehension text
-                setUserAnswers(new Array(sharedData.quiz.length).fill(null));
-                setTimeLeft(sharedData.formValues.timeLimit * 60);
-                setShowResults(false);
+                // Ensure shared quiz data has proper type structure
+                let quizData: Quiz = [];
+                if (Array.isArray(sharedData.quiz)) {
+                    quizData = sharedData.quiz.map((q: any) => ({
+                        type: q.type || (q.answers && q.answers.length > 0 ? "multiple-choice" : "descriptive"),
+                        question: q.question || "",
+                        smiles: q.smiles,
+                        answers: q.answers,
+                        correctAnswer: q.correctAnswer
+                    }));
+                }
 
-                // Clear shared data to prevent conflicts
-                sessionStorage.removeItem('sharedQuizData');
+                if (quizData.length > 0) {
+                    setQuiz(quizData);
+                    setFormValues(sharedData.formValues);
+                    setComprehensionText(null); // Shared quizzes don't have comprehension text
+                    setUserAnswers(new Array(quizData.length).fill(null));
+                    setTimeLeft(sharedData.formValues.timeLimit * 60);
+                    setShowResults(false);
 
-                return;
+                    // Clear shared data to prevent conflicts
+                    sessionStorage.removeItem('sharedQuizData');
+                    return;
+                }
             } catch (error) {
                 console.error('Error parsing shared quiz data:', error);
                 sessionStorage.removeItem('sharedQuizData');
@@ -474,49 +499,96 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
         if (initialQuiz && initialFormValues) {
             // Handle both data shapes: { quiz: Quiz[] } or Quiz[] directly
-            const quizData = Array.isArray(initialQuiz) ? initialQuiz : (initialQuiz as any).questions || [];
-            setQuiz(quizData);
-            setComprehensionText(initialComprehensionText || null);
-            setUserAnswers(new Array(quizData.length).fill(null));
-            setTimeLeft(initialFormValues.timeLimit * 60);
-            setFormValues({
-                topic: initialFormValues.topic,
-                difficulty: initialFormValues.difficulty,
-                numberOfQuestions: initialFormValues.numberOfQuestions,
-                questionTypes: initialFormValues.questionTypes,
-                questionStyles: initialFormValues.questionStyles,
-                timeLimit: initialFormValues.timeLimit,
-                specificInstructions: initialFormValues.specificInstructions
-            });
-            setShowResults(false);
-            return;
+            let quizData: Quiz = [];
+            
+            if (Array.isArray(initialQuiz)) {
+                // Ensure each question has the required type property
+                quizData = initialQuiz.map((q: any) => ({
+                    type: q.type || (q.answers && q.answers.length > 0 ? "multiple-choice" : "descriptive"),
+                    question: q.question || "",
+                    smiles: q.smiles,
+                    answers: q.answers,
+                    correctAnswer: q.correctAnswer
+                }));
+            } else if ((initialQuiz as any).questions) {
+                // If it's in the { questions: [] } format
+                quizData = (initialQuiz as any).questions.map((q: any) => ({
+                    type: q.type || (q.answers && q.answers.length > 0 ? "multiple-choice" : "descriptive"),
+                    question: q.question || "",
+                    smiles: q.smiles,
+                    answers: q.answers,
+                    correctAnswer: q.correctAnswer
+                }));
+            }
+
+            if (quizData.length > 0) {
+                setQuiz(quizData);
+                setComprehensionText(initialComprehensionText || null);
+                setUserAnswers(new Array(quizData.length).fill(null));
+                setTimeLeft(initialFormValues.timeLimit * 60);
+                setFormValues({
+                    topic: initialFormValues.topic,
+                    difficulty: initialFormValues.difficulty,
+                    numberOfQuestions: initialFormValues.numberOfQuestions,
+                    questionTypes: initialFormValues.questionTypes,
+                    questionStyles: initialFormValues.questionStyles,
+                    timeLimit: initialFormValues.timeLimit,
+                    specificInstructions: initialFormValues.specificInstructions
+                });
+                setShowResults(false);
+                return;
+            }
         }
 
         if (user && !isSharedAccess) {
             const savedState = await getQuizState(user.uid);
             if (savedState && savedState.quiz && savedState.formValues) {
-            // Handle IndexedDB QuizState which has different format than component state
-            const quizData = Array.isArray(savedState.quiz) ? savedState.quiz : savedState.quiz?.questions || [];
-            setQuiz(quizData);
-            setComprehensionText(savedState.comprehensionText || null);
-            setCurrentQuestion(savedState.currentQuestion);
-            setUserAnswers(savedState.userAnswers);
-            setTimeLeft(savedState.timeLeft);
+                // Handle IndexedDB QuizState which has different format than component state
+                let quizData: Quiz = [];
+                
+                if (Array.isArray(savedState.quiz)) {
+                    // If it's already an array, ensure each question has the required type property
+                    quizData = savedState.quiz.map((q: any) => ({
+                        type: q.type || (q.answers && q.answers.length > 0 ? "multiple-choice" : "descriptive"),
+                        question: q.question || "",
+                        smiles: q.smiles,
+                        answers: q.answers,
+                        correctAnswer: q.correctAnswer
+                    }));
+                } else if (savedState.quiz?.questions) {
+                    // If it's in the { questions: [] } format
+                    quizData = savedState.quiz.questions.map((q: any) => ({
+                        type: q.type || (q.answers && q.answers.length > 0 ? "multiple-choice" : "descriptive"),
+                        question: q.question || "",
+                        smiles: q.smiles,
+                        answers: q.answers,
+                        correctAnswer: q.correctAnswer
+                    }));
+                }
 
-            // Convert IndexedDB formValues to component format
-            if (savedState.formValues) {
-                setFormValues({
-                    topic: savedState.formValues.topic,
-                    difficulty: savedState.formValues.difficulty as "easy" | "medium" | "hard" | "master",
-                    numberOfQuestions: savedState.formValues.numberOfQuestions,
-                    questionTypes: ["Multiple Choice"], // Default fallback
-                    questionStyles: ["Knowledge-based"], // Default fallback
-                    timeLimit: savedState.formValues.quizType === "timed" ? 10 : 60, // Default fallback
-                    specificInstructions: ""
-                });
-            }
-                setShowResults(false);
-                return;
+                // Only set state if we have valid quiz data
+                if (quizData.length > 0) {
+                    setQuiz(quizData);
+                    setComprehensionText(savedState.comprehensionText || null);
+                    setCurrentQuestion(savedState.currentQuestion || 0);
+                    setUserAnswers(savedState.userAnswers || []);
+                    setTimeLeft(savedState.timeLeft || 0);
+
+                    // Convert IndexedDB formValues to component format
+                    if (savedState.formValues) {
+                        setFormValues({
+                            topic: savedState.formValues.topic || "",
+                            difficulty: (savedState.formValues.difficulty as "easy" | "medium" | "hard" | "master") || "medium",
+                            numberOfQuestions: savedState.formValues.numberOfQuestions || 10,
+                            questionTypes: ["Multiple Choice"], // Default fallback
+                            questionStyles: ["Knowledge-based"], // Default fallback
+                            timeLimit: savedState.formValues.quizType === "timed" ? 10 : 60, // Default fallback
+                            specificInstructions: ""
+                        });
+                    }
+                    setShowResults(false);
+                    return;
+                }
             }
         }
 
@@ -931,29 +1003,54 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   };
 
   const toggleBookmark = async (question: string, correctAnswer: string) => {
-    if(!formValues || !user) return;
+    if(!formValues || !user) {
+      console.log('❌ Cannot bookmark: missing formValues or user');
+      return;
+    }
 
-    const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
-    const bookmarkId = btoa(question); // Use base64 encoded question as a safe key
+    try {
+      const isCurrentlyBookmarked = bookmarkedQuestions.some(bm => bm.question === question);
+      const bookmarkId = btoa(question).replace(/[^a-zA-Z0-9]/g, '_'); // Safe Firebase key
 
-    if (isCurrentlyBookmarked) {
+      console.log('📌 Toggling bookmark:', { question: question.substring(0, 50), isCurrentlyBookmarked });
+
+      if (isCurrentlyBookmarked) {
         // Remove from Firebase and local state
         const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, null);
         await deleteBookmark(user.uid, question);
         setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
-    } else {
+        
+        toast({
+          title: "Bookmark Removed",
+          description: "Question removed from bookmarks",
+        });
+      } else {
         const newBookmark: BookmarkedQuestion = {
-            userId: user.uid,
-            question,
-            correctAnswer,
-            topic: formValues.topic
+          userId: user.uid,
+          question,
+          correctAnswer,
+          topic: formValues.topic
         };
+        
         // Save to Firebase and local state
         const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, newBookmark);
         await saveBookmark(newBookmark);
         setBookmarkedQuestions(prev => [...prev, newBookmark]);
+        
+        toast({
+          title: "Bookmark Added",
+          description: "Question saved to bookmarks",
+        });
+      }
+    } catch (error) {
+      console.error('❌ Bookmark error:', error);
+      toast({
+        title: "Bookmark Error",
+        description: "Failed to update bookmark. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 

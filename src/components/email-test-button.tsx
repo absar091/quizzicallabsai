@@ -8,6 +8,7 @@ import { Mail } from 'lucide-react';
 
 export function EmailTestButton() {
   const [isSending, setIsSending] = useState(false);
+  const [testType, setTestType] = useState<'quiz-result' | 'welcome' | 'reminder'>('quiz-result');
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -24,22 +25,47 @@ export function EmailTestButton() {
     setIsSending(true);
     
     try {
-      console.log('📧 Testing email system...');
+      console.log(`📧 Testing ${testType} email...`);
       
+      let requestBody: any = {
+        type: testType === 'reminder' ? 'study-reminder' : testType,
+        to: user.email,
+      };
+
+      switch (testType) {
+        case 'quiz-result':
+          requestBody = {
+            ...requestBody,
+            userName: user.displayName || user.email.split('@')[0] || 'Test User',
+            topic: 'Email System Test',
+            score: 9,
+            total: 10,
+            percentage: 90,
+            timeTaken: 180,
+            date: new Date().toISOString()
+          };
+          break;
+        case 'welcome':
+          requestBody = {
+            ...requestBody,
+            userName: user.displayName || user.email.split('@')[0] || 'Test User',
+            userEmail: user.email,
+            accountType: 'Free',
+            signUpDate: new Date().toLocaleDateString()
+          };
+          break;
+        case 'reminder':
+          requestBody = {
+            ...requestBody,
+            userName: user.displayName || user.email.split('@')[0] || 'Test User'
+          };
+          break;
+      }
+
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'quiz-result',
-          to: user.email,
-          userName: user.displayName || user.email.split('@')[0] || 'Test User',
-          topic: 'Email System Test',
-          score: 9,
-          total: 10,
-          percentage: 90,
-          timeTaken: 180, // 3 minutes
-          date: new Date().toISOString()
-        })
+        body: JSON.stringify(requestBody)
       });
       
       if (response.ok) {
@@ -47,7 +73,7 @@ export function EmailTestButton() {
         console.log('✅ Test email sent:', result);
         toast({
           title: "Test Email Sent! 📧",
-          description: `Check your inbox at ${user.email}`,
+          description: `${testType} email sent to ${user.email}`,
           duration: 5000,
         });
       } else {
@@ -72,14 +98,26 @@ export function EmailTestButton() {
   };
 
   return (
-    <Button 
-      onClick={sendTestEmail} 
-      disabled={isSending || !user?.email}
-      variant="outline"
-      className="h-20 flex-col gap-2"
-    >
-      <Mail className="h-6 w-6" />
-      <span className="text-sm">{isSending ? 'Sending...' : 'Test Email'}</span>
-    </Button>
+    <div className="flex flex-col gap-2 p-2 border rounded-lg">
+      <select 
+        value={testType} 
+        onChange={(e) => setTestType(e.target.value as any)}
+        className="text-xs p-1 border rounded"
+        disabled={isSending}
+      >
+        <option value="quiz-result">Quiz Result</option>
+        <option value="welcome">Welcome</option>
+        <option value="reminder">Reminder</option>
+      </select>
+      <Button 
+        onClick={sendTestEmail} 
+        disabled={isSending || !user?.email}
+        variant="outline"
+        size="sm"
+      >
+        <Mail className="h-4 w-4 mr-2" />
+        <span className="text-xs">{isSending ? 'Sending...' : 'Test Email'}</span>
+      </Button>
+    </div>
   );
 }

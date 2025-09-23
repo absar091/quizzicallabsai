@@ -97,18 +97,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${idToken}`
                 },
-                body: JSON.stringify({ userId: firebaseUser.uid })
+                body: JSON.stringify({ 
+                  idToken,
+                  userEmail: firebaseUser.email,
+                  userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student'
+                })
               });
 
               if (response.ok) {
-                console.log('✅ Welcome notifications scheduled for new user');
+                console.log('✅ Welcome email sent to new user');
               } else {
-                console.warn('⚠️ Failed to schedule welcome notifications');
+                const errorData = await response.json();
+                console.warn('⚠️ Failed to send welcome email:', errorData.error);
               }
             } catch (error) {
-              console.warn('⚠️ Error scheduling welcome notifications:', error);
+              console.warn('⚠️ Error sending welcome email:', error);
             }
           }
 

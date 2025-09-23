@@ -71,7 +71,7 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Welcome to Quizzicallabs AI</title>
+      <title>Welcome to Quizzicallabz AI</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -297,7 +297,7 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
   `;
 
   const text = `
-QUIZZICALLABS AI - WELCOME ${userName.toUpperCase()}
+QUIZZICALLABz AI - WELCOME ${userName.toUpperCase()}
 
 Hello ${userName}!
 
