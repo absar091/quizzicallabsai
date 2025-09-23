@@ -320,6 +320,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           console.error('❌ Local save failed:', localError);
         }
 
+        console.log('🔄 Proceeding to cleanup and email...');
+
         // Clean up quiz state
         try {
           await deleteQuizState(user.uid);
@@ -333,8 +335,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         console.log('🔄 Form values:', formValues);
         
         // Send quiz result email
-        try {
-          console.log('📧 Sending quiz result email...');
+        if (!user.email) {
+          console.error('❌ Cannot send email: user email is missing');
+        } else if (!formValues) {
+          console.error('❌ Cannot send email: form values are missing');
+        } else {
+          try {
+            console.log('📧 Sending quiz result email...');
           console.log('📧 Email data:', {
             type: 'quiz-result',
             to: user.email,
@@ -399,8 +406,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             variant: "default",
           });
         }
+        }
 
         console.log('🎉 Quiz submission completed successfully');
+        console.log('🎉 Email sending completed (check logs above for details)');
       } else {
         console.error('❌ Missing required data for quiz submission:', {
           hasQuiz: !!quiz,
