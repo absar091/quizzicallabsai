@@ -39,13 +39,7 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Configure Firebase to use custom action URL
-      const actionCodeSettings = {
-        url: `${window.location.origin}/auth/action`,
-        handleCodeInApp: false,
-      };
-
-      await sendPasswordResetEmail(auth, values.email, actionCodeSettings);
+      await sendPasswordResetEmail(auth, values.email);
       
       toast({
         title: "Password Reset Email Sent",
