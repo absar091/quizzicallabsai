@@ -1,0 +1,7 @@
+export default function VerificationToken() {
+  return (
+    <div>
+      ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO.M0-GObbb5ePi63ASQsPKBrDqfgayGnOWpyrEF0nHqug
+    </div>
+  );
+}
