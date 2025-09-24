@@ -133,3 +133,14 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
     text: template.text 
   });
 }
+
+export async function sendPasswordResetEmail(to: string, userName: string, resetLink: string) {
+  const { passwordResetEmailTemplate } = await import('./email-templates');
+  const template = passwordResetEmailTemplate(userName, resetLink);
+  return sendEmail({ 
+    to, 
+    subject: template.subject, 
+    html: template.html, 
+    text: template.text 
+  });
+}

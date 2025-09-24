@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendEmail, sendQuizResultEmail, sendWelcomeEmail, sendStudyReminderEmail, sendEmailVerificationEmail } from '@/lib/email';
+import { sendEmail, sendQuizResultEmail, sendWelcomeEmail, sendStudyReminderEmail, sendEmailVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,6 +63,16 @@ export async function POST(request: NextRequest) {
         result = await sendEmailVerificationEmail(to, data.userName, data.verificationLink);
         break;
 
+      case 'password-reset':
+        if (!data.userName || !data.resetLink) {
+          return NextResponse.json(
+            { success: false, error: 'Missing userName or resetLink for password reset email' },
+            { status: 400 }
+          );
+        }
+        result = await sendPasswordResetEmail(to, data.userName, data.resetLink);
+        break;
+
       case 'custom':
         if (!data.subject || !data.html) {
           return NextResponse.json(
@@ -80,7 +90,7 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { success: false, error: 'Invalid email type. Use: quiz-result, welcome, study-reminder, email-verification, or custom' },
+          { success: false, error: 'Invalid email type. Use: quiz-result, welcome, study-reminder, email-verification, password-reset, or custom' },
           { status: 400 }
         );
     }

@@ -39,16 +39,35 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await sendPasswordResetEmail(auth, values.email);
+      // Configure Firebase to use custom action URL
+      const actionCodeSettings = {
+        url: `${window.location.origin}/auth/action`,
+        handleCodeInApp: false,
+      };
+
+      await sendPasswordResetEmail(auth, values.email, actionCodeSettings);
+      
       toast({
         title: "Password Reset Email Sent",
-        description: "Check your inbox for a link to reset your password.",
+        description: "Check your inbox for a link to reset your password. The email will arrive from Quizzicallabzᴬᴵ with professional styling.",
+        duration: 6000,
       });
+      
       router.push("/login");
     } catch (error: any) {
+      let errorMessage = "Failed to send password reset email.";
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = "No account found with this email address.";
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = "Invalid email address.";
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = "Too many requests. Please try again later.";
+      }
+      
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     }

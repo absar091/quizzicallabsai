@@ -77,7 +77,25 @@ export default function TestEnhancedEmailsPage() {
       
       const emailTemplate = emailVerificationTemplate(
         'Abid Hussain', 
-        'https://quizzicallabz.qzz.io/verify-email?token=sample-verification-token'
+        'https://quizzicallabz.qzz.io/auth/action?mode=verifyEmail&oobCode=sample-verification-token'
+      );
+      setEmailHtml(emailTemplate.html);
+    } catch (error) {
+      console.error('Error generating email:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generatePasswordResetEmail = async () => {
+    setIsLoading(true);
+    setEmailType('Password Reset');
+    try {
+      const { passwordResetEmailTemplate } = await import('@/lib/email-templates');
+      
+      const emailTemplate = passwordResetEmailTemplate(
+        'Abid Hussain', 
+        'https://quizzicallabz.qzz.io/auth/action?mode=resetPassword&oobCode=sample-reset-token'
       );
       setEmailHtml(emailTemplate.html);
     } catch (error) {
@@ -97,7 +115,7 @@ export default function TestEnhancedEmailsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <Button onClick={generateWelcomeEmail} disabled={isLoading} className="h-auto p-4 flex flex-col">
               <span className="text-2xl mb-2">👋</span>
               <span className="font-semibold">Welcome Email</span>
@@ -108,6 +126,12 @@ export default function TestEnhancedEmailsPage() {
               <span className="text-2xl mb-2">🔐</span>
               <span className="font-semibold">Email Verification</span>
               <span className="text-sm opacity-75">Account activation</span>
+            </Button>
+            
+            <Button onClick={generatePasswordResetEmail} disabled={isLoading} variant="destructive" className="h-auto p-4 flex flex-col">
+              <span className="text-2xl mb-2">🔄</span>
+              <span className="font-semibold">Password Reset</span>
+              <span className="text-sm opacity-75">Secure reset</span>
             </Button>
             
             <Button onClick={generateQuizResultEmail} disabled={isLoading} variant="outline" className="h-auto p-4 flex flex-col">
@@ -137,6 +161,7 @@ export default function TestEnhancedEmailsPage() {
                 <div>✅ <strong>Professional Design:</strong> AWS/NVIDIA inspired styling</div>
                 <div>✅ <strong>Smart Recommendations:</strong> AI-powered study suggestions</div>
                 <div>✅ <strong>Email Verification:</strong> Secure account activation template</div>
+                <div>✅ <strong>Password Reset:</strong> Professional security-focused design</div>
               </CardContent>
             </Card>
             

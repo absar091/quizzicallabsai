@@ -852,6 +852,197 @@ Having trouble? Contact us at support@quizzicallabz.qzz.io
   `
 });
 
+export const passwordResetEmailTemplate = (userName: string, resetLink: string) => ({
+  subject: `🔐 Reset Your Quizzicallabzᴬᴵ Password - Secure Access Restoration`,
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Reset Your Password</title>
+      <style>
+        body {
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+          line-height: 1.6;
+          color: #232f3e;
+          margin: 0;
+          padding: 0;
+          background-color: #f7f8fa;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background: #ffffff;
+        }
+        .header {
+          background: #d13212;
+          padding: 32px 40px;
+          text-align: center;
+          color: white;
+        }
+        .header-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+        }
+        .header-title {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+        }
+        .content {
+          padding: 40px;
+        }
+        .greeting {
+          font-size: 20px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .main-message {
+          font-size: 16px;
+          color: #5a6c7d;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        }
+        .reset-section {
+          background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
+          border: 2px solid #d13212;
+          border-radius: 12px;
+          padding: 32px;
+          text-align: center;
+          margin: 32px 0;
+        }
+        .reset-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #d13212;
+          margin-bottom: 16px;
+        }
+        .reset-button {
+          background: #d13212;
+          color: #ffffff;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 16px;
+          display: inline-block;
+          margin: 16px 0;
+          transition: background 0.3s ease;
+        }
+        .reset-button:hover {
+          background: #b12a0c;
+        }
+        .security-warning {
+          background: #fff3cd;
+          border-left: 4px solid #f6a23b;
+          padding: 20px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .security-warning h4 {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #f6a23b;
+        }
+        .security-warning p {
+          margin: 0;
+          font-size: 14px;
+          color: #232f3e;
+        }
+        .footer {
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
+          text-align: center;
+          font-size: 14px;
+        }
+        .footer a {
+          color: #f6a23b;
+          text-decoration: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="header">
+          <div class="header-icon">🔐</div>
+          <div class="header-title">Password Reset Request</div>
+          <div class="header-subtitle">Secure your Quizzicallabzᴬᴵ account</div>
+        </div>
+        
+        <div class="content">
+          <div class="greeting">Hello ${userName}!</div>
+          <div class="main-message">
+            We received a request to reset your password for your Quizzicallabzᴬᴵ account. 
+            If you made this request, click the button below to create a new password.
+          </div>
+          
+          <div class="reset-section">
+            <div class="reset-title">🔄 Reset Your Password</div>
+            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to set a new password</p>
+            <a href="${resetLink}" class="reset-button">
+              🔐 Reset Password
+            </a>
+            <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
+              This link will expire in 1 hour for security reasons
+            </p>
+          </div>
+          
+          <div class="security-warning">
+            <h4>⚠️ Security Notice</h4>
+            <p>
+              If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+              For security, consider changing your password if you suspect unauthorized access.
+            </p>
+          </div>
+          
+          <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
+            <h4 style="margin: 0 0 12px 0; color: #232f3e;">Can't click the button?</h4>
+            <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
+              Copy and paste this link into your browser:<br>
+              <a href="${resetLink}" style="color: #d13212; word-break: break-all;">${resetLink}</a>
+            </p>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
+          <p style="margin: 10px 0; font-size: 12px;">
+            Quizzicallabzᴬᴵ Security Team<br>
+            This is an automated security email
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  text: `
+Password Reset Request - Quizzicallabzᴬᴵ
+
+Hello ${userName}!
+
+We received a request to reset your password for your Quizzicallabzᴬᴵ account.
+
+Reset Link: ${resetLink}
+
+This link will expire in 1 hour for security reasons.
+
+If you didn't request a password reset, please ignore this email.
+
+Need help? Contact us at support@quizzicallabz.qzz.io
+
+© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
+  `
+});
+
 export const studyReminderEmailTemplate = (userName: string) => ({
   subject: `🔔 ${userName}, your AI learning session awaits - Let's boost your knowledge!`,
   html: `
