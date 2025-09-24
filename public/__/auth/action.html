@@ -36,14 +36,27 @@
       text-align: center;
     }
     
-    .logo {
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .logo-img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+    
+    .logo-text {
       font-size: 2.5rem;
       font-weight: 700;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 8px;
     }
     
     .subtitle {
@@ -174,15 +187,23 @@
         margin: 16px;
       }
       
-      .logo {
+      .logo-text {
         font-size: 2rem;
+      }
+      
+      .logo-img {
+        width: 40px;
+        height: 40px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">🎯 Quizzicallabzᴬᴵ</div>
+    <div class="logo-container">
+      <img src="/icon.svg" alt="Quizzicallabzᴬᴵ Logo" class="logo-img">
+      <div class="logo-text">Quizzicallabzᴬᴵ</div>
+    </div>
     <div class="subtitle">The Future of Education is Here</div>
     
     <div id="message" class="message loading">

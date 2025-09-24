@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="8"/>
+  
+  <!-- Target/Quiz Icon -->
+  <g transform="translate(256,256)">
+    <!-- Outer Ring -->
+    <circle cx="0" cy="0" r="120" fill="none" stroke="url(#iconGradient)" stroke-width="12"/>
+    <!-- Middle Ring -->
+    <circle cx="0" cy="0" r="80" fill="none" stroke="url(#iconGradient)" stroke-width="10"/>
+    <!-- Inner Ring -->
+    <circle cx="0" cy="0" r="40" fill="none" stroke="url(#iconGradient)" stroke-width="8"/>
+    <!-- Center Dot -->
+    <circle cx="0" cy="0" r="16" fill="url(#iconGradient)"/>
+    
+    <!-- Quiz Elements -->
+    <!-- Question Mark -->
+    <path d="M-20,-60 Q-20,-80 0,-80 Q20,-80 20,-60 Q20,-40 0,-40 L0,-20" 
+          fill="none" stroke="url(#iconGradient)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="0" cy="-10" r="4" fill="url(#iconGradient)"/>
+    
+    <!-- AI Sparkles -->
+    <g opacity="0.8">
+      <path d="M60,-60 L65,-50 L75,-55 L70,-45 L80,-40 L70,-35 L75,-25 L65,-30 L60,-20 L55,-30 L45,-25 L50,-35 L40,-40 L50,-45 L45,-55 L55,-50 Z" 
+            fill="url(#iconGradient)"/>
+      <path d="M-75,60 L-70,70 L-60,65 L-65,75 L-55,80 L-65,85 L-60,95 L-70,90 L-75,100 L-80,90 L-90,95 L-85,85 L-95,80 L-85,75 L-90,65 L-80,70 Z" 
+            fill="url(#iconGradient)" transform="scale(0.7)"/>
+    </g>
+  </g>
+  
+  <!-- App Name Arc -->
+  <path id="textPath" d="M 100 256 A 156 156 0 0 1 412 256" fill="none"/>
+  <text font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="url(#iconGradient)">
+    <textPath href="#textPath" startOffset="50%" text-anchor="middle">
+      Quizzicallabzᴬᴵ
+    </textPath>
+  </text>
+</svg>
