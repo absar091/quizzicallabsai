@@ -21,17 +21,17 @@ async function getTransporter() {
     
     // Dynamic import to ensure proper loading
     const nodemailer = await import('nodemailer');
-    console.log('📧 Nodemailer loaded:', typeof nodemailer.default, typeof nodemailer.default.createTransporter);
+    console.log('📧 Nodemailer loaded:', typeof nodemailer.default, typeof nodemailer.default?.createTransport);
     
     // Use default export if available, otherwise use named export
     const mailer = nodemailer.default || nodemailer;
     
-    if (typeof mailer.createTransporter !== 'function') {
-      console.error('❌ createTransporter is not a function:', mailer);
-      throw new Error('Nodemailer import error: createTransporter is not available');
+    if (typeof mailer.createTransport !== 'function') {
+      console.error('❌ createTransport is not a function:', mailer);
+      throw new Error('Nodemailer import error: createTransport is not available');
     }
     
-    transporter = mailer.createTransporter({
+    transporter = mailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false, // TLS

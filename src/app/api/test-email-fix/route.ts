@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const nodemailer = await import('nodemailer');
     console.log('📧 Nodemailer import test:', {
       hasDefault: !!nodemailer.default,
-      hasCreateTransporter: !!(nodemailer.default?.createTransporter || nodemailer.createTransporter),
+      hasCreateTransport: !!(nodemailer.default?.createTransport || nodemailer.createTransport),
       type: typeof nodemailer.default
     });
     
@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
     
     // Test transporter creation
     const mailer = nodemailer.default || nodemailer;
-    if (typeof mailer.createTransporter !== 'function') {
-      throw new Error('createTransporter is not a function');
+    if (typeof mailer.createTransport !== 'function') {
+      throw new Error('createTransport is not a function');
     }
     
-    const testTransporter = mailer.createTransporter({
+    const testTransporter = mailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false,
