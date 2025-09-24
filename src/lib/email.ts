@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 import { welcomeEmailTemplate, quizResultEmailTemplate, studyReminderEmailTemplate } from './email-templates';
 
 interface EmailOptions {
@@ -9,9 +8,9 @@ interface EmailOptions {
 }
 
 // Create a reusable transporter for better performance
-let transporter: nodemailer.Transporter | null = null;
+let transporter: any = null;
 
-function getTransporter() {
+async function getTransporter() {
   if (!transporter) {
     // Validate environment variables
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
@@ -19,7 +18,20 @@ function getTransporter() {
     }
 
     console.log('📧 Creating optimized email transporter...');
-    transporter = nodemailer.createTransporter({
+    
+    // Dynamic import to ensure proper loading
+    const nodemailer = await import('nodemailer');
+    console.log('📧 Nodemailer loaded:', typeof nodemailer.default, typeof nodemailer.default.createTransporter);
+    
+    // Use default export if available, otherwise use named export
+    const mailer = nodemailer.default || nodemailer;
+    
+    if (typeof mailer.createTransporter !== 'function') {
+      console.error('❌ createTransporter is not a function:', mailer);
+      throw new Error('Nodemailer import error: createTransporter is not available');
+    }
+    
+    transporter = mailer.createTransporter({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: false, // TLS
@@ -41,7 +53,7 @@ function getTransporter() {
 
 export async function sendEmail({ to, subject, html, text }: EmailOptions) {
   try {
-    const emailTransporter = getTransporter();
+    const emailTransporter = await getTransporter();
     console.log('📧 Sending email to:', to.substring(0, 20) + '...');
 
     const result = await emailTransporter.sendMail({
