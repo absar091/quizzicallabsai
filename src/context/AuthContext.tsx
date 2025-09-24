@@ -88,13 +88,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
           setUser(appUser);
 
-          // Trigger welcome notifications for new users
-          if (isNewUser) {
-            console.log('🎉 NEW USER DETECTED - TRIGGERING WELCOME NOTIFICATIONS');
+          // Trigger welcome notifications for new users (only if email is verified)
+          if (isNewUser && firebaseUser.emailVerified) {
+            console.log('🎉 NEW VERIFIED USER DETECTED - TRIGGERING WELCOME NOTIFICATIONS');
             console.log('🎉 User details:', {
               email: firebaseUser.email,
               displayName: firebaseUser.displayName,
-              uid: firebaseUser.uid
+              uid: firebaseUser.uid,
+              emailVerified: firebaseUser.emailVerified
             });
             
             try {
@@ -118,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.log('🎉 Welcome email response data:', responseData);
 
               if (response.ok && responseData.success) {
-                console.log('✅ Welcome email sent successfully to new user');
+                console.log('✅ Welcome email sent successfully to new verified user');
               } else {
                 console.error('❌ Failed to send welcome email:', {
                   status: response.status,
@@ -133,6 +134,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: error.name
               });
             }
+          } else if (isNewUser && !firebaseUser.emailVerified) {
+            console.log('📧 NEW UNVERIFIED USER - Welcome email will be sent after verification');
           }
 
           // Initialize cloud sync for cross-device data synchronization

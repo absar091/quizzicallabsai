@@ -661,6 +661,197 @@ Take Another Quiz: https://quizzicallabz.qzz.io/generate-quiz
   `
 });
 
+export const emailVerificationTemplate = (userName: string, verificationLink: string) => ({
+  subject: `🔐 Verify Your Email - Complete Your Quizzicallabzᴬᴵ Registration`,
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify Your Email</title>
+      <style>
+        body {
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+          line-height: 1.6;
+          color: #232f3e;
+          margin: 0;
+          padding: 0;
+          background-color: #f7f8fa;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background: #ffffff;
+        }
+        .header {
+          background: #1A237E;
+          padding: 32px 40px;
+          text-align: center;
+          color: white;
+        }
+        .header-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+        }
+        .header-title {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+        }
+        .content {
+          padding: 40px;
+        }
+        .greeting {
+          font-size: 20px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .main-message {
+          font-size: 16px;
+          color: #5a6c7d;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        }
+        .verification-section {
+          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+          border: 2px solid #1A237E;
+          border-radius: 12px;
+          padding: 32px;
+          text-align: center;
+          margin: 32px 0;
+        }
+        .verification-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1A237E;
+          margin-bottom: 16px;
+        }
+        .verify-button {
+          background: #1A237E;
+          color: #ffffff;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 16px;
+          display: inline-block;
+          margin: 16px 0;
+          transition: background 0.3s ease;
+        }
+        .verify-button:hover {
+          background: #0d1b69;
+        }
+        .security-note {
+          background: #fff3e0;
+          border-left: 4px solid #f6a23b;
+          padding: 20px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .security-note h4 {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #f6a23b;
+        }
+        .security-note p {
+          margin: 0;
+          font-size: 14px;
+          color: #232f3e;
+        }
+        .footer {
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
+          text-align: center;
+          font-size: 14px;
+        }
+        .footer a {
+          color: #f6a23b;
+          text-decoration: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="header">
+          <div class="header-icon">🔐</div>
+          <div class="header-title">Verify Your Email</div>
+          <div class="header-subtitle">One more step to unlock your AI learning journey</div>
+        </div>
+        
+        <div class="content">
+          <div class="greeting">Hello ${userName}!</div>
+          <div class="main-message">
+            Welcome to Quizzicallabzᴬᴵ! To complete your registration and start your AI-powered learning journey, 
+            please verify your email address by clicking the button below.
+          </div>
+          
+          <div class="verification-section">
+            <div class="verification-title">🚀 Activate Your Account</div>
+            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to verify your email and unlock all features</p>
+            <a href="${verificationLink}" class="verify-button">
+              ✅ Verify My Email Address
+            </a>
+            <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
+              This link will expire in 24 hours for security reasons
+            </p>
+          </div>
+          
+          <div class="security-note">
+            <h4>🛡️ Security Notice</h4>
+            <p>
+              If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email. 
+              Your email address will not be added to our system without verification.
+            </p>
+          </div>
+          
+          <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
+            <h4 style="margin: 0 0 12px 0; color: #232f3e;">Having trouble with the button?</h4>
+            <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
+              Copy and paste this link into your browser:<br>
+              <a href="${verificationLink}" style="color: #1A237E; word-break: break-all;">${verificationLink}</a>
+            </p>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
+          <p style="margin: 10px 0; font-size: 12px;">
+            Quizzicallabzᴬᴵ - Intelligent Learning Platform<br>
+            Secure • Trusted • AI-Powered
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  text: `
+Verify Your Email - Quizzicallabzᴬᴵ
+
+Hello ${userName}!
+
+Welcome to Quizzicallabzᴬᴵ! To complete your registration and start your AI-powered learning journey, please verify your email address.
+
+Verification Link: ${verificationLink}
+
+This link will expire in 24 hours for security reasons.
+
+If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email.
+
+Having trouble? Contact us at support@quizzicallabz.qzz.io
+
+© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
+  `
+});
+
 export const studyReminderEmailTemplate = (userName: string) => ({
   subject: `🔔 ${userName}, your AI learning session awaits - Let's boost your knowledge!`,
   html: `

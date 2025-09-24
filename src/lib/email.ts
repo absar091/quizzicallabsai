@@ -122,3 +122,14 @@ export async function sendStudyReminderEmail(to: string, userName: string) {
     text: template.text 
   });
 }
+
+export async function sendEmailVerificationEmail(to: string, userName: string, verificationLink: string) {
+  const { emailVerificationTemplate } = await import('./email-templates');
+  const template = emailVerificationTemplate(userName, verificationLink);
+  return sendEmail({ 
+    to, 
+    subject: template.subject, 
+    html: template.html, 
+    text: template.text 
+  });
+}

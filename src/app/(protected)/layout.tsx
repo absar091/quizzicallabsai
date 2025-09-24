@@ -12,6 +12,7 @@ import { MainSidebar } from "@/components/main-sidebar";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import ShareAppFAB from "@/components/share-app-fab";
+import { EmailVerificationGuard } from "@/components/email-verification-guard";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -47,7 +48,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return null;
   }
 
+  // Wrap everything in EmailVerificationGuard
   return (
+    <EmailVerificationGuard>
     <div className="min-h-screen w-full overflow-x-hidden">
       {/* Desktop Sidebar */}
       <div
@@ -88,5 +91,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <ShareAppFAB />
       </div>
     </div>
+    </EmailVerificationGuard>
   );
 }
