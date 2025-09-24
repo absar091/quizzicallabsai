@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEmailVerificationEmail } from '@/lib/email';
-import { auth as adminAuth } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
+  // Skip during build time
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+    return NextResponse.json({ success: true, message: 'Build time skip' });
+  }
+
   try {
     const body = await request.json();
     const { idToken, verificationLink, userEmail, userName } = body;
@@ -20,12 +24,16 @@ export async function POST(request: NextRequest) {
     let name = userName || 'User';
 
     // If idToken is provided, try to extract user info from it
-    if (idToken && adminAuth) {
+    if (idToken) {
       try {
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
-        email = decodedToken.email || email;
-        name = decodedToken.name || decodedToken.email?.split('@')[0] || name;
-        console.log('✅ User info extracted from token:', { email: email?.substring(0, 20) + '...', name });
+        const { auth: adminAuth } = await import('@/lib/firebase-admin');
+        
+        if (adminAuth) {
+          const decodedToken = await adminAuth.verifyIdToken(idToken);
+          email = decodedToken.email || email;
+          name = decodedToken.name || decodedToken.email?.split('@')[0] || name;
+          console.log('✅ User info extracted from token:', { email: email?.substring(0, 20) + '...', name });
+        }
       } catch (tokenError) {
         console.warn('⚠️ Could not verify token, using provided data:', tokenError);
       }

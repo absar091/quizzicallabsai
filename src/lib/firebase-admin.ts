@@ -24,8 +24,31 @@ if (!admin.apps.length) {
 }
 
 // Safe exports with error handling
-export const auth = admin.apps.length > 0 ? admin.auth() : null;
-export const db = admin.apps.length > 0 && process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ? admin.database() : null;
-export const firestore = admin.apps.length > 0 ? admin.firestore() : null;
+export const auth = (() => {
+  try {
+    return admin.apps.length > 0 ? admin.auth() : null;
+  } catch (error) {
+    console.warn('⚠️ Firebase Admin Auth not available:', error);
+    return null;
+  }
+})();
+
+export const db = (() => {
+  try {
+    return admin.apps.length > 0 && process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ? admin.database() : null;
+  } catch (error) {
+    console.warn('⚠️ Firebase Admin Database not available:', error);
+    return null;
+  }
+})();
+
+export const firestore = (() => {
+  try {
+    return admin.apps.length > 0 ? admin.firestore() : null;
+  } catch (error) {
+    console.warn('⚠️ Firebase Admin Firestore not available:', error);
+    return null;
+  }
+})();
 
 export default admin;
