@@ -312,91 +312,71 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           // Continue with local save even if Firebase fails
         }
 
-        // Save to local IndexedDB (this should always work)
-        console.log('🔄 About to save to IndexedDB...');
-        try {
-          await saveQuizResult(newResult);
-          console.log('✅ Local IndexedDB save successful');
-        } catch (localError) {
-          console.error('❌ Local save failed:', localError);
-          console.error('❌ Local save error details:', {
-            name: localError?.name,
-            message: localError?.message,
-            stack: localError?.stack
-          });
-          // Continue execution even if local save fails
-          console.log('🔄 Continuing despite IndexedDB error...');
-        }
-
-        console.log('🔄 Proceeding to cleanup and email...');
-
-        // Clean up quiz state
-        try {
-          await deleteQuizState(user.uid);
-          console.log('✅ Quiz state cleanup successful');
-        } catch (cleanupError) {
-          console.error('⚠️ Quiz state cleanup failed:', cleanupError);
-        }
-
-        console.log('🔄 About to send quiz result email...');
-        console.log('🔄 User email:', user.email);
-        console.log('🔄 Form values:', formValues);
+        // Run IndexedDB save, cleanup, and email preparation in parallel for better performance
+        console.log('🔄 Starting parallel operations: IndexedDB save, cleanup, and email...');
         
-        // Send quiz result email - wrap entire section in try-catch
+        const [localSaveResult, cleanupResult] = await Promise.allSettled([
+          // Save to local IndexedDB
+          saveQuizResult(newResult).catch(error => {
+            console.error('❌ Local save failed:', error.message);
+            return null;
+          }),
+          // Clean up quiz state
+          deleteQuizState(user.uid).catch(error => {
+            console.error('⚠️ Quiz state cleanup failed:', error.message);
+            return null;
+          })
+        ]);
+
+        if (localSaveResult.status === 'fulfilled') {
+          console.log('✅ IndexedDB save completed');
+        }
+        if (cleanupResult.status === 'fulfilled') {
+          console.log('✅ Quiz cleanup completed');
+        }
+        
+        // Send quiz result email - optimized for speed
         try {
-          if (!user.email) {
-            console.error('❌ Cannot send email: user email is missing');
-          } else if (!formValues) {
-            console.error('❌ Cannot send email: form values are missing');
+          if (!user.email || !formValues) {
+            console.log('⚠️ Skipping email: missing email or form data');
           } else {
-            console.log('📧 Sending quiz result email...');
-            console.log('📧 Email data:', {
-              type: 'quiz-result',
-              to: user.email,
-              userName: user.displayName || user.email?.split('@')[0] || 'Student',
-              topic: formValues.topic,
-              score,
-              total: quiz.length,
-              percentage
+            console.log('📧 Sending quiz result email to:', user.email);
+
+            // Send email with timeout for better UX
+            const emailPromise = fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'quiz-result',
+                to: user.email,
+                userName: user.displayName || user.email?.split('@')[0] || 'Student',
+                topic: formValues.topic,
+                score,
+                total: quiz.length,
+                percentage,
+                timeTaken: timeTaken,
+                date: new Date().toISOString()
+              })
             });
 
+            // Add timeout to prevent hanging
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Email timeout')), 10000)
+            );
+
             try {
-              const emailResponse = await fetch('/api/send-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  type: 'quiz-result',
-                  to: user.email,
-                  userName: user.displayName || user.email?.split('@')[0] || 'Student',
-                  topic: formValues.topic,
-                  score,
-                  total: quiz.length,
-                  percentage,
-                  timeTaken: timeTaken,
-                  date: new Date().toISOString()
-                })
-              });
-              
-              console.log('📧 Email response status:', emailResponse.status);
-              console.log('📧 Email response headers:', Object.fromEntries(emailResponse.headers.entries()));
-              
+              const emailResponse = await Promise.race([emailPromise, timeoutPromise]) as Response;
               const emailResult = await emailResponse.json();
-              console.log('📧 Email response data:', emailResult);
               
               if (emailResponse.ok && emailResult.success) {
-                console.log('✅ Quiz result email sent successfully:', emailResult.messageId);
+                console.log('✅ Email sent:', emailResult.messageId);
                 toast({
                   title: "Quiz Complete! 📧",
                   description: `Results sent to ${user.email}. Check your inbox!`,
                   duration: 5000,
                 });
               } else {
-                console.error('❌ Email sending failed:', {
-                  status: emailResponse.status,
-                  statusText: emailResponse.statusText,
-                  error: emailResult.error,
-                  details: emailResult
-                });
+                console.error('❌ Email failed:', emailResult.error);
                 toast({
                   title: "Quiz Complete!",
                   description: `Quiz saved successfully. Email failed: ${emailResult.error || 'Unknown error'}`,
@@ -404,24 +384,16 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                 });
               }
             } catch (emailError: any) {
-              console.error('❌ Email sending network error:', {
-                message: emailError.message,
-                stack: emailError.stack,
-                name: emailError.name
-              });
+              console.error('❌ Email error:', emailError.message);
               toast({
                 title: "Quiz Complete!",
-                description: `Quiz saved successfully. Email network error: ${emailError.message}`,
+                description: `Quiz saved successfully. Email error: ${emailError.message}`,
                 variant: "default",
               });
             }
           }
         } catch (emailSectionError: any) {
-          console.error('❌ Email section error:', {
-            message: emailSectionError.message,
-            stack: emailSectionError.stack,
-            name: emailSectionError.name
-          });
+          console.error('❌ Email section error:', emailSectionError.message);
           toast({
             title: "Quiz Complete!",
             description: "Quiz saved successfully. Email system encountered an error.",
