@@ -1,8 +1,8 @@
 {
-  "crons": [
+  "rewrites": [
     {
-      "path": "/api/cron",
-      "schedule": "0 9 * * *"
+      "source": "/.well-known/acme-challenge/ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO",
+      "destination": "/api/verification-token"
     }
   ]
 }
