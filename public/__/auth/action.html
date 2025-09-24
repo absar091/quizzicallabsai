@@ -20,7 +20,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Quizzicallabs</h2>
+    <h2>🎯 Quizzicallabs</h2>
     <div id="message" class="loading">Processing...</div>
     
     <div id="resetForm" style="display: none;">
@@ -59,18 +59,18 @@
     
     function verifyEmail() {
       auth.applyActionCode(oobCode).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">Email verified successfully!</div>';
+        document.getElementById('message').innerHTML = '<div class="success">✅ Email verified successfully!</div>';
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">Invalid or expired verification link</div>';
+        document.getElementById('message').innerHTML = '<div class="error">❌ Invalid or expired verification link</div>';
       });
     }
     
     function showResetForm() {
       auth.verifyPasswordResetCode(oobCode).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">Enter your new password</div>';
+        document.getElementById('message').innerHTML = '<div class="success">Enter your new password below:</div>';
         document.getElementById('resetForm').style.display = 'block';
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">Invalid or expired reset link</div>';
+        document.getElementById('message').innerHTML = '<div class="error">❌ Invalid or expired reset link</div>';
       });
     }
     
@@ -79,25 +79,26 @@
       const confirmPassword = document.getElementById('confirmPassword').value;
       
       if (newPassword !== confirmPassword) {
-        document.getElementById('message').innerHTML = '<div class="error">Passwords do not match</div>';
+        document.getElementById('message').innerHTML = '<div class="error">❌ Passwords do not match</div>';
         return;
       }
       
       if (newPassword.length < 6) {
-        document.getElementById('message').innerHTML = '<div class="error">Password must be at least 6 characters</div>';
+        document.getElementById('message').innerHTML = '<div class="error">❌ Password must be at least 6 characters</div>';
         return;
       }
       
       auth.confirmPasswordReset(oobCode, newPassword).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">Password reset successfully!</div>';
+        document.getElementById('message').innerHTML = '<div class="success">✅ Password reset successfully!</div>';
         document.getElementById('resetForm').style.display = 'none';
+        setTimeout(() => goToApp(), 2000);
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">Failed to reset password</div>';
+        document.getElementById('message').innerHTML = '<div class="error">❌ Failed to reset password</div>';
       });
     }
     
     function goToApp() {
-      window.location.href = 'https://quizzicallabs.vercel.app';
+      window.location.href = 'https://quizzicallabs.vercel.app/login';
     }
   </script>
 </body>
