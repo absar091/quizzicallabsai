@@ -1,37 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quizzicallabs - Auth Action</title>
+  <title>Quizzicallabzᴬᴵ - Authentication</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
-    .container { text-align: center; }
-    .success { color: #4CAF50; }
-    .error { color: #f44336; }
-    .loading { color: #2196F3; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-    button { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-    button:hover { background: #1976D2; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      color: #64748b;
+      font-size: 1rem;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+    
+    .message {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    
+    .loading {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 16px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-secondary {
+      background: #f8fafc;
+      color: #475569;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f4f6;
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .footer {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.85rem;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px;
+        margin: 16px;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🎯 Quizzicallabs</h2>
-    <div id="message" class="loading">Processing...</div>
+    <div class="logo">🎯 Quizzicallabzᴬᴵ</div>
+    <div class="subtitle">The Future of Education is Here</div>
     
-    <div id="resetForm" style="display: none;">
-      <h3>Reset Password</h3>
-      <input type="password" id="newPassword" placeholder="New Password" required>
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-      <button onclick="resetPassword()">Reset Password</button>
+    <div id="message" class="message loading">
+      <div class="spinner"></div>
+      Processing your request...
     </div>
     
-    <div id="actions" style="margin-top: 20px;">
-      <button onclick="goToApp()">Go to Quizzicallabs</button>
+    <div id="resetForm" style="display: none;">
+      <div class="form-group">
+        <label class="form-label" for="newPassword">New Password</label>
+        <input type="password" id="newPassword" class="form-input" placeholder="Enter your new password" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your new password" required>
+      </div>
+      
+      <button class="btn" onclick="resetPassword()" id="resetBtn">
+        Reset Password
+      </button>
+    </div>
+    
+    <div id="actions">
+      <button class="btn btn-secondary" onclick="goToApp()">
+        Continue to Quizzicallabzᴬᴵ
+      </button>
+    </div>
+    
+    <div class="footer">
+      Secure authentication powered by Firebase<br>
+      © 2025 Quizzicallabzᴬᴵ - Transforming education, one quiz at a time.
     </div>
   </div>
 
@@ -50,55 +233,68 @@
     const oobCode = urlParams.get('oobCode');
     
     if (!mode || !oobCode) {
-      document.getElementById('message').innerHTML = '<div class="error">Invalid action link</div>';
+      showMessage('error', '❌ Invalid Action Link', 'This authentication link is invalid or has expired.');
     } else if (mode === 'verifyEmail') {
       verifyEmail();
     } else if (mode === 'resetPassword') {
       showResetForm();
     }
     
+    function showMessage(type, title, description) {
+      const messageEl = document.getElementById('message');
+      messageEl.className = `message ${type}`;
+      messageEl.innerHTML = `<strong>${title}</strong><br>${description}`;
+    }
+    
     function verifyEmail() {
       auth.applyActionCode(oobCode).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">✅ Email verified successfully!</div>';
+        showMessage('success', '✅ Email Verified Successfully!', 'Your email has been verified. You can now access all features.');
+        setTimeout(() => goToApp(), 3000);
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">❌ Invalid or expired verification link</div>';
+        showMessage('error', '❌ Verification Failed', 'This verification link is invalid or has expired.');
       });
     }
     
     function showResetForm() {
       auth.verifyPasswordResetCode(oobCode).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">Enter your new password below:</div>';
+        showMessage('success', '🔐 Reset Your Password', 'Enter your new password below to complete the reset process.');
         document.getElementById('resetForm').style.display = 'block';
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">❌ Invalid or expired reset link</div>';
+        showMessage('error', '❌ Reset Link Expired', 'This password reset link is invalid or has expired.');
       });
     }
     
     function resetPassword() {
       const newPassword = document.getElementById('newPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
+      const resetBtn = document.getElementById('resetBtn');
       
       if (newPassword !== confirmPassword) {
-        document.getElementById('message').innerHTML = '<div class="error">❌ Passwords do not match</div>';
+        showMessage('error', '❌ Password Mismatch', 'The passwords you entered do not match.');
         return;
       }
       
       if (newPassword.length < 6) {
-        document.getElementById('message').innerHTML = '<div class="error">❌ Password must be at least 6 characters</div>';
+        showMessage('error', '❌ Password Too Short', 'Password must be at least 6 characters long.');
         return;
       }
       
+      resetBtn.disabled = true;
+      resetBtn.innerHTML = '<div class="spinner"></div>Resetting Password...';
+      
       auth.confirmPasswordReset(oobCode, newPassword).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">✅ Password reset successfully!</div>';
+        showMessage('success', '✅ Password Reset Complete!', 'Your password has been updated successfully. Redirecting to login...');
         document.getElementById('resetForm').style.display = 'none';
-        setTimeout(() => goToApp(), 2000);
+        setTimeout(() => goToApp(), 3000);
       }).catch((error) => {
-        document.getElementById('message').innerHTML = '<div class="error">❌ Failed to reset password</div>';
+        showMessage('error', '❌ Reset Failed', 'Failed to reset password. Please try again.');
+        resetBtn.disabled = false;
+        resetBtn.innerHTML = 'Reset Password';
       });
     }
     
     function goToApp() {
-      window.location.href = 'https://quizzicallabs.vercel.app/login';
+      window.location.href = 'https://quizzicallabz.qzz.io/login';
     }
   </script>
 </body>
