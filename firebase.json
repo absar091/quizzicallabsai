@@ -16,5 +16,8 @@
         "destination": "/auth-action.html"
       }
     ]
+  },
+  "database": {
+    "rules": "firebase-rules-fix.json"
   }
 }
