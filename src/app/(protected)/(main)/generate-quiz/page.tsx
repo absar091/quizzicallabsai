@@ -313,11 +313,19 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }
 
         // Save to local IndexedDB (this should always work)
+        console.log('🔄 About to save to IndexedDB...');
         try {
           await saveQuizResult(newResult);
           console.log('✅ Local IndexedDB save successful');
         } catch (localError) {
           console.error('❌ Local save failed:', localError);
+          console.error('❌ Local save error details:', {
+            name: localError?.name,
+            message: localError?.message,
+            stack: localError?.stack
+          });
+          // Continue execution even if local save fails
+          console.log('🔄 Continuing despite IndexedDB error...');
         }
 
         console.log('🔄 Proceeding to cleanup and email...');
@@ -334,13 +342,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         console.log('🔄 User email:', user.email);
         console.log('🔄 Form values:', formValues);
         
-        // Send quiz result email
-        if (!user.email) {
-          console.error('❌ Cannot send email: user email is missing');
-        } else if (!formValues) {
-          console.error('❌ Cannot send email: form values are missing');
-        } else {
-          try {
+        // Send quiz result email - wrap entire section in try-catch
+        try {
+          if (!user.email) {
+            console.error('❌ Cannot send email: user email is missing');
+          } else if (!formValues) {
+            console.error('❌ Cannot send email: form values are missing');
+          } else {
             console.log('📧 Sending quiz result email...');
           console.log('📧 Email data:', {
             type: 'quiz-result',
@@ -405,7 +413,18 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             description: `Quiz saved successfully. Email network error: ${emailError.message}`,
             variant: "default",
           });
-        }
+          }
+        } catch (emailSectionError: any) {
+          console.error('❌ Email section error:', {
+            message: emailSectionError.message,
+            stack: emailSectionError.stack,
+            name: emailSectionError.name
+          });
+          toast({
+            title: "Quiz Complete!",
+            description: "Quiz saved successfully. Email system encountered an error.",
+            variant: "default",
+          });
         }
 
         console.log('🎉 Quiz submission completed successfully');
