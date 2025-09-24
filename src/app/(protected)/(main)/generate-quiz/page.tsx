@@ -402,17 +402,18 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
               variant: "default",
             });
           }
-        } catch (emailError: any) {
-          console.error('❌ Email sending network error:', {
-            message: emailError.message,
-            stack: emailError.stack,
-            name: emailError.name
-          });
-          toast({
-            title: "Quiz Complete!",
-            description: `Quiz saved successfully. Email network error: ${emailError.message}`,
-            variant: "default",
-          });
+            } catch (emailError: any) {
+              console.error('❌ Email sending network error:', {
+                message: emailError.message,
+                stack: emailError.stack,
+                name: emailError.name
+              });
+              toast({
+                title: "Quiz Complete!",
+                description: `Quiz saved successfully. Email network error: ${emailError.message}`,
+                variant: "default",
+              });
+            }
           }
         } catch (emailSectionError: any) {
           console.error('❌ Email section error:', {
