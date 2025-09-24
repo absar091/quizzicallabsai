@@ -6,7 +6,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
   signUpDate?: string;
   preferredLanguage?: string;
 }) => ({
-  subject: `Welcome to Quizzicallabs AI, ${userName}`,
+  subject: `Welcome to Quizzicallabzᴬᴵ, ${userName} - Your AI Learning Journey Begins`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -35,13 +35,15 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
         }
         .logo {
           color: #ffffff;
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 700;
           margin-bottom: 8px;
+          letter-spacing: -0.5px;
         }
         .tagline {
           color: #aab7b8;
-          font-size: 16px;
+          font-size: 18px;
+          font-weight: 300;
         }
         .content {
           padding: 40px;
@@ -136,6 +138,85 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           font-size: 14px;
           color: #5a6c7d;
         }
+        .user-details {
+          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+          padding: 24px;
+          border-radius: 8px;
+          margin: 24px 0;
+          border-left: 4px solid #1A237E;
+        }
+        .user-details h3 {
+          margin: 0 0 16px 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #1A237E;
+        }
+        .detail-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 12px;
+        }
+        .detail-item {
+          font-size: 14px;
+          color: #5a6c7d;
+          padding: 8px 0;
+        }
+        .detail-item strong {
+          color: #232f3e;
+        }
+        .action-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 16px;
+          margin: 32px 0;
+        }
+        .action-card {
+          background: #ffffff;
+          border: 2px solid #e9ecef;
+          border-radius: 8px;
+          padding: 20px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .action-card:hover {
+          border-color: #1A237E;
+          box-shadow: 0 4px 12px rgba(26, 35, 126, 0.1);
+        }
+        .action-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+        }
+        .action-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 8px;
+        }
+        .action-desc {
+          font-size: 13px;
+          color: #5a6c7d;
+          margin-bottom: 16px;
+        }
+        .action-btn {
+          background: #1A237E;
+          color: #ffffff;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: 500;
+          font-size: 14px;
+          display: inline-block;
+          transition: background 0.3s ease;
+        }
+        .action-btn:hover {
+          background: #0d1b69;
+        }
+        .action-btn.secondary {
+          background: #f6a23b;
+        }
+        .action-btn.secondary:hover {
+          background: #e8941a;
+        }
         .footer {
           background: #232f3e;
           color: #aab7b8;
@@ -152,13 +233,34 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="logo">🧠 Quizzicallabs AI</div>
-          <div class="tagline">Your AI Learning Assistant</div>
+          <div class="logo">🧠 Quizzicallabzᴬᴵ</div>
+          <div class="tagline">Intelligent Learning • Powered by AI • Built for Success</div>
         </div>
         
         <div class="content">
-          <h1 class="welcome-title">Welcome to Quizzicallabs AI</h1>
-          <p class="welcome-text">Hello ${userName}, thank you for joining our platform. We're excited to help you accelerate your learning with AI-powered study tools.</p>
+          <h1 class="welcome-title">Hello ${userName}, Welcome to the Future of Learning!</h1>
+          <p class="welcome-text">
+            We're thrilled to have you join Quizzicallabzᴬᴵ! Your journey to smarter, faster learning starts now. 
+            Our AI-powered platform is designed to adapt to your learning style and help you achieve your academic goals.
+          </p>
+          
+          <div class="user-details">
+            <h3>Your Account Details</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <strong>Email:</strong> ${emailDetails.userEmail}
+              </div>
+              <div class="detail-item">
+                <strong>Plan:</strong> ${emailDetails.accountType || 'Free'} Account
+              </div>
+              <div class="detail-item">
+                <strong>Joined:</strong> ${emailDetails.signUpDate || new Date().toLocaleDateString()}
+              </div>
+              <div class="detail-item">
+                <strong>Language:</strong> ${emailDetails.preferredLanguage || 'English'}
+              </div>
+            </div>
+          </div>
           
           <div class="feature-section">
             <h2 class="section-title">Get started with these features</h2>
@@ -187,9 +289,25 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             </ul>
           </div>
           
-          <div class="cta-section">
-            <p style="margin: 0 0 16px 0; color: #232f3e; font-weight: 600;">Ready to get started?</p>
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">Go to Dashboard</a>
+          <div class="action-grid">
+            <div class="action-card">
+              <div class="action-icon">🎯</div>
+              <div class="action-title">Start Learning</div>
+              <div class="action-desc">Create your first AI-powered quiz</div>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="action-btn">Generate Quiz</a>
+            </div>
+            <div class="action-card">
+              <div class="action-icon">📊</div>
+              <div class="action-title">View Dashboard</div>
+              <div class="action-desc">Track your progress and analytics</div>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="action-btn">Open Dashboard</a>
+            </div>
+            <div class="action-card">
+              <div class="action-icon">🚀</div>
+              <div class="action-title">Explore Features</div>
+              <div class="action-desc">Discover all AI learning tools</div>
+              <a href="https://quizzicallabz.qzz.io/how-to-use" class="action-btn secondary">Learn More</a>
+            </div>
           </div>
           
           <div class="account-info">
@@ -203,8 +321,18 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
         </div>
         
         <div class="footer">
-          <p>Need help? Visit our <a href="https://quizzicallabz.qzz.io/how-to-use">Help Center</a> or reply to this email.</p>
-          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
+          <div style="margin-bottom: 20px;">
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/how-to-use" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Help Center</a>
+            <a href="https://quizzicallabz.qzz.io/quiz-arena" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Quiz Arena</a>
+            <a href="https://quizzicallabz.qzz.io/profile" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Account Settings</a>
+          </div>
+          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
+          <p style="margin: 10px 0; font-size: 12px; color: #aab7b8;">
+            Quizzicallabzᴬᴵ - Intelligent Learning Platform<br>
+            Powered by Advanced AI • Trusted by Students Worldwide
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -243,7 +371,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
   timeTaken?: number;
   date?: string;
 }) => ({
-  subject: `Quiz Results: ${quizData.topic} - ${quizData.percentage}% Score`,
+  subject: `🎯 ${userName}, Your ${quizData.topic} Results Are Ready - ${quizData.percentage}% Score`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -383,6 +511,29 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           font-size: 14px;
           color: ${quizData.percentage < 80 ? '#f6a23b' : '#1A237E'};
         }
+        .ai-insights {
+          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+          border: 2px solid #1A237E;
+          border-radius: 12px;
+          padding: 24px;
+          margin: 24px 0;
+          text-align: left;
+        }
+        .ai-insights h3 {
+          margin: 0 0 16px 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #1A237E;
+        }
+        .insight-text {
+          font-size: 15px;
+          line-height: 1.6;
+          color: #232f3e;
+          background: rgba(26, 35, 126, 0.05);
+          padding: 16px;
+          border-radius: 8px;
+          border-left: 4px solid #f6a23b;
+        }
         .footer {
           background: #232f3e;
           color: #aab7b8;
@@ -400,19 +551,34 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
       <div class="email-container">
         <div class="header">
           <div class="score-display">${quizData.percentage}%</div>
-          <div class="header-title">Quiz Complete</div>
-          <div class="header-subtitle">${quizData.topic}</div>
+          <div class="header-title">Quiz Complete!</div>
+          <div class="header-subtitle">${quizData.topic} • ${new Date().toLocaleDateString()}</div>
         </div>
         
         <div class="content">
           <div class="congratulations">
-            <h2 class="congrats-title">Great work, ${userName}!</h2>
+            <h2 class="congrats-title">Hello ${userName}, here's your detailed performance analysis!</h2>
             <div class="performance-badge">
-              ${quizData.percentage >= 90 ? '🏆 Excellent Performance' :
-                quizData.percentage >= 80 ? '⭐ Great Work' :
-                quizData.percentage >= 70 ? '👍 Good Job' :
-                quizData.percentage >= 60 ? '📈 Keep Improving' :
-                '💪 Keep Practicing'}
+              ${quizData.percentage >= 90 ? '🏆 Outstanding! You\'re in the top 10%' :
+                quizData.percentage >= 80 ? '⭐ Excellent work! Above average performance' :
+                quizData.percentage >= 70 ? '👍 Good job! Solid understanding shown' :
+                quizData.percentage >= 60 ? '📈 Making progress! Keep building momentum' :
+                '💪 Learning opportunity! Every expert was once a beginner'}
+            </div>
+            
+            <div class="ai-insights">
+              <h3>🤖 AI Performance Insights</h3>
+              <div class="insight-text">
+                ${quizData.percentage >= 90 ? 
+                  `Exceptional performance, ${userName}! Your mastery of ${quizData.topic} is impressive. Consider exploring advanced topics or helping others learn.` :
+                  quizData.percentage >= 80 ? 
+                  `Strong performance! You've demonstrated good understanding of ${quizData.topic}. Focus on the areas you missed to reach mastery level.` :
+                  quizData.percentage >= 70 ? 
+                  `You're on the right track! Your ${quizData.percentage}% score shows solid foundation in ${quizData.topic}. Review incorrect answers and practice similar questions.` :
+                  quizData.percentage >= 60 ? 
+                  `Good effort! You've grasped the basics of ${quizData.topic}. Spend more time on fundamentals and try active recall techniques.` :
+                  `Don't worry, ${userName}! Learning is a journey. Focus on understanding concepts rather than memorizing. Break down ${quizData.topic} into smaller topics and practice regularly.`}
+              </div>
             </div>
           </div>
           
@@ -434,11 +600,13 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           </div>
           
           <div class="action-section">
-            <div class="action-title">Your results are ready</div>
-            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Review your performance and continue learning</p>
+            <div class="action-title">Continue Your Learning Journey</div>
+            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Choose your next step to accelerate your progress</p>
             <div class="action-buttons">
-              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">View Dashboard</a>
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button secondary">Take Another Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">📊 View Analytics</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button secondary">🎯 New Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/generate-study-guide" class="cta-button">📚 Study Guide</a>
+              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button secondary">🏆 Quiz Arena</a>
             </div>
           </div>
           
@@ -451,8 +619,17 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
         </div>
         
         <div class="footer">
-          <p>Your learning journey continues. <a href="https://quizzicallabz.qzz.io/dashboard">Visit Dashboard</a></p>
-          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
+          <div style="margin-bottom: 20px;">
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">📊 Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/review" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">📝 Review Answers</a>
+            <a href="https://quizzicallabz.qzz.io/generate-flashcards" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">🃏 Flashcards</a>
+            <a href="https://quizzicallabz.qzz.io/bookmarks" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">🔖 Bookmarks</a>
+          </div>
+          <p style="margin: 10px 0;">Keep learning with Quizzicallabzᴬᴵ • <a href="https://quizzicallabz.qzz.io/how-to-use">Need Help?</a></p>
+          <p style="margin: 10px 0; font-size: 12px; color: #aab7b8;">
+            AI-Powered Learning • Personalized for You • Built for Success
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -485,7 +662,7 @@ Take Another Quiz: https://quizzicallabz.qzz.io/generate-quiz
 });
 
 export const studyReminderEmailTemplate = (userName: string) => ({
-  subject: `${userName}, time for your daily study session`,
+  subject: `🔔 ${userName}, your AI learning session awaits - Let's boost your knowledge!`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -659,6 +836,25 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           color: #10b981;
           font-weight: bold;
         }
+        .ai-recommendation {
+          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+          border: 2px solid #8b5cf6;
+          border-radius: 12px;
+          padding: 20px;
+          margin: 24px 0;
+        }
+        .ai-recommendation h3 {
+          margin: 0 0 12px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #8b5cf6;
+        }
+        .ai-recommendation p {
+          margin: 0;
+          font-size: 14px;
+          color: #232f3e;
+          line-height: 1.5;
+        }
         .footer {
           background: #232f3e;
           color: #aab7b8;
@@ -676,14 +872,19 @@ export const studyReminderEmailTemplate = (userName: string) => ({
       <div class="email-container">
         <div class="header">
           <div class="header-icon">📚</div>
-          <div class="header-title">Study Time, ${userName}</div>
-          <div class="header-subtitle">Your daily learning session awaits</div>
+          <div class="header-title">Hello ${userName}!</div>
+          <div class="header-subtitle">Your personalized AI learning session is ready</div>
         </div>
         
         <div class="content">
-          <div class="greeting">Hello ${userName}!</div>
+          <div class="greeting">Ready to level up your knowledge, ${userName}?</div>
           <div class="main-message">
-            It's time for your daily learning session. Research shows that consistent, focused study sessions lead to better retention and academic success.
+            Your AI-powered learning session is ready! Our research shows that students who maintain consistent study habits with Quizzicallabzᴬᴵ improve their performance by 40% faster than traditional methods.
+          </div>
+          
+          <div class="ai-recommendation">
+            <h3>🤖 AI Recommendation for You</h3>
+            <p>Based on your learning patterns, we suggest a 15-20 minute focused session today. This optimal duration maximizes retention while preventing cognitive overload.</p>
           </div>
           
           <div class="quote-section">
@@ -713,10 +914,12 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           </div>
           
           <div class="cta-section">
-            <div class="cta-title">Ready to learn?</div>
+            <div class="cta-title">Choose Your Learning Path</div>
             <div class="action-buttons">
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">Start Studying</a>
-              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button secondary">View Dashboard</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">🎯 Quick Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button secondary">📊 Dashboard</a>
+              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button">🏆 Challenge Friends</a>
+              <a href="https://quizzicallabz.qzz.io/review" class="cta-button secondary">📝 Review Mode</a>
             </div>
           </div>
           
@@ -733,8 +936,17 @@ export const studyReminderEmailTemplate = (userName: string) => ({
         </div>
         
         <div class="footer">
-          <p>Keep learning, keep growing. <a href="https://quizzicallabz.qzz.io/dashboard">Visit Dashboard</a></p>
-          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
+          <div style="margin-bottom: 20px;">
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">🎯 Start Quiz</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">📊 Progress</a>
+            <a href="https://quizzicallabz.qzz.io/profile" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">⚙️ Settings</a>
+            <a href="https://quizzicallabz.qzz.io/how-to-use" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">❓ Help</a>
+          </div>
+          <p style="margin: 10px 0;">Your success is our mission • <a href="mailto:support@quizzicallabz.qzz.io">Contact Support</a></p>
+          <p style="margin: 10px 0; font-size: 12px; color: #aab7b8;">
+            Quizzicallabzᴬᴵ • Smart Learning • Proven Results
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
         </div>
       </div>
     </body>
