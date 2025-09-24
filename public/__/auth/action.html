@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quizzicallabs - Auth Action</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+    .container { text-align: center; }
+    .success { color: #4CAF50; }
+    .error { color: #f44336; }
+    .loading { color: #2196F3; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+    button { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+    button:hover { background: #1976D2; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Quizzicallabs</h2>
+    <div id="message" class="loading">Processing...</div>
+    
+    <div id="resetForm" style="display: none;">
+      <h3>Reset Password</h3>
+      <input type="password" id="newPassword" placeholder="New Password" required>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+      <button onclick="resetPassword()">Reset Password</button>
+    </div>
+    
+    <div id="actions" style="margin-top: 20px;">
+      <button onclick="goToApp()">Go to Quizzicallabs</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBart3YOoBWb82LOeNJ6iZSfkl3wJDf3xo",
+      authDomain: "quizzicallabs.firebaseapp.com",
+      projectId: "quizzicallabs"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const oobCode = urlParams.get('oobCode');
+    
+    if (!mode || !oobCode) {
+      document.getElementById('message').innerHTML = '<div class="error">Invalid action link</div>';
+    } else if (mode === 'verifyEmail') {
+      verifyEmail();
+    } else if (mode === 'resetPassword') {
+      showResetForm();
+    }
+    
+    function verifyEmail() {
+      auth.applyActionCode(oobCode).then(() => {
+        document.getElementById('message').innerHTML = '<div class="success">Email verified successfully!</div>';
+      }).catch((error) => {
+        document.getElementById('message').innerHTML = '<div class="error">Invalid or expired verification link</div>';
+      });
+    }
+    
+    function showResetForm() {
+      auth.verifyPasswordResetCode(oobCode).then(() => {
+        document.getElementById('message').innerHTML = '<div class="success">Enter your new password</div>';
+        document.getElementById('resetForm').style.display = 'block';
+      }).catch((error) => {
+        document.getElementById('message').innerHTML = '<div class="error">Invalid or expired reset link</div>';
+      });
+    }
+    
+    function resetPassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (newPassword !== confirmPassword) {
+        document.getElementById('message').innerHTML = '<div class="error">Passwords do not match</div>';
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        document.getElementById('message').innerHTML = '<div class="error">Password must be at least 6 characters</div>';
+        return;
+      }
+      
+      auth.confirmPasswordReset(oobCode, newPassword).then(() => {
+        document.getElementById('message').innerHTML = '<div class="success">Password reset successfully!</div>';
+        document.getElementById('resetForm').style.display = 'none';
+      }).catch((error) => {
+        document.getElementById('message').innerHTML = '<div class="error">Failed to reset password</div>';
+      });
+    }
+    
+    function goToApp() {
+      window.location.href = 'https://quizzicallabs.vercel.app';
+    }
+  </script>
+</body>
+</html>
