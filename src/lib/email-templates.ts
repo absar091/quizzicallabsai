@@ -1,4 +1,4 @@
-// Modern, clean email templates for Quizzicallabs AI
+// Professional email templates inspired by AWS and NVIDIA
 
 export const welcomeEmailTemplate = (userName: string, emailDetails: {
   userEmail: string;
@@ -6,7 +6,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
   signUpDate?: string;
   preferredLanguage?: string;
 }) => ({
-  subject: `Welcome to Quizzicallabs AI, ${userName}! 🚀`,
+  subject: `Welcome to Quizzicallabs AI, ${userName}`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -16,208 +16,222 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
       <title>Welcome to Quizzicallabs AI</title>
       <style>
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #232f3e;
           margin: 0;
           padding: 0;
-          background-color: #f8fafc;
+          background-color: #f7f8fa;
         }
-        .container {
+        .email-container {
           max-width: 600px;
           margin: 0 auto;
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          background: #ffffff;
         }
         .header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 40px 30px;
+          background: #232f3e;
+          padding: 32px 40px;
           text-align: center;
         }
         .logo {
+          color: #ffffff;
           font-size: 28px;
-          font-weight: bold;
-          margin-bottom: 10px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .tagline {
+          color: #aab7b8;
+          font-size: 16px;
         }
         .content {
-          padding: 40px 30px;
+          padding: 40px;
         }
         .welcome-title {
           font-size: 24px;
-          font-weight: bold;
-          color: #1a202c;
+          font-weight: 700;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .welcome-text {
+          font-size: 16px;
+          color: #5a6c7d;
+          margin-bottom: 32px;
+        }
+        .feature-section {
+          margin: 32px 0;
+        }
+        .section-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #232f3e;
           margin-bottom: 20px;
         }
         .feature-list {
           list-style: none;
           padding: 0;
-          margin: 30px 0;
         }
-        .feature-list li {
-          padding: 12px 0;
-          border-bottom: 1px solid #e2e8f0;
+        .feature-item {
+          padding: 16px 0;
+          border-bottom: 1px solid #e9ecef;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
         }
-        .feature-list li:last-child {
+        .feature-item:last-child {
           border-bottom: none;
         }
         .feature-icon {
-          width: 24px;
-          height: 24px;
-          background: #667eea;
-          border-radius: 50%;
+          background: #ff9900;
+          color: white;
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          font-size: 12px;
-          margin-right: 15px;
+          margin-right: 16px;
           flex-shrink: 0;
+          font-size: 16px;
+        }
+        .feature-content h4 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #232f3e;
+        }
+        .feature-content p {
+          margin: 0;
+          font-size: 14px;
+          color: #5a6c7d;
+        }
+        .cta-section {
+          background: #f7f8fa;
+          padding: 32px;
+          text-align: center;
+          margin: 32px 0;
+          border-radius: 4px;
         }
         .cta-button {
-          display: inline-block;
-          background: #667eea;
-          color: white;
-          padding: 15px 30px;
+          background: #ff9900;
+          color: #ffffff;
+          padding: 12px 24px;
           text-decoration: none;
-          border-radius: 8px;
+          border-radius: 4px;
           font-weight: 600;
-          margin: 20px 0;
+          font-size: 16px;
+          display: inline-block;
+        }
+        .account-info {
+          background: #f7f8fa;
+          padding: 24px;
+          border-radius: 4px;
+          margin: 32px 0;
+        }
+        .account-info h4 {
+          margin: 0 0 12px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #232f3e;
+        }
+        .account-details {
+          font-size: 14px;
+          color: #5a6c7d;
         }
         .footer {
-          background: #f7fafc;
-          padding: 30px;
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
           text-align: center;
-          color: #718096;
           font-size: 14px;
         }
-        .stats {
-          display: flex;
-          justify-content: space-around;
-          margin: 30px 0;
-          padding: 20px;
-          background: #f7fafc;
-          border-radius: 8px;
-        }
-        .stat {
-          text-align: center;
-        }
-        .stat-number {
-          font-size: 24px;
-          font-weight: bold;
-          color: #667eea;
-        }
-        .stat-label {
-          font-size: 12px;
-          color: #718096;
-          text-transform: uppercase;
+        .footer a {
+          color: #ff9900;
+          text-decoration: none;
         }
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="email-container">
         <div class="header">
           <div class="logo">🧠 Quizzicallabs AI</div>
-          <p>Your Personal AI Learning Assistant</p>
+          <div class="tagline">Your AI Learning Assistant</div>
         </div>
         
         <div class="content">
-          <h1 class="welcome-title">Welcome aboard, ${userName}! 🎉</h1>
+          <h1 class="welcome-title">Welcome to Quizzicallabs AI</h1>
+          <p class="welcome-text">Hello ${userName}, thank you for joining our platform. We're excited to help you accelerate your learning with AI-powered study tools.</p>
           
-          <p>We're thrilled to have you join our community of learners! Quizzicallabs AI is designed to make your study sessions more effective and engaging.</p>
-          
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-number">50K+</div>
-              <div class="stat-label">Students</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">1M+</div>
-              <div class="stat-label">Quizzes Generated</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">95%</div>
-              <div class="stat-label">Success Rate</div>
-            </div>
+          <div class="feature-section">
+            <h2 class="section-title">Get started with these features</h2>
+            <ul class="feature-list">
+              <li class="feature-item">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-content">
+                  <h4>Smart Quiz Generation</h4>
+                  <p>Create personalized quizzes from any topic or document using advanced AI</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-content">
+                  <h4>Progress Tracking</h4>
+                  <p>Monitor your learning progress with detailed analytics and insights</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-content">
+                  <h4>AI Explanations</h4>
+                  <p>Get instant, detailed explanations for every question</p>
+                </div>
+              </li>
+            </ul>
           </div>
           
-          <h3>What you can do with Quizzicallabs AI:</h3>
-          <ul class="feature-list">
-            <li>
-              <div class="feature-icon">🎯</div>
-              <div>
-                <strong>Smart Quiz Generation</strong><br>
-                Create personalized quizzes from any topic or document
-              </div>
-            </li>
-            <li>
-              <div class="feature-icon">📚</div>
-              <div>
-                <strong>Study Guides & Flashcards</strong><br>
-                Generate comprehensive study materials instantly
-              </div>
-            </li>
-            <li>
-              <div class="feature-icon">📊</div>
-              <div>
-                <strong>Progress Tracking</strong><br>
-                Monitor your learning progress and identify weak areas
-              </div>
-            </li>
-            <li>
-              <div class="feature-icon">🤖</div>
-              <div>
-                <strong>AI-Powered Explanations</strong><br>
-                Get detailed explanations for every question
-              </div>
-            </li>
-          </ul>
+          <div class="cta-section">
+            <p style="margin: 0 0 16px 0; color: #232f3e; font-weight: 600;">Ready to get started?</p>
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">Go to Dashboard</a>
+          </div>
           
-          <p>Ready to supercharge your learning? Let's get started!</p>
-          
-          <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">Start Learning Now →</a>
-          
-          <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px;">
-            <strong>Account Details:</strong><br>
-            Email: ${emailDetails.userEmail}<br>
-            Plan: ${emailDetails.accountType || 'Free'}<br>
-            Joined: ${emailDetails.signUpDate || new Date().toLocaleDateString()}
-          </p>
+          <div class="account-info">
+            <h4>Account Information</h4>
+            <div class="account-details">
+              <strong>Email:</strong> ${emailDetails.userEmail}<br>
+              <strong>Plan:</strong> ${emailDetails.accountType || 'Free'}<br>
+              <strong>Joined:</strong> ${emailDetails.signUpDate || new Date().toLocaleDateString()}
+            </div>
+          </div>
         </div>
         
         <div class="footer">
-          <p><strong>Need help?</strong> Reply to this email or visit our <a href="https://quizzicallabz.qzz.io/how-to-use">help center</a></p>
-          <p style="margin-top: 15px;">© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.</p>
+          <p>Need help? Visit our <a href="https://quizzicallabz.qzz.io/how-to-use">Help Center</a> or reply to this email.</p>
+          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `,
   text: `
-Welcome to Quizzicallabs AI, ${userName}!
+Welcome to Quizzicallabs AI
 
-We're thrilled to have you join our community of learners!
+Hello ${userName},
 
-What you can do:
+Thank you for joining Quizzicallabs AI! We're excited to help you accelerate your learning with AI-powered study tools.
+
+Get started with these features:
 • Smart Quiz Generation - Create personalized quizzes from any topic
-• Study Guides & Flashcards - Generate study materials instantly  
-• Progress Tracking - Monitor your learning progress
-• AI-Powered Explanations - Get detailed explanations
+• Progress Tracking - Monitor your learning progress with detailed analytics  
+• AI Explanations - Get instant, detailed explanations for every question
 
-Account Details:
+Ready to get started? Visit: https://quizzicallabz.qzz.io/dashboard
+
+Account Information:
 Email: ${emailDetails.userEmail}
 Plan: ${emailDetails.accountType || 'Free'}
 Joined: ${emailDetails.signUpDate || new Date().toLocaleDateString()}
 
-Get started: https://quizzicallabz.qzz.io/dashboard
+Need help? Visit our Help Center: https://quizzicallabz.qzz.io/how-to-use
 
-Need help? Reply to this email or visit our help center.
-
-© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.
+© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
   `
 });
 
@@ -229,7 +243,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
   timeTaken?: number;
   date?: string;
 }) => ({
-  subject: `🎯 Quiz Complete: ${quizData.topic} - ${quizData.percentage}% Score`,
+  subject: `Quiz Results: ${quizData.topic} - ${quizData.percentage}% Score`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -239,186 +253,239 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
       <title>Quiz Results</title>
       <style>
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #232f3e;
           margin: 0;
           padding: 0;
-          background-color: #f8fafc;
+          background-color: #f7f8fa;
         }
-        .container {
+        .email-container {
           max-width: 600px;
           margin: 0 auto;
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          background: #ffffff;
         }
         .header {
-          background: ${quizData.percentage >= 80 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 
-                       quizData.percentage >= 60 ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 
-                       'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'};
-          color: white;
-          padding: 40px 30px;
+          background: ${quizData.percentage >= 80 ? '#00a651' : quizData.percentage >= 60 ? '#ff9900' : '#d13212'};
+          padding: 32px 40px;
           text-align: center;
+          color: white;
         }
-        .score-circle {
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 20px;
-          border: 3px solid rgba(255,255,255,0.3);
+        .score-display {
+          font-size: 48px;
+          font-weight: 700;
+          margin-bottom: 8px;
         }
-        .score-text {
-          font-size: 36px;
-          font-weight: bold;
+        .header-title {
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
         }
         .content {
-          padding: 40px 30px;
+          padding: 40px;
         }
-        .result-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 20px;
-          margin: 30px 0;
-        }
-        .result-card {
-          background: #f7fafc;
-          padding: 20px;
-          border-radius: 8px;
+        .congratulations {
           text-align: center;
+          margin-bottom: 32px;
         }
-        .result-number {
+        .congrats-title {
           font-size: 24px;
-          font-weight: bold;
-          color: #667eea;
-        }
-        .result-label {
-          font-size: 14px;
-          color: #718096;
-          margin-top: 5px;
+          font-weight: 700;
+          color: #232f3e;
+          margin-bottom: 8px;
         }
         .performance-badge {
           display: inline-block;
           padding: 8px 16px;
-          border-radius: 20px;
+          border-radius: 4px;
           font-size: 14px;
           font-weight: 600;
-          margin: 20px 0;
-          ${quizData.percentage >= 90 ? 'background: #dcfce7; color: #166534;' :
-            quizData.percentage >= 80 ? 'background: #fef3c7; color: #92400e;' :
-            quizData.percentage >= 70 ? 'background: #dbeafe; color: #1e40af;' :
-            quizData.percentage >= 60 ? 'background: #fed7aa; color: #9a3412;' :
-            'background: #fecaca; color: #991b1b;'}
+          ${quizData.percentage >= 90 ? 'background: #d4edda; color: #155724;' :
+            quizData.percentage >= 80 ? 'background: #fff3cd; color: #856404;' :
+            quizData.percentage >= 70 ? 'background: #cce5ff; color: #004085;' :
+            quizData.percentage >= 60 ? 'background: #ffe6cc; color: #8a4100;' :
+            'background: #f8d7da; color: #721c24;'}
+        }
+        .results-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 16px;
+          margin: 32px 0;
+        }
+        .result-card {
+          background: #f7f8fa;
+          padding: 24px;
+          text-align: center;
+          border-radius: 4px;
+        }
+        .result-number {
+          font-size: 32px;
+          font-weight: 700;
+          color: #232f3e;
+          display: block;
+        }
+        .result-label {
+          font-size: 14px;
+          color: #5a6c7d;
+          margin-top: 4px;
+        }
+        .action-section {
+          background: #f7f8fa;
+          padding: 32px;
+          text-align: center;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .action-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
         }
         .cta-button {
-          display: inline-block;
-          background: #667eea;
-          color: white;
-          padding: 15px 30px;
+          background: #ff9900;
+          color: #ffffff;
+          padding: 12px 24px;
           text-decoration: none;
-          border-radius: 8px;
+          border-radius: 4px;
           font-weight: 600;
-          margin: 20px 10px;
+          font-size: 14px;
+          display: inline-block;
+        }
+        .cta-button.secondary {
+          background: #232f3e;
+        }
+        .study-tip {
+          background: ${quizData.percentage < 80 ? '#fff3cd' : '#d4edda'};
+          border-left: 4px solid ${quizData.percentage < 80 ? '#ff9900' : '#00a651'};
+          padding: 20px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .study-tip h4 {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: ${quizData.percentage < 80 ? '#856404' : '#155724'};
+        }
+        .study-tip p {
+          margin: 0;
+          font-size: 14px;
+          color: ${quizData.percentage < 80 ? '#856404' : '#155724'};
         }
         .footer {
-          background: #f7fafc;
-          padding: 30px;
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
           text-align: center;
-          color: #718096;
           font-size: 14px;
+        }
+        .footer a {
+          color: #ff9900;
+          text-decoration: none;
         }
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="email-container">
         <div class="header">
-          <div class="score-circle">
-            <div class="score-text">${quizData.percentage}%</div>
-          </div>
-          <h1>Quiz Complete!</h1>
-          <p>${quizData.topic}</p>
+          <div class="score-display">${quizData.percentage}%</div>
+          <div class="header-title">Quiz Complete</div>
+          <div class="header-subtitle">${quizData.topic}</div>
         </div>
         
         <div class="content">
-          <h2>Great job, ${userName}! 🎉</h2>
-          
-          <div class="performance-badge">
-            ${quizData.percentage >= 90 ? '🏆 Excellent Performance' :
-              quizData.percentage >= 80 ? '⭐ Great Work' :
-              quizData.percentage >= 70 ? '👍 Good Job' :
-              quizData.percentage >= 60 ? '📈 Keep Improving' :
-              '💪 Keep Practicing'}
+          <div class="congratulations">
+            <h2 class="congrats-title">Great work, ${userName}!</h2>
+            <div class="performance-badge">
+              ${quizData.percentage >= 90 ? '🏆 Excellent Performance' :
+                quizData.percentage >= 80 ? '⭐ Great Work' :
+                quizData.percentage >= 70 ? '👍 Good Job' :
+                quizData.percentage >= 60 ? '📈 Keep Improving' :
+                '💪 Keep Practicing'}
+            </div>
           </div>
           
-          <div class="result-grid">
+          <div class="results-grid">
             <div class="result-card">
-              <div class="result-number">${quizData.score}/${quizData.total}</div>
+              <span class="result-number">${quizData.score}/${quizData.total}</span>
               <div class="result-label">Correct Answers</div>
             </div>
             <div class="result-card">
-              <div class="result-number">${quizData.percentage}%</div>
-              <div class="result-label">Score</div>
+              <span class="result-number">${quizData.percentage}%</span>
+              <div class="result-label">Final Score</div>
             </div>
             ${quizData.timeTaken ? `
             <div class="result-card">
-              <div class="result-number">${Math.floor(quizData.timeTaken / 60)}m ${quizData.timeTaken % 60}s</div>
+              <span class="result-number">${Math.floor(quizData.timeTaken / 60)}:${String(quizData.timeTaken % 60).padStart(2, '0')}</span>
               <div class="result-label">Time Taken</div>
             </div>
             ` : ''}
           </div>
           
-          <p>Your quiz results have been saved to your dashboard. You can review your answers, get explanations, and track your progress over time.</p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">View Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">Take Another Quiz</a>
+          <div class="action-section">
+            <div class="action-title">Your results are ready</div>
+            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Review your performance and continue learning</p>
+            <div class="action-buttons">
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">View Dashboard</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button secondary">Take Another Quiz</a>
+            </div>
           </div>
           
-          ${quizData.percentage < 80 ? `
-          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #92400e; margin-top: 0;">💡 Study Tip</h3>
-            <p style="color: #92400e; margin-bottom: 0;">Consider reviewing the topics you missed and try generating flashcards for better retention!</p>
+          <div class="study-tip">
+            <h4>${quizData.percentage >= 80 ? '🎯 Keep the momentum going!' : '💡 Study Recommendation'}</h4>
+            <p>${quizData.percentage >= 80 ? 
+              'Excellent performance! Consider challenging yourself with more advanced topics.' : 
+              'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}</p>
           </div>
-          ` : ''}
         </div>
         
         <div class="footer">
-          <p>Keep up the great work! Consistent practice leads to mastery.</p>
-          <p style="margin-top: 15px;">© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.</p>
+          <p>Your learning journey continues. <a href="https://quizzicallabz.qzz.io/dashboard">Visit Dashboard</a></p>
+          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
         </div>
       </div>
     </body>
     </html>
-  `,
-  text: `
-Quiz Complete: ${quizData.topic}
+  `,  text: `
 
-Great job, ${userName}!
+Quiz Results: ${quizData.topic}
 
-Results:
-• Score: ${quizData.score}/${quizData.total} (${quizData.percentage}%)
-${quizData.timeTaken ? `• Time: ${Math.floor(quizData.timeTaken / 60)}m ${quizData.timeTaken % 60}s` : ''}
-• Date: ${quizData.date || new Date().toLocaleDateString()}
+Great work, ${userName}!
 
 Performance: ${quizData.percentage >= 90 ? 'Excellent' :
               quizData.percentage >= 80 ? 'Great' :
               quizData.percentage >= 70 ? 'Good' :
               quizData.percentage >= 60 ? 'Fair' : 'Needs Improvement'}
 
-View your detailed results: https://quizzicallabz.qzz.io/dashboard
-Take another quiz: https://quizzicallabz.qzz.io/generate-quiz
+Results:
+• Score: ${quizData.score}/${quizData.total} (${quizData.percentage}%)
+${quizData.timeTaken ? `• Time: ${Math.floor(quizData.timeTaken / 60)}:${String(quizData.timeTaken % 60).padStart(2, '0')}` : ''}
+• Date: ${quizData.date || new Date().toLocaleDateString()}
 
-© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.
+${quizData.percentage >= 80 ? 
+  'Excellent performance! Consider challenging yourself with more advanced topics.' : 
+  'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}
+
+View Dashboard: https://quizzicallabz.qzz.io/dashboard
+Take Another Quiz: https://quizzicallabz.qzz.io/generate-quiz
+
+© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
   `
 });
 
 export const studyReminderEmailTemplate = (userName: string) => ({
-  subject: `📚 ${userName}, time for your daily study session!`,
+  subject: `${userName}, time for your daily study session`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -428,163 +495,278 @@ export const studyReminderEmailTemplate = (userName: string) => ({
       <title>Study Reminder</title>
       <style>
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #232f3e;
           margin: 0;
           padding: 0;
-          background-color: #f8fafc;
+          background-color: #f7f8fa;
         }
-        .container {
+        .email-container {
           max-width: 600px;
           margin: 0 auto;
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          background: #ffffff;
         }
         .header {
-          background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-          color: white;
-          padding: 40px 30px;
+          background: #8b5cf6;
+          padding: 32px 40px;
           text-align: center;
+          color: white;
+        }
+        .header-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+        }
+        .header-title {
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
         }
         .content {
-          padding: 40px 30px;
+          padding: 40px;
         }
-        .motivation-quote {
+        .greeting {
+          font-size: 18px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .main-message {
+          font-size: 16px;
+          color: #5a6c7d;
+          margin-bottom: 32px;
+        }
+        .quote-section {
           background: #f0f9ff;
           border-left: 4px solid #0ea5e9;
           padding: 20px;
-          margin: 20px 0;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .quote-text {
           font-style: italic;
           color: #0c4a6e;
+          font-size: 16px;
+          margin-bottom: 8px;
+        }
+        .quote-author {
+          color: #0369a1;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .activities-section {
+          margin: 32px 0;
+        }
+        .section-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 20px;
         }
         .activity-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 20px;
-          margin: 30px 0;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 16px;
         }
         .activity-card {
-          background: #f7fafc;
-          padding: 20px;
-          border-radius: 8px;
+          background: #f7f8fa;
+          padding: 24px;
           text-align: center;
-          border: 2px solid transparent;
-          transition: all 0.3s ease;
-        }
-        .activity-card:hover {
-          border-color: #8b5cf6;
+          border-radius: 4px;
+          border: 1px solid #e9ecef;
         }
         .activity-icon {
           font-size: 32px;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
+        }
+        .activity-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 8px;
+        }
+        .activity-description {
+          font-size: 14px;
+          color: #5a6c7d;
+        }
+        .cta-section {
+          background: #8b5cf6;
+          padding: 32px;
+          text-align: center;
+          margin: 32px 0;
+          border-radius: 4px;
+          color: white;
+        }
+        .cta-title {
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 16px;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
         }
         .cta-button {
-          display: inline-block;
-          background: #8b5cf6;
-          color: white;
-          padding: 15px 30px;
+          background: #ffffff;
+          color: #8b5cf6;
+          padding: 12px 24px;
           text-decoration: none;
-          border-radius: 8px;
+          border-radius: 4px;
           font-weight: 600;
-          margin: 10px;
+          font-size: 14px;
+          display: inline-block;
+        }
+        .cta-button.secondary {
+          background: transparent;
+          color: #ffffff;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .tips-section {
+          background: #d1fae5;
+          border-left: 4px solid #10b981;
+          padding: 24px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .tips-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #065f46;
+          margin-bottom: 12px;
+        }
+        .tips-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .tips-list li {
+          color: #065f46;
+          margin-bottom: 8px;
+          padding-left: 20px;
+          position: relative;
+          font-size: 14px;
+        }
+        .tips-list li::before {
+          content: '✓';
+          position: absolute;
+          left: 0;
+          color: #10b981;
+          font-weight: bold;
         }
         .footer {
-          background: #f7fafc;
-          padding: 30px;
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
           text-align: center;
-          color: #718096;
           font-size: 14px;
+        }
+        .footer a {
+          color: #ff9900;
+          text-decoration: none;
         }
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="email-container">
         <div class="header">
-          <h1>📚 Study Time, ${userName}!</h1>
-          <p>Consistency is the key to success</p>
+          <div class="header-icon">📚</div>
+          <div class="header-title">Study Time, ${userName}</div>
+          <div class="header-subtitle">Your daily learning session awaits</div>
         </div>
         
         <div class="content">
-          <p>Hi ${userName}! 👋</p>
-          
-          <p>It's time for your daily study session. Even 15 minutes of focused learning can make a huge difference in your academic journey!</p>
-          
-          <div class="motivation-quote">
-            "Success is the sum of small efforts repeated day in and day out." - Robert Collier
+          <div class="greeting">Hello ${userName}!</div>
+          <div class="main-message">
+            It's time for your daily learning session. Research shows that consistent, focused study sessions lead to better retention and academic success.
           </div>
           
-          <h3>What would you like to study today?</h3>
+          <div class="quote-section">
+            <div class="quote-text">"Success is the sum of small efforts repeated day in and day out."</div>
+            <div class="quote-author">— Robert Collier</div>
+          </div>
           
-          <div class="activity-grid">
-            <div class="activity-card">
-              <div class="activity-icon">🎯</div>
-              <h4>Take a Quiz</h4>
-              <p>Test your knowledge on any topic</p>
-            </div>
-            <div class="activity-card">
-              <div class="activity-icon">📝</div>
-              <h4>Review Flashcards</h4>
-              <p>Reinforce what you've learned</p>
-            </div>
-            <div class="activity-card">
-              <div class="activity-icon">📊</div>
-              <h4>Check Progress</h4>
-              <p>See how far you've come</p>
+          <div class="activities-section">
+            <div class="section-title">Choose your learning activity</div>
+            <div class="activity-grid">
+              <div class="activity-card">
+                <div class="activity-icon">🎯</div>
+                <div class="activity-title">Take a Quiz</div>
+                <div class="activity-description">Test your knowledge on any topic</div>
+              </div>
+              <div class="activity-card">
+                <div class="activity-icon">📝</div>
+                <div class="activity-title">Review Flashcards</div>
+                <div class="activity-description">Reinforce key concepts</div>
+              </div>
+              <div class="activity-card">
+                <div class="activity-icon">📊</div>
+                <div class="activity-title">Check Progress</div>
+                <div class="activity-description">See your learning analytics</div>
+              </div>
             </div>
           </div>
           
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">Start Studying</a>
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">View Dashboard</a>
+          <div class="cta-section">
+            <div class="cta-title">Ready to learn?</div>
+            <div class="action-buttons">
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">Start Studying</a>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button secondary">View Dashboard</a>
+            </div>
           </div>
           
-          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #065f46; margin-top: 0;">🔥 Study Streak Tips</h3>
-            <ul style="color: #065f46; margin-bottom: 0;">
-              <li>Set a specific time each day for studying</li>
-              <li>Start with just 15-20 minutes</li>
-              <li>Focus on one topic at a time</li>
-              <li>Celebrate small wins along the way</li>
+          <div class="tips-section">
+            <div class="tips-title">🔥 Study Streak Tips</div>
+            <ul class="tips-list">
+              <li>Set a consistent time each day for studying</li>
+              <li>Start with 15-20 minute focused sessions</li>
+              <li>Focus on one subject at a time</li>
+              <li>Use active recall techniques like quizzing</li>
+              <li>Celebrate your daily learning wins</li>
             </ul>
           </div>
         </div>
         
         <div class="footer">
-          <p>You've got this! Every expert was once a beginner.</p>
-          <p style="margin-top: 15px;">© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.</p>
+          <p>Keep learning, keep growing. <a href="https://quizzicallabz.qzz.io/dashboard">Visit Dashboard</a></p>
+          <p>© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `,
   text: `
-Study Time, ${userName}!
+Study Time, ${userName}
 
-Hi ${userName}! 👋
+Hello ${userName}!
 
-It's time for your daily study session. Even 15 minutes of focused learning can make a huge difference!
+It's time for your daily learning session. Research shows that consistent, focused study sessions lead to better retention and academic success.
 
-"Success is the sum of small efforts repeated day in and day out." - Robert Collier
+"Success is the sum of small efforts repeated day in and day out." — Robert Collier
 
-What would you like to study today?
+Choose your learning activity:
 • Take a Quiz - Test your knowledge on any topic
-• Review Flashcards - Reinforce what you've learned  
-• Check Progress - See how far you've come
+• Review Flashcards - Reinforce key concepts  
+• Check Progress - See your learning analytics
 
-Start studying: https://quizzicallabz.qzz.io/generate-quiz
-View dashboard: https://quizzicallabz.qzz.io/dashboard
+Ready to learn?
+Start Studying: https://quizzicallabz.qzz.io/generate-quiz
+View Dashboard: https://quizzicallabz.qzz.io/dashboard
 
 Study Streak Tips:
-• Set a specific time each day for studying
-• Start with just 15-20 minutes
-• Focus on one topic at a time
-• Celebrate small wins along the way
+✓ Set a consistent time each day for studying
+✓ Start with 15-20 minute focused sessions
+✓ Focus on one subject at a time
+✓ Use active recall techniques like quizzing
+✓ Celebrate your daily learning wins
 
-You've got this! Every expert was once a beginner.
+Keep learning, keep growing.
 
-© ${new Date().getFullYear()} Quizzicallabs AI. Made with ❤️ for students worldwide.
+© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
   `
 });

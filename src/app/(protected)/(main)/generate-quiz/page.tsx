@@ -350,58 +350,59 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             console.error('❌ Cannot send email: form values are missing');
           } else {
             console.log('📧 Sending quiz result email...');
-          console.log('📧 Email data:', {
-            type: 'quiz-result',
-            to: user.email,
-            userName: user.displayName || user.email?.split('@')[0] || 'Student',
-            topic: formValues.topic,
-            score,
-            total: quiz.length,
-            percentage
-          });
-
-          const emailResponse = await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            console.log('📧 Email data:', {
               type: 'quiz-result',
               to: user.email,
               userName: user.displayName || user.email?.split('@')[0] || 'Student',
               topic: formValues.topic,
               score,
               total: quiz.length,
-              percentage,
-              timeTaken: timeTaken,
-              date: new Date().toISOString()
-            })
-          });
-          
-          console.log('📧 Email response status:', emailResponse.status);
-          console.log('📧 Email response headers:', Object.fromEntries(emailResponse.headers.entries()));
-          
-          const emailResult = await emailResponse.json();
-          console.log('📧 Email response data:', emailResult);
-          
-          if (emailResponse.ok && emailResult.success) {
-            console.log('✅ Quiz result email sent successfully:', emailResult.messageId);
-            toast({
-              title: "Quiz Complete! 📧",
-              description: `Results sent to ${user.email}. Check your inbox!`,
-              duration: 5000,
+              percentage
             });
-          } else {
-            console.error('❌ Email sending failed:', {
-              status: emailResponse.status,
-              statusText: emailResponse.statusText,
-              error: emailResult.error,
-              details: emailResult
-            });
-            toast({
-              title: "Quiz Complete!",
-              description: `Quiz saved successfully. Email failed: ${emailResult.error || 'Unknown error'}`,
-              variant: "default",
-            });
-          }
+
+            try {
+              const emailResponse = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'quiz-result',
+                  to: user.email,
+                  userName: user.displayName || user.email?.split('@')[0] || 'Student',
+                  topic: formValues.topic,
+                  score,
+                  total: quiz.length,
+                  percentage,
+                  timeTaken: timeTaken,
+                  date: new Date().toISOString()
+                })
+              });
+              
+              console.log('📧 Email response status:', emailResponse.status);
+              console.log('📧 Email response headers:', Object.fromEntries(emailResponse.headers.entries()));
+              
+              const emailResult = await emailResponse.json();
+              console.log('📧 Email response data:', emailResult);
+              
+              if (emailResponse.ok && emailResult.success) {
+                console.log('✅ Quiz result email sent successfully:', emailResult.messageId);
+                toast({
+                  title: "Quiz Complete! 📧",
+                  description: `Results sent to ${user.email}. Check your inbox!`,
+                  duration: 5000,
+                });
+              } else {
+                console.error('❌ Email sending failed:', {
+                  status: emailResponse.status,
+                  statusText: emailResponse.statusText,
+                  error: emailResult.error,
+                  details: emailResult
+                });
+                toast({
+                  title: "Quiz Complete!",
+                  description: `Quiz saved successfully. Email failed: ${emailResult.error || 'Unknown error'}`,
+                  variant: "default",
+                });
+              }
             } catch (emailError: any) {
               console.error('❌ Email sending network error:', {
                 message: emailError.message,
