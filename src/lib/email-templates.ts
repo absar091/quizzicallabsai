@@ -80,7 +80,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           border-bottom: none;
         }
         .feature-icon {
-          background: #ff9900;
+          background: #f6a23b;
           color: white;
           width: 32px;
           height: 32px;
@@ -111,7 +111,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           border-radius: 4px;
         }
         .cta-button {
-          background: #ff9900;
+          background: #f6a23b;
           color: #ffffff;
           padding: 12px 24px;
           text-decoration: none;
@@ -144,7 +144,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           font-size: 14px;
         }
         .footer a {
-          color: #ff9900;
+          color: #f6a23b;
           text-decoration: none;
         }
       </style>
@@ -266,7 +266,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           background: #ffffff;
         }
         .header {
-          background: ${quizData.percentage >= 80 ? '#00a651' : quizData.percentage >= 60 ? '#ff9900' : '#d13212'};
+          background: ${quizData.percentage >= 80 ? '#1A237E' : quizData.percentage >= 60 ? '#f6a23b' : '#d13212'};
           padding: 32px 40px;
           text-align: center;
           color: white;
@@ -304,10 +304,10 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           border-radius: 4px;
           font-size: 14px;
           font-weight: 600;
-          ${quizData.percentage >= 90 ? 'background: #d4edda; color: #155724;' :
-            quizData.percentage >= 80 ? 'background: #fff3cd; color: #856404;' :
-            quizData.percentage >= 70 ? 'background: #cce5ff; color: #004085;' :
-            quizData.percentage >= 60 ? 'background: #ffe6cc; color: #8a4100;' :
+          ${quizData.percentage >= 90 ? 'background: #f0f3fb; color: #1A237E;' :
+            quizData.percentage >= 80 ? 'background: #f0f3fb; color: #1A237E;' :
+            quizData.percentage >= 70 ? 'background: #fff3e0; color: #f6a23b;' :
+            quizData.percentage >= 60 ? 'background: #fff3e0; color: #f6a23b;' :
             'background: #f8d7da; color: #721c24;'}
         }
         .results-grid {
@@ -353,7 +353,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           flex-wrap: wrap;
         }
         .cta-button {
-          background: #ff9900;
+          background: #f6a23b;
           color: #ffffff;
           padding: 12px 24px;
           text-decoration: none;
@@ -363,11 +363,11 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           display: inline-block;
         }
         .cta-button.secondary {
-          background: #232f3e;
+          background: #1A237E;
         }
         .study-tip {
-          background: ${quizData.percentage < 80 ? '#fff3cd' : '#d4edda'};
-          border-left: 4px solid ${quizData.percentage < 80 ? '#ff9900' : '#00a651'};
+          background: ${quizData.percentage < 80 ? '#fff3e0' : '#f0f3fb'};
+          border-left: 4px solid ${quizData.percentage < 80 ? '#f6a23b' : '#1A237E'};
           padding: 20px;
           margin: 32px 0;
           border-radius: 4px;
@@ -376,12 +376,12 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           margin: 0 0 8px 0;
           font-size: 16px;
           font-weight: 600;
-          color: ${quizData.percentage < 80 ? '#856404' : '#155724'};
+          color: ${quizData.percentage < 80 ? '#f6a23b' : '#1A237E'};
         }
         .study-tip p {
           margin: 0;
           font-size: 14px;
-          color: ${quizData.percentage < 80 ? '#856404' : '#155724'};
+          color: ${quizData.percentage < 80 ? '#f6a23b' : '#1A237E'};
         }
         .footer {
           background: #232f3e;
@@ -391,7 +391,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           font-size: 14px;
         }
         .footer a {
-          color: #ff9900;
+          color: #f6a23b;
           text-decoration: none;
         }
       </style>
@@ -667,7 +667,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           font-size: 14px;
         }
         .footer a {
-          color: #ff9900;
+          color: #f6a23b;
           text-decoration: none;
         }
       </style>
