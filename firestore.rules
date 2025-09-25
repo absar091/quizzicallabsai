@@ -92,6 +92,38 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // 🔥 FCM Tokens - For push notifications
+    match /fcmTokens/{userId} {
+      // ✅ Users can read/write their own FCM tokens
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 📱 Device Tracking - For security notifications
+    match /deviceTracking/{userId} {
+      // ✅ Users can read/write their own device tracking data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 🔐 Login Notifications - For security alerts
+    match /loginNotifications/{notificationId} {
+      // ✅ Anyone can read notifications (for email delivery)
+      allow read: if true;
+      // ✅ Authenticated users can create their own notifications
+      allow create: if request.auth != null;
+      // ❌ No updates or deletions (immutable once created)
+      allow update, delete: if false;
+    }
+
+    // 🛡️ Security Logs - For audit trails
+    match /securityLogs/{logId} {
+      // ✅ Users can read their own security logs
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      // ✅ Users can create security log entries
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // ❌ No updates or deletions (immutable audit trail)
+      allow update, delete: if false;
+    }
+
     // 👤 User profiles (existing from your app)
     match /users/{userId} {
       // ✅ Users can read/write their own profile

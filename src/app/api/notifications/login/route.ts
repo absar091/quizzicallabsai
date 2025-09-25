@@ -6,7 +6,15 @@ import { auth } from '@/lib/firebase-admin';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userEmail, userName, userAgent, ipAddress, idToken } = body;
+    const { userEmail, userName, userAgent, idToken } = body;
+
+    // Get real IP address from request headers (server-side)
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const realIP = request.headers.get('x-real-ip');
+    const clientIP = request.headers.get('x-client-ip');
+    const ipAddress = forwardedFor?.split(',')[0] || realIP || clientIP || 'Unknown';
+
+    console.log('🌐 IP Detection:', { forwardedFor, realIP, clientIP, finalIP: ipAddress });
 
     // Verify the user token for security
     if (!idToken) {
@@ -34,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get device information
+    // Get device information with real IP
     const deviceInfo = await getDeviceInfo(userAgent || getUserAgent(), ipAddress);
 
     // Prepare login data for email

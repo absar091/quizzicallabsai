@@ -251,6 +251,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     await firebaseSignOut(auth);
     setUser(null);
+    setHasSentLoginNotification(false); // Reset notification flag for next login
     router.push('/login');
   };
   
