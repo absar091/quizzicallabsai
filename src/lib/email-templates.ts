@@ -637,23 +637,23 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           <div class="congratulations">
             <h2 class="congrats-title">Hello ${userName}, here's your detailed performance analysis!</h2>
             <div class="performance-badge">
-              ${quizData.percentage >= 90 ? '🏆 Outstanding! You\'re in the top 10%' :
-                quizData.percentage >= 80 ? '⭐ Excellent work! Above average performance' :
-                quizData.percentage >= 70 ? '👍 Good job! Solid understanding shown' :
-                quizData.percentage >= 60 ? '📈 Making progress! Keep building momentum' :
-                '💪 Learning opportunity! Every expert was once a beginner'}
+              ${quizData.percentage >= 90 ? 'Outstanding! You\'re in the top 10%' :
+                quizData.percentage >= 80 ? 'Excellent work! Above average performance' :
+                quizData.percentage >= 70 ? 'Good job! Solid understanding shown' :
+                quizData.percentage >= 60 ? 'Making progress! Keep building momentum' :
+                'Learning opportunity! Every expert was once a beginner'}
             </div>
             
             <div class="ai-insights">
-              <h3>🤖 AI Performance Insights</h3>
+              <h3>AI Performance Insights</h3>
               <div class="insight-text">
-                ${quizData.percentage >= 90 ? 
+                ${quizData.percentage >= 90 ?
                   `Exceptional performance, ${userName}! Your mastery of ${quizData.topic} is impressive. Consider exploring advanced topics or helping others learn.` :
-                  quizData.percentage >= 80 ? 
+                  quizData.percentage >= 80 ?
                   `Strong performance! You've demonstrated good understanding of ${quizData.topic}. Focus on the areas you missed to reach mastery level.` :
-                  quizData.percentage >= 70 ? 
+                  quizData.percentage >= 70 ?
                   `You're on the right track! Your ${quizData.percentage}% score shows solid foundation in ${quizData.topic}. Review incorrect answers and practice similar questions.` :
-                  quizData.percentage >= 60 ? 
+                  quizData.percentage >= 60 ?
                   `Good effort! You've grasped the basics of ${quizData.topic}. Spend more time on fundamentals and try active recall techniques.` :
                   `Don't worry, ${userName}! Learning is a journey. Focus on understanding concepts rather than memorizing. Break down ${quizData.topic} into smaller topics and practice regularly.`}
               </div>
