@@ -1,539 +1,557 @@
-// 🔥 Quiz Arena Firebase Cloud Functions
-// Anti-Cheat Security & Real-Time Processing
-// Version: 2.0.0 - Production Ready
+// 🔥 Firebase Cloud Functions - Custom Email Templates with Firebase Security
+// This replaces Firebase's basic email template with your beautiful branded templates
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const crypto = require('crypto-js');
+const nodemailer = require('nodemailer');
 
-// Initialize Firebase Admin
 admin.initializeApp();
-const db = admin.firestore();
 
-// 🚨 SECURITY & MONITORING CONFIG
-const CONFIG = {
-  MAX_ANSWERS_PER_MINUTE: 10,
-  CLEANUP_HOURS: 24,
-  SPAM_DETECTION_WINDOW: 30, // seconds
-  ALERT_EMAIL: functions.config().monitoring?.alert_email || 'admin@yoursite.com'
+// 📧 Email Configuration (using your existing Gmail SMTP)
+const gmailEmail = 'services@quizzicallabz.qzz.io';
+const gmailPassword = 'ynhf aesm bnzu rjme'; // Your app password
+
+const mailTransport = nodemailer.createTransporter({
+  service: 'gmail',
+  auth: {
+    user: gmailEmail,
+    pass: gmailPassword,
+  },
+});
+
+// 🎨 Your Beautiful Email Templates (matching your app's design)
+const emailVerificationTemplate = (userName, verificationLink, continueUrl) => {
+  const fullVerificationLink = continueUrl
+    ? `${verificationLink}${verificationLink.includes('?') ? '&' : '?'}continueUrl=${encodeURIComponent(continueUrl)}`
+    : verificationLink;
+
+  return {
+    subject: `Verify Your Email - Complete Your Quizzicallabzᴬᴵ Registration`,
+    html: `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your Email</title>
+        <style>
+          body {
+            font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #232f3e;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f8fa;
+          }
+          .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+          }
+          .header {
+            background: #1A237E;
+            padding: 32px 40px;
+            text-align: center;
+            color: white;
+          }
+          .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+          }
+          .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+          }
+          .content {
+            padding: 40px;
+          }
+          .greeting {
+            font-size: 20px;
+            font-weight: 600;
+            color: #232f3e;
+            margin-bottom: 16px;
+          }
+          .main-message {
+            font-size: 16px;
+            color: #5a6c7d;
+            margin-bottom: 32px;
+            line-height: 1.6;
+          }
+          .verification-section {
+            background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+            border: 2px solid #1A237E;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+          }
+          .verification-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A237E;
+            margin-bottom: 16px;
+          }
+          .verify-button {
+            background: #1A237E;
+            color: #ffffff;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            display: inline-block;
+            margin: 16px 0;
+            transition: background 0.3s ease;
+          }
+          .verify-button:hover {
+            background: #0d1b69;
+          }
+          .continue-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #ffffff 100%);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 32px 0;
+          }
+          .continue-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #065f46;
+            margin-bottom: 12px;
+          }
+          .continue-button {
+            background: #10b981;
+            color: #ffffff;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            display: inline-block;
+            margin: 12px 0;
+            transition: background 0.3s ease;
+          }
+          .continue-button:hover {
+            background: #059669;
+          }
+          .security-note {
+            background: #fff3e0;
+            border-left: 4px solid #f6a23b;
+            padding: 20px;
+            margin: 32px 0;
+            border-radius: 4px;
+          }
+          .security-note h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #f6a23b;
+          }
+          .security-note p {
+            margin: 0;
+            font-size: 14px;
+            color: #232f3e;
+          }
+          .footer {
+            background: #232f3e;
+            color: #aab7b8;
+            padding: 32px 40px;
+            text-align: center;
+            font-size: 14px;
+          }
+          .footer a {
+            color: #f6a23b;
+            text-decoration: none;
+          }
+          @media only screen and (max-width: 600px) {
+            .email-container {
+              width: 100% !important;
+              margin: 0 !important;
+            }
+            .header {
+              padding: 20px !important;
+            }
+            .content {
+              padding: 20px !important;
+            }
+            .verification-section,
+            .continue-section {
+              padding: 20px !important;
+              margin: 20px 0 !important;
+            }
+            .verify-button,
+            .continue-button {
+              width: 100% !important;
+              box-sizing: border-box !important;
+              padding: 16px 20px !important;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <div class="header">
+            <div class="header-title">Verify Your Email</div>
+            <div class="header-subtitle">One more step to unlock your AI learning journey</div>
+          </div>
+
+          <div class="content">
+            <div class="greeting">Hello ${userName}!</div>
+            <div class="main-message">
+              Welcome to Quizzicallabzᴬᴵ! To complete your registration and start your AI-powered learning journey,
+              please verify your email address by clicking the button below.
+            </div>
+
+            <div class="verification-section">
+              <div class="verification-title">Activate Your Account</div>
+              <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to verify your email and unlock all features</p>
+              <a href="${fullVerificationLink}" class="verify-button">
+                Verify My Email Address
+              </a>
+              <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
+                This link will expire in 24 hours for security reasons
+              </p>
+            </div>
+
+            ${continueUrl ? `
+            <div class="continue-section">
+              <div class="continue-title">After Verification</div>
+              <p style="margin: 0 0 16px 0; color: #065f46; font-size: 14px;">
+                Once verified, you'll be automatically redirected to continue your learning journey!
+              </p>
+              <a href="${continueUrl}" class="continue-button">
+                Continue to Dashboard
+              </a>
+            </div>
+            ` : ''}
+
+            <div class="security-note">
+              <h4>Security Notice</h4>
+              <p>
+                If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email.
+                Your email address will not be added to our system without verification.
+              </p>
+            </div>
+
+            <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
+              <h4 style="margin: 0 0 12px 0; color: #232f3e;">Having trouble with the button?</h4>
+              <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
+                Copy and paste this link into your browser:<br>
+                <a href="${fullVerificationLink}" style="color: #1A237E; word-break: break-all;">${fullVerificationLink}</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
+            <p style="margin: 10px 0; font-size: 12px;">
+              Quizzicallabzᴬᴵ - Intelligent Learning Platform<br>
+              Secure • Trusted • AI-Powered
+            </p>
+            <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  };
 };
 
-// 📊 SECURITY MONITORING
-const logSecurityEvent = (type, data) => {
-  console.warn(`🛡️ SECURITY: ${type}`, JSON.stringify(data, null, 2));
-
-  return db.collection('security-logs').add({
-    type,
-    data,
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    severity: type.includes('SPAM') || type.includes('CHEAT') ? 'HIGH' : 'MEDIUM'
-  });
-};
-
-// 🧹 UTILITY FUNCTIONS
-const validateAnswerData = (roomId, answerData) => {
-  const { userId, questionIndex, answerIndex, hash } = answerData;
-
-  // Basic validation
-  if (!userId || !hash || typeof questionIndex !== 'number' || typeof answerIndex !== 'number') {
-    throw new Error('Invalid answer data structure');
-  }
-
-  // Validate hash integrity (anti-cheat)
-  const expectedHash = btoa(JSON.stringify({
-    roomId,
-    userId,
-    questionIndex,
-    answerIndex,
-    timestamp: Math.floor(Date.now() / 10000) // 10-second tolerance
-  })).replace(/[^a-zA-Z0-9]/g, '');
-
-  if (hash !== expectedHash) {
-    throw new Error('Hash validation failed - possible cheating');
-  }
-
-  return true;
-};
-
-// 🎯 ANSWER VALIDATION CLOUD FUNCTION
-exports.validateQuizAnswer = functions.firestore
-  .document('quiz-rooms/{roomId}/answers/{answerId}')
-  .onCreate(async (snap, context) => {
-    const answerData = snap.data();
-    const { roomId } = context.params;
-
-    try {
-      // 🔒 SECURITY: Validate answer integrity
-      validateAnswerData(roomId, answerData);
-
-      // Get room data for validation
-      const roomRef = db.collection('quiz-rooms').doc(roomId);
-      const roomSnap = await roomRef.get();
-
-      if (!roomSnap.exists()) {
-        throw new Error('Room not found');
-      }
-
-      const roomData = roomSnap.data();
-      const { userId, questionIndex, answerIndex } = answerData;
-
-      // ✅ VALIDATE QUESTION EXISTS
-      if (!roomData.quiz || questionIndex >= roomData.quiz.length) {
-        await logSecurityEvent('INVALID_QUESTION_ACCESS', {
-          userId,
-          roomId,
-          questionIndex,
-          attemptTime: Date.now()
-        });
-        return snap.ref.delete();
-      }
-
-      const currentQuestion = roomData.quiz[questionIndex];
-      const correctAnswer = currentQuestion.correctIndex;
-      const isCorrect = answerIndex === correctAnswer;
-
-      // 📝 UPDATE ANSWER WITH VALIDATION RESULT
-      await snap.ref.update({
-        correct: isCorrect,
-        validatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        correctIndex: correctAnswer,
-        validationServer: functions.config().firebase?.projectId || 'quiz-arena'
-      });
-
-      // 🏆 UPDATE PLAYER SCORE (SERVER-SIDE ONLY)
-      if (isCorrect) {
-        const playerRef = roomRef.collection('players').doc(userId);
-        await playerRef.update({
-          score: admin.firestore.FieldValue.increment(10),
-          correctAnswers: admin.firestore.FieldValue.increment(1)
-        });
-
-        console.log(`🎯 ${userId} scored +10 points in ${roomId}`);
-      } else {
-        const playerRef = roomRef.collection('players').doc(userId);
-        await playerRef.update({
-          incorrectAnswers: admin.firestore.FieldValue.increment(1)
-        });
-      }
-
-      // 📊 NOTIFY ROOM ABOUT ANSWER VALIDATION
-      await roomRef.collection('events').add({
-        type: 'ANSWER_VALIDATED',
-        userId,
-        questionIndex,
-        isCorrect,
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
-        points: isCorrect ? 10 : 0
-      });
-
-      return null;
-
-    } catch (error) {
-      console.error('❌ Answer validation error:', error);
-
-      await logSecurityEvent('ANSWER_VALIDATION_ERROR', {
-        roomId,
-        error: error.message,
-        answerData: { ...answerData, hash: '[REDACTED]' }
-      });
-
-      // Delete invalid submissions
-      return snap.ref.delete();
-    }
-  });
-
-// 🚫 SPAM PREVENTION FUNCTION
-exports.preventAnswerSpam = functions.firestore
-  .document('quiz-rooms/{roomId}/answers/{answerId}')
-  .onCreate(async (snap, context) => {
-    const answerData = snap.data();
-    const { roomId } = context.params;
-    const userId = answerData.userId;
-    const questionIndex = answerData.questionIndex;
-
-    try {
-      // Check for spam (multiple submissions for same question)
-      const recentAnswers = await db.collection('quiz-rooms')
-        .doc(roomId).collection('answers')
-        .where('userId', '==', userId)
-        .where('questionIndex', '==', questionIndex)
-        .where('submittedAt', '>', new Date(Date.now() - CONFIG.SPAM_DETECTION_WINDOW * 1000))
-        .limit(3) // Should only be 1 or 2 max
-        .get();
-
-      if (!recentAnswers.empty && recentAnswers.size > 1) {
-        // 🚨 SPAM DETECTED
-        const spamDetails = {
-          userId,
-          roomId,
-          questionIndex,
-          submissionCount: recentAnswers.size,
-          timeWindow: CONFIG.SPAM_DETECTION_WINDOW,
-          timestamp: Date.now()
-        };
-
-        console.warn('🚨 Answer spam detected:', JSON.stringify(spamDetails, null, 2));
-
-        await logSecurityEvent('ANSWER_SPAM_DETECTED', spamDetails);
-
-        // Remove spam submission
-        await snap.ref.delete();
-
-        // Optional: Notify admin
-        if (CONFIG.ALERT_EMAIL) {
-          // Send email alert here (implement with SendGrid/Nodemailer)
-          console.log(`📧 Spam alert would be sent to ${CONFIG.ALERT_EMAIL}`);
-        }
-
-        return null;
-      }
-
-    } catch (error) {
-      console.error('❌ Spam detection error:', error);
-      return null;
-    }
-  });
-
-// 🎯 BUZZER SYSTEM (Real-Time Competition)
-exports.handleBuzzer = functions.firestore
-  .document('quiz-rooms/{roomId}/buzzes/{buzzId}')
-  .onCreate(async (snap, context) => {
-    const buzzData = snap.data();
-    const { roomId } = context.params;
-
-    try {
-      const { userId, timestamp } = buzzData;
-      const roomRef = db.collection('quiz-rooms').doc(roomId);
-
-      // Get all buzzes for this room
-      const buzzesRef = roomRef.collection('buzzes');
-      const allBuzzesSnap = await buzzesRef.orderBy('timestamp').get();
-      const allBuzzes = allBuzzesSnap.docs.map(doc => doc.data());
-
-      // Calculate buzzer order (first to buzz gets priority)
-      const buzzerOrder = allBuzzes.findIndex(buzz => buzz.userId === userId) + 1;
-
-      // Update buzzer with order
-      await snap.ref.update({
-        order: buzzerOrder,
-        processedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Notify all clients about buzzer update
-      await roomRef.collection('events').add({
-        type: 'BUZZER_UPDATE',
-        userId,
-        order: buzzerOrder,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      console.log(`🔔 ${userId} buzzed in position ${buzzerOrder} for room ${roomId}`);
-
-    } catch (error) {
-      console.error('❌ Buzzer handling error:', error);
-      return null;
-    }
-  });
-
-// 🧹 ROOM CLEANUP FUNCTION
-exports.cleanupFinishedRooms = functions.pubsub
-  .schedule(`every ${CONFIG.CLEANUP_HOURS} hours`)
-  .timeZone('America/New_York')
-  .onRun(async (context) => {
-    console.log('🧹 Starting room cleanup...');
-
-    try {
-      const cutoffTime = new Date();
-      cutoffTime.setHours(cutoffTime.getHours() - CONFIG.CLEANUP_HOURS);
-
-      const expiredRoomsQuery = db.collection('quiz-rooms')
-        .where('finished', '==', true)
-        .where('finishedAt', '<', cutoffTime);
-
-      const batch = db.batch();
-      let deletedCount = 0;
-      let batchCount = 0;
-
-      const expiredRooms = await expiredRoomsQuery.limit(500).get();
-
-      expiredRooms.docs.forEach(doc => {
-        batch.delete(doc.ref);
-        deletedCount++;
-
-        // Process in batches of 10
-        if (++batchCount >= 10) {
-          batch.commit();
-          const newBatch = db.batch();
-          batchCount = 0;
-        }
-      });
-
-      // Commit remaining batch
-      if (batchCount > 0) {
-        await batch.commit();
-      }
-
-      console.log(`✅ Cleaned up ${deletedCount} expired rooms`);
-
-      // Log cleanup activity
-      await db.collection('system-logs').add({
-        type: 'ROOM_CLEANUP',
-        roomsDeleted: deletedCount,
-        cutoffTime: cutoffTime.toISOString(),
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-    } catch (error) {
-      console.error('❌ Room cleanup error:', error);
-    }
-
-    return null;
-  });
-
-// 📊 PERFORMANCE MONITORING
-exports.monitorRoomPerformance = functions.firestore
-  .document('quiz-rooms/{roomId}')
-  .onUpdate(async (change, context) => {
-    const { roomId } = context.params;
-    const newData = change.after.data();
-    const oldData = change.before.data();
-
-    try {
-      // Track room state changes
-      if (newData.currentQuestion !== oldData.currentQuestion) {
-        await db.collection('analytics').add({
-          type: 'QUESTION_CHANGE',
-          roomId,
-          questionFrom: oldData.currentQuestion,
-          questionTo: newData.currentQuestion,
-          timestamp: admin.firestore.FieldValue.serverTimestamp()
-        });
-      }
-
-      // Track quiz completion
-      if (newData.finished && !oldData.finished) {
-        const playersRef = change.after.ref.collection('players');
-        const playersSnap = await playersRef.get();
-        const playerCount = playersSnap.size;
-
-        const playerScores = [];
-        playersSnap.forEach(player => {
-          playerScores.push({
-            userId: player.id,
-            score: player.data().score || 0,
-            name: player.data().name || 'Anonymous'
-          });
-        });
-
-        await db.collection('completed-quizzes').add({
-          roomId,
-          playerCount,
-          questionCount: newData.quiz?.length || 0,
-          duration: newData.startedAt ? newData.finishedAt - newData.startedAt : null,
-          playerScores,
-          timestamp: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        console.log(`🏁 Quiz ${roomId} completed with ${playerCount} players`);
-      }
-
-    } catch (error) {
-      console.error('❌ Performance monitoring error:', error);
-    }
-
-    return null;
-  });
-
-// 🚨 SECURITY MONITORING FUNCTION
-exports.monitorSecurityViolations = functions.firestore
-  .document('security-logs/{logId}')
-  .onCreate(async (snap, context) => {
-    const logData = snap.data();
-    const { type, severity } = logData;
-
-    // Handle high severity alerts
-    if (severity === 'HIGH') {
-      console.error('🚨 HIGH SEVERITY SECURITY ALERT:', JSON.stringify(logData, null, 2));
-
-      // In production, send email/SMS alerts to admin
-      // Integration with PagerDuty, Slack, or email service
-      await db.collection('alerts').add({
-        type: 'SECURITY_ALERT',
-        securityLogId: context.params.logId,
-        priority: 'HIGH',
-        notified: false,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
-
-    return null;
-  });
-
-// 🎯 PLAYER RANKING UPDATE
-exports.updateGlobalRankings = functions.firestore
-  .document('quiz-rooms/{roomId}')
-  .onUpdate(async (change, context) => {
-    const { roomId } = context.params;
-
-    if (!change.after.data().finished) return;
-
-    try {
-      // Update global leaderboard
-      const playersRef = change.after.ref.collection('players');
-      const playersSnap = await playersRef.get();
-
-      // Process each player's score for global rankings
-      const promises = playersSnap.docs.map(async (playerDoc) => {
-        const playerData = playerDoc.data();
-        const userId = playerDoc.id;
-        const score = playerData.score || 0;
-
-        if (score > 0) {
-          // Update user's global stats
-          const userStatsRef = db.collection('user-stats').doc(userId);
-          await userStatsRef.set({
-            userId,
-            totalScore: admin.firestore.FieldValue.increment(score),
-            quizzesPlayed: admin.firestore.FieldValue.increment(1),
-            lastPlayed: admin.firestore.FieldValue.serverTimestamp(),
-            name: playerData.name || 'Anonymous'
-          }, { merge: true });
-        }
-      });
-
-      await Promise.all(promises);
-      console.log(`📈 Updated global rankings for ${roomId}`);
-
-    } catch (error) {
-      console.error('❌ Global ranking update error:', error);
-    }
-
-    return null;
-  });
-
-// 🔍 ADMIN EMERGENCY FUNCTIONS
-exports.emergencyShutdownRoom = functions.https.onCall(async (data, context) => {
-  // Only admins can call this
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
-  }
-
-  // Check if user is admin (implement your admin check logic)
-  const isAdmin = await checkIsAdmin(context.auth.uid);
-  if (!isAdmin) {
-    throw new functions.https.HttpsError('permission-denied', 'Admin access required');
-  }
-
-  const { roomId, reason } = data;
-
+// 🚀 Firebase Cloud Function - Send Custom Verification Email
+exports.sendCustomVerificationEmail = functions.auth.user().onCreate(async (user) => {
   try {
-    await db.collection('quiz-rooms').doc(roomId).update({
-      finished: true,
-      emergencyShutdown: true,
-      shutdownBy: context.auth.uid,
-      shutdownReason: reason,
-      shutdownAt: admin.firestore.FieldValue.serverTimestamp()
+    console.log('Sending custom verification email for:', user.email);
+
+    // Generate the verification link with Firebase's secure code
+    const verificationLink = await admin.auth().generateEmailVerificationLink(user.email, {
+      url: `${functions.config().app.url}/auth/action?mode=verifyEmail`,
+      handleCodeInApp: true
     });
 
-    // Log emergency action
-    await logSecurityEvent('EMERGENCY_ROOM_SHUTDOWN', {
-      roomId,
-      shutdownBy: context.auth.uid,
-      reason: reason || 'Admin emergency shutdown'
-    });
+    // Create beautiful email using your template
+    const userName = user.displayName || user.email.split('@')[0];
+    const continueUrl = `${functions.config().app.url}/dashboard`;
 
-    return { success: true, roomId };
+    const emailTemplate = emailVerificationTemplate(userName, verificationLink, continueUrl);
+
+    // Send the email using your Gmail SMTP
+    const mailOptions = {
+      from: `Quizzicallabzᴬᴵ <${gmailEmail}>`,
+      to: user.email,
+      subject: emailTemplate.subject,
+      html: emailTemplate.html,
+    };
+
+    await mailTransport.sendMail(mailOptions);
+
+    console.log('Custom verification email sent successfully to:', user.email);
+
+    return {
+      success: true,
+      message: 'Custom verification email sent',
+      email: user.email
+    };
+
   } catch (error) {
-    console.error('Emergency shutdown error:', error);
-    throw new functions.https.HttpsError('internal', 'Shutdown failed');
+    console.error('Error sending custom verification email:', error);
+
+    // Don't throw error - let Firebase handle its own email as backup
+    return {
+      success: false,
+      error: error.message,
+      email: user.email
+    };
   }
 });
 
-// 🎮 MATCHMAKING HELPER FUNCTION
-exports.findOptimalRoom = functions.https.onCall(async (data, context) => {
+// Password Reset Email Function
+exports.sendCustomPasswordResetEmail = functions.auth.user().beforePasswordReset(async (user) => {
   try {
-    const { skillLevel, topics, roomSize, difficulty } = data;
+    console.log('Sending custom password reset email for:', user.email);
 
-    // Find suitable rooms based on criteria
-    const roomsQuery = db.collection('quiz-rooms')
-      .where('isPublic', '==', true)
-      .where('started', '==', false)
-      .where('finished', '==', false)
-      .where('difficulty', '==', difficulty);
-
-    const roomsSnap = await roomsQuery.limit(20).get();
-    const suitableRooms = [];
-
-    roomsSnap.forEach(doc => {
-      const roomData = doc.data();
-
-      // Check criteria
-      const roomTopic = roomData.topic?.toLowerCase();
-      const matchingTopics = topics.some(topic =>
-        roomTopic?.includes(topic.toLowerCase())
-      );
-
-      if (matchingTopics && roomData.playerCount < (roomData.maxPlayers || roomSize)) {
-        suitableRooms.push({
-          roomId: doc.id,
-          ...roomData,
-          compatibility: calculateRoomCompatibility(roomData, skillLevel, topics)
-        });
-      }
+    // Generate password reset link
+    const resetLink = await admin.auth().generatePasswordResetLink(user.email, {
+      url: `${functions.config().app.url}/auth/action?mode=resetPassword`
     });
 
-    // Return best match or null
-    const bestMatch = suitableRooms
-      .sort((a, b) => b.compatibility - a.compatibility)[0];
+    const userName = user.displayName || user.email.split('@')[0];
 
-    return bestMatch || null;
+    // Use your existing password reset template
+    const passwordResetTemplate = (userName, resetLink) => ({
+      subject: `Reset Your Quizzicallabzᴬᴵ Password - Secure Access Restoration`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Reset Your Password</title>
+          <style>
+            body {
+              font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+              line-height: 1.6;
+              color: #232f3e;
+              margin: 0;
+              padding: 0;
+              background-color: #f7f8fa;
+            }
+            .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              background: #ffffff;
+            }
+            .header {
+              background: #d13212;
+              padding: 32px 40px;
+              text-align: center;
+              color: white;
+            }
+            .header-title {
+              font-size: 28px;
+              font-weight: 700;
+              margin-bottom: 8px;
+            }
+            .header-subtitle {
+              font-size: 16px;
+              opacity: 0.9;
+            }
+            .content {
+              padding: 40px;
+            }
+            .greeting {
+              font-size: 20px;
+              font-weight: 600;
+              color: #232f3e;
+              margin-bottom: 16px;
+            }
+            .main-message {
+              font-size: 16px;
+              color: #5a6c7d;
+              margin-bottom: 32px;
+              line-height: 1.6;
+            }
+            .reset-section {
+              background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
+              border: 2px solid #d13212;
+              border-radius: 12px;
+              padding: 32px;
+              text-align: center;
+              margin: 32px 0;
+            }
+            .reset-title {
+              font-size: 18px;
+              font-weight: 600;
+              color: #d13212;
+              margin-bottom: 16px;
+            }
+            .reset-button {
+              background: #d13212;
+              color: #ffffff;
+              padding: 16px 32px;
+              text-decoration: none;
+              border-radius: 8px;
+              font-weight: 600;
+              font-size: 16px;
+              display: inline-block;
+              margin: 16px 0;
+              transition: background 0.3s ease;
+            }
+            .reset-button:hover {
+              background: #b12a0c;
+            }
+            .security-warning {
+              background: #fff3cd;
+              border-left: 4px solid #f6a23b;
+              padding: 20px;
+              margin: 32px 0;
+              border-radius: 4px;
+            }
+            .security-warning h4 {
+              margin: 0 0 8px 0;
+              font-size: 16px;
+              font-weight: 600;
+              color: #f6a23b;
+            }
+            .security-warning p {
+              margin: 0;
+              font-size: 14px;
+              color: #232f3e;
+            }
+            .footer {
+              background: #232f3e;
+              color: #aab7b8;
+              padding: 32px 40px;
+              text-align: center;
+              font-size: 14px;
+            }
+            .footer a {
+              color: #f6a23b;
+              text-decoration: none;
+            }
+            @media only screen and (max-width: 600px) {
+              .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+              }
+              .header {
+                padding: 20px !important;
+              }
+              .content {
+                padding: 20px !important;
+              }
+              .reset-section {
+                padding: 20px !important;
+                margin: 20px 0 !important;
+              }
+              .reset-button {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 16px 20px !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <div class="header-title">Password Reset Request</div>
+              <div class="header-subtitle">Secure your Quizzicallabzᴬᴵ account</div>
+            </div>
+
+            <div class="content">
+              <div class="greeting">Hello ${userName}!</div>
+              <div class="main-message">
+                We received a request to reset your password for your Quizzicallabzᴬᴵ account.
+                If you made this request, click the button below to create a new password.
+              </div>
+
+              <div class="reset-section">
+                <div class="reset-title">Reset Your Password</div>
+                <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to set a new password</p>
+                <a href="${resetLink}" class="reset-button">
+                  Reset Password
+                </a>
+                <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
+                  This link will expire in 1 hour for security reasons
+                </p>
+              </div>
+
+              <div class="security-warning">
+                <h4>Security Notice</h4>
+                <p>
+                  If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+                  For security, consider changing your password if you suspect unauthorized access.
+                </p>
+              </div>
+
+              <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
+                <h4 style="margin: 0 0 12px 0; color: #232f3e;">Can't click the button?</h4>
+                <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
+                  Copy and paste this link into your browser:<br>
+                  <a href="${resetLink}" style="color: #d13212; word-break: break-all;">${resetLink}</a>
+                </p>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
+              <p style="margin: 10px 0; font-size: 12px;">
+                Quizzicallabzᴬᴵ Security Team<br>
+                This is an automated security email
+              </p>
+              <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    });
+
+    const emailTemplate = passwordResetTemplate(userName, resetLink);
+
+    const mailOptions = {
+      from: `Quizzicallabzᴬᴵ <${gmailEmail}>`,
+      to: user.email,
+      subject: emailTemplate.subject,
+      html: emailTemplate.html,
+    };
+
+    await mailTransport.sendMail(mailOptions);
+
+    console.log('Custom password reset email sent successfully to:', user.email);
+
+    return {
+      success: true,
+      message: 'Custom password reset email sent',
+      email: user.email
+    };
 
   } catch (error) {
-    console.error('Matchmaking error:', error);
-    throw new functions.https.HttpsError('internal', 'Matchmaking failed');
+    console.error('Error sending custom password reset email:', error);
+    return {
+      success: false,
+      error: error.message,
+      email: user.email
+    };
   }
 });
 
-// 🛠️ UTILITY FUNCTION
-const checkIsAdmin = async (userId) => {
-  // Implement your admin check logic here
-  // e.g., check user document for admin role
-  const userDoc = await db.collection('users').doc(userId).get();
-  return userDoc.data()?.role === 'admin';
-};
+// 📧 Utility function to send emails
+async function sendEmail(to, subject, html) {
+  const mailOptions = {
+    from: `Quizzicallabzᴬᴵ <${gmailEmail}>`,
+    to: to,
+    subject: subject,
+    html: html,
+  };
 
-const calculateRoomCompatibility = (roomData, userSkill, userTopics) => {
-  let score = 0;
+  return mailTransport.sendMail(mailOptions);
+}
 
-  // Skill level match
-  if (roomData.skillLevel === userSkill) score += 30;
-
-  // Topic match
-  const roomTopics = Array.isArray(roomData.topics) ? roomData.topics : [roomData.topic];
-  const topicMatches = roomTopics.filter(roomTopic =>
-    userTopics.some(userTopic =>
-      roomTopic.toLowerCase().includes(userTopic.toLowerCase())
-    )
-  ).length;
-
-  score += topicMatches * 20;
-
-  // Player count optimization
-  const playerRatio = roomData.playerCount / (roomData.maxPlayers || 20);
-  if (playerRatio >= 0.3 && playerRatio <= 0.8) score += 20;
-
-  return Math.min(score, 100);
-};
-
-// 🌐 EXPORTS
+// 🚀 Export functions for deployment
 module.exports = {
-  validateQuizAnswer,
-  preventAnswerSpam,
-  handleBuzzer,
-  cleanupFinishedRooms,
-  monitorRoomPerformance,
-  monitorSecurityViolations,
-  updateGlobalRankings,
-  emergencyShutdownRoom,
-  findOptimalRoom
+  sendCustomVerificationEmail: exports.sendCustomVerificationEmail,
+  sendCustomPasswordResetEmail: exports.sendCustomPasswordResetEmail
 };

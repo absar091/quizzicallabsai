@@ -29,21 +29,61 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           background: #ffffff;
         }
         .header {
-          background: #232f3e;
+          background: #1A237E;
           padding: 32px 40px;
           text-align: center;
+          color: white;
         }
-        .logo {
+        .header-title {
           color: #ffffff;
           font-size: 32px;
           font-weight: 700;
           margin-bottom: 8px;
           letter-spacing: -0.5px;
         }
-        .tagline {
-          color: #aab7b8;
+        .header-subtitle {
+          color: #ffffff;
           font-size: 18px;
           font-weight: 300;
+          opacity: 0.9;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-container {
+            width: 100% !important;
+            margin: 0 !important;
+          }
+          .header {
+            padding: 20px !important;
+          }
+          .content {
+            padding: 20px !important;
+          }
+          .feature-list {
+            padding: 0 !important;
+          }
+          .feature-item {
+            flex-direction: column !important;
+            text-align: center !important;
+          }
+          .feature-icon {
+            margin: 0 0 12px 0 !important;
+          }
+          .action-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .action-card {
+            padding: 16px !important;
+          }
+          .detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+          .cta-button {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin-bottom: 8px !important;
+          }
         }
         .content {
           padding: 40px;
@@ -233,8 +273,8 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="logo">🧠 Quizzicallabzᴬᴵ</div>
-          <div class="tagline">Intelligent Learning • Powered by AI • Built for Success</div>
+          <div class="header-title">Quizzicallabzᴬᴵ</div>
+          <div class="header-subtitle">Intelligent Learning • Powered by AI • Built for Success</div>
         </div>
         
         <div class="content">
@@ -412,6 +452,44 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
         .header-subtitle {
           font-size: 16px;
           opacity: 0.9;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-container {
+            width: 100% !important;
+            margin: 0 !important;
+          }
+          .header {
+            padding: 20px !important;
+          }
+          .content {
+            padding: 20px !important;
+          }
+          .results-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .result-card {
+            padding: 16px !important;
+          }
+          .action-section {
+            padding: 20px !important;
+          }
+          .action-buttons {
+            flex-direction: column !important;
+          }
+          .cta-button {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin-bottom: 8px !important;
+          }
+          .study-tip {
+            padding: 16px !important;
+            margin: 20px 0 !important;
+          }
+          .ai-insights {
+            padding: 16px !important;
+            margin: 16px 0 !important;
+          }
         }
         .content {
           padding: 40px;
@@ -690,21 +768,59 @@ export const emailVerificationTemplate = (userName: string, verificationLink: st
             margin: 0 auto;
             background: #ffffff;
           }
+        .header {
+          background: #1A237E;
+          padding: 32px 40px;
+          text-align: center;
+          color: white;
+        }
+        .header-title {
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-container {
+            width: 100% !important;
+            margin: 0 !important;
+          }
           .header {
-            background: #1A237E;
-            padding: 32px 40px;
-            text-align: center;
-            color: white;
+            padding: 20px !important;
           }
-          .header-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+          .content {
+            padding: 20px !important;
           }
-          .header-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
+          .results-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
           }
+          .result-card {
+            padding: 16px !important;
+          }
+          .action-section {
+            padding: 20px !important;
+          }
+          .action-buttons {
+            flex-direction: column !important;
+          }
+          .cta-button {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin-bottom: 8px !important;
+          }
+          .study-tip {
+            padding: 16px !important;
+            margin: 20px 0 !important;
+          }
+          .ai-insights {
+            padding: 16px !important;
+            margin: 16px 0 !important;
+          }
+        }
           .header-subtitle {
             font-size: 16px;
             opacity: 0.9;
