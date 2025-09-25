@@ -54,6 +54,7 @@ const provider = new GoogleAuthProvider();
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasSentLoginNotification, setHasSentLoginNotification] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -87,9 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
 
-          // Send login notification email for security
-          if (firebaseUser.email && firebaseUser.emailVerified) {
-            console.log('🔐 SENDING LOGIN NOTIFICATION FOR SECURITY');
+          // Send login notification email for security - ONLY ONCE PER SESSION
+          if (firebaseUser.email && firebaseUser.emailVerified && !hasSentLoginNotification) {
+            console.log('🔐 SENDING LOGIN NOTIFICATION FOR SECURITY (FIRST TIME)');
 
             try {
               const idToken = await firebaseUser.getIdToken();
@@ -105,8 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   userEmail: firebaseUser.email,
                   userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
                   userAgent,
-                  // Note: IP address would need to be passed from server-side in production
-                  // For now, we'll let the API handle it
+                  // Note: IP address will be captured server-side
                 })
               });
 
@@ -115,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
               if (response.ok && notificationResult.success) {
                 console.log('✅ Login notification sent successfully');
+                setHasSentLoginNotification(true); // Mark as sent for this session
               } else {
                 console.warn('⚠️ Login notification failed:', notificationResult);
               }
