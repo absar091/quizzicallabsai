@@ -48,7 +48,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const oobCode = urlParams.get('oobCode');
-    
+    const continueUrl = urlParams.get('continueUrl');
+
     if (!mode || !oobCode) {
       document.getElementById('message').innerHTML = '<div class="error">Invalid action link</div>';
     } else if (mode === 'verifyEmail') {
@@ -59,7 +60,26 @@
     
     function verifyEmail() {
       auth.applyActionCode(oobCode).then(() => {
-        document.getElementById('message').innerHTML = '<div class="success">Email verified successfully!</div>';
+        let continueButton = '';
+        if (continueUrl) {
+          continueButton = `<br><br><button onclick="continueToApp()" style="background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">🚀 Continue to Dashboard</button>`;
+        }
+
+        document.getElementById('message').innerHTML = `
+          <div class="success">✅ Email verified successfully!</div>
+          <p style="color: #666; margin-top: 10px;">Your account is now active and you can start learning with AI-powered quizzes.</p>
+          ${continueButton}
+        `;
+
+        // Show continue button after 2 seconds if continueUrl exists
+        if (continueUrl) {
+          setTimeout(() => {
+            const continueBtn = document.querySelector('button[onclick="continueToApp()"]');
+            if (continueBtn) {
+              continueBtn.style.display = 'inline-block';
+            }
+          }, 2000);
+        }
       }).catch((error) => {
         document.getElementById('message').innerHTML = '<div class="error">Invalid or expired verification link</div>';
       });
@@ -98,6 +118,29 @@
     
     function goToApp() {
       window.location.href = 'https://quizzicallabs.vercel.app';
+    }
+
+    function continueToApp() {
+      if (continueUrl) {
+        // Validate the continueUrl to prevent open redirect attacks
+        try {
+          const url = new URL(continueUrl);
+          // Only allow URLs from our domain
+          if (url.hostname === 'quizzicallabs.vercel.app' ||
+              url.hostname === 'quizzicallabz.qzz.io' ||
+              url.hostname === 'localhost') {
+            window.location.href = continueUrl;
+          } else {
+            console.warn('Invalid continue URL domain:', url.hostname);
+            window.location.href = 'https://quizzicallabs.vercel.app/dashboard';
+          }
+        } catch (error) {
+          console.error('Invalid continue URL:', error);
+          window.location.href = 'https://quizzicallabs.vercel.app/dashboard';
+        }
+      } else {
+        window.location.href = 'https://quizzicallabs.vercel.app/dashboard';
+      }
     }
   </script>
 </body>

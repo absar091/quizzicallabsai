@@ -15,7 +15,41 @@ export function EmailVerificationGuard({ children }: { children: React.ReactNode
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const [isChecking, setIsChecking] = useState(false);
+  const [checkCount, setCheckCount] = useState(0);
   const router = useRouter();
+
+  // Auto-check verification status every 3 seconds for faster response
+  useEffect(() => {
+    if (!user || user.emailVerified || loading) return;
+
+    const interval = setInterval(async () => {
+      if (!auth.currentUser) return;
+
+      try {
+        await auth.currentUser.reload();
+        if (auth.currentUser.emailVerified) {
+          // Send verification confirmation to backend
+          try {
+            const idToken = await auth.currentUser.getIdToken();
+            await fetch('/api/handle-email-verification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idToken })
+            });
+          } catch (error) {
+            console.error('Error notifying backend of verification:', error);
+          }
+
+          // Refresh the page to update the auth context
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error checking verification status:', error);
+      }
+    }, 3000); // Check every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [user, loading, checkCount]);
 
   // If user is verified or loading, show children
   if (loading || !user || user.emailVerified) {
@@ -24,16 +58,18 @@ export function EmailVerificationGuard({ children }: { children: React.ReactNode
 
   const handleResendVerification = async () => {
     if (!auth.currentUser) return;
-    
+
     setIsResending(true);
     setResendMessage('');
-    
+
     try {
+      // Send verification email with continue URL
+      const continueUrl = `${window.location.origin}/auth/action?mode=verifyEmail`;
       await sendEmailVerification(auth.currentUser, {
-        url: `${window.location.origin}/dashboard`,
-        handleCodeInApp: false,
+        url: continueUrl,
+        handleCodeInApp: true,
       });
-      setResendMessage('Verification email sent! Please check your inbox and spam folder.');
+      setResendMessage('Verification email sent with continue link! Please check your inbox and spam folder.');
     } catch (error: any) {
       console.error('Error sending verification email:', error);
       setResendMessage('Failed to send verification email. Please try again.');

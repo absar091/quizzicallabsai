@@ -84,11 +84,16 @@ export default function SignupPage() {
         plan: 'Free' // Default plan
       });
 
-      await sendEmailVerification(userCredential.user);
+      // Send email verification with continue URL
+      const continueUrl = `${window.location.origin}/auth/action?mode=verifyEmail`;
+      await sendEmailVerification(userCredential.user, {
+        url: continueUrl,
+        handleCodeInApp: true
+      });
 
       toast({
         title: "Account Created! Please Verify Your Email",
-        description: "A verification email has been sent. Please check your main inbox and also your spam/junk folder.",
+        description: "A verification email has been sent with a continue link. Please check your main inbox and also your spam/junk folder.",
         duration: 9000,
       });
       router.push("/login");
