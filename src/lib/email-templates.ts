@@ -13,7 +13,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Welcome to Quizzicallabs AI</title>
+      <title>Welcome to Quizzicallabz AI</title>
       <style>
         body {
           font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
@@ -1038,6 +1038,281 @@ This link will expire in 1 hour for security reasons.
 If you didn't request a password reset, please ignore this email.
 
 Need help? Contact us at support@quizzicallabz.qzz.io
+
+© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
+  `
+});
+
+export const loginNotificationEmailTemplate = (userName: string, loginData: {
+  timestamp: string;
+  browser: string;
+  device: string;
+  location: string;
+  ipAddress: string;
+  userAgent: string;
+}) => ({
+  subject: `🔐 Security Alert: New Login to Your Quizzicallabzᴬᴵ Account`,
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Login Security Alert</title>
+      <style>
+        body {
+          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+          line-height: 1.6;
+          color: #232f3e;
+          margin: 0;
+          padding: 0;
+          background-color: #f7f8fa;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background: #ffffff;
+        }
+        .header {
+          background: #1A237E;
+          padding: 32px 40px;
+          text-align: center;
+          color: white;
+        }
+        .header-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+        }
+        .header-title {
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .header-subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+        }
+        .content {
+          padding: 40px;
+        }
+        .greeting {
+          font-size: 18px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .main-message {
+          font-size: 16px;
+          color: #5a6c7d;
+          margin-bottom: 32px;
+          line-height: 1.6;
+        }
+        .security-alert {
+          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
+          border: 2px solid #1A237E;
+          border-radius: 12px;
+          padding: 24px;
+          text-align: center;
+          margin: 32px 0;
+        }
+        .alert-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1A237E;
+          margin-bottom: 16px;
+        }
+        .alert-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+        }
+        .login-details {
+          background: #f7f8fa;
+          border-left: 4px solid #1A237E;
+          padding: 24px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .details-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #232f3e;
+          margin-bottom: 16px;
+        }
+        .details-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 12px;
+        }
+        .detail-item {
+          font-size: 14px;
+          color: #5a6c7d;
+          padding: 8px 0;
+        }
+        .detail-item strong {
+          color: #232f3e;
+        }
+        .security-actions {
+          background: #fff3e0;
+          border-left: 4px solid #f6a23b;
+          padding: 20px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .security-actions h4 {
+          margin: 0 0 12px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #f6a23b;
+        }
+        .security-actions p {
+          margin: 0 0 16px 0;
+          font-size: 14px;
+          color: #232f3e;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        .security-button {
+          background: #1A237E;
+          color: #ffffff;
+          padding: 12px 24px;
+          text-decoration: none;
+          border-radius: 4px;
+          font-weight: 600;
+          font-size: 14px;
+          display: inline-block;
+        }
+        .security-button.danger {
+          background: #d13212;
+        }
+        .security-button.warning {
+          background: #f6a23b;
+        }
+        .security-note {
+          background: #d1fae5;
+          border-left: 4px solid #10b981;
+          padding: 20px;
+          margin: 32px 0;
+          border-radius: 4px;
+        }
+        .security-note h4 {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #065f46;
+        }
+        .security-note p {
+          margin: 0;
+          font-size: 14px;
+          color: #065f46;
+        }
+        .footer {
+          background: #232f3e;
+          color: #aab7b8;
+          padding: 32px 40px;
+          text-align: center;
+          font-size: 14px;
+        }
+        .footer a {
+          color: #f6a23b;
+          text-decoration: none;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="header">
+          <div class="header-icon">🔐</div>
+          <div class="header-title">Security Alert</div>
+          <div class="header-subtitle">New login detected to your account</div>
+        </div>
+
+        <div class="content">
+          <div class="greeting">Hello ${userName}!</div>
+          <div class="main-message">
+            We detected a new login to your Quizzicallabzᴬᴵ account. If this was you, no action is needed.
+            If you don't recognize this activity, please secure your account immediately.
+          </div>
+
+          <div class="security-alert">
+            <div class="alert-icon">🛡️</div>
+            <div class="alert-title">New Login Detected</div>
+            <p style="margin: 0; color: #5a6c7d;">A new device/browser has accessed your account</p>
+          </div>
+
+          <div class="login-details">
+            <div class="details-title">📍 Login Details</div>
+            <div class="details-grid">
+              <div class="detail-item">
+                <strong>Time:</strong> ${new Date(loginData.timestamp).toLocaleString()}
+              </div>
+              <div class="detail-item">
+                <strong>Browser:</strong> ${loginData.browser}
+              </div>
+              <div class="detail-item">
+                <strong>Device:</strong> ${loginData.device}
+              </div>
+              <div class="detail-item">
+                <strong>Location:</strong> ${loginData.location}
+              </div>
+              <div class="detail-item">
+                <strong>IP Address:</strong> ${loginData.ipAddress}
+              </div>
+            </div>
+          </div>
+
+          <div class="security-actions">
+            <h4>⚠️ Don't Recognize This Login?</h4>
+            <p>If you don't recognize this login activity, take these steps immediately:</p>
+            <div class="action-buttons">
+              <a href="https://quizzicallabz.qzz.io/reset-password" class="security-button danger">🔐 Change Password</a>
+              <a href="https://quizzicallabz.qzz.io/profile" class="security-button warning">⚙️ Review Security</a>
+            </div>
+          </div>
+
+          <div class="security-note">
+            <h4>✅ This Was You?</h4>
+            <p>
+              Great! Your account is secure. You can safely ignore this email.
+              This notification helps protect your account from unauthorized access.
+            </p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:security@quizzicallabz.qzz.io">security@quizzicallabz.qzz.io</a></p>
+          <p style="margin: 10px 0; font-size: 12px;">
+            Quizzicallabzᴬᴵ Security Team<br>
+            Protecting your learning journey 24/7
+          </p>
+          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  text: `
+Security Alert: New Login Detected
+
+Hello ${userName}!
+
+We detected a new login to your Quizzicallabzᴬᴵ account. If this was you, no action is needed.
+
+Login Details:
+• Time: ${new Date(loginData.timestamp).toLocaleString()}
+• Browser: ${loginData.browser}
+• Device: ${loginData.device}
+• Location: ${loginData.location}
+• IP Address: ${loginData.ipAddress}
+
+Don't recognize this login?
+• Change Password: https://quizzicallabz.qzz.io/reset-password
+• Review Security: https://quizzicallabz.qzz.io/profile
+
+This was you? Great! Your account is secure.
 
 © ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
   `

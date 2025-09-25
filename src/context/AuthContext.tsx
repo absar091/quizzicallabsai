@@ -86,6 +86,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
 
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
+
+          // Send login notification email for security
+          if (firebaseUser.email && firebaseUser.emailVerified) {
+            console.log('🔐 SENDING LOGIN NOTIFICATION FOR SECURITY');
+
+            try {
+              const idToken = await firebaseUser.getIdToken();
+              const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : 'Server-side Request';
+
+              const response = await fetch('/api/notifications/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  idToken,
+                  userEmail: firebaseUser.email,
+                  userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
+                  userAgent,
+                  // Note: IP address would need to be passed from server-side in production
+                  // For now, we'll let the API handle it
+                })
+              });
+
+              const notificationResult = await response.json();
+              console.log('🔐 Login notification result:', notificationResult);
+
+              if (response.ok && notificationResult.success) {
+                console.log('✅ Login notification sent successfully');
+              } else {
+                console.warn('⚠️ Login notification failed:', notificationResult);
+              }
+            } catch (error: any) {
+              console.warn('⚠️ Login notification error (non-critical):', error.message);
+              // Don't fail the login if notification fails
+            }
+          }
+
           setUser(appUser);
 
           // Trigger welcome notifications for new users (only if email is verified)

@@ -137,10 +137,28 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
 export async function sendPasswordResetEmail(to: string, userName: string, resetLink: string) {
   const { passwordResetEmailTemplate } = await import('./email-templates');
   const template = passwordResetEmailTemplate(userName, resetLink);
-  return sendEmail({ 
-    to, 
-    subject: template.subject, 
-    html: template.html, 
-    text: template.text 
+  return sendEmail({
+    to,
+    subject: template.subject,
+    html: template.html,
+    text: template.text
+  });
+}
+
+export async function sendLoginNotificationEmail(to: string, userName: string, loginData: {
+  timestamp: string;
+  browser: string;
+  device: string;
+  location: string;
+  ipAddress: string;
+  userAgent: string;
+}) {
+  const { loginNotificationEmailTemplate } = await import('./email-templates');
+  const template = loginNotificationEmailTemplate(userName, loginData);
+  return sendEmail({
+    to,
+    subject: template.subject,
+    html: template.html,
+    text: template.text
   });
 }
