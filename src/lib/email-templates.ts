@@ -1,4 +1,4 @@
-// Professional email templates inspired by AWS and NVIDIA
+// New Professional Email Templates with Header/Footer Structure
 
 export const welcomeEmailTemplate = (userName: string, emailDetails: {
   userEmail: string;
@@ -15,375 +15,117 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome to Quizzicallabz AI</title>
       <style>
-        body {
-          font-family: Arial, Helvetica, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          margin: 0;
-          padding: 0;
-          background-color: #f9fafb;
-        }
-        .email-container {
-          max-width: 600px;
-          margin: 0 auto;
-          background: #ffffff;
-        }
+        body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 0; background-color: #f9fafb; }
+        .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; }
         @media only screen and (max-width: 600px) {
-          .email-container {
-            width: 100% !important;
-            margin: 0 !important;
-          }
-          .header {
-            padding: 20px !important;
-          }
-          .content {
-            padding: 20px !important;
-          }
-          .feature-list {
-            padding: 0 !important;
-          }
-          .feature-item {
-            flex-direction: column !important;
-            text-align: center !important;
-          }
-          .feature-icon {
-            margin: 0 0 12px 0 !important;
-          }
-          .action-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-          }
-          .action-card {
-            padding: 16px !important;
-          }
-          .detail-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-          }
-          .cta-button {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            margin-bottom: 8px !important;
-          }
-        }
-        .content {
-          padding: 40px;
-        }
-        .welcome-title {
-          font-size: 24px;
-          font-weight: 700;
-          color: #232f3e;
-          margin-bottom: 16px;
-        }
-        .welcome-text {
-          font-size: 16px;
-          color: #5a6c7d;
-          margin-bottom: 32px;
-        }
-        .feature-section {
-          margin: 32px 0;
-        }
-        .section-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #232f3e;
-          margin-bottom: 20px;
-        }
-        .feature-list {
-          list-style: none;
-          padding: 0;
-        }
-        .feature-item {
-          padding: 16px 0;
-          border-bottom: 1px solid #e9ecef;
-          display: flex;
-          align-items: flex-start;
-        }
-        .feature-item:last-child {
-          border-bottom: none;
-        }
-        .feature-icon {
-          background: #f6a23b;
-          color: white;
-          width: 32px;
-          height: 32px;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 16px;
-          flex-shrink: 0;
-          font-size: 16px;
-        }
-        .feature-content h4 {
-          margin: 0 0 4px 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #232f3e;
-        }
-        .feature-content p {
-          margin: 0;
-          font-size: 14px;
-          color: #5a6c7d;
-        }
-        .cta-section {
-          background: #f7f8fa;
-          padding: 32px;
-          text-align: center;
-          margin: 32px 0;
-          border-radius: 4px;
-        }
-        .cta-button {
-          background: #f6a23b;
-          color: #ffffff;
-          padding: 12px 24px;
-          text-decoration: none;
-          border-radius: 4px;
-          font-weight: 600;
-          font-size: 16px;
-          display: inline-block;
-        }
-        .account-info {
-          background: #f7f8fa;
-          padding: 24px;
-          border-radius: 4px;
-          margin: 32px 0;
-        }
-        .account-info h4 {
-          margin: 0 0 12px 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #232f3e;
-        }
-        .account-details {
-          font-size: 14px;
-          color: #5a6c7d;
-        }
-        .user-details {
-          background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
-          padding: 24px;
-          border-radius: 8px;
-          margin: 24px 0;
-          border-left: 4px solid #1A237E;
-        }
-        .user-details h3 {
-          margin: 0 0 16px 0;
-          font-size: 18px;
-          font-weight: 600;
-          color: #1A237E;
-        }
-        .detail-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 12px;
-        }
-        .detail-item {
-          font-size: 14px;
-          color: #5a6c7d;
-          padding: 8px 0;
-        }
-        .detail-item strong {
-          color: #232f3e;
-        }
-        .action-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 16px;
-          margin: 32px 0;
-        }
-        .action-card {
-          background: #ffffff;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          padding: 20px;
-          text-align: center;
-          transition: all 0.3s ease;
-        }
-        .action-card:hover {
-          border-color: #1A237E;
-          box-shadow: 0 4px 12px rgba(26, 35, 126, 0.1);
-        }
-        .action-icon {
-          font-size: 32px;
-          margin-bottom: 12px;
-        }
-        .action-title {
-          font-size: 16px;
-          font-weight: 600;
-          color: #232f3e;
-          margin-bottom: 8px;
-        }
-        .action-desc {
-          font-size: 13px;
-          color: #5a6c7d;
-          margin-bottom: 16px;
-        }
-        .action-btn {
-          background: #1A237E;
-          color: #ffffff;
-          padding: 10px 20px;
-          text-decoration: none;
-          border-radius: 6px;
-          font-weight: 500;
-          font-size: 14px;
-          display: inline-block;
-          transition: background 0.3s ease;
-        }
-        .action-btn:hover {
-          background: #0d1b69;
-        }
-        .action-btn.secondary {
-          background: #f6a23b;
-        }
-        .action-btn.secondary:hover {
-          background: #e8941a;
-        }
-        .footer {
-          background: #232f3e;
-          color: #aab7b8;
-          padding: 32px 40px;
-          text-align: center;
-          font-size: 14px;
-        }
-        .footer a {
-          color: #f6a23b;
-          text-decoration: none;
+          .email-container { width: 100% !important; margin: 0 !important; }
+          .header-table td { padding: 10px !important; }
+          .content { padding: 20px !important; }
+          .footer-table td { padding: 15px !important; }
         }
       </style>
     </head>
     <body>
       <div class="email-container">
-        <div class="header">
-          <div class="logo-container">
-            <img src="https://quizzicallabz.qzz.io/logo.png" alt="Quizzicallabz AI" class="logo-image">
-          </div>
-          <div class="header-title">Quizzicallabzᴬᴵ</div>
-          <div class="header-subtitle">Intelligent Learning • Powered by AI • Built for Success</div>
-        </div>
-        
-        <div class="content">
-          <h1 class="welcome-title">Hello ${userName}, Welcome to the Future of Learning!</h1>
-          <p class="welcome-text">
-            We're thrilled to have you join Quizzicallabzᴬᴵ! Your journey to smarter, faster learning starts now. 
-            Our AI-powered platform is designed to adapt to your learning style and help you achieve your academic goals.
-          </p>
-          
-          <div class="user-details">
-            <h3>Your Account Details</h3>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <strong>Email:</strong> ${emailDetails.userEmail}
-              </div>
-              <div class="detail-item">
-                <strong>Plan:</strong> ${emailDetails.accountType || 'Free'} Account
-              </div>
-              <div class="detail-item">
-                <strong>Joined:</strong> ${emailDetails.signUpDate || new Date().toLocaleDateString()}
-              </div>
-              <div class="detail-item">
-                <strong>Language:</strong> ${emailDetails.preferredLanguage || 'English'}
-              </div>
-            </div>
-          </div>
-          
-          <div class="feature-section">
-            <h2 class="section-title">Get started with these features</h2>
-            <ul class="feature-list">
-              <li class="feature-item">
-                <div class="feature-icon"></div>
-                <div class="feature-content">
-                  <h4>Smart Quiz Generation</h4>
-                  <p>Create personalized quizzes from any topic or document using advanced AI</p>
-                </div>
-              </li>
-              <li class="feature-item">
-                <div class="feature-icon"></div>
-                <div class="feature-content">
-                  <h4>Progress Tracking</h4>
-                  <p>Monitor your learning progress with detailed analytics and insights</p>
-                </div>
-              </li>
-              <li class="feature-item">
-                <div class="feature-icon"></div>
-                <div class="feature-content">
-                  <h4>AI Explanations</h4>
-                  <p>Get instant, detailed explanations for every question</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-          
-          <div class="action-grid">
-            <div class="action-card">
-              <div class="action-icon"></div>
-              <div class="action-title">Start Learning</div>
-              <div class="action-desc">Create your first AI-powered quiz</div>
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="action-btn">Generate Quiz</a>
-            </div>
-            <div class="action-card">
-              <div class="action-icon"></div>
-              <div class="action-title">View Dashboard</div>
-              <div class="action-desc">Track your progress and analytics</div>
-              <a href="https://quizzicallabz.qzz.io/dashboard" class="action-btn">Open Dashboard</a>
-            </div>
-            <div class="action-card">
-              <div class="action-icon"></div>
-              <div class="action-title">Explore Features</div>
-              <div class="action-desc">Discover all AI learning tools</div>
-              <a href="https://quizzicallabz.qzz.io/how-to-use" class="action-btn secondary">Learn More</a>
-            </div>
-          </div>
-          
-          <div class="account-info">
-            <h4>Account Information</h4>
-            <div class="account-details">
-              <strong>Email:</strong> ${emailDetails.userEmail}<br>
-              <strong>Plan:</strong> ${emailDetails.accountType || 'Free'}<br>
-              <strong>Joined:</strong> ${emailDetails.signUpDate || new Date().toLocaleDateString()}
-            </div>
-          </div>
-        </div>
-        
-        <div class="footer">
-          <div style="margin-bottom: 20px;">
-            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/how-to-use" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Help Center</a>
-            <a href="https://quizzicallabz.qzz.io/quiz-arena" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Quiz Arena</a>
-            <a href="https://quizzicallabz.qzz.io/profile" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Account Settings</a>
-          </div>
-          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
-          <p style="margin: 10px 0; font-size: 12px; color: #aab7b8;">
-            Quizzicallabzᴬᴵ - Intelligent Learning Platform<br>
-            Powered by Advanced AI • Trusted by Students Worldwide
-          </p>
-          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
-        </div>
+        <!-- HEADER START -->
+        <tr>
+          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <!-- Logo -->
+                <td align="left">
+                  <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
+                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
+                  </a>
+                </td>
+                <!-- App Name + Tagline -->
+                <td align="right" style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;">
+                  <strong style="font-size:16px;color:#4f46e5;">Quizzicallabzᴬᴵ</strong><br>
+                  <span style="color:#6b7280;">Your ultimate AI-powered study partner</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- HEADER END -->
+
+        <tr>
+          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;">
+            <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
+              Welcome to Quizzicallabzᴬᴵ
+            </h2>
+            <p style="margin:0 0 20px;">Hello <strong>${userName}</strong>,</p>
+            <p style="margin:0 0 20px;">
+              Your account has been successfully created with the <strong>${emailDetails.accountType || 'Free'}</strong> plan.
+              Below are your account details:
+            </p>
+
+            <!-- Info Card -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0;font-size:14px;"><strong>Username:</strong> ${userName}</p>
+                <p style="margin:0;font-size:14px;"><strong>Email:</strong> ${emailDetails.userEmail}</p>
+                <p style="margin:0;font-size:14px;"><strong>Plan:</strong> ${emailDetails.accountType || 'Free'}</p>
+                <p style="margin:0;font-size:14px;"><strong>Signup Date:</strong> ${emailDetails.signUpDate || new Date().toLocaleDateString()}</p>
+              </td></tr>
+            </table>
+
+            <!-- Buttons -->
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">View Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">Access Gen Lab</a>
+            <a href="https://quizzicallabz.qzz.io/exam-prep" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;">Start Exam Prep</a>
+          </td>
+        </tr>
+
+        <!-- FOOTER START -->
+        <tr>
+          <td style="padding:30px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;text-align:center;border-top:1px solid #e5e7eb;">
+
+            <!-- Legal & Branding -->
+            <p style="margin:0 0 10px;">
+              © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
+              <em>Quizzicallabzᴬᴵ® is a registered product.</em>
+            </p>
+
+            <!-- Links -->
+            <p style="margin:0 0 10px;">
+              <a href="https://quizzicallabz.qzz.io/privacy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a> · 
+              <a href="https://quizzicallabz.qzz.io/terms" style="color:#4f46e5;text-decoration:none;">Terms of Use</a> · 
+              <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
+            </p>
+
+            <!-- Contact Info -->
+            <p style="margin:0;">
+              Vehari, Punjab, Pakistan<br>
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> · 
+              <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
+            </p>
+          </td>
+        </tr>
+        <!-- FOOTER END -->
       </div>
     </body>
     </html>
   `,
   text: `
-Welcome to Quizzicallabs AI
+Welcome to Quizzicallabz AI
 
 Hello ${userName},
 
-Thank you for joining Quizzicallabs AI! We're excited to help you accelerate your learning with AI-powered study tools.
+Your account has been successfully created with the ${emailDetails.accountType || 'Free'} plan.
 
-Get started with these features:
-• Smart Quiz Generation - Create personalized quizzes from any topic
-• Progress Tracking - Monitor your learning progress with detailed analytics  
-• AI Explanations - Get instant, detailed explanations for every question
+Account Details:
+• Username: ${userName}
+• Email: ${emailDetails.userEmail}
+• Plan: ${emailDetails.accountType || 'Free'}
+• Signup Date: ${emailDetails.signUpDate || new Date().toLocaleDateString()}
 
-Ready to get started? Visit: https://quizzicallabz.qzz.io/dashboard
+Get started:
+• View Dashboard: https://quizzicallabz.qzz.io/dashboard
+• Access Gen Lab: https://quizzicallabz.qzz.io/generate-quiz
+• Start Exam Prep: https://quizzicallabz.qzz.io/exam-prep
 
-Account Information:
-Email: ${emailDetails.userEmail}
-Plan: ${emailDetails.accountType || 'Free'}
-Joined: ${emailDetails.signUpDate || new Date().toLocaleDateString()}
-
-Need help? Visit our Help Center: https://quizzicallabz.qzz.io/how-to-use
-
-© ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
+© 2025 Quizzicallabz AI. All rights reserved.
   `
 });
 
