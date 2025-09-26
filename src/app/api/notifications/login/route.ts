@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendEmail } from '@/lib/email';
-import { loginNotificationEmailTemplate } from '@/lib/email-templates';
+import { sendLoginNotificationEmail } from '@/lib/email';
 import { loginCredentialsManager } from '@/lib/login-credentials';
 import { detectDeviceInfo, DeviceInfo } from '@/lib/device-detection';
 import { auth } from '@/lib/firebase-admin';
@@ -55,27 +54,16 @@ export async function POST(request: NextRequest) {
 
       // Prepare login data for email
       const loginData = {
+        timestamp: new Date(deviceInfo.timestamp).toISOString(),
+        browser: deviceInfo.browser,
         device: deviceInfo.device,
-        location: deviceInfo.location,
+        location: `${deviceInfo.city}, ${deviceInfo.region}, ${deviceInfo.country}`,
         ipAddress: deviceInfo.ip,
-        time: new Date(deviceInfo.timestamp).toLocaleString()
+        userAgent: userAgent || 'Unknown'
       };
 
-      // Send login notification email
-      const emailResult = await sendEmail({
-        to: userEmail,
-        subject: loginNotificationEmailTemplate(userName, loginData).subject,
-        html: loginNotificationEmailTemplate(userName, loginData).html,
-        text: loginNotificationEmailTemplate(userName, loginData).text,
-      });
-
-      if (!emailResult.success) {
-        console.error('Failed to send login notification email:', emailResult);
-        return NextResponse.json(
-          { success: false, error: 'Failed to send notification email' },
-          { status: 500 }
-        );
-      }
+      // Send login notification email using the fixed function
+      const emailResult = await sendLoginNotificationEmail(userEmail, userName, loginData);
 
       console.log('✅ Login notification sent successfully for untrusted device');
     } else {
