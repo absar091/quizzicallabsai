@@ -254,8 +254,6 @@ Get started:
   `
 });
 
-
-
 export const quizResultEmailTemplate = (userName: string, quizData: {
   topic: string;
   score: number;
@@ -485,7 +483,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           <div class="header-title">Quiz Complete!</div>
           <div class="header-subtitle">${quizData.topic} • ${new Date().toLocaleDateString()}</div>
         </div>
-        
+
         <div class="content">
           <div class="congratulations">
             <h2 class="congrats-title">Hello ${userName}, here's your detailed performance analysis!</h2>
@@ -496,7 +494,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
                 quizData.percentage >= 60 ? 'Making progress! Keep building momentum' :
                 'Learning opportunity! Every expert was once a beginner'}
             </div>
-            
+
             <div class="ai-insights">
               <h3>AI Performance Insights</h3>
               <div class="insight-text">
@@ -512,7 +510,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
               </div>
             </div>
           </div>
-          
+
           <div class="results-grid">
             <div class="result-card">
               <span class="result-number">${quizData.score}/${quizData.total}</span>
@@ -529,7 +527,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             </div>
             ` : ''}
           </div>
-          
+
           <div class="action-section">
             <div class="action-title">Continue Your Learning Journey</div>
             <p style="margin: 0 0 20px 0; color: #5a6c7d;">Choose your next step to accelerate your progress</p>
@@ -540,15 +538,15 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
               <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button secondary"> Quiz Arena</a>
             </div>
           </div>
-          
+
           <div class="study-tip">
             <h4>${quizData.percentage >= 80 ? 'Keep the momentum going! Study Recommendation' : 'Study Recommendation'}</h4>
-            <p>${quizData.percentage >= 80 ? 
-              'Excellent performance! Consider challenging yourself with more advanced topics.' : 
+            <p>${quizData.percentage >= 80 ?
+              'Excellent performance! Consider challenging yourself with more advanced topics.' :
               'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}</p>
           </div>
         </div>
-        
+
         <div class="footer">
           <div style="margin-bottom: 20px;">
             <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">📊 Dashboard</a>
@@ -581,8 +579,8 @@ Results:
 ${quizData.timeTaken ? `• Time: ${Math.floor(quizData.timeTaken / 60)}:${String(quizData.timeTaken % 60).padStart(2, '0')}` : ''}
 • Date: ${quizData.date || new Date().toLocaleDateString()}
 
-${quizData.percentage >= 80 ? 
-  'Excellent performance! Consider challenging yourself with more advanced topics.' : 
+${quizData.percentage >= 80 ?
+  'Excellent performance! Consider challenging yourself with more advanced topics.' :
   'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}
 
 View Dashboard: https://quizzicallabz.qzz.io/dashboard
@@ -591,478 +589,6 @@ Take Another Quiz: https://quizzicallabz.qzz.io/generate-quiz
 © ${new Date().getFullYear()} Quizzicallabs AI. All rights reserved.
   `
 });
-
-export const emailVerificationTemplate = (userName: string, verificationLink: string, continueUrl?: string) => {
-  // Ensure the verification link includes continueUrl parameter
-  const fullVerificationLink = continueUrl
-    ? `${verificationLink}${verificationLink.includes('?') ? '&' : '?'}continueUrl=${encodeURIComponent(continueUrl)}`
-    : verificationLink;
-
-  return {
-    subject: ` Verify Your Email - Complete Your Quizzicallabzᴬᴵ Registration`,
-    html: `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verify Your Email</title>
-        <style>
-          body {
-            font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
-            line-height: 1.6;
-            color: #232f3e;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f8fa;
-          }
-          .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-          }
-        .header {
-          background: #1A237E;
-          padding: 32px 40px;
-          text-align: center;
-          color: white;
-        }
-        .header-title {
-          font-size: 24px;
-          font-weight: 600;
-          margin-bottom: 4px;
-        }
-        .header-subtitle {
-          font-size: 16px;
-          opacity: 0.9;
-        }
-        @media only screen and (max-width: 600px) {
-          .email-container {
-            width: 100% !important;
-            margin: 0 !important;
-          }
-          .header {
-            padding: 20px !important;
-          }
-          .content {
-            padding: 20px !important;
-          }
-          .results-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-          }
-          .result-card {
-            padding: 16px !important;
-          }
-          .action-section {
-            padding: 20px !important;
-          }
-          .action-buttons {
-            flex-direction: column !important;
-          }
-          .cta-button {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            margin-bottom: 8px !important;
-          }
-          .study-tip {
-            padding: 16px !important;
-            margin: 20px 0 !important;
-          }
-          .ai-insights {
-            padding: 16px !important;
-            margin: 16px 0 !important;
-          }
-        }
-          .header-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-          }
-          .content {
-            padding: 40px;
-          }
-          .greeting {
-            font-size: 20px;
-            font-weight: 600;
-            color: #232f3e;
-            margin-bottom: 16px;
-          }
-          .main-message {
-            font-size: 16px;
-            color: #5a6c7d;
-            margin-bottom: 32px;
-            line-height: 1.6;
-          }
-          .verification-section {
-            background: linear-gradient(135deg, #f0f3fb 0%, #ffffff 100%);
-            border: 2px solid #1A237E;
-            border-radius: 12px;
-            padding: 32px;
-            text-align: center;
-            margin: 32px 0;
-          }
-          .verification-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1A237E;
-            margin-bottom: 16px;
-          }
-          .verify-button {
-            background: #1A237E;
-            color: #ffffff;
-            padding: 16px 32px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            display: inline-block;
-            margin: 16px 0;
-            transition: background 0.3s ease;
-          }
-          .verify-button:hover {
-            background: #0d1b69;
-          }
-          .continue-section {
-            background: linear-gradient(135deg, #d1fae5 0%, #ffffff 100%);
-            border: 2px solid #10b981;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            margin: 32px 0;
-          }
-          .continue-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #065f46;
-            margin-bottom: 12px;
-          }
-          .continue-button {
-            background: #10b981;
-            color: #ffffff;
-            padding: 14px 28px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            display: inline-block;
-            margin: 12px 0;
-            transition: background 0.3s ease;
-          }
-          .continue-button:hover {
-            background: #059669;
-          }
-          .security-note {
-            background: #fff3e0;
-            border-left: 4px solid #f6a23b;
-            padding: 20px;
-            margin: 32px 0;
-            border-radius: 4px;
-          }
-          .security-note h4 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #f6a23b;
-          }
-          .security-note p {
-            margin: 0;
-            font-size: 14px;
-            color: #232f3e;
-          }
-          .footer {
-            background: #232f3e;
-            color: #aab7b8;
-            padding: 32px 40px;
-            text-align: center;
-            font-size: 14px;
-          }
-          .footer a {
-            color: #f6a23b;
-            text-decoration: none;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <div class="header">
-            <div class="header-icon"></div>
-            <div class="header-title">Verify Your Email</div>
-            <div class="header-subtitle">One more step to unlock your AI learning journey</div>
-          </div>
-
-          <div class="content">
-            <div class="greeting">Hello ${userName}!</div>
-            <div class="main-message">
-              Welcome to Quizzicallabzᴬᴵ! To complete your registration and start your AI-powered learning journey,
-              please verify your email address by clicking the button below.
-            </div>
-
-            <div class="verification-section">
-              <div class="verification-title"> Activate Your Account</div>
-              <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to verify your email and unlock all features</p>
-              <a href="${fullVerificationLink}" class="verify-button">
-                ✅ Verify My Email Address
-              </a>
-              <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
-                This link will expire in 24 hours for security reasons
-              </p>
-            </div>
-
-            ${continueUrl ? `
-            <div class="continue-section">
-              <div class="continue-title"> After Verification</div>
-              <p style="margin: 0 0 16px 0; color: #065f46; font-size: 14px;">
-                Once verified, you'll be automatically redirected to continue your learning journey!
-              </p>
-              <a href="${continueUrl}" class="continue-button">
-                 Continue to Dashboard
-              </a>
-            </div>
-            ` : ''}
-
-            <div class="security-note">
-              <h4> Security Notice</h4>
-              <p>
-                If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email.
-                Your email address will not be added to our system without verification.
-              </p>
-            </div>
-
-            <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
-              <h4 style="margin: 0 0 12px 0; color: #232f3e;">Having trouble with the button?</h4>
-              <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
-                Copy and paste this link into your browser:<br>
-                <a href="${fullVerificationLink}" style="color: #1A237E; word-break: break-all;">${fullVerificationLink}</a>
-              </p>
-            </div>
-          </div>
-
-          <div class="footer">
-            <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
-            <p style="margin: 10px 0; font-size: 12px;">
-              Quizzicallabzᴬᴵ - Intelligent Learning Platform<br>
-              Secure • Trusted • AI-Powered
-            </p>
-            <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `,
-    text: `
-Verify Your Email - Quizzicallabzᴬᴵ
-
-Hello ${userName}!
-
-Welcome to Quizzicallabzᴬᴵ! To complete your registration and start your AI-powered learning journey, please verify your email address.
-
-Verification Link: ${fullVerificationLink}
-
-${continueUrl ? `After verification, you'll be redirected to: ${continueUrl}` : ''}
-
-This link will expire in 24 hours for security reasons.
-
-If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email.
-
-Having trouble? Contact us at support@quizzicallabz.qzz.io
-
-© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
-    `
-  };
-};
-
-export const passwordResetEmailTemplate = (userName: string, resetLink: string) => ({
-  subject: ` Reset Your Quizzicallabzᴬᴵ Password - Secure Access Restoration`,
-  html: `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Reset Your Password</title>
-      <style>
-        body {
-          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
-          line-height: 1.6;
-          color: #232f3e;
-          margin: 0;
-          padding: 0;
-          background-color: #f7f8fa;
-        }
-        .email-container {
-          max-width: 600px;
-          margin: 0 auto;
-          background: #ffffff;
-        }
-        .header {
-          background: #d13212;
-          padding: 32px 40px;
-          text-align: center;
-          color: white;
-        }
-        .header-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
-        }
-        .header-title {
-          font-size: 28px;
-          font-weight: 700;
-          margin-bottom: 8px;
-        }
-        .header-subtitle {
-          font-size: 16px;
-          opacity: 0.9;
-        }
-        .content {
-          padding: 40px;
-        }
-        .greeting {
-          font-size: 20px;
-          font-weight: 600;
-          color: #232f3e;
-          margin-bottom: 16px;
-        }
-        .main-message {
-          font-size: 16px;
-          color: #5a6c7d;
-          margin-bottom: 32px;
-          line-height: 1.6;
-        }
-        .reset-section {
-          background: linear-gradient(135deg, #fff3e0 0%, #ffffff 100%);
-          border: 2px solid #d13212;
-          border-radius: 12px;
-          padding: 32px;
-          text-align: center;
-          margin: 32px 0;
-        }
-        .reset-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #d13212;
-          margin-bottom: 16px;
-        }
-        .reset-button {
-          background: #d13212;
-          color: #ffffff;
-          padding: 16px 32px;
-          text-decoration: none;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 16px;
-          display: inline-block;
-          margin: 16px 0;
-          transition: background 0.3s ease;
-        }
-        .reset-button:hover {
-          background: #b12a0c;
-        }
-        .security-warning {
-          background: #fff3cd;
-          border-left: 4px solid #f6a23b;
-          padding: 20px;
-          margin: 32px 0;
-          border-radius: 4px;
-        }
-        .security-warning h4 {
-          margin: 0 0 8px 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #f6a23b;
-        }
-        .security-warning p {
-          margin: 0;
-          font-size: 14px;
-          color: #232f3e;
-        }
-        .footer {
-          background: #232f3e;
-          color: #aab7b8;
-          padding: 32px 40px;
-          text-align: center;
-          font-size: 14px;
-        }
-        .footer a {
-          color: #f6a23b;
-          text-decoration: none;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="email-container">
-        <div class="header">
-          <div class="header-icon"></div>
-          <div class="header-title">Password Reset Request</div>
-          <div class="header-subtitle">Secure your Quizzicallabzᴬᴵ account</div>
-        </div>
-        
-        <div class="content">
-          <div class="greeting">Hello ${userName}!</div>
-          <div class="main-message">
-            We received a request to reset your password for your Quizzicallabzᴬᴵ account. 
-            If you made this request, click the button below to create a new password.
-          </div>
-          
-          <div class="reset-section">
-            <div class="reset-title"> Reset Your Password</div>
-            <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to set a new password</p>
-            <a href="${resetLink}" class="reset-button">
-               Reset Password
-            </a>
-            <p style="margin: 20px 0 0 0; font-size: 12px; color: #5a6c7d;">
-              This link will expire in 1 hour for security reasons
-            </p>
-          </div>
-          
-          <div class="security-warning">
-            <h4> Security Notice</h4>
-            <p>
-              If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
-              For security, consider changing your password if you suspect unauthorized access.
-            </p>
-          </div>
-          
-          <div style="margin: 32px 0; padding: 20px; background: #f7f8fa; border-radius: 8px;">
-            <h4 style="margin: 0 0 12px 0; color: #232f3e;">Can't click the button?</h4>
-            <p style="margin: 0; font-size: 14px; color: #5a6c7d;">
-              Copy and paste this link into your browser:<br>
-              <a href="${resetLink}" style="color: #d13212; word-break: break-all;">${resetLink}</a>
-            </p>
-          </div>
-        </div>
-        
-        <div class="footer">
-          <p style="margin: 10px 0;">Need help? Contact us at <a href="mailto:support@quizzicallabz.qzz.io">support@quizzicallabz.qzz.io</a></p>
-          <p style="margin: 10px 0; font-size: 12px;">
-            Quizzicallabzᴬᴵ Security Team<br>
-            This is an automated security email
-          </p>
-          <p style="margin: 10px 0; font-size: 12px;">© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `,
-  text: `
-Password Reset Request - Quizzicallabzᴬᴵ
-
-Hello ${userName}!
-
-We received a request to reset your password for your Quizzicallabzᴬᴵ account.
-
-Reset Link: ${resetLink}
-
-This link will expire in 1 hour for security reasons.
-
-If you didn't request a password reset, please ignore this email.
-
-Need help? Contact us at support@quizzicallabz.qzz.io
-
-© ${new Date().getFullYear()} Quizzicallabzᴬᴵ. All rights reserved.
-  `
-});
-
-
 
 export const studyReminderEmailTemplate = (userName: string) => ({
   subject: ` ${userName}, your AI learning session awaits - Let's boost your knowledge!`,
@@ -1278,23 +804,23 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           <div class="header-title">Hello ${userName}!</div>
           <div class="header-subtitle">Your personalized AI learning session is ready</div>
         </div>
-        
+
         <div class="content">
           <div class="greeting">Ready to level up your knowledge, ${userName}?</div>
           <div class="main-message">
             Your AI-powered learning session is ready! Our research shows that students who maintain consistent study habits with Quizzicallabzᴬᴵ improve their performance by 40% faster than traditional methods.
           </div>
-          
+
           <div class="ai-recommendation">
             <h3>AI Recommendation for You</h3>
             <p>Based on your learning patterns, we suggest a 15-20 minute focused session today. This optimal duration maximizes retention while preventing cognitive overload.</p>
           </div>
-          
+
           <div class="quote-section">
             <div class="quote-text">"Success is the sum of small efforts repeated day in and day out."</div>
             <div class="quote-author">— Robert Collier</div>
           </div>
-          
+
           <div class="activities-section">
             <div class="section-title">Choose your learning activity</div>
             <div class="activity-grid">
@@ -1315,7 +841,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
               </div>
             </div>
           </div>
-          
+
           <div class="cta-section">
             <div class="cta-title">Choose Your Learning Path</div>
             <div class="action-buttons">
@@ -1325,7 +851,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
               <a href="https://quizzicallabz.qzz.io/review" class="cta-button secondary"> Review Mode</a>
             </div>
           </div>
-          
+
           <div class="tips-section">
             <div class="tips-title"> Study Streak Tips</div>
             <ul class="tips-list">
@@ -1337,7 +863,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
             </ul>
           </div>
         </div>
-        
+
         <div class="footer">
           <div style="margin-bottom: 20px;">
             <a href="https://quizzicallabz.qzz.io/generate-quiz" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Start Quiz</a>
@@ -1366,7 +892,7 @@ It's time for your daily learning session. Research shows that consistent, focus
 
 Choose your learning activity:
 • Take a Quiz - Test your knowledge on any topic
-• Review Flashcards - Reinforce key concepts  
+• Review Flashcards - Reinforce key concepts
 • Check Progress - See your learning analytics
 
 Ready to learn?
