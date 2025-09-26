@@ -3,10 +3,10 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useState, useMemo, useEffect, useCallback } from "react";
-import { 
-    onAuthStateChanged, 
-    signOut as firebaseSignOut, 
-    deleteUser, 
+import {
+    onAuthStateChanged,
+    signOut as firebaseSignOut,
+    deleteUser,
     type User as FirebaseUser,
     GoogleAuthProvider,
     signInWithPopup
@@ -16,6 +16,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { clearUserData } from "@/lib/indexed-db";
 import { ref, get, set } from "firebase/database";
 import { syncUserData } from "@/lib/cloud-sync";
+import { loginCredentialsManager } from "@/lib/login-credentials";
+import { detectDeviceInfo } from "@/lib/device-detection";
 
 export type UserPlan = "Free" | "Pro";
 
@@ -88,40 +90,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           console.log('✅ SETTING USER WITH PLAN:', appUser.email, 'Plan:', appUser.plan);
 
-          // Send login notification email for security - ONLY ONCE PER SESSION
-          if (firebaseUser.email && firebaseUser.emailVerified && !hasSentLoginNotification) {
-            console.log('🔐 SENDING LOGIN NOTIFICATION FOR SECURITY (FIRST TIME)');
-
+          // SMART LOGIN NOTIFICATION - Only send when credentials don't match trusted devices
+          if (firebaseUser.email && firebaseUser.emailVerified) {
             try {
-              const idToken = await firebaseUser.getIdToken();
+              // Detect device information
               const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : 'Server-side Request';
+              const deviceInfo = await detectDeviceInfo(userAgent);
 
-              const response = await fetch('/api/notifications/login', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  idToken,
-                  userEmail: firebaseUser.email,
-                  userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
-                  userAgent,
-                  // Note: IP address will be captured server-side
-                })
-              });
+              // Check if we should send notification (only for untrusted devices)
+              const shouldNotify = await loginCredentialsManager.shouldSendNotification(firebaseUser.uid, deviceInfo);
 
-              const notificationResult = await response.json();
-              console.log('🔐 Login notification result:', notificationResult);
+              if (shouldNotify) {
+                console.log('🔐 SENDING LOGIN NOTIFICATION - UNTRUSTED DEVICE DETECTED');
 
-              if (response.ok && notificationResult.success) {
-                console.log('✅ Login notification sent successfully');
-                setHasSentLoginNotification(true); // Mark as sent for this session
+                const idToken = await firebaseUser.getIdToken();
+
+                const response = await fetch('/api/notifications/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    idToken,
+                    userEmail: firebaseUser.email,
+                    userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
+                    deviceInfo,
+                  })
+                });
+
+                const notificationResult = await response.json();
+                console.log('🔐 Login notification result:', notificationResult);
+
+                if (response.ok && notificationResult.success) {
+                  console.log('✅ Login notification sent successfully for untrusted device');
+                } else {
+                  console.warn('⚠️ Login notification failed:', notificationResult);
+                }
               } else {
-                console.warn('⚠️ Login notification failed:', notificationResult);
+                console.log('✅ TRUSTED DEVICE DETECTED - No notification needed');
               }
+
+              // Always store/update login credentials (for both trusted and untrusted devices)
+              await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
+              console.log('✅ Login credentials stored/updated');
+
             } catch (error: any) {
-              console.warn('⚠️ Login notification error (non-critical):', error.message);
-              // Don't fail the login if notification fails
+              console.warn('⚠️ Login credentials error (non-critical):', error.message);
+              // Don't fail the login if credential storage fails
             }
           }
 

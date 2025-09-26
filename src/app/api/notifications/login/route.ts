@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendLoginNotificationEmail } from '@/lib/email';
-import { getDeviceInfo, getUserAgent } from '@/lib/device-detection';
+import { sendEmail } from '@/lib/email';
+import { loginNotificationEmailTemplate } from '@/lib/email-templates';
+import { loginCredentialsManager } from '@/lib/login-credentials';
+import { detectDeviceInfo, DeviceInfo } from '@/lib/device-detection';
 import { auth } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
@@ -43,48 +45,62 @@ export async function POST(request: NextRequest) {
     }
 
     // Get device information with real IP
-    const deviceInfo = await getDeviceInfo(userAgent || getUserAgent(), ipAddress);
+    const deviceInfo = await detectDeviceInfo(userAgent || 'Server-side Request', ipAddress);
 
-    // Prepare login data for email
-    const loginData = {
-      timestamp: deviceInfo.timestamp,
-      browser: deviceInfo.browser,
-      device: deviceInfo.device,
-      location: deviceInfo.location || 'Unknown',
-      ipAddress: deviceInfo.ipAddress || 'Unknown',
-      userAgent: deviceInfo.userAgent
-    };
+    // Check if we should send notification (only for untrusted devices)
+    const shouldNotify = await loginCredentialsManager.shouldSendNotification(decodedToken.uid, deviceInfo);
 
-    // Send login notification email
-    try {
-      await sendLoginNotificationEmail(userEmail, userName, loginData);
+    if (shouldNotify) {
+      console.log('🔐 SENDING LOGIN NOTIFICATION - UNTRUSTED DEVICE DETECTED');
 
-      return NextResponse.json({
-        success: true,
-        message: 'Login notification sent successfully',
-        loginData: {
-          timestamp: loginData.timestamp,
-          browser: loginData.browser,
-          device: loginData.device,
-          location: loginData.location
-        }
+      // Prepare login data for email
+      const loginData = {
+        device: deviceInfo.device,
+        location: deviceInfo.location,
+        ipAddress: deviceInfo.ip,
+        time: new Date(deviceInfo.timestamp).toLocaleString()
+      };
+
+      // Send login notification email
+      const emailResult = await sendEmail({
+        to: userEmail,
+        subject: loginNotificationEmailTemplate(userName, loginData).subject,
+        html: loginNotificationEmailTemplate(userName, loginData).html,
+        text: loginNotificationEmailTemplate(userName, loginData).text,
       });
-    } catch (emailError: any) {
-      console.error('Failed to send login notification email:', emailError);
 
-      // Don't fail the login if email fails, just log it
-      return NextResponse.json({
-        success: true,
-        message: 'Login successful but notification email failed',
-        warning: 'Email notification could not be sent',
-        loginData: {
-          timestamp: loginData.timestamp,
-          browser: loginData.browser,
-          device: loginData.device,
-          location: loginData.location
-        }
-      });
+      if (!emailResult.success) {
+        console.error('Failed to send login notification email:', emailResult);
+        return NextResponse.json(
+          { success: false, error: 'Failed to send notification email' },
+          { status: 500 }
+        );
+      }
+
+      console.log('✅ Login notification sent successfully for untrusted device');
+    } else {
+      console.log('✅ TRUSTED DEVICE DETECTED - No notification needed');
     }
+
+    // Always store/update login credentials
+    await loginCredentialsManager.storeLoginCredentials(decodedToken.uid, deviceInfo);
+    console.log('✅ Login credentials stored/updated');
+
+    return NextResponse.json({
+      success: true,
+      message: shouldNotify ? 'Login notification sent successfully' : 'Trusted device - no notification needed',
+      deviceInfo: {
+        device: deviceInfo.device,
+        browser: deviceInfo.browser,
+        os: deviceInfo.os,
+        location: deviceInfo.location,
+        ip: deviceInfo.ip,
+        country: deviceInfo.country,
+        city: deviceInfo.city,
+        region: deviceInfo.region,
+        timezone: deviceInfo.timezone
+      }
+    });
 
   } catch (error: any) {
     console.error('Login notification API error:', error);
