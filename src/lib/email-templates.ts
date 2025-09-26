@@ -16,36 +16,17 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
       <title>Welcome to Quizzicallabz AI</title>
       <style>
         body {
-          font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+          font-family: Arial, Helvetica, sans-serif;
           line-height: 1.6;
-          color: #232f3e;
+          color: #333;
           margin: 0;
           padding: 0;
-          background-color: #f7f8fa;
+          background-color: #f9fafb;
         }
         .email-container {
           max-width: 600px;
           margin: 0 auto;
           background: #ffffff;
-        }
-        .header {
-          background: #1A237E;
-          padding: 32px 40px;
-          text-align: center;
-          color: white;
-        }
-        .header-title {
-          color: #ffffff;
-          font-size: 32px;
-          font-weight: 700;
-          margin-bottom: 8px;
-          letter-spacing: -0.5px;
-        }
-        .header-subtitle {
-          color: #ffffff;
-          font-size: 18px;
-          font-weight: 300;
-          opacity: 0.9;
         }
         @media only screen and (max-width: 600px) {
           .email-container {
@@ -1709,7 +1690,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           </div>
           
           <div class="ai-recommendation">
-            <h3>🤖 AI Recommendation for You</h3>
+            <h3>AI Recommendation for You</h3>
             <p>Based on your learning patterns, we suggest a 15-20 minute focused session today. This optimal duration maximizes retention while preventing cognitive overload.</p>
           </div>
           
