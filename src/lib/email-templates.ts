@@ -273,6 +273,9 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     <body>
       <div class="email-container">
         <div class="header">
+          <div class="logo-container">
+            <img src="https://quizzicallabz.qzz.io/logo.png" alt="Quizzicallabz AI" class="logo-image">
+          </div>
           <div class="header-title">Quizzicallabzᴬᴵ</div>
           <div class="header-subtitle">Intelligent Learning • Powered by AI • Built for Success</div>
         </div>
@@ -306,14 +309,14 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             <h2 class="section-title">Get started with these features</h2>
             <ul class="feature-list">
               <li class="feature-item">
-                <div class="feature-icon">🎯</div>
+                <div class="feature-icon"></div>
                 <div class="feature-content">
                   <h4>Smart Quiz Generation</h4>
                   <p>Create personalized quizzes from any topic or document using advanced AI</p>
                 </div>
               </li>
               <li class="feature-item">
-                <div class="feature-icon">📊</div>
+                <div class="feature-icon"></div>
                 <div class="feature-content">
                   <h4>Progress Tracking</h4>
                   <p>Monitor your learning progress with detailed analytics and insights</p>
@@ -681,15 +684,15 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             <div class="action-title">Continue Your Learning Journey</div>
             <p style="margin: 0 0 20px 0; color: #5a6c7d;">Choose your next step to accelerate your progress</p>
             <div class="action-buttons">
-              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button">📊 View Analytics</a>
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button secondary">🎯 New Quiz</a>
-              <a href="https://quizzicallabz.qzz.io/generate-study-guide" class="cta-button">📚 Study Guide</a>
-              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button secondary">🏆 Quiz Arena</a>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button"> View Analytics</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button secondary"> New Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/generate-study-guide" class="cta-button"> Study Guide</a>
+              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button secondary"> Quiz Arena</a>
             </div>
           </div>
           
           <div class="study-tip">
-            <h4>${quizData.percentage >= 80 ? '🎯 Keep the momentum going!' : '💡 Study Recommendation'}</h4>
+            <h4>${quizData.percentage >= 80 ? ' Keep the momentum going! "Study Recommendation'}</h4>
             <p>${quizData.percentage >= 80 ? 
               'Excellent performance! Consider challenging yourself with more advanced topics.' : 
               'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}</p>
@@ -968,7 +971,7 @@ export const emailVerificationTemplate = (userName: string, verificationLink: st
             ` : ''}
 
             <div class="security-note">
-              <h4>🛡️ Security Notice</h4>
+              <h4> Security Notice</h4>
               <p>
                 If you didn't create an account with Quizzicallabzᴬᴵ, please ignore this email.
                 Your email address will not be added to our system without verification.
@@ -1138,7 +1141,7 @@ export const passwordResetEmailTemplate = (userName: string, resetLink: string) 
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="header-icon">🔐</div>
+          <div class="header-icon"></div>
           <div class="header-title">Password Reset Request</div>
           <div class="header-subtitle">Secure your Quizzicallabzᴬᴵ account</div>
         </div>
@@ -1151,7 +1154,7 @@ export const passwordResetEmailTemplate = (userName: string, resetLink: string) 
           </div>
           
           <div class="reset-section">
-            <div class="reset-title">🔄 Reset Your Password</div>
+            <div class="reset-title"> Reset Your Password</div>
             <p style="margin: 0 0 20px 0; color: #5a6c7d;">Click the button below to set a new password</p>
             <a href="${resetLink}" class="reset-button">
                Reset Password
@@ -1404,7 +1407,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           </div>
 
           <div class="security-alert">
-            <div class="alert-icon">🛡️</div>
+            <div class="alert-icon"></div>
             <div class="alert-title">New Login Detected</div>
             <p style="margin: 0; color: #5a6c7d;">A new device/browser has accessed your account</p>
           </div>
@@ -1694,7 +1697,7 @@ export const studyReminderEmailTemplate = (userName: string) => ({
     <body>
       <div class="email-container">
         <div class="header">
-          <div class="header-icon">📚</div>
+          <div class="header-icon"></div>
           <div class="header-title">Hello ${userName}!</div>
           <div class="header-subtitle">Your personalized AI learning session is ready</div>
         </div>
@@ -1724,12 +1727,12 @@ export const studyReminderEmailTemplate = (userName: string) => ({
                 <div class="activity-description">Test your knowledge on any topic</div>
               </div>
               <div class="activity-card">
-                <div class="activity-icon">📝</div>
+                <div class="activity-icon"></div>
                 <div class="activity-title">Review Flashcards</div>
                 <div class="activity-description">Reinforce key concepts</div>
               </div>
               <div class="activity-card">
-                <div class="activity-icon">📊</div>
+                <div class="activity-icon"></div>
                 <div class="activity-title">Check Progress</div>
                 <div class="activity-description">See your learning analytics</div>
               </div>
@@ -1739,15 +1742,15 @@ export const studyReminderEmailTemplate = (userName: string) => ({
           <div class="cta-section">
             <div class="cta-title">Choose Your Learning Path</div>
             <div class="action-buttons">
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button">🎯 Quick Quiz</a>
-              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button secondary">📊 Dashboard</a>
-              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button">🏆 Challenge Friends</a>
-              <a href="https://quizzicallabz.qzz.io/review" class="cta-button secondary">📝 Review Mode</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" class="cta-button"> Quick Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/dashboard" class="cta-button secondary"> Dashboard</a>
+              <a href="https://quizzicallabz.qzz.io/quiz-arena" class="cta-button"> Challenge Friends</a>
+              <a href="https://quizzicallabz.qzz.io/review" class="cta-button secondary"> Review Mode</a>
             </div>
           </div>
           
           <div class="tips-section">
-            <div class="tips-title">🔥 Study Streak Tips</div>
+            <div class="tips-title"> Study Streak Tips</div>
             <ul class="tips-list">
               <li>Set a consistent time each day for studying</li>
               <li>Start with 15-20 minute focused sessions</li>
@@ -1760,9 +1763,9 @@ export const studyReminderEmailTemplate = (userName: string) => ({
         
         <div class="footer">
           <div style="margin-bottom: 20px;">
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">🎯 Start Quiz</a>
-            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">📊 Progress</a>
-            <a href="https://quizzicallabz.qzz.io/profile" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">⚙️ Settings</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Start Quiz</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Progress</a>
+            <a href="https://quizzicallabz.qzz.io/profile" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">Settings</a>
             <a href="https://quizzicallabz.qzz.io/how-to-use" style="color: #f6a23b; text-decoration: none; margin: 0 15px;">❓ Help</a>
           </div>
           <p style="margin: 10px 0;">Your success is our mission • <a href="mailto:support@quizzicallabz.qzz.io">Contact Support</a></p>
