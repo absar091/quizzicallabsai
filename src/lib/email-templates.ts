@@ -415,7 +415,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           </div>
           
           <div class="study-tip">
-            <h4>${quizData.percentage >= 80 ? ' Keep the momentum going! "Study Recommendation'}</h4>
+            <h4>${quizData.percentage >= 80 ? 'Keep the momentum going! Study Recommendation' : 'Study Recommendation'}</h4>
             <p>${quizData.percentage >= 80 ? 
               'Excellent performance! Consider challenging yourself with more advanced topics.' : 
               'Focus on reviewing the questions you missed. Try generating flashcards for better retention.'}</p>
