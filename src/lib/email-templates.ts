@@ -1,4 +1,4 @@
-// Complete Email Templates with Updated Header/Footer
+// Complete Email Templates with Mobile-Optimized Footer
 
 export const quizResultEmailTemplate = (userName: string, quizData: {
   quizTitle: string;
@@ -15,12 +15,19 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Quiz Results</title>
+      <style>
+        @media only screen and (max-width: 600px) {
+          .mobile-padding { padding: 15px !important; }
+          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-text { font-size: 14px !important; }
+        }
+      </style>
     </head>
     <body>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
-          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
+          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <!-- Logo -->
@@ -41,7 +48,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
         <!-- HEADER END -->
         
         <tr>
-          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;">
+          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
             <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
               Your Quiz Results Are Ready
             </h2>
@@ -62,32 +69,32 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/review" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">Review Answers</a>
-            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;">Practice Weak Areas</a>
+            <a href="https://quizzicallabz.qzz.io/review" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Review Answers</a>
+            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Practice Weak Areas</a>
           </td>
         </tr>
 
         <!-- FOOTER START -->
         <tr>
-          <td style="padding:30px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;text-align:center;border-top:1px solid #e5e7eb;">
+          <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
             
             <!-- Legal & Branding -->
-            <p style="margin:0 0 10px;">
+            <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em>Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
             </p>
             
             <!-- Links -->
-            <p style="margin:0 0 10px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a> · 
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a> · 
+            <p style="margin:0 0 8px;font-size:11px;">
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
               <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;">
+            <p style="margin:0;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> · 
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
             </p>
           </td>
@@ -128,12 +135,19 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Welcome</title>
+      <style>
+        @media only screen and (max-width: 600px) {
+          .mobile-padding { padding: 15px !important; }
+          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-text { font-size: 14px !important; }
+        }
+      </style>
     </head>
     <body>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
-          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
+          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <!-- Logo -->
@@ -154,7 +168,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
         <!-- HEADER END -->
         
         <tr>
-          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;">
+          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
             <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
               Welcome to Quizzicallabzᴬᴵ
             </h2>
@@ -175,33 +189,33 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/dashboard" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">View Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">Access Gen Lab</a>
-            <a href="https://quizzicallabz.qzz.io/exam-prep" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;">Start Exam Prep</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">View Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Access Gen Lab</a>
+            <a href="https://quizzicallabz.qzz.io/exam-prep" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Start Exam Prep</a>
           </td>
         </tr>
 
         <!-- FOOTER START -->
         <tr>
-          <td style="padding:30px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;text-align:center;border-top:1px solid #e5e7eb;">
+          <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
             
             <!-- Legal & Branding -->
-            <p style="margin:0 0 10px;">
+            <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em>Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
             </p>
             
             <!-- Links -->
-            <p style="margin:0 0 10px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a> · 
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a> · 
+            <p style="margin:0 0 8px;font-size:11px;">
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
               <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;">
+            <p style="margin:0;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> · 
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
             </p>
           </td>
@@ -245,12 +259,19 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Security Alert</title>
+      <style>
+        @media only screen and (max-width: 600px) {
+          .mobile-padding { padding: 15px !important; }
+          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-text { font-size: 14px !important; }
+        }
+      </style>
     </head>
     <body>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
-          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
+          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <!-- Logo -->
@@ -271,7 +292,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
         <!-- HEADER END -->
         
         <tr>
-          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;">
+          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
             <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
               Security Alert: New Login Detected
             </h2>
@@ -292,32 +313,32 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/reset-password" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">Change Password</a>
-            <a href="https://quizzicallabz.qzz.io/profile" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;">Review Activity</a>
+            <a href="https://quizzicallabz.qzz.io/reset-password" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Change Password</a>
+            <a href="https://quizzicallabz.qzz.io/profile" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Activity</a>
           </td>
         </tr>
 
         <!-- FOOTER START -->
         <tr>
-          <td style="padding:30px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;text-align:center;border-top:1px solid #e5e7eb;">
+          <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
             
             <!-- Legal & Branding -->
-            <p style="margin:0 0 10px;">
+            <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em>Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
             </p>
             
             <!-- Links -->
-            <p style="margin:0 0 10px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a> · 
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a> · 
+            <p style="margin:0 0 8px;font-size:11px;">
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
               <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;">
+            <p style="margin:0;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> · 
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
             </p>
           </td>
@@ -358,12 +379,19 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Study Reminder</title>
+      <style>
+        @media only screen and (max-width: 600px) {
+          .mobile-padding { padding: 15px !important; }
+          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-text { font-size: 14px !important; }
+        }
+      </style>
     </head>
     <body>
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
-          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
+          <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
               <tr>
                 <!-- Logo -->
@@ -384,7 +412,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
         <!-- HEADER END -->
         
         <tr>
-          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;">
+          <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
             <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
               Reminder: Stay on Track with Your Learning
             </h2>
@@ -409,32 +437,32 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
             </blockquote>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;">Take Quiz</a>
-            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;">Review Weak Areas</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Take Quiz</a>
+            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Weak Areas</a>
           </td>
         </tr>
 
         <!-- FOOTER START -->
         <tr>
-          <td style="padding:30px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;text-align:center;border-top:1px solid #e5e7eb;">
+          <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
             
             <!-- Legal & Branding -->
-            <p style="margin:0 0 10px;">
+            <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em>Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
             </p>
             
             <!-- Links -->
-            <p style="margin:0 0 10px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a> · 
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a> · 
+            <p style="margin:0 0 8px;font-size:11px;">
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
               <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;">
+            <p style="margin:0;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> · 
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
             </p>
           </td>
