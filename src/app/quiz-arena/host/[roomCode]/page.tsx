@@ -255,7 +255,7 @@ export default function RoomHostPage() {
       }, 1000);
 
       // Small delay to let participants prepare
-      setTimeout(() => {
+      setTimeout(async () => {
         // Start quiz in Firebase
         await QuizArena.Host.startQuiz(roomCode, user!.uid);
 
