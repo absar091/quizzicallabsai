@@ -3,6 +3,7 @@
  * Comprehensive testing suite for live multiplayer quiz functionality
  */
 
+/// <reference path="../jest.d.ts" />
 import { QuizArena } from '@/lib/quiz-arena';
 
 // Mock Firebase for testing
