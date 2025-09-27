@@ -20,6 +20,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
           .mobile-text { font-size: 14px !important; }
+          .logo { width: 100px !important; }
         }
       </style>
     </head>
@@ -33,7 +34,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
+                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -140,6 +141,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
           .mobile-text { font-size: 14px !important; }
+          .logo { width: 100px !important; }
         }
       </style>
     </head>
@@ -153,7 +155,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
+                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -264,6 +266,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
           .mobile-text { font-size: 14px !important; }
+          .logo { width: 100px !important; }
         }
       </style>
     </head>
@@ -277,7 +280,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
+                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -366,10 +369,10 @@ Review Activity: https://quizzicallabz.qzz.io/profile
 © 2025 Quizzicallabzᴬᴵ. All rights reserved.`
 });
 
-export const studyReminderEmailTemplate = (userName: string, reminderData: {
-  topic: string;
-  weakAreas: string;
-  lastActivityDate: string;
+export const studyReminderEmailTemplate = (userName: string, reminderData?: {
+  topic?: string;
+  weakAreas?: string;
+  lastActivityDate?: string;
 }) => ({
   subject: `Reminder: Stay on Track with Your Learning - ${userName}`,
   html: `
@@ -384,6 +387,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
           .mobile-text { font-size: 14px !important; }
+          .logo { width: 100px !important; }
         }
       </style>
     </head>
@@ -397,7 +401,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
+                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -425,9 +429,9 @@ export const studyReminderEmailTemplate = (userName: string, reminderData: {
             <!-- Info Card -->
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;border-radius:6px;margin-bottom:20px;">
               <tr><td style="padding:15px;">
-                <p style="margin:0;font-size:14px;"><strong>Topic:</strong> ${reminderData.topic}</p>
-                <p style="margin:0;font-size:14px;"><strong>Weak Areas:</strong> ${reminderData.weakAreas}</p>
-                <p style="margin:0;font-size:14px;"><strong>Last Activity:</strong> ${reminderData.lastActivityDate}</p>
+                <p style="margin:0;font-size:14px;"><strong>Topic:</strong> ${reminderData?.topic || 'General Study'}</p>
+                <p style="margin:0;font-size:14px;"><strong>Weak Areas:</strong> ${reminderData?.weakAreas || 'Review recommended'}</p>
+                <p style="margin:0;font-size:14px;"><strong>Last Activity:</strong> ${reminderData?.lastActivityDate || 'Recently'}</p>
               </td></tr>
             </table>
 
@@ -478,9 +482,9 @@ Hello ${userName},
 
 This is a reminder that you have pending activities in your account.
 
-Topic: ${reminderData.topic}
-Weak Areas: ${reminderData.weakAreas}
-Last Activity: ${reminderData.lastActivityDate}
+Topic: ${reminderData?.topic || 'General Study'}
+Weak Areas: ${reminderData?.weakAreas || 'Review recommended'}
+Last Activity: ${reminderData?.lastActivityDate || 'Recently'}
 
 "Success is the sum of small efforts, repeated day in and day out."
 
