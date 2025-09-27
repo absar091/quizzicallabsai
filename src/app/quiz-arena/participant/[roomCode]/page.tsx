@@ -127,20 +127,35 @@ export default function ParticipantArenaPage() {
     setIsAnswered(true);
 
     try {
-      // 🚫 REMOVE client-side correct calculation - handled server-side for security
-      await QuizArena.Player.submitAnswer(
-        roomCode.toUpperCase(),
-        user.uid,
-        roomData.currentQuestion,
-        selectedAnswer
-      );
+      // Server-side answer submission with authentication
+      const idToken = await user.getIdToken();
+      const response = await fetch('/api/quiz-arena/submit-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          roomCode: roomCode.toUpperCase(),
+          questionIndex: roomData.currentQuestion,
+          answerIndex: selectedAnswer,
+          submittedAt: Date.now()
+        })
+      });
 
-      // Show submitting feedback immediately
-      setShowResults(false);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Submission failed');
+      }
 
+      // Show results immediately
+      setShowResults(true);
+      
       toast?.({
-        title: 'Answer Submitted!',
-        description: 'Waiting for validation...',
+        title: result.correct ? 'Correct! 🎉' : 'Incorrect',
+        description: result.correct ? `+${result.points} points!` : `Correct answer: ${result.correctAnswer}`,
+        variant: result.correct ? 'default' : 'destructive'
       });
 
     } catch (error: any) {

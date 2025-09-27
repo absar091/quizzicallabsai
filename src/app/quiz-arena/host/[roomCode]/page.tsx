@@ -47,6 +47,8 @@ export default function RoomHostPage() {
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [timerActive, setTimerActive] = useState(false);
 
   useEffect(() => {
     if (!roomCode || !user) return;
@@ -54,8 +56,38 @@ export default function RoomHostPage() {
     loadRoomData();
 
     // Set up real-time listener
-    setupRoomListener();
+    const cleanup = setupRoomListener();
+    return cleanup;
   }, [roomCode, user]);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            setTimerActive(false);
+            // Auto advance to next question when timer ends (host only)
+            if (isHost) {
+              if (currentQuestionIndex < (roomData?.quiz.length || 0) - 1) {
+                setTimeout(() => handleNextQuestion(), 2000);
+              } else {
+                setTimeout(() => handleFinishQuiz(), 2000);
+              }
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timerActive, timeLeft, currentQuestionIndex, roomData?.quiz.length]);
 
   const loadRoomData = async () => {
     try {
@@ -143,8 +175,48 @@ export default function RoomHostPage() {
   };
 
   const setupRoomListener = () => {
-    // In a real implementation, this would set up Firestore real-time listeners
-    console.log('🎧 Setting up room listeners for real-time updates');
+    if (!roomCode || !user) return;
+
+    try {
+      const { QuizArena } = require('@/lib/quiz-arena');
+      
+      // Real-time room state listener
+      const unsubscribeRoom = QuizArena.Host.listenToRoom(
+        roomCode,
+        (data: any) => {
+          if (data) {
+            setRoomData(prev => ({ ...prev, ...data }));
+            setCurrentQuestionIndex(data.currentQuestion || -1);
+            setQuizStarted(data.started || false);
+            
+            // Sync timer with room state
+            if (data.started && data.currentQuestion >= 0) {
+              setTimeLeft(30);
+              setTimerActive(true);
+            }
+          }
+        }
+      );
+
+      // Real-time players listener
+      const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
+        roomCode,
+        (players: any[]) => {
+          setRoomData(prev => ({
+            ...prev,
+            players,
+            playerCount: players.length
+          }));
+        }
+      );
+
+      return () => {
+        unsubscribeRoom?.();
+        unsubscribePlayers?.();
+      };
+    } catch (error) {
+      console.error('Error setting up listeners:', error);
+    }
   };
 
   const handleStartQuiz = async () => {
@@ -184,11 +256,13 @@ export default function RoomHostPage() {
 
       // Small delay to let participants prepare
       setTimeout(() => {
-        // In a real implementation:
-        // await QuizArena.Host.startQuiz(roomCode, user!.uid);
+        // Start quiz in Firebase
+        await QuizArena.Host.startQuiz(roomCode, user!.uid);
 
         setQuizStarted(true);
         setCurrentQuestionIndex(0);
+        setTimeLeft(30);
+        setTimerActive(true);
 
         toast?.({
           title: 'Quiz Started! 🎯',
@@ -212,11 +286,13 @@ export default function RoomHostPage() {
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
 
-      // In a real implementation:
-      // await QuizArena.Host.nextQuestion(roomCode, user!.uid);
+      // Move to next question in Firebase
+      await QuizArena.Host.nextQuestion(roomCode, user!.uid);
 
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
+      setTimeLeft(30);
+      setTimerActive(true);
 
       toast?.({
         title: 'Next Question',
@@ -232,8 +308,8 @@ export default function RoomHostPage() {
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
 
-      // In a real implementation:
-      // await QuizArena.Host.finishQuiz(roomCode, user!.uid);
+      // Finish quiz in Firebase
+      await QuizArena.Host.finishQuiz(roomCode, user!.uid);
 
       setQuizStarted(false);
       setCurrentQuestionIndex(-1);
@@ -371,9 +447,9 @@ export default function RoomHostPage() {
                       <Badge variant="secondary">
                         Question {currentQuestionIndex + 1}
                       </Badge>
-                      <Badge variant="outline">
+                      <Badge variant={timeLeft <= 10 ? "destructive" : "outline"}>
                         <Clock className="mr-1 h-3 w-3" />
-                        30s
+                        {timeLeft}s
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -432,9 +508,18 @@ export default function RoomHostPage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
-                      <Button variant="outline" onClick={() => handlePauseQuiz()}>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setTimerActive(!timerActive);
+                          toast?.({
+                            title: timerActive ? 'Timer Paused' : 'Timer Resumed',
+                            description: timerActive ? 'Quiz timer has been paused' : 'Quiz timer is now running',
+                          });
+                        }}
+                      >
                         <Pause className="mr-2 h-4 w-4" />
-                        Pause Quiz
+                        {timerActive ? 'Pause' : 'Resume'} Timer
                       </Button>
                       <Button variant="outline">
                         <Settings className="mr-2 h-4 w-4" />

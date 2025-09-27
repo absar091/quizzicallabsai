@@ -185,7 +185,7 @@ export default function QuizArenaPage() {
       const startTime = Date.now();
 
       let quizContent;
-      const template = quizTemplates.find(t => t.id === 'mdcpharmacology');
+      const template = quizTemplates.find(t => t.id === templateId);
 
       if (template) {
         // Optimize API call with better timeout and error handling

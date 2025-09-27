@@ -1,47 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore as db } from '@/lib/firebase';
+import { firestore } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const code = searchParams.get('code')?.toUpperCase();
+    const roomCode = searchParams.get('code');
 
-    if (!code) {
+    if (!roomCode) {
       return NextResponse.json({ error: 'Room code required' }, { status: 400 });
     }
 
-    // Ultra-fast room validation (database lookup only)
-    const roomRef = db.collection('quiz-rooms').doc(code);
-    const roomSnap = await roomRef.get();
+    // Quick room validation
+    const roomRef = firestore.collection('quiz-rooms').doc(roomCode.toUpperCase());
+    const roomDoc = await roomRef.get();
 
-    if (!roomSnap.exists) {
-      return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+    if (!roomDoc.exists) {
+      return NextResponse.json({ exists: false }, { status: 404 });
     }
 
-    const roomData = roomSnap.data();
-
-    // Validate room is joinable
-    if (roomData?.finished) {
-      return NextResponse.json({ error: 'Room finished' }, { status: 410 });
-    }
-
-    if (roomData?.started && !roomData?.allowLateJoining) {
-      return NextResponse.json({ error: 'Room in progress' }, { status: 403 });
-    }
-
-    // Return room info for instant display
+    const roomData = roomDoc.data();
+    
     return NextResponse.json({
-      valid: true,
-      roomId: code,
-      hostName: roomData?.hostName || 'Host',
-      playerCount: roomData?.playerCount || 1,
-      maxPlayers: roomData?.maxPlayers || 10,
-      quizLength: roomData?.quiz?.length || 0,
-      started: roomData?.started || false
+      exists: true,
+      started: roomData?.started || false,
+      finished: roomData?.finished || false,
+      playerCount: roomData?.playerCount || 0
     });
 
   } catch (error) {
-    console.error('Room check error:', error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    console.error('Quick room check error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
