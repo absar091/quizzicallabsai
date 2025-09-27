@@ -2,7 +2,7 @@
 
 export const quizResultEmailTemplate = (userName: string, quizData: {
   quizTitle: string;
-  score: string;
+  score: string | number;
   correct: string;
   incorrect: string;
   date: string;
