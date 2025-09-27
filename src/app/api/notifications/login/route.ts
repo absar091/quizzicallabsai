@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { sendLoginNotificationEmail } from '@/lib/email';
 import { loginCredentialsManager } from '@/lib/login-credentials';
 import { detectDeviceInfo, DeviceInfo } from '@/lib/device-detection';
