@@ -40,11 +40,14 @@
     "cmdk": "^0.2.0",
     "firebase": "^10.7.1",
     "firebase-admin": "^12.0.0",
+    "framer-motion": "^10.16.16",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.48.2",
+    "recharts": "^2.8.0",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
@@ -52,8 +55,9 @@
   "devDependencies": {
     "@types/jest": "^29.5.8",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/react-google-recaptcha": "^2.1.5",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
@@ -78,8 +82,4 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/tests/**/*"
-    ]
-  }
-}
+      "!src/
