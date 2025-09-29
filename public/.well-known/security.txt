@@ -1,4 +1,4 @@
-Contact: mailto:security@quizzicallabz.qzz.io
+Contact: mailto:security@quizzicallabs.com
 Contact: https://quizzicallabz.qzz.io/security
 Expires: 2025-12-31T23:59:59.000Z
 Encryption: https://quizzicallabz.qzz.io/pgp-key.txt
