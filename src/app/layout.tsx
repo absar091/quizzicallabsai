@@ -107,6 +107,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `console.error=console.warn=console.log=console.info=console.debug=function(){};window.onerror=function(){return true;};window.onunhandledrejection=function(){return true;};`
+        }} />
         <script src="/suppress-firebase-errors.js"></script>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       </head>

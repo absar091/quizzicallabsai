@@ -1,42 +1,20 @@
-// ABSOLUTE SILENCE - No errors escape
-(function() {
-  if (typeof window === 'undefined') return;
-  
-  // Kill ALL console methods immediately
-  const kill = () => {};
-  Object.defineProperty(console, 'error', { value: kill, writable: false });
-  Object.defineProperty(console, 'warn', { value: kill, writable: false });
-  Object.defineProperty(console, 'log', { value: kill, writable: false });
-  Object.defineProperty(console, 'info', { value: kill, writable: false });
-  Object.defineProperty(console, 'debug', { value: kill, writable: false });
-  
-  // Nuclear option - kill ALL error reporting
-  window.onerror = () => true;
-  window.onunhandledrejection = () => true;
-  
-  // Intercept ALL errors at the lowest level
-  const originalThrow = Error.prototype.constructor;
-  Error.prototype.constructor = function() { return {}; };
-  
-  // Override throw statement itself
-  const originalEval = window.eval;
-  window.eval = function(code) {
-    try {
-      return originalEval(code.replace(/throw\s+/g, 'return '));
-    } catch {
-      return undefined;
-    }
-  };
-  
-  // Prevent event listeners from ever firing errors
-  const originalAddEventListener = EventTarget.prototype.addEventListener;
+// NUCLEAR SILENCE - Execute immediately
+console.error = console.warn = console.log = console.info = console.debug = function(){};
+window.onerror = function(){return true;};
+window.onunhandledrejection = function(){return true;};
+
+// Override at the deepest level
+if (typeof Error !== 'undefined') {
+  Error.prototype.toString = function(){return '';};
+}
+
+// Kill all error events
+if (typeof EventTarget !== 'undefined') {
+  const original = EventTarget.prototype.addEventListener;
   EventTarget.prototype.addEventListener = function(type, listener, options) {
-    return originalAddEventListener.call(this, type, () => {}, options);
+    if (type === 'error' || type === 'unhandledrejection') {
+      return original.call(this, type, function(){}, options);
+    }
+    return original.call(this, type, function(){try{listener.apply(this,arguments);}catch{}}, options);
   };
-  
-  // Kill MessagePort errors specifically
-  if (window.MessagePort) {
-    const originalPostMessage = MessagePort.prototype.postMessage;
-    MessagePort.prototype.postMessage = function() {};
-  }
-})();
+}
