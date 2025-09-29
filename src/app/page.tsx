@@ -127,20 +127,20 @@ export default function Home() {
       <AppHeader />
 
       {/* Hero Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-slate-50 via-cyan-50/20 to-purple-50/20 dark:from-slate-900 dark:via-cyan-950/10 dark:to-purple-950/10">
+      <section className="py-16 md:py-24 bg-gradient-to-br from-slate-50 via-primary/5 to-accent/10 dark:from-slate-900 dark:via-primary/10 dark:to-accent/10">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Badge Chips */}
             <div className="flex justify-center gap-3 mb-8 flex-wrap">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold border border-cyan-200">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-primary/20">
                 <BrainCircuit className="h-5 w-5" />
-                <span className="text-yellow-600">AI</span>-Powered Learning
+                <span className="text-accent">AI</span>-Powered Learning
               </div>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-cyan-500/10 to-teal-500/10 text-cyan-700 px-5 py-3 rounded-full text-sm font-semibold border border-cyan-200">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-primary/20">
                 <Zap className="h-5 w-5" />
                 Smart Quiz Generation
               </div>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 text-teal-700 px-5 py-3 rounded-full text-sm font-semibold border border-teal-200">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-accent/10 to-primary/10 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-accent/20">
                 <GamepadIcon className="h-5 w-5" />
                 Multiplayer Battles
               </div>
@@ -148,9 +148,9 @@ export default function Home() {
 
             {/* Main Hero Content */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Study Smarter, <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Not Longer</span>
-              <span className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
-              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mt-1">with <span className="text-yellow-600">AI</span>-Powered Quizzes</span>
+              Study Smarter, <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Not Longer</span>
+              <span className="block bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
+              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-1">with <span className="text-accent">AI</span>-Powered Quizzes</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
@@ -215,7 +215,7 @@ export default function Home() {
                   "Comprehensive performance analytics per battle"
                 ].map((feature, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full"></div>
                     <span>{feature}</span>
                   </div>
                 ))}
@@ -239,38 +239,38 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
+            <div className="bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10 p-8 rounded-2xl border border-primary/20 dark:border-primary/30">
               <div className="space-y-6">
                 <div className="text-center">
-                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📧 Quiz Result Email Reports</h4>
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">📧 Quiz Result Email Reports</h4>
                   <p className="text-muted-foreground">
                     Receive comprehensive quiz performance reports with detailed analysis, personalized recommendations, and learning insights delivered via email.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">📊</div>
                       <span className="font-medium">Performance Analysis</span>
                     </div>
-                    <div className="text-sm text-cyan-600 font-semibold">Detailed Breakdown</div>
+                    <div className="text-sm text-primary font-semibold">Detailed Breakdown</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
                       <span className="font-medium">Personalized Feedback</span>
                     </div>
-                    <div className="text-sm text-teal-600 font-semibold">AI-Generated Tips</div>
+                    <div className="text-sm text-accent font-semibold">AI-Generated Tips</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/15 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">⏰</div>
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">⏰</div>
                       <span className="font-medium">Scheduled Delivery</span>
                     </div>
-                    <div className="text-sm text-blue-600 font-semibold">Immediate After Quiz</div>
+                    <div className="text-sm text-primary font-semibold">Immediate After Quiz</div>
                   </div>
                 </div>
               </div>
@@ -285,21 +285,21 @@ export default function Home() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">📄 Smart Document Quiz Generator</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Revolutionize your study routine with AI that transforms <strong>ANY document</strong> into perfect quizzes instantly. <span className="font-semibold text-teal-600">Study smarter, not harder!</span>
+              Revolutionize your study routine with AI that transforms <strong>ANY document</strong> into perfect quizzes instantly. <span className="font-semibold text-accent">Study smarter, not harder!</span>
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center">
                   <FileText className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold">Instant AI Quiz Generation</h3>
               </div>
               <p className="text-lg text-muted-foreground">
                 Upload PDFs, DOCX files, PowerPoints, images, or even handwritten notes. Our AI extracts key concepts and generates comprehensive quizzes in seconds.
-                <strong className="text-teal-600">No more manual quiz creation!</strong>
+                <strong className="text-accent">No more manual quiz creation!</strong>
               </p>
 
               <div className="space-y-4">
@@ -311,51 +311,51 @@ export default function Home() {
                   "Perfect for teachers, students, and professionals alike"
                 ].map((feature, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-accent to-primary rounded-full"></div>
                     <span>{feature}</span>
                   </div>
                 ))}
               </div>
 
-              <Button size="lg" className="mt-8 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600" asChild>
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90" asChild>
                 <Link href="/generate-quiz">
                   Transform Documents Now
                 </Link>
               </Button>
             </div>
 
-            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 p-8 rounded-2xl border border-teal-200 dark:border-teal-800">
+            <div className="bg-gradient-to-br from-accent/5 to-primary/5 dark:from-accent/10 dark:to-primary/10 p-8 rounded-2xl border border-accent/20 dark:border-accent/30">
               <div className="space-y-6">
                 <div className="text-center">
-                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">🎯 The Magic Happens Here</h4>
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">🎯 The Magic Happens Here</h4>
                   <p className="text-muted-foreground">
                     Upload any document and watch as our AI transforms it into educational excellence
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">1</div>
                       <span className="font-medium">Upload Document</span>
                     </div>
-                    <div className="text-sm text-teal-600 font-semibold">Instant</div>
+                    <div className="text-sm text-accent font-semibold">Instant</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">2</div>
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">2</div>
                       <span className="font-medium">AI Analysis</span>
                     </div>
-                    <div className="text-sm text-cyan-600 font-semibold">30s</div>
+                    <div className="text-sm text-primary font-semibold">30s</div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-accent/10 dark:bg-accent/15 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">3</div>
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">3</div>
                       <span className="font-medium">Perfect Quiz Ready</span>
                     </div>
-                    <div className="text-sm text-blue-600 font-semibold">Done!</div>
+                    <div className="text-sm text-accent font-semibold">Done!</div>
                   </div>
                 </div>
               </div>
