@@ -7,75 +7,48 @@ export default function TermsOfService() {
         <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
         
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
-          <p>
-            By accessing or using Quizzicallabzᴬᴵ, operated by QuizzicallabzTM, 
-            you agree to be bound by these Terms of Service and our Privacy Policy.
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">1. Acceptance</h2>
+          <p>By using Quizzicallabzᴬᴵ at quizzicallabz.qzz.io, you agree to these terms.</p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
-          <p>
-            Quizzicallabzᴬᴵ is an AI-powered educational platform that generates 
-            personalized quizzes, flashcards, and study materials to enhance learning experiences.
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">2. Service</h2>
+          <p>AI-powered educational platform for personalized quizzes and study materials.</p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">3. Prohibited Content and Conduct</h2>
-          <p className="font-semibold text-red-600 mb-4">
-            The following activities are strictly prohibited and will result in immediate account termination:
-          </p>
-          <ul className="list-disc pl-6">
-            <li>Generating or requesting harmful, illegal, or inappropriate content</li>
-            <li>Creating content involving minors in inappropriate contexts</li>
-            <li>Requesting violent, hateful, or discriminatory material</li>
-            <li>Attempting to bypass security measures or abuse AI systems</li>
-            <li>Sharing accounts or violating rate limits</li>
-            <li>Using the platform for illegal activities</li>
-          </ul>
+          <h2 className="text-2xl font-semibold mb-4">3. Prohibited Content</h2>
+          <div className="bg-red-50 p-4 rounded border-l-4 border-red-500">
+            <p className="font-bold text-red-700 mb-2">IMMEDIATE BAN for:</p>
+            <ul className="list-disc pl-6 text-red-600">
+              <li>Harmful, illegal, or inappropriate content</li>
+              <li>Content involving minors inappropriately</li>
+              <li>Violence, hate, discrimination</li>
+              <li>Security bypass attempts</li>
+            </ul>
+          </div>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">4. Account Termination</h2>
-          <p className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
-            <strong>Policy Violations:</strong> Accounts that violate our content policy 
-            or security measures will be permanently banned. Both the account and associated 
-            email address will be blocked. If you believe this was done in error, 
-            contact support@quizzicallabs.com.
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">4. Account Bans</h2>
+          <div className="bg-yellow-50 p-4 rounded border-l-4 border-yellow-400">
+            <p className="font-bold">Policy violations = permanent ban + email blocked.</p>
+            <p>Appeal: hello@quizzicallabz.qzz.io</p>
+          </div>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">5. Intellectual Property</h2>
-          <p>
-            All content generated through our AI systems remains your property. 
-            However, you grant us a license to use anonymized data to improve our services.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibent mb-4">6. Limitation of Liability</h2>
-          <p>
-            QuizzicallabzTM provides this service "as is" without warranties. 
-            We are not liable for any damages arising from your use of the platform.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">7. Contact Information</h2>
-          <p>
-            For questions about these terms:
-            <br />
-            Email: legal@quizzicallabs.com
-            <br />
-            Support: support@quizzicallabs.com
-            <br />
-            Website: <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a>
-            <br />
-            Company: QuizzicallabzTM
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">5. Contact</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-600">quizzicallabz.qzz.io</a></p>
+              <p><strong>Support:</strong> hello@quizzicallabz.qzz.io</p>
+            </div>
+            <div>
+              <p><strong>Legal:</strong> legal@quizzicallabz.qzz.io</p>
+              <p><strong>Company:</strong> QuizzicallabzTM</p>
+            </div>
+          </div>
         </section>
       </div>
     </div>

@@ -8,58 +8,33 @@ export default function Disclaimer() {
         
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Educational Purpose</h2>
-          <p>
-            Quizzicallabzᴬᴵ, operated by QuizzicallabzTM, is designed for educational purposes only. 
-            The AI-generated content is intended to supplement, not replace, traditional learning methods 
-            and professional educational guidance.
-          </p>
+          <p>Quizzicallabzᴬᴵ at quizzicallabz.qzz.io is for educational use only. AI-generated content may contain errors.</p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">AI-Generated Content</h2>
-          <p>
-            All quizzes, flashcards, and study materials are generated using artificial intelligence. 
-            While we strive for accuracy, the content may contain errors or inaccuracies. 
-            Users should verify information from authoritative sources.
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">Beta Platform</h2>
+          <div className="bg-yellow-50 p-4 rounded border-l-4 border-yellow-400">
+            <p className="font-semibold">Platform is in development. Features and availability may vary.</p>
+          </div>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibent mb-4">No Guarantee of Results</h2>
-          <p>
-            We do not guarantee specific learning outcomes or academic performance improvements. 
-            Results may vary based on individual effort, study habits, and other factors.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Medical and Professional Advice</h2>
-          <p>
-            Content related to medical, legal, or professional topics is for educational purposes only 
-            and should not be considered professional advice. Always consult qualified professionals 
-            for specific guidance.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Platform Availability</h2>
-          <p>
-            Quizzicallabzᴬᴵ is currently in development. Features, availability, and performance 
-            may vary. We reserve the right to modify or discontinue services without notice.
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">No Guarantees</h2>
+          <p>We don't guarantee learning outcomes or academic performance. Results vary by individual effort.</p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Contact</h2>
-          <p>
-            For questions about this disclaimer:
-            <br />
-            Email: legal@quizzicallabs.com
-            <br />
-            Website: <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a>
-            <br />
-            Company: QuizzicallabzTM
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-600">quizzicallabz.qzz.io</a></p>
+              <p><strong>Support:</strong> hello@quizzicallabz.qzz.io</p>
+            </div>
+            <div>
+              <p><strong>Legal:</strong> legal@quizzicallabz.qzz.io</p>
+              <p><strong>Company:</strong> QuizzicallabzTM</p>
+            </div>
+          </div>
         </section>
       </div>
     </div>

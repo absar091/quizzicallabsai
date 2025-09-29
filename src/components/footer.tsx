@@ -37,10 +37,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="mailto:support@quizzicallabs.com" className="hover:text-white">Contact Support</a></li>
-              <li><a href="mailto:legal@quizzicallabs.com" className="hover:text-white">Legal Inquiries</a></li>
-              <li><a href="mailto:security@quizzicallabs.com" className="hover:text-white">Security Issues</a></li>
-              <li><a href="mailto:privacy@quizzicallabs.com" className="hover:text-white">Privacy Concerns</a></li>
+              <li><a href="mailto:hello@quizzicallabz.qzz.io" className="hover:text-white">Contact Support</a></li>
+              <li><a href="mailto:legal@quizzicallabz.qzz.io" className="hover:text-white">Legal Inquiries</a></li>
+              <li><a href="mailto:security@quizzicallabz.qzz.io" className="hover:text-white">Security Issues</a></li>
+              <li><a href="mailto:privacy@quizzicallabz.qzz.io" className="hover:text-white">Privacy Concerns</a></li>
             </ul>
           </div>
 
