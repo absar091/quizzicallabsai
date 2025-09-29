@@ -9,13 +9,11 @@ interface SafeComponentProps {
 
 export function SafeComponent({ children, fallback = null }: SafeComponentProps) {
   try {
-    // Ensure children is not undefined
-    if (children === undefined || children === null) {
+    if (children === undefined || children === null || children === false) {
       return <>{fallback}</>;
     }
     return <>{children}</>;
-  } catch (error) {
-    console.warn('SafeComponent caught error:', error);
+  } catch {
     return <>{fallback}</>;
   }
 }

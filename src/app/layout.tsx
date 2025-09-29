@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/lib/suppress-firebase-errors"; // Suppress Firebase WebChannel errors
+import "@/lib/error-recovery"; // Global error recovery
 
 const poppins = Poppins({
   subsets: ["latin"],
