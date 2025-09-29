@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { QuizSharingDialog } from "@/components/quiz-sharing";
+import { SafeComponent } from "@/components/safe-component";
 
 // Dynamic imports for code splitting
 const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
@@ -1536,7 +1537,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   return (
     <FormProvider {...formMethods}>
-      <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
+      <SafeComponent fallback={<QuizLoadingSkeleton />}>
+        <QuizSetupForm onGenerateQuiz={handleGenerateQuiz} />
+      </SafeComponent>
     </FormProvider>
   );
 }

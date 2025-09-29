@@ -1,30 +1,21 @@
 'use client';
 
-import React from 'react';
+import { ReactNode } from 'react';
 
 interface SafeComponentProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 export function SafeComponent({ children, fallback = null }: SafeComponentProps) {
   try {
+    // Ensure children is not undefined
+    if (children === undefined || children === null) {
+      return <>{fallback}</>;
+    }
     return <>{children}</>;
   } catch (error) {
-    console.warn('Component render error (non-fatal):', error);
+    console.warn('SafeComponent caught error:', error);
     return <>{fallback}</>;
   }
-}
-
-export function withSafeRender<P extends object>(
-  Component: React.ComponentType<P>
-) {
-  return function SafeWrappedComponent(props: P) {
-    try {
-      return <Component {...props} />;
-    } catch (error) {
-      console.warn('Component error (non-fatal):', error);
-      return null;
-    }
-  };
 }
