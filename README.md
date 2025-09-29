@@ -268,11 +268,11 @@ npm run dev
 > **"My physics class went from 20% engagement to 95%. Students actually excited about homework now."**
 > *— Dr. Ali R., University Professor*
 
-### **📊 Impact Numbers**
-- 🎓 **10,000+ Students** empowered worldwide
-- 🏆 **2,000+ Quiz Battles** hosted monthly
-- 📚 **50,000+ Study materials** generated
-- ⭐ **4.9/5 Student Rating** across platforms
+### **📊 Platform Status**
+- 🚧 **In Development** - Beta testing phase
+- 🎯 **Target Launch** - Q2 2025
+- 📚 **AI Models** - Powered by Gemini 2.0
+- ⭐ **Early Access** - Limited beta users
 
 </div>
 
@@ -329,6 +329,6 @@ We welcome passionate educators, developers, and learning enthusiasts! 🚀
 
 *Built with ❤️ by educators, for the future of learning.*
 
-*© 2025 Quizzicallabs AI. Transforming education, one quiz at a time.*
+*© 2025 QuizzicallabzTM. Transforming education, one quiz at a time.*
 
 </div>
