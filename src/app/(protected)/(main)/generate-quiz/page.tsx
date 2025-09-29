@@ -29,20 +29,24 @@ import { PageHeader } from "@/components/page-header";
 import { QuizSharingDialog } from "@/components/quiz-sharing";
 
 // Dynamic imports for code splitting
-const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form'), {
+const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
   loading: () => <QuizLoadingSkeleton />,
+  ssr: false
 });
 
-const QuizTaker = dynamic(() => import('@/components/quiz-wizard/quiz-taker'), {
+const QuizTaker = dynamic(() => import('@/components/quiz-wizard/quiz-taker').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
   loading: () => <QuizLoadingSkeleton />,
+  ssr: false
 });
 
-const QuizResults = dynamic(() => import('@/components/quiz-wizard/quiz-results'), {
+const QuizResults = dynamic(() => import('@/components/quiz-wizard/quiz-results').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
   loading: () => <QuizLoadingSkeleton />,
+  ssr: false
 });
 
-const FlashcardViewer = dynamic(() => import('@/components/quiz-wizard/flashcard-viewer'), {
+const FlashcardViewer = dynamic(() => import('@/components/quiz-wizard/flashcard-viewer').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
   loading: () => <QuizLoadingSkeleton />,
+  ssr: false
 });
 
 // Import types and utilities
