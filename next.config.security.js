@@ -17,18 +17,17 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com https://generativelanguage.googleapis.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' https://generativelanguage.googleapis.com https://*.googleapis.com https://*.firebase.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com",
+              "connect-src 'self' https://api.gemini.com https://*.googleapis.com https://*.firebase.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com",
               "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
-              "block-all-mixed-content"
+              "upgrade-insecure-requests"
             ].join('; ')
           },
           {
@@ -46,32 +45,7 @@ const nextConfig = {
         ]
       }
     ]
-  },
-  serverExternalPackages: ['firebase-admin'],
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-    dirs: [],
-  },
-  experimental: {
-    typedRoutes: false,
-  },
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    };
-    
-    // Suppress critical dependency warnings from genkit/express
-    config.module.exprContextCritical = false;
-    config.module.unknownContextCritical = false;
-    
-    return config;
   }
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

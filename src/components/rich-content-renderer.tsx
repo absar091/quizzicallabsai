@@ -8,6 +8,7 @@ import { Card, CardContent } from './ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area, ScatterChart, Scatter, PieChart, Pie, Cell } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { cn } from '@/lib/utils';
+import { InputValidator } from '@/lib/input-validator';
 
 type PlaceholderData = {
     searchQuery: string;
@@ -40,8 +41,11 @@ const chartConfig = {
 const processTextContent = (text: string) => {
   if (!text) return '';
 
+  // First sanitize the input to prevent XSS
+  const sanitizedText = InputValidator.sanitizeHtml(text);
+
   // Handle common AI formatting issues
-  return text
+  return sanitizedText
     // Fix spacing around mathematical operators
     .replace(/([+\-×÷=≠≤≥≈])(?!\s)/g, '$1 ')
     .replace(/(?<!\s)([+\-×÷=≠≤≥≈])/g, ' $1')

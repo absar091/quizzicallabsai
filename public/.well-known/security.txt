@@ -1,0 +1,23 @@
+Contact: mailto:security@quizzicallabz.qzz.io
+Contact: https://quizzicallabz.qzz.io/security
+Expires: 2025-12-31T23:59:59.000Z
+Encryption: https://quizzicallabz.qzz.io/pgp-key.txt
+Preferred-Languages: en
+Canonical: https://quizzicallabz.qzz.io/.well-known/security.txt
+Policy: https://quizzicallabz.qzz.io/security-policy
+Hiring: https://quizzicallabz.qzz.io/careers
+
+# Security Policy
+# We take security seriously. Please report vulnerabilities responsibly.
+# 
+# Scope: All subdomains of quizzicallabz.qzz.io
+# 
+# Please include:
+# - Detailed description of the vulnerability
+# - Steps to reproduce
+# - Potential impact
+# - Your contact information
+#
+# We will respond within 48 hours and provide updates every 7 days.
+# 
+# Thank you for helping keep Quizzicallabs secure!
