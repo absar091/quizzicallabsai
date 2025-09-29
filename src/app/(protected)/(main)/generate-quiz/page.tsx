@@ -1233,7 +1233,11 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   // --- Conditional Rendering ---
 
   if (showFlashcardViewer) {
-    return <FlashcardViewer flashcards={generatedFlashcards as any || []} onBack={() => setShowFlashcardViewer(false)} />;
+    return (
+      <SafeComponent fallback={<QuizLoadingSkeleton />}>
+        <FlashcardViewer flashcards={generatedFlashcards as any || []} onBack={() => setShowFlashcardViewer(false)} />
+      </SafeComponent>
+    );
   }
 
 

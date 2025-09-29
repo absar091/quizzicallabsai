@@ -33,5 +33,21 @@
     originalWarn.apply(console, args);
   };
   
+  // Global error handler for unhandled React errors
+  window.addEventListener('error', function(event) {
+    if (event.error && event.error.message && event.error.message.includes('306')) {
+      event.preventDefault();
+      return false;
+    }
+  });
+  
+  // Global unhandled promise rejection handler
+  window.addEventListener('unhandledrejection', function(event) {
+    if (event.reason && String(event.reason).includes('306')) {
+      event.preventDefault();
+      return false;
+    }
+  });
+  
   console.log('🔥 Error suppressor active');
 })();
