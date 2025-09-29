@@ -151,36 +151,72 @@ class NotificationService {
   }
 
   // Schedule daily reminder notifications for inactive users
-  async sendDailyReminderNotifications(): Promise<void> {
+  async sendDailyReminderNotifications(): Promise<{ sent: number; errors: number }> {
     try {
       console.log('📧 Starting daily reminder notifications...');
       
-      // For now, we'll implement a simple version that sends reminders to all users
-      // In production, you'd want to query your database for inactive users
+      const { ref, get } = await import('firebase/database');
+      const { db } = await import('@/lib/firebase');
       
-      // This is a placeholder implementation - you'd need to:
-      // 1. Query your user database for users who haven't been active recently
-      // 2. Filter users who have reminder notifications enabled
-      // 3. Send reminder emails to those users
+      let sent = 0;
+      let errors = 0;
       
-      console.log('📧 Daily reminder notifications completed (placeholder implementation)');
+      // Get all users from Firebase
+      const usersRef = ref(db, 'users');
+      const snapshot = await get(usersRef);
       
-      // Example of how you might implement this:
-      /*
-      const inactiveUsers = await getUsersInactiveForDays(3);
-      for (const user of inactiveUsers) {
-        if (user.notificationSettings.studyReminders) {
-          await fetch('/api/notifications/reminder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userEmail: user.email,
-              userName: user.displayName || user.email.split('@')[0]
-            })
-          });
+      if (!snapshot.exists()) {
+        console.log('📧 No users found in database');
+        return { sent: 0, errors: 0 };
+      }
+      
+      const users = snapshot.val();
+      const threeDaysAgo = Date.now() - (3 * 24 * 60 * 60 * 1000);
+      
+      // Check quiz results to find inactive users
+      for (const [userId, userData] of Object.entries(users as any)) {
+        try {
+          if (!userData.email) continue;
+          
+          // Check last quiz activity
+          const resultsRef = ref(db, `quizResults/${userId}`);
+          const resultsSnapshot = await get(resultsRef);
+          
+          let isInactive = true;
+          if (resultsSnapshot.exists()) {
+            const results = Object.values(resultsSnapshot.val() as any);
+            const lastActivity = Math.max(...results.map((r: any) => r.createdAt || 0));
+            isInactive = lastActivity < threeDaysAgo;
+          }
+          
+          if (isInactive) {
+            // Send reminder email
+            const response = await fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'study-reminder',
+                to: userData.email,
+                userName: userData.displayName || userData.email.split('@')[0] || 'Student'
+              })
+            });
+            
+            if (response.ok) {
+              sent++;
+              console.log(`✅ Reminder sent to ${userData.email}`);
+            } else {
+              errors++;
+              console.error(`❌ Failed to send reminder to ${userData.email}`);
+            }
+          }
+        } catch (userError) {
+          errors++;
+          console.error(`❌ Error processing user ${userId}:`, userError);
         }
       }
-      */
+      
+      console.log(`📧 Daily reminders completed: ${sent} sent, ${errors} errors`);
+      return { sent, errors };
       
     } catch (error) {
       console.error('❌ Daily reminder notifications failed:', error);

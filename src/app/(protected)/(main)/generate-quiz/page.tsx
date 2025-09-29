@@ -335,10 +335,17 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           console.log('✅ Quiz cleanup completed');
         }
         
-        // Send quiz result email - optimized for speed
+        // Send quiz result email - optimized for speed (Pro users only)
         try {
           if (!user.email || !formValues) {
             console.log('⚠️ Skipping email: missing email or form data');
+          } else if (!isPro) {
+            console.log('⚠️ Skipping email: feature restricted to Pro users');
+            toast({
+              title: "Quiz Complete!",
+              description: "Quiz saved successfully. Upgrade to Pro to receive result emails.",
+              variant: "default",
+            });
           } else {
             console.log('📧 Sending quiz result email to:', user.email);
 
@@ -361,7 +368,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
             // Add timeout to prevent hanging
             const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Email timeout')), 10000)
+              setTimeout(() => reject(new Error('Email timeout')), 5000)
             );
 
             try {

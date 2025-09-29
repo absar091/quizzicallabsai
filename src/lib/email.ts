@@ -39,10 +39,13 @@ async function getTransporter() {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-      // Optimize for performance
-      pool: true, // Use connection pooling
-      maxConnections: 5,
-      maxMessages: 100,
+      // Optimize for speed
+      pool: true,
+      maxConnections: 10,
+      maxMessages: 1000,
+      connectionTimeout: 3000,
+      greetingTimeout: 2000,
+      socketTimeout: 5000,
       tls: {
         rejectUnauthorized: false
       }
