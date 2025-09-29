@@ -337,17 +337,94 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         
         // Send quiz result email - optimized for speed (Pro users only)
         try {
+          console.log('📧 Email section - checking conditions:', {
+            hasEmail: !!user.email,
+            hasFormValues: !!formValues,
+            isPro,
+            userPlan: user?.plan || 'unknown'
+          });
+          
           if (!user.email || !formValues) {
             console.log('⚠️ Skipping email: missing email or form data');
           } else if (!isPro) {
-            console.log('⚠️ Skipping email: feature restricted to Pro users');
-            toast({
-              title: "Quiz Complete!",
-              description: "Quiz saved successfully. Upgrade to Pro to receive result emails.",
-              variant: "default",
+            console.log('⚠️ User is not Pro, but sending email for testing');
+            // TEMPORARY: Send email to all users for testing
+            console.log('📧 Sending quiz result email to:', user.email);
+            console.log('📧 Email payload:', {
+              type: 'quiz-result',
+              to: user.email,
+              userName: user.displayName || user.email?.split('@')[0] || 'Student',
+              topic: formValues.topic,
+              score,
+              total: quiz.length,
+              percentage,
+              timeTaken: timeTaken,
+              date: new Date().toISOString()
             });
+
+            // Send email with timeout for better UX
+            const emailPromise = fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'quiz-result',
+                to: user.email,
+                userName: user.displayName || user.email?.split('@')[0] || 'Student',
+                topic: formValues.topic,
+                score,
+                total: quiz.length,
+                percentage,
+                timeTaken: timeTaken,
+                date: new Date().toISOString()
+              })
+            });
+
+            // Add timeout to prevent hanging
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Email timeout')), 5000)
+            );
+
+            try {
+              const emailResponse = await Promise.race([emailPromise, timeoutPromise]) as Response;
+              const emailResult = await emailResponse.json();
+              
+              if (emailResponse.ok && emailResult.success) {
+                console.log('✅ Email sent:', emailResult.messageId);
+                toast({
+                  title: "Quiz Complete! 📧",
+                  description: `Results sent to ${user.email}. Check your inbox!`,
+                  duration: 5000,
+                });
+              } else {
+                console.error('❌ Email failed:', emailResult.error);
+                toast({
+                  title: "Quiz Complete!",
+                  description: `Quiz saved successfully. Email failed: ${emailResult.error || 'Unknown error'}`,
+                  variant: "default",
+                });
+              }
+            } catch (emailError: any) {
+              console.error('❌ Email error:', emailError.message);
+              toast({
+                title: "Quiz Complete!",
+                description: `Quiz saved successfully. Email error: ${emailError.message}`,
+                variant: "default",
+              });
+            }
+            return; // Exit early after handling non-Pro user
           } else {
             console.log('📧 Sending quiz result email to:', user.email);
+            console.log('📧 Email payload:', {
+              type: 'quiz-result',
+              to: user.email,
+              userName: user.displayName || user.email?.split('@')[0] || 'Student',
+              topic: formValues.topic,
+              score,
+              total: quiz.length,
+              percentage,
+              timeTaken: timeTaken,
+              date: new Date().toISOString()
+            });
 
             // Send email with timeout for better UX
             const emailPromise = fetch('/api/send-email', {

@@ -104,12 +104,11 @@ export async function sendQuizResultEmail(to: string, quizData: {
   date?: string;
 }) {
   const template = quizResultEmailTemplate(quizData.userName, {
-    topic: quizData.topic,
-    score: quizData.score,
-    total: quizData.total || 10,
-    percentage: quizData.percentage || Math.round((quizData.score / (quizData.total || 10)) * 100),
-    timeTaken: quizData.timeTaken,
-    date: quizData.date
+    quizTitle: quizData.topic,
+    score: quizData.percentage || Math.round((quizData.score / (quizData.total || 10)) * 100),
+    correct: quizData.score.toString(),
+    incorrect: ((quizData.total || 10) - quizData.score).toString(),
+    date: quizData.date || new Date().toLocaleDateString()
   });
 
   return sendEmail({ 
