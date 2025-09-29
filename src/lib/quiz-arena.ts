@@ -102,12 +102,16 @@ export class QuizArenaHost {
     if (room.hostId !== hostId) throw new Error('Only host can start the quiz');
     if (room.started) throw new Error('Quiz already started');
 
-    // Start quiz and set first question
-    await updateDoc(roomRef, {
-      started: true,
-      currentQuestion: 0,
-      startedAt: Timestamp.now()
-    });
+    try {
+      // Start quiz and set first question
+      await updateDoc(roomRef, {
+        started: true,
+        currentQuestion: 0,
+        startedAt: Timestamp.now()
+      });
+    } catch (error) {
+      throw new Error('Failed to start quiz');
+    }
   }
 
   /**
@@ -151,10 +155,14 @@ export class QuizArenaHost {
 
     if (room.hostId !== hostId) throw new Error('Only host can finish the quiz');
 
-    await updateDoc(roomRef, {
-      finished: true,
-      finishedAt: Timestamp.now()
-    });
+    try {
+      await updateDoc(roomRef, {
+        finished: true,
+        finishedAt: Timestamp.now()
+      });
+    } catch (error) {
+      throw new Error('Failed to finish quiz');
+    }
   }
 
   /**
@@ -215,8 +223,12 @@ export class QuizArenaPlayer {
     roomId: string,
     userId: string
   ): Promise<void> {
-    // Remove player from players subcollection
-    await deleteDoc(doc(db, `quiz-rooms/${roomId}/players`, userId));
+    try {
+      // Remove player from players subcollection
+      await deleteDoc(doc(db, `quiz-rooms/${roomId}/players`, userId));
+    } catch (error) {
+      throw new Error('Failed to leave room');
+    }
   }
 
   /**
@@ -271,7 +283,11 @@ export class QuizArenaPlayer {
     const answerId = `${userId}_${questionIndex}_${Date.now()}`;
     const secureAnswer = { ...answer, hash };
 
-    await setDoc(doc(db, `quiz-rooms/${roomId}/answers`, answerId), secureAnswer);
+    try {
+      await setDoc(doc(db, `quiz-rooms/${roomId}/answers`, answerId), secureAnswer);
+    } catch (error) {
+      throw new Error('Failed to submit answer');
+    }
 
     // 🚫 IMPORTANT: Score calculation moved to backend Cloud Function
     // Client no longer handles scoring to prevent cheating
