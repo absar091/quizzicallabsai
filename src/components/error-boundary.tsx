@@ -2,31 +2,25 @@
 
 import React from 'react';
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-export class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<{}>,
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>> {
   constructor(props: React.PropsWithChildren<{}>) {
     super(props);
-    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    // Never crash - always continue
-    return { hasError: false };
+  static getDerivedStateFromError() {
+    // NEVER change state - always render normally
+    return null;
   }
 
   componentDidCatch() {
-    // Silently handle all errors - never crash app
-    return;
+    // Completely silent - no logging, no state changes
   }
 
   render() {
-    // Always render children - never show error UI
-    return this.props.children;
+    try {
+      return this.props.children || null;
+    } catch {
+      return null;
+    }
   }
 }

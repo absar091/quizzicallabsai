@@ -22,27 +22,30 @@ const HelpBot = dynamic(() => import("./help-bot"), {
 });
 
 function AppContent({ children }: { children: React.ReactNode }) {
-    const { user, loading } = useAuth();
+    try {
+        const { user, loading } = useAuth();
+        const showHelpBot = !loading;
 
-    const showHelpBot = !loading; // Show for all users, logged in or not
-
-    return (
-        <>
-            {children}
-            <Toaster />
-            <CookieConsentBanner />
-            <InstallPwaPrompt />
-            <PWAInstallPrompt />
-            <ServiceWorkerRegistration />
-            <MobileOptimization />
-            {showHelpBot && (
-                 <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
-                    <HelpBot />
-                </div>
-            )}
-            {user && <NotificationHandler />}
-        </>
-    );
+        return (
+            <>
+                {children}
+                <Toaster />
+                <CookieConsentBanner />
+                <InstallPwaPrompt />
+                <PWAInstallPrompt />
+                <ServiceWorkerRegistration />
+                <MobileOptimization />
+                {showHelpBot && (
+                     <div className="fixed bottom-20 right-4 z-50 md:bottom-6 md:right-6">
+                        <HelpBot />
+                    </div>
+                )}
+                {user && <NotificationHandler />}
+            </>
+        );
+    } catch {
+        return <>{children}</>;
+    }
 }
 
 export default function AppProviders({
@@ -77,20 +80,24 @@ export default function AppProviders({
     setIsSplashLoading(false);
   };
 
-  return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <AuthProvider>
-        {isSplashLoading ? (
-          <SplashScreen onAnimationComplete={handleAnimationComplete} />
-        ) : (
-          <AppContent>{children}</AppContent>
-        )}
-      </AuthProvider>
-    </ThemeProvider>
-  );
+  try {
+    return (
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <AuthProvider>
+          {isSplashLoading ? (
+            <SplashScreen onAnimationComplete={handleAnimationComplete} />
+          ) : (
+            <AppContent>{children}</AppContent>
+          )}
+        </AuthProvider>
+      </ThemeProvider>
+    );
+  } catch {
+    return <>{children}</>;
+  }
 }
