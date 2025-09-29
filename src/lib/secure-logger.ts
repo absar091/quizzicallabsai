@@ -1,20 +1,19 @@
-// Secure Logger - Prevents sensitive data from being logged
+// Secure logging utility to prevent log injection
 export const secureLog = {
-  info: (message: string) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(message);
-    }
+  info: (message: string, data?: any) => {
+    const sanitizedMessage = message.replace(/[\r\n]/g, ' ').substring(0, 200);
+    const sanitizedData = data ? JSON.stringify(data).replace(/[\r\n]/g, ' ').substring(0, 100) : '';
+    console.log(`[INFO] ${sanitizedMessage}`, sanitizedData);
   },
   
   error: (message: string, error?: any) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.error(message, error);
-    }
+    const sanitizedMessage = message.replace(/[\r\n]/g, ' ').substring(0, 200);
+    const sanitizedError = error?.message?.replace(/[\r\n]/g, ' ').substring(0, 100) || '';
+    console.error(`[ERROR] ${sanitizedMessage}`, sanitizedError);
   },
   
-  warn: (message: string) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(message);
-    }
+  warn: (message: string, data?: any) => {
+    const sanitizedMessage = message.replace(/[\r\n]/g, ' ').substring(0, 200);
+    console.warn(`[WARN] ${sanitizedMessage}`, data);
   }
 };
