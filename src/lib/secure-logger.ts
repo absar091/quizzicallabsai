@@ -3,6 +3,11 @@
  */
 
 export class SecureLogger {
+
+  /**
+   * Legacy secureLog function for backward compatibility
+   */
+  static secureLog = SecureLogger.info;
   /**
    * Sanitizes input to prevent log injection attacks
    */
@@ -63,3 +68,6 @@ export class SecureLogger {
     }
   }
 }
+
+// Export legacy function for backward compatibility
+export const secureLog = SecureLogger.info;

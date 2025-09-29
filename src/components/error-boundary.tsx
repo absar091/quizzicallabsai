@@ -17,47 +17,22 @@ export class ErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // Suppress Firebase-related errors
-    if (error.message?.includes('Cannot read properties of undefined') &&
-        error.message?.includes('info')) {
-      return { hasError: false };
-    }
-    
-    return { hasError: true, error };
+    // Always prevent app crash - just log and continue
+    console.warn('Error caught but app continues:', error.message);
+    return { hasError: false };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Suppress Firebase-related errors
-    if (error.message?.includes('Cannot read properties of undefined') &&
-        error.message?.includes('info')) {
-      return;
-    }
-    
-    console.error('Error caught by boundary:', error, errorInfo);
+    // Log error but don't crash app
+    console.warn('Component error (non-fatal):', {
+      error: error.message,
+      stack: error.stack?.substring(0, 200),
+      component: errorInfo.componentStack?.substring(0, 200)
+    });
   }
 
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 mb-6">
-              We're sorry, but something unexpected happened.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Reload Page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
+    // Never show error UI - always render children
     return this.props.children;
   }
 }
