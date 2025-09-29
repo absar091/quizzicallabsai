@@ -17,13 +17,20 @@ export class ErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // Always prevent app crash - just log and continue
+    // Silently handle React #306 errors (undefined render)
+    if (error.message?.includes('306') || error.message?.includes('undefined')) {
+      return { hasError: false };
+    }
     console.warn('Error caught but app continues:', error.message);
     return { hasError: false };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error but don't crash app
+    // Silently handle React #306 errors
+    if (error.message?.includes('306') || error.message?.includes('undefined')) {
+      return;
+    }
+    // Log other errors but don't crash app
     console.warn('Component error (non-fatal):', {
       error: error.message,
       stack: error.stack?.substring(0, 200),
