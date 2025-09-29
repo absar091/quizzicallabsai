@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-12 mt-20">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           
           {/* Company Info */}
           <div>
@@ -12,9 +12,13 @@ export default function Footer() {
             <p className="text-gray-400 mb-4">
               AI-powered educational platform transforming learning through personalized quizzes and study materials.
             </p>
-            <p className="text-sm text-gray-500">
-              © 2025 QuizzicallabzTM. All rights reserved.
-            </p>
+            <div className="text-sm text-gray-500">
+              <p>© 2025 QuizzicallabzTM</p>
+              <p>All rights reserved.</p>
+              <p className="mt-2">
+                <a href="https://quizzicallabz.qzz.io" className="hover:text-white">quizzicallabz.qzz.io</a>
+              </p>
+            </div>
           </div>
 
           {/* Legal */}
@@ -25,6 +29,7 @@ export default function Footer() {
               <li><Link href="/terms-of-service" className="hover:text-white">Terms of Service</Link></li>
               <li><Link href="/disclaimer" className="hover:text-white">Disclaimer</Link></li>
               <li><Link href="/security" className="hover:text-white">Security Policy</Link></li>
+              <li><Link href="/.well-known/security.txt" className="hover:text-white">Security.txt</Link></li>
             </ul>
           </div>
 
@@ -35,31 +40,53 @@ export default function Footer() {
               <li><a href="mailto:support@quizzicallabs.com" className="hover:text-white">Contact Support</a></li>
               <li><a href="mailto:legal@quizzicallabs.com" className="hover:text-white">Legal Inquiries</a></li>
               <li><a href="mailto:security@quizzicallabs.com" className="hover:text-white">Security Issues</a></li>
-              <li><Link href="/.well-known/security.txt" className="hover:text-white">Report Vulnerability</Link></li>
+              <li><a href="mailto:privacy@quizzicallabs.com" className="hover:text-white">Privacy Concerns</a></li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold mb-4">Resources</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li><Link href="/help" className="hover:text-white">Help Center</Link></li>
+              <li><Link href="/api-docs" className="hover:text-white">API Documentation</Link></li>
+              <li><Link href="/status" className="hover:text-white">System Status</Link></li>
+              <li><Link href="/changelog" className="hover:text-white">Changelog</Link></li>
             </ul>
           </div>
 
           {/* Platform Status */}
           <div>
-            <h4 className="font-semibold mb-4">Platform Status</h4>
+            <h4 className="font-semibold mb-4">Platform</h4>
             <div className="space-y-2 text-gray-400">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                <span className="text-sm">In Development</span>
+                <span className="text-sm">Beta Testing</span>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Platform is currently in beta. Features and availability may vary.
+                Hosted at quizzicallabz.qzz.io
+              </p>
+              <p className="text-xs text-gray-500">
+                Features may vary during development.
               </p>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
-          <p className="text-sm">
-            Quizzicallabzᴬᴵ is a product of QuizzicallabzTM. 
-            Built with ❤️ for educators and learners worldwide.
-          </p>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center text-gray-500">
+            <p className="text-sm mb-4 md:mb-0">
+              Quizzicallabzᴬᴵ is a product of QuizzicallabzTM. Built with ❤️ for educators and learners worldwide.
+            </p>
+            <div className="flex space-x-4 text-sm">
+              <a href="https://quizzicallabz.qzz.io" className="hover:text-white">quizzicallabz.qzz.io</a>
+              <span>•</span>
+              <span>Version 2.5.0</span>
+              <span>•</span>
+              <span>Beta</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

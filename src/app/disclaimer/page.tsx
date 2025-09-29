@@ -56,6 +56,8 @@ export default function Disclaimer() {
             <br />
             Email: legal@quizzicallabs.com
             <br />
+            Website: <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a>
+            <br />
             Company: QuizzicallabzTM
           </p>
         </section>

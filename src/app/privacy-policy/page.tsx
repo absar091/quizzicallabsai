@@ -80,7 +80,9 @@ export default function PrivacyPolicy() {
           <p>
             For privacy-related questions or requests, contact us at:
             <br />
-            Email: privacy@quizzicallabs.com
+            Email: privacy@quizzicallabs.com\
+                        <br />
+            Website: <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a>
             <br />
             Company: QuizzicallabzTM
           </p>

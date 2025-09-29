@@ -228,7 +228,7 @@ npm run dev
 
 ### 🎯 **Your First Quiz (2 minutes)**
 
-1. **Sign Up:** Free account at [app.quizzicallabs.com](https://app.quizzicallabs.com)
+1. **Sign Up:** Free account at [quizzicallabz.qzz.io](https://quizzicallabz.qzz.io)
 2. **Upload Material:** PDF, DOCX, or type your study topic
 3. **Get Quiz:** AI generates personalized questions instantly
 4. **Start Competing:** Challenge friends in Quiz Arena
@@ -308,7 +308,7 @@ We welcome passionate educators, developers, and learning enthusiasts! 🚀
 
 ### 🌏 **Find Us Online**
 - 📋 **GitHub:** [github.com/quizzicallabs/quizzicallabs-ai](https://github.com/quizzicallabs/quizzicallabs-ai)
-- 🌐 **Website:** [quizzicallabs.com](https://quizzicallabs.com)
+- 🌐 **Website:** [quizzicallabz.qzz.io](https://quizzicallabz.qzz.io)
 - 🎯 **LinkedIn:** [Company Updates & Hiring](https://linkedin.com/company/quizzicallabs)
 
 ---
