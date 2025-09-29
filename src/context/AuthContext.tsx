@@ -64,6 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     secureLog.info('AUTH CONTEXT EFFECT RUNNING');
     
+    // AbortController for cleanup
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       secureLog.info('AUTH STATE CHANGED', { hasUser: !!firebaseUser });
       secureLog.info('User email domain', { domain: firebaseUser?.email?.split('@')[1] });
@@ -116,7 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     userEmail: firebaseUser.email,
                     userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
                     deviceInfo,
-                  })
+                  }),
+                  signal
                 });
 
                 const notificationResult = await response.json();
@@ -165,7 +170,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   idToken,
                   userEmail: firebaseUser.email,
                   userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student'
-                })
+                }),
+                signal
               });
 
               secureLog.info('Welcome email response', { status: response.status });
@@ -251,7 +257,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      abortController.abort();
+      unsubscribe();
+    };
   }, [router, pathname]);
 
 
