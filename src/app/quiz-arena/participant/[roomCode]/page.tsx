@@ -94,7 +94,7 @@ export default function ParticipantArenaPage() {
         };
 
       } catch (error) {
-        console.error('Error initializing participant:', error);
+        console.error('Error initializing participant');
         toast?.({
           title: 'Connection Failed',
           description: 'Unable to join the room. Please try again.',
@@ -159,7 +159,7 @@ export default function ParticipantArenaPage() {
       });
 
     } catch (error: any) {
-      console.error('Error submitting answer:', error);
+      console.error('Error submitting answer');
       setHasSubmitted(false); // Allow retry on error
       setIsAnswered(false);
 
@@ -179,7 +179,7 @@ export default function ParticipantArenaPage() {
       await QuizArena.Player.leaveRoom(roomCode.toUpperCase(), user.uid);
       router.push('/dashboard');
     } catch (error: any) {
-      console.error('Error leaving room:', error);
+      console.error('Error leaving room');
       toast?.({
         title: 'Failed to Leave Room',
         description: error.message || 'Please try again',
@@ -352,63 +352,95 @@ export default function ParticipantArenaPage() {
                             return (
                               <div
                                 key={index}
-                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                                  !showResults ? 'hover:scale-101' : ''
+                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-md relative overflow-hidden ${
+                                  !showResults ? 'hover:scale-[1.02] active:scale-[0.98]' : ''
                                 } ${
                                   isSelected && !showResults
-                                    ? 'border-primary bg-primary/15 shadow-lg scale-102'
+                                    ? 'border-primary bg-primary/15 shadow-lg scale-[1.02] ring-2 ring-primary/30'
                                     : showResults && isCorrect
-                                    ? 'border-green-500 bg-green-500/15 shadow-lg'
+                                    ? 'border-green-500 bg-green-500/15 shadow-lg animate-pulse'
                                     : showResults && isWrongSelection
-                                    ? 'border-red-500 bg-red-500/15'
+                                    ? 'border-red-500 bg-red-500/15 animate-shake'
                                     : !showResults
                                     ? 'border-muted hover:border-primary/60 hover:bg-primary/5'
                                     : 'border-muted/50 bg-muted/30'
                                 }`}
-                                onClick={() => !hasSubmitted && setSelectedAnswer(index)}
+                                onClick={() => {
+                                  if (!hasSubmitted) {
+                                    setSelectedAnswer(index);
+                                    // Add click feedback
+                                    const element = document.getElementById(`option-${index}`);
+                                    element?.classList.add('animate-bounce');
+                                    setTimeout(() => element?.classList.remove('animate-bounce'), 300);
+                                  }
+                                }}
+                                id={`option-${index}`}
                               >
-                                <div className="flex items-center gap-4">
+                                {/* Selection pulse effect */}
+                                {isSelected && !showResults && (
+                                  <div className="absolute inset-0 bg-primary/10 animate-pulse rounded-xl" />
+                                )}
+                                
+                                {/* Correct answer glow */}
+                                {showResults && isCorrect && (
+                                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 animate-pulse rounded-xl" />
+                                )}
+
+                                <div className="flex items-center gap-4 relative z-10">
                                   {/* Letter Badge */}
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                                     isSelected && !showResults
-                                      ? 'bg-primary text-primary-foreground'
+                                      ? 'bg-primary text-primary-foreground shadow-lg scale-110'
                                       : showResults && isCorrect
-                                      ? 'bg-green-500 text-white'
+                                      ? 'bg-green-500 text-white shadow-lg animate-bounce'
                                       : showResults && isWrongSelection
-                                      ? 'bg-red-500 text-white'
-                                      : 'bg-muted/50 border-2 border-muted-foreground/20 text-muted-foreground'
+                                      ? 'bg-red-500 text-white shadow-lg'
+                                      : 'bg-muted/50 border-2 border-muted-foreground/20 text-muted-foreground hover:bg-primary/20 hover:border-primary/40'
                                   }`}>
                                     {String.fromCharCode(65 + index)}
                                   </div>
 
                                   {/* Option Text */}
-                                  <span className={`flex-1 ${
+                                  <span className={`flex-1 transition-all duration-300 ${
                                     isSelected && !showResults
                                       ? 'font-semibold text-primary'
                                       : showResults && isCorrect
-                                      ? 'font-semibold text-green-700'
-                                      : 'text-foreground'
+                                      ? 'font-bold text-green-700'
+                                      : showResults && isWrongSelection
+                                      ? 'font-medium text-red-600'
+                                      : 'text-foreground hover:text-primary'
                                   }`}>
                                     {option}
                                   </span>
 
                                   {/* Result Indicators */}
                                   {showResults && isCorrect && (
-                                    <div className="flex items-center gap-1 ml-auto">
-                                      <CheckCircle className="h-5 w-5 text-green-500" />
-                                      <span className="text-xs font-semibold text-green-600">+10 pts</span>
+                                    <div className="flex items-center gap-2 ml-auto animate-fadeIn">
+                                      <CheckCircle className="h-6 w-6 text-green-500 animate-bounce" />
+                                      <div className="text-right">
+                                        <div className="text-sm font-bold text-green-600">CORRECT!</div>
+                                        <div className="text-xs text-green-500">+10 points</div>
+                                      </div>
                                     </div>
                                   )}
 
                                   {showResults && isWrongSelection && (
-                                    <div className="flex items-center gap-1 ml-auto">
-                                      <Timer className="h-5 w-5 text-red-500" />
-                                      <span className="text-xs font-semibold text-red-600">Incorrect</span>
+                                    <div className="flex items-center gap-2 ml-auto animate-fadeIn">
+                                      <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
+                                        <span className="text-white text-sm font-bold">✕</span>
+                                      </div>
+                                      <div className="text-right">
+                                        <div className="text-sm font-bold text-red-600">WRONG</div>
+                                        <div className="text-xs text-red-500">0 points</div>
+                                      </div>
                                     </div>
                                   )}
 
                                   {isSelected && !showResults && (
-                                    <CheckCircle className="h-5 w-5 text-primary ml-auto" />
+                                    <div className="flex items-center gap-2 ml-auto">
+                                      <CheckCircle className="h-6 w-6 text-primary animate-pulse" />
+                                      <span className="text-sm font-semibold text-primary">SELECTED</span>
+                                    </div>
                                   )}
                                 </div>
                               </div>

@@ -18,14 +18,24 @@ import {
 
 // 🎯 TypeScript Interfaces (matching the blueprint)
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  type?: string;
+}
+
 export interface QuizArenaRoom {
   roomId: string;
   hostId: string;
   started: boolean;
   finished: boolean;
   currentQuestion: number;
-  quiz: any[]; // [{question, options[], correctIndex}]
+  quiz: QuizQuestion[];
   createdAt: Timestamp;
+  startedAt?: Timestamp;
+  finishedAt?: Timestamp;
+  isPublic?: boolean;
 }
 
 export interface ArenaPlayer {
@@ -53,7 +63,7 @@ export class QuizArenaHost {
     roomId: string,
     hostId: string,
     hostName: string,
-    quiz: any[]
+    quiz: QuizQuestion[]
   ): Promise<QuizArenaRoom> {
     const room: QuizArenaRoom = {
       roomId,
@@ -65,13 +75,18 @@ export class QuizArenaHost {
       createdAt: Timestamp.now()
     };
 
-    // Create room document
-    await setDoc(doc(db, 'quiz-rooms', roomId), room);
+    try {
+      // Create room document
+      await setDoc(doc(db, 'quiz-rooms', roomId), room);
 
-    // Add host as first player
-    await QuizArenaPlayer.joinRoom(roomId, hostId, hostName);
+      // Add host as first player
+      await QuizArenaPlayer.joinRoom(roomId, hostId, hostName);
 
-    return room;
+      return room;
+    } catch (error) {
+      console.error('Failed to create room:', error);
+      throw new Error('Failed to create quiz room');
+    }
   }
 
   /**
@@ -106,6 +121,7 @@ export class QuizArenaHost {
     const room = roomSnap.data() as QuizArenaRoom;
 
     if (room.hostId !== hostId) throw new Error('Only host can advance questions');
+    if (!room.started) throw new Error('Quiz not started yet');
     if (room.finished) throw new Error('Quiz already finished');
     if (room.currentQuestion >= room.quiz.length - 1) {
       // Finish the quiz
@@ -113,9 +129,14 @@ export class QuizArenaHost {
       return;
     }
 
-    await updateDoc(roomRef, {
-      currentQuestion: room.currentQuestion + 1
-    });
+    try {
+      await updateDoc(roomRef, {
+        currentQuestion: room.currentQuestion + 1
+      });
+    } catch (error) {
+      console.error('Failed to advance question:', error);
+      throw new Error('Failed to advance to next question');
+    }
   }
 
   /**
@@ -139,12 +160,21 @@ export class QuizArenaHost {
   /**
    * Listen to room state (for host dashboard)
    */
-  static listenToRoom(roomId: string, callback: (data: any) => void): () => void {
-    const unsubscribe = onSnapshot(doc(db, 'quiz-rooms', roomId), (doc) => {
-      if (doc.exists()) {
-        callback({ id: doc.id, ...doc.data() });
+  static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
+    const unsubscribe = onSnapshot(
+      doc(db, 'quiz-rooms', roomId), 
+      (doc) => {
+        if (doc.exists()) {
+          callback({ roomId: doc.id, ...doc.data() } as QuizArenaRoom);
+        } else {
+          callback(null);
+        }
+      },
+      (error) => {
+        console.error('Room listener error');
+        callback(null);
       }
-    });
+    );
     return unsubscribe;
   }
 }
@@ -167,19 +197,14 @@ export class QuizArenaPlayer {
       joinedAt: Timestamp.now()
     };
 
-    // Use updateDoc with merge to optimize performance and prevent overwrites
+    // Optimized: Use setDoc with merge to reduce database operations
     const playerRef = doc(db, `quiz-rooms/${roomId}/players`, userId);
-    const playerSnap = await getDoc(playerRef);
-
-    if (playerSnap.exists()) {
-      // Update existing player (re-joining case)
-      await updateDoc(playerRef, {
-        name: userName,
-        joinedAt: Timestamp.now()
-      });
-    } else {
-      // Create new player document
-      await setDoc(playerRef, player);
+    
+    try {
+      await setDoc(playerRef, player, { merge: true });
+    } catch (error) {
+      console.error('Failed to join room:', error);
+      throw new Error('Failed to join quiz room');
     }
   }
 
@@ -272,12 +297,21 @@ export class QuizArenaPlayer {
   /**
    * Listen to room state (for player dashboard)
    */
-  static listenToRoom(roomId: string, callback: (data: any) => void): () => void {
-    const unsubscribe = onSnapshot(doc(db, 'quiz-rooms', roomId), (doc) => {
-      if (doc.exists()) {
-        callback({ id: doc.id, ...doc.data() });
+  static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
+    const unsubscribe = onSnapshot(
+      doc(db, 'quiz-rooms', roomId), 
+      (doc) => {
+        if (doc.exists()) {
+          callback({ roomId: doc.id, ...doc.data() } as QuizArenaRoom);
+        } else {
+          callback(null);
+        }
+      },
+      (error) => {
+        console.error('Room listener error');
+        callback(null);
       }
-    });
+    );
     return unsubscribe;
   }
 
@@ -327,7 +361,10 @@ export class QuizArenaDiscovery {
    * Generate unique room code
    */
   static generateRoomCode(): string {
-    return Math.random().toString(36).substring(2, 6).toUpperCase();
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID().substring(0, 6).toUpperCase();
+    }
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
   /**

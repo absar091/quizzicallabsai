@@ -18,9 +18,10 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
-          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
           .logo { width: 100px !important; }
+          .button-container { text-align: center !important; }
         }
       </style>
     </head>
@@ -70,8 +71,10 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/review" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Review Answers</a>
-            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Practice Weak Areas</a>
+            <div class="button-container" style="text-align:left;">
+              <a href="https://quizzicallabz.qzz.io/review" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Review Answers</a>
+              <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Practice Weak Areas</a>
+            </div>
           </td>
         </tr>
 
@@ -139,9 +142,10 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
-          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
           .logo { width: 100px !important; }
+          .button-container { text-align: center !important; }
         }
       </style>
     </head>
@@ -191,9 +195,11 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/dashboard" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">View Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Access Gen Lab</a>
-            <a href="https://quizzicallabz.qzz.io/exam-prep" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Start Exam Prep</a>
+            <div class="button-container" style="text-align:left;">
+              <a href="https://quizzicallabz.qzz.io/dashboard" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">View Dashboard</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Access Gen Lab</a>
+              <a href="https://quizzicallabz.qzz.io/exam-prep" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Start Exam Prep</a>
+            </div>
           </td>
         </tr>
 
@@ -264,9 +270,10 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
-          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
           .logo { width: 100px !important; }
+          .button-container { text-align: center !important; }
         }
       </style>
     </head>
@@ -316,8 +323,10 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             </table>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/reset-password" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Change Password</a>
-            <a href="https://quizzicallabz.qzz.io/profile" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Activity</a>
+            <div class="button-container" style="text-align:left;">
+              <a href="https://quizzicallabz.qzz.io/reset-password" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Change Password</a>
+              <a href="https://quizzicallabz.qzz.io/profile" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Activity</a>
+            </div>
           </td>
         </tr>
 
@@ -385,9 +394,10 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
-          .mobile-button { display: block !important; width: 100% !important; margin: 5px 0 !important; }
+          .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
           .logo { width: 100px !important; }
+          .button-container { text-align: center !important; }
         }
       </style>
     </head>
@@ -441,8 +451,10 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
             </blockquote>
 
             <!-- Buttons -->
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;" class="mobile-button">Take Quiz</a>
-            <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Weak Areas</a>
+            <div class="button-container" style="text-align:left;">
+              <a href="https://quizzicallabz.qzz.io/generate-quiz" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Take Quiz</a>
+              <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Weak Areas</a>
+            </div>
           </td>
         </tr>
 

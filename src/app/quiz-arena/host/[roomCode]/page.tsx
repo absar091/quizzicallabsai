@@ -102,7 +102,7 @@ export default function RoomHostPage() {
 
   const loadRoomData = async () => {
     try {
-      console.log('🔍 Loading room data for:', roomCode);
+      // Loading room data
 
       // Load room data from Firestore using QuizArena Discovery
       const { QuizArena } = await import('@/lib/quiz-arena');
@@ -121,7 +121,7 @@ export default function RoomHostPage() {
 
       const firebaseRoomData = roomSnapshot.data();
 
-      console.log('✅ Room data loaded from Firebase:', firebaseRoomData);
+      // Room data loaded
 
       // Transform Firebase room data to component format
       const roomPlayers = [];
@@ -162,22 +162,17 @@ export default function RoomHostPage() {
         players: roomPlayers
       };
 
-      console.log('📊 Final room data:', {
-        roomId: roomData.roomId,
-        hostId: roomData.hostId,
-        quizLength: roomData.quiz?.length || 0,
-        playersCount: roomData.playerCount
-      });
+      // Room data loaded successfully
 
       setRoomData(roomData);
       setCurrentQuestionIndex(roomData.currentQuestion);
       setQuizStarted(roomData.started);
 
     } catch (error) {
-      console.error('❌ Error loading room data:', error);
+      console.error('Error loading room data');
       toast?.({
         title: 'Error Loading Room',
-        description: error.message || 'Could not load room data. Please check the room code.',
+        description: 'Could not load room data. Please check the room code.',
         variant: 'destructive'
       });
     } finally {
@@ -282,7 +277,7 @@ export default function RoomHostPage() {
       }, 3000);
 
     } catch (error) {
-      console.error('Error starting quiz:', error);
+      console.error('Error starting quiz');
       toast?.({
         title: 'Error Starting Quiz',
         description: 'Please try again.',
@@ -311,7 +306,7 @@ export default function RoomHostPage() {
       });
 
     } catch (error) {
-      console.error('Error advancing question:', error);
+      console.error('Error advancing question');
     }
   };
 
@@ -331,7 +326,7 @@ export default function RoomHostPage() {
       });
 
     } catch (error) {
-      console.error('Error finishing quiz:', error);
+      console.error('Error finishing quiz');
     }
   };
 
@@ -381,8 +376,9 @@ export default function RoomHostPage() {
     );
   }
 
-  const isHost = user && roomData.hostId === user.uid;
-  const currentQuestion = roomData.quiz[currentQuestionIndex];
+  // Define isHost early to prevent undefined behavior
+  const isHost = user && roomData?.hostId === user.uid;
+  const currentQuestion = roomData?.quiz[currentQuestionIndex];
 
   return (
     <div className="min-h-screen p-4">
