@@ -9,13 +9,13 @@ import { ntsSyllabus } from "@/lib/nts-syllabus";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type CategoryPageProps = {
-  params: {
+  params: Promise<{
     category: string;
-  };
+  }>;
 };
 
-export default function NtsCategoryPage({ params }: CategoryPageProps) {
-  const { category: categoryKey } = params;
+export default async function NtsCategoryPage({ params }: CategoryPageProps) {
+  const { category: categoryKey } = await params;
   const category = ntsSyllabus[categoryKey];
 
   if (!category) {

@@ -19,5 +19,8 @@
   },
   "database": {
     "rules": "firebase-rules-fix.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

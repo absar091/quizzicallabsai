@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
 
 interface QuizQuestion {
   question: string;
@@ -49,6 +50,7 @@ export default function RoomHostPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [timeLeft, setTimeLeft] = useState(30);
   const [timerActive, setTimerActive] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
 
   useEffect(() => {
     if (!roomCode || !user) return;
@@ -57,7 +59,16 @@ export default function RoomHostPage() {
 
     // Set up real-time listener
     const cleanup = setupRoomListener();
-    return cleanup;
+    
+    // Monitor connection status
+    const connectionInterval = setInterval(() => {
+      setConnectionStatus(getConnectionStatus());
+    }, 5000);
+    
+    return () => {
+      cleanup?.();
+      clearInterval(connectionInterval);
+    };
   }, [roomCode, user]);
 
   // Timer effect
@@ -386,6 +397,23 @@ export default function RoomHostPage() {
           </div>
 
           <div className="flex gap-2">
+            {/* Connection Status Indicator */}
+            {!connectionStatus.isOnline && (
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={forceReconnect}
+                className="animate-pulse"
+              >
+                📴 Offline - Tap to Reconnect
+              </Button>
+            )}
+            {connectionStatus.reconnectAttempts > 0 && connectionStatus.isOnline && (
+              <Button variant="outline" size="sm" disabled>
+                🔄 Reconnecting... ({connectionStatus.reconnectAttempts})
+              </Button>
+            )}
+            
             <Button variant="outline" onClick={copyRoomCode}>
               <Copy className="mr-2 h-4 w-4" />
               {roomCode}

@@ -204,9 +204,10 @@ const guideData: Record<string, GuideContent> = {
     },
 };
 
-export default function GuideDetailPage({ params }: { params: { slug: string } }) {
+export default async function GuideDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
-  const sanitizedSlug = sanitizeSlug(params.slug);
+  const { slug } = await params;
+  const sanitizedSlug = sanitizeSlug(slug);
   const guide = guideData[sanitizedSlug];
 
   if (!guide) {

@@ -9,13 +9,13 @@ import { ecatSyllabus, Topic } from "@/lib/ecat-syllabus";
 import { SidebarAd } from "@/components/ads/ad-banner";
 
 type SubjectPageProps = {
-  params: {
+  params: Promise<{
     subject: string;
-  };
+  }>;
 };
 
-export default function EcatSubjectPage({ params }: SubjectPageProps) {
-  const { subject: subjectKey } = params;
+export default async function EcatSubjectPage({ params }: SubjectPageProps) {
+  const { subject: subjectKey } = await params;
   const subject = ecatSyllabus[subjectKey];
 
   if (!subject) {

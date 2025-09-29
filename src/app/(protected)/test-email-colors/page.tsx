@@ -16,12 +16,11 @@ export default function TestEmailColorsPage() {
       
       // Generate sample email with good score to show the new blue theme
       const sampleData = {
-        topic: 'Email System Test',
+        quizTitle: 'Email System Test',
         score: 9,
-        total: 10,
-        percentage: 90,
-        timeTaken: 180,
-        date: new Date().toISOString()
+        correct: '9',
+        incorrect: '1',
+        date: new Date().toLocaleDateString()
       };
       
       const emailTemplate = quizResultEmailTemplate('Abid Hussain', sampleData);

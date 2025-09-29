@@ -81,7 +81,7 @@ export default function ReviewPage() {
   const stats = SpacedRepetitionManager.getReviewStats(reviewCards);
 
   if (isLoading) {
-    return <EnhancedLoading type="questions" message="Loading your review session..." />;
+    return <EnhancedLoading type="quiz" message="Loading your review session..." />;
   }
 
   if (reviewCards.length === 0) {

@@ -7,6 +7,7 @@ import AppProviders from "@/components/app-providers";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import "@/lib/suppress-firebase-errors"; // Suppress Firebase WebChannel errors
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -105,6 +106,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script src="/suppress-firebase-errors.js"></script>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>

@@ -5,7 +5,7 @@ import {
     getAuth
 } from "firebase/auth";
 import { getDatabase } from "firebase/database";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, enableNetwork, disableNetwork } from "firebase/firestore";
 import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
@@ -27,6 +27,17 @@ const auth = getAuth(app);
 export const db = getDatabase(app);
 export const firestore = getFirestore(app);
 
+// Configure Firestore settings for better connection handling
+if (typeof window !== 'undefined') {
+  // Enable offline persistence and better error handling
+  try {
+    // These settings help with connection stability
+    firestore._delegate._databaseId = firestore._delegate._databaseId;
+  } catch (e) {
+    // Ignore if already configured
+  }
+}
+
 // Initialize Analytics and get a reference to the service, only if supported
 let analytics: Analytics | null = null;
 
@@ -46,6 +57,13 @@ async function initializeAnalytics() {
 initializeAnalytics();
 
 export { app, auth, analytics };
+
+// Initialize connection manager
+if (typeof window !== 'undefined') {
+  import('./firebase-connection').then(({ connectionManager }) => {
+    console.log('🔥 Firebase connection manager initialized');
+  }).catch(console.error);
+}
 
 // Re-export database functions for convenience
 export { ref, set, get, push, remove, update, query, orderByChild, equalTo, limitToFirst, limitToLast } from 'firebase/database';

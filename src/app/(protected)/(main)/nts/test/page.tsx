@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { QuizGenerationLoading } from "@/components/enhanced-loading";
 import { GenerationAd } from "@/components/ads/ad-banner";
+import type { Quiz } from "@/types/quiz";
 
 function NtsTestFlow() {
     const searchParams = useSearchParams();

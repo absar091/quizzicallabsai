@@ -18,9 +18,8 @@ export default function TestEnhancedEmailsPage() {
       
       const emailTemplate = welcomeEmailTemplate('Abid Hussain', {
         userEmail: 'ahmadraoabsar@gmail.com',
-        accountType: 'Free',
-        signUpDate: new Date().toLocaleDateString(),
-        preferredLanguage: 'English'
+        planName: 'Free',
+        signupDate: new Date().toLocaleDateString()
       });
       
       setEmailHtml(emailTemplate.html);
@@ -38,11 +37,10 @@ export default function TestEnhancedEmailsPage() {
       const { quizResultEmailTemplate } = await import('@/lib/email-templates');
       
       const emailTemplate = quizResultEmailTemplate('Abid Hussain', {
-        topic: 'Advanced JavaScript Concepts',
+        quizTitle: 'Advanced JavaScript Concepts',
         score: 8,
-        total: 10,
-        percentage: 80,
-        timeTaken: 240,
+        correct: '8',
+        incorrect: '2',
         date: new Date().toISOString()
       });
       

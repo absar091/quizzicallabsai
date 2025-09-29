@@ -11,9 +11,9 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarAd } from "@/components/ads/ad-banner";
 
 type SubjectPageProps = {
-  params: {
+  params: Promise<{
     subject: string;
-  };
+  }>;
 };
 
 export default async function MdcatSubjectPage({ params }: SubjectPageProps) {
