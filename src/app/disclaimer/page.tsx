@@ -1,9 +1,10 @@
 export default function Disclaimer() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">Disclaimer</h1>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Disclaimer</h1>
 
-      <div className="prose prose-lg max-w-none">
+        <div className="prose prose-lg max-w-none text-foreground">
         <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
         <section className="mb-8">
@@ -240,9 +241,10 @@ export default function Disclaimer() {
           </ul>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded mt-6">
-          <p className="font-semibold mb-2">📞 Need Help Understanding This Disclaimer?</p>
-          <p>If you have questions about this disclaimer or need clarification on any points, please don't hesitate to contact our support team. We're here to help you use our platform effectively and responsibly.</p>
+          <div className="bg-gray-50 p-4 rounded mt-6">
+            <p className="font-semibold mb-2">📞 Need Help Understanding This Disclaimer?</p>
+            <p>If you have questions about this disclaimer or need clarification on any points, please don't hesitate to contact our support team. We're here to help you use our platform effectively and responsibly.</p>
+          </div>
         </div>
       </div>
     </div>

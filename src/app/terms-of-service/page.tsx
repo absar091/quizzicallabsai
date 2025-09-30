@@ -1,9 +1,10 @@
 export default function TermsOfService() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">Terms of Service</h1>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Terms of Service</h1>
 
-      <div className="prose prose-lg max-w-none">
+        <div className="prose prose-lg max-w-none text-foreground">
         <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
         <section className="mb-8">

@@ -1,9 +1,10 @@
 export default function PrivacyPolicy() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">Privacy Policy</h1>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Privacy Policy</h1>
 
-      <div className="prose prose-lg max-w-none">
+        <div className="prose prose-lg max-w-none text-foreground">
         <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
         <section className="mb-8">
@@ -235,16 +236,17 @@ export default function PrivacyPolicy() {
           <p>This Privacy Policy is governed by the laws of Pakistan and applicable international privacy regulations, including GDPR where applicable. Any disputes will be resolved in accordance with our Terms of Service.</p>
         </section>
 
-        <div className="bg-yellow-50 p-4 rounded mt-8">
-          <p className="font-semibold mb-2">📋 Summary of Key Points:</p>
-          <ul className="list-disc pl-6 space-y-1 text-sm">
-            <li>We collect minimal data necessary for AI-powered educational services</li>
-            <li>Your data is used to personalize learning and improve our platform</li>
-            <li>We implement strong security measures to protect your information</li>
-            <li>You have comprehensive rights to access, correct, and delete your data</li>
-            <li>We are transparent about third-party services and data handling</li>
-            <li>Contact our Privacy Officer for any privacy-related concerns</li>
-          </ul>
+          <div className="bg-yellow-50 p-4 rounded mt-8">
+            <p className="font-semibold mb-2">📋 Summary of Key Points:</p>
+            <ul className="list-disc pl-6 space-y-1 text-sm">
+              <li>We collect minimal data necessary for AI-powered educational services</li>
+              <li>Your data is used to personalize learning and improve our platform</li>
+              <li>We implement strong security measures to protect your information</li>
+              <li>You have comprehensive rights to access, correct, and delete your data</li>
+              <li>We are transparent about third-party services and data handling</li>
+              <li>Contact our Privacy Officer for any privacy-related concerns</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
