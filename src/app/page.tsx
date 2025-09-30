@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { GraduationCap, Loader2, BrainCircuit, Check, Trophy, Share2, GamepadIcon, Target, Zap, TrendingUp, BookOpen, FileText } from "lucide-react";
@@ -9,10 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-
-// Lazy load heavy components
-const AppHeader = lazy(() => import("@/components/app-header").then(mod => ({ default: mod.AppHeader })));
-const Footer = lazy(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -123,57 +119,75 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader />
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      {/* Simple Header */}
+      <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <BrainCircuit className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-white font-bold text-xl">Quizzicallabz<sup className="text-yellow-400">AI</sup></span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" className="text-white hover:bg-white/10" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700" asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* Hero Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-slate-50 via-primary/5 to-accent/10 dark:from-slate-900 dark:via-primary/10 dark:to-accent/10">
+      <section className="py-16 md:py-24 bg-gradient-to-br from-blue-900/20 via-slate-900/20 to-blue-900/20">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Badge Chips */}
             <div className="flex justify-center gap-3 mb-8 flex-wrap">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-primary/20">
+              <div className="flex items-center gap-2 bg-blue-500/20 text-blue-300 px-5 py-3 rounded-full text-sm font-semibold border border-blue-500/30 backdrop-blur-sm">
                 <BrainCircuit className="h-5 w-5" />
-                <span className="text-accent">AI</span>-Powered Learning
+                <span className="text-yellow-400">AI</span>-Powered Learning
               </div>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-accent/10 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-primary/20">
+              <div className="flex items-center gap-2 bg-blue-600/20 text-blue-300 px-5 py-3 rounded-full text-sm font-semibold border border-blue-600/30 backdrop-blur-sm">
                 <Zap className="h-5 w-5" />
                 Smart Quiz Generation
               </div>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-accent/10 to-primary/10 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-accent/20">
+              <div className="flex items-center gap-2 bg-blue-700/20 text-blue-300 px-5 py-3 rounded-full text-sm font-semibold border border-blue-700/30 backdrop-blur-sm">
                 <GamepadIcon className="h-5 w-5" />
                 Multiplayer Battles
               </div>
             </div>
 
             {/* Main Hero Content */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Study Smarter, <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Not Longer</span>
-              <span className="block bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
-              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-1">with <span className="text-accent">AI</span>-Powered Quizzes</span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+              Study Smarter, <span className="bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent">Not Longer</span>
+              <span className="block bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
+              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mt-1">with <span className="text-yellow-400">AI</span>-Powered Quizzes</span>
             </h1>
 
-            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
               Transform your study routine with intelligent AI that creates personalized quizzes, tracks your progress, and makes learning competitive and engaging.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
-                size="xl"
-                variant="featured"
+                size="lg"
                 onClick={(e) => handleNavigation('/signup', 'Sign Up')}
                 disabled={!!navigatingTo}
-                className="font-bold text-lg shadow-2xl"
+                className="font-bold text-lg shadow-2xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4"
               >
                 <Zap className="mr-2 h-5 w-5" />
                 {navigatingTo === '/signup' ? 'Taking you there...' : 'Start Free Trial'}
               </Button>
               <Button
-                size="xl"
-                variant="cta"
+                size="lg"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
                 disabled={!!navigatingTo}
-                className="font-bold text-lg shadow-2xl"
+                className="font-bold text-lg shadow-2xl bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-8 py-4"
               >
                 <GamepadIcon className="mr-2 h-5 w-5" />
                 {navigatingTo === '/quiz-arena' ? 'Loading Arena...' : 'Play Live Quiz Arena'}
@@ -1148,7 +1162,84 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer />
+      {/* Comprehensive Footer */}
+      <footer className="border-t-2 border-blue-500/30 bg-slate-900/90 backdrop-blur-sm mt-auto">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand Section */}
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <BrainCircuit className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-white font-bold text-xl">Quizzicallabz<sup className="text-yellow-400">AI</sup></span>
+              </div>
+              <p className="text-white/70 text-sm mb-4">Transforming education with AI-powered learning experiences.</p>
+              <div className="flex gap-3">
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                  <span className="text-blue-400 text-xs">f</span>
+                </div>
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                  <span className="text-blue-400 text-xs">t</span>
+                </div>
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-500/30">
+                  <span className="text-blue-400 text-xs">in</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Product Section */}
+            <div>
+              <h4 className="text-white font-semibold mb-4 border-b border-blue-500/20 pb-2">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/generate-quiz" className="text-white/70 hover:text-blue-400 transition-colors">Quiz Generator</Link></li>
+                <li><Link href="/quiz-arena" className="text-white/70 hover:text-blue-400 transition-colors">Quiz Arena</Link></li>
+                <li><Link href="/study-guides" className="text-white/70 hover:text-blue-400 transition-colors">Study Guides</Link></li>
+                <li><Link href="/dashboard" className="text-white/70 hover:text-blue-400 transition-colors">Dashboard</Link></li>
+                <li><Link href="/pricing" className="text-white/70 hover:text-blue-400 transition-colors">Pricing</Link></li>
+              </ul>
+            </div>
+
+            {/* Resources Section */}
+            <div>
+              <h4 className="text-white font-semibold mb-4 border-b border-blue-500/20 pb-2">Resources</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/help" className="text-white/70 hover:text-blue-400 transition-colors">Help Center</Link></li>
+                <li><Link href="/tutorials" className="text-white/70 hover:text-blue-400 transition-colors">Tutorials</Link></li>
+                <li><Link href="/blog" className="text-white/70 hover:text-blue-400 transition-colors">Blog</Link></li>
+                <li><Link href="/api-docs" className="text-white/70 hover:text-blue-400 transition-colors">API Docs</Link></li>
+                <li><Link href="/community" className="text-white/70 hover:text-blue-400 transition-colors">Community</Link></li>
+              </ul>
+            </div>
+
+            {/* Company Section */}
+            <div>
+              <h4 className="text-white font-semibold mb-4 border-b border-blue-500/20 pb-2">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about" className="text-white/70 hover:text-blue-400 transition-colors">About Us</Link></li>
+                <li><Link href="/careers" className="text-white/70 hover:text-blue-400 transition-colors">Careers</Link></li>
+                <li><Link href="/contact" className="text-white/70 hover:text-blue-400 transition-colors">Contact</Link></li>
+                <li><Link href="/privacy" className="text-white/70 hover:text-blue-400 transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-white/70 hover:text-blue-400 transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="border-t border-blue-500/20 pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-white/70 text-sm">
+                © 2025 Quizzicallabz<sup className="text-yellow-400">AI</sup>. All rights reserved. Transforming education, one quiz at a time.
+              </p>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-white/50">Made with</span>
+                <span className="text-yellow-400">♥</span>
+                <span className="text-white/50">for learners worldwide</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
