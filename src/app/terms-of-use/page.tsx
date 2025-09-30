@@ -10,7 +10,7 @@ export default function TermsOfUsePage() {
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
-            Welcome to Quizzicallabs AI. These Terms of Use ("Terms") govern your access to and use of our application and services ("Service"), which are a product of QuizzicalLabs™. By accessing or using our Service, you agree to be bound by these Terms.
+            Welcome to Quizzicallabzᴬᴵ. These Terms of Use ("Terms") govern your access to and use of our application and services ("Service"), which are a product of QuizzicalLabs™. By accessing or using our Service, you agree to be bound by these Terms.
           </p>
 
           <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function TermsOfUsePage() {
 
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-foreground">Contact Us</h2>
-            <p>If you have any questions about these Terms, please contact us at legal@quizzicallabs.com.</p>
+            <p>If you have any questions about these Terms, please contact us at legal@quizzicallabz.qzz.io.</p>
           </div>
         </CardContent>
       </Card>

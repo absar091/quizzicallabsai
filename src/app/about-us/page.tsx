@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: "About Us",
-    description: "Learn about the mission of Quizzicallabs AI and its creator, Absar Ahmad Rao.",
+    description: "Learn about the mission of Quizzicallabzᴬᴵ and its creator, Absar Ahmad Rao.",
 };
 
 export default function AboutUsPage() {
