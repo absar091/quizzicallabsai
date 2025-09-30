@@ -47,7 +47,7 @@ export default function Home() {
     e?.preventDefault();
     setNavigatingTo(path);
     toast({
-      title: `🚀 Taking you there...`,
+      title: ` Taking you there...`,
       description: `Navigating to ${buttonText}`,
       duration: 800,
     });
@@ -117,7 +117,7 @@ export default function Home() {
           <div className="mx-auto max-w-5xl text-center">
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 backdrop-blur-sm">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Powered by Gemini 2.0 Pro AI</span>
+              <span className="text-sm font-medium">Powered by Quizzicallabz Studio</span>
             </div>
 
             <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
@@ -143,7 +143,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    Start Free Forever <Rocket className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    Start Free Trial <Rocket className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </Button>
@@ -175,7 +175,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-green-500" />
-                <span>Free forever plan</span>
+                <span>Free Tier</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-green-500" />
@@ -455,19 +455,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
-                quote: "After using Quizzicallabs AI, my MDCAT score improved 30%. The Quiz Arena made studying actually fun!",
+                quote: "After using Quizzicallabz AI, my MDCAT score improved 30%. The Quiz Arena made studying actually fun!",
                 author: "Fatima H.",
-                role: "MDCAT Top Scorer 2024"
+                role: "MDCAT 2024"
               },
               {
                 quote: "Spent 4 hours making flash cards that I forgot next day. This app generates them instantly and they STICK!",
                 author: "Ahmed K.",
-                role: "Medical Student"
+                role: "UET Student"
               },
               {
                 quote: "My physics class engagement went from 20% to 95%. Students are excited about homework now!",
-                author: "Dr. Ali R.",
-                role: "University Professor"
+                author: "Furqan Ahmad",
+                role: "University Of Education"
               }
             ].map((testimonial, i) => (
               <Card key={i} className="border-2">
@@ -513,7 +513,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    Start Free Forever <Rocket className="ml-2 h-5 w-5" />
+                    Start Free Trial <Rocket className="ml-2 h-5 w-5" />
                   </>
                 )}
               </Button>
@@ -530,7 +530,7 @@ export default function Home() {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-6">
-              No credit card required · Free forever · Upgrade anytime
+              No credit card required · Free Tier · Upgrade anytime
             </p>
           </div>
         </div>
@@ -584,9 +584,7 @@ export default function Home() {
 
           <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>© 2025 Quizzicallabz<sup className="text-accent">AI</sup>. All rights reserved.</p>
-            <p className="flex items-center gap-2">
-              Made with <span className="text-red-500">♥</span> for learners worldwide
-            </p>
+            
           </div>
         </div>
       </footer>
