@@ -45,7 +45,7 @@
 
 ### 🔗 **Social Learning Ecosystem**
 <p align="center">
-  <img src="./demo/social-sharig.png" alt="Social Learning Features" width="65%" />
+  <img src="./demo/social-sharing.png" alt="Social Learning Features" width="65%" />
 </p>
 
 **Build your learning community and see education spread virally**
