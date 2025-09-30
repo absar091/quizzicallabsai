@@ -9,7 +9,7 @@ export default function TermsOfUsePage() {
       <div className="container py-8 max-w-4xl mx-auto">
         <PageHeader title="Terms of Use" description="Last updated: September 10, 2025" />
         <Card className="bg-card border-border">
-        <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
+          <CardContent className="pt-6 space-y-6 text-sm text-muted-foreground leading-relaxed">
           <p>
             Welcome to Quizzicallabzᴬᴵ. These Terms of Use ("Terms") govern your access to and use of our application and services ("Service"), which are a product of QuizzicalLabs™. By accessing or using our Service, you agree to be bound by these Terms.
           </p>
