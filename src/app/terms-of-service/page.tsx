@@ -5,7 +5,7 @@ export default function TermsOfService() {
         <h1 className="text-3xl font-bold mb-8 text-foreground">Terms of Service</h1>
 
         <div className="prose prose-lg max-w-none text-foreground">
-        <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
