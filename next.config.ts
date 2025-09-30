@@ -4,16 +4,12 @@ require('dotenv').config();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
+    // TypeScript errors will now fail the build - ensuring type safety
+    ignoreBuildErrors: false,
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    // ESLint errors will now fail the build - ensuring code quality
+    ignoreDuringBuilds: false,
   },
   images: {
     remotePatterns: [

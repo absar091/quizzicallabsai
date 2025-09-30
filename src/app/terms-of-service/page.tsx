@@ -5,7 +5,7 @@ export default function TermsOfService() {
         <h1 className="text-3xl font-bold mb-8 text-foreground">Terms of Service</h1>
 
         <div className="prose prose-lg max-w-none text-foreground">
-          <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-sm text-muted-foreground mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
@@ -40,9 +40,9 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">4. Prohibited Uses and Content</h2>
-            <div className="bg-red-50 p-4 rounded border-l-4 border-red-500 mb-4">
-              <p className="font-bold text-red-700 mb-3">🚫 IMMEDIATE ACCOUNT TERMINATION for:</p>
-              <ul className="list-disc pl-6 text-red-600 space-y-1">
+            <div className="bg-destructive/10 p-4 rounded border-l-4 border-destructive mb-4">
+              <p className="font-bold text-destructive mb-3">🚫 IMMEDIATE ACCOUNT TERMINATION for:</p>
+              <ul className="list-disc pl-6 text-destructive/80 space-y-1">
                 <li>Creating or distributing harmful, illegal, or inappropriate content</li>
                 <li>Content involving minors in inappropriate contexts</li>
                 <li>Promoting violence, hate speech, or discrimination</li>
@@ -57,7 +57,7 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. Account Suspension and Termination</h2>
-            <div className="bg-yellow-50 p-4 rounded border-l-4 border-yellow-400 mb-4">
+            <div className="bg-accent/10 p-4 rounded border-l-4 border-accent mb-4">
               <p className="font-bold mb-3">⚠️ Violation Consequences:</p>
               <ul className="list-disc pl-6 space-y-1">
                 <li><strong>First Offense:</strong> Written warning and content removal</li>
@@ -108,13 +108,13 @@ export default function TermsOfService() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">9. Contact Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-blue-50 p-4 rounded">
+              <div className="bg-primary/10 border border-primary/20 p-4 rounded">
                 <h3 className="font-semibold mb-3">General Inquiries</h3>
-                <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a></p>
+                <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-primary hover:underline">quizzicallabz.qzz.io</a></p>
                 <p><strong>Email:</strong> hello@quizzicallabz.qzz.io</p>
                 <p><strong>WhatsApp:</strong> +923261536764</p>
               </div>
-              <div className="bg-green-50 p-4 rounded">
+              <div className="bg-accent/10 border border-accent/20 p-4 rounded">
                 <h3 className="font-semibold mb-3">Legal & Compliance</h3>
                 <p><strong>Legal Department:</strong> legal@quizzicallabz.qzz.io</p>
                 <p><strong>Privacy Officer:</strong> privacy@quizzicallabz.qzz.io</p>
@@ -123,7 +123,7 @@ export default function TermsOfService() {
             </div>
           </section>
 
-          <div className="bg-gray-50 p-4 rounded mt-8">
+          <div className="bg-card border border-border p-4 rounded mt-8">
             <p className="font-semibold mb-2">📋 Summary of Key Terms:</p>
             <ul className="list-disc pl-6 space-y-1 text-sm">
               <li>Use the service responsibly and for educational purposes only</li>

@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
         <h1 className="text-3xl font-bold mb-8 text-foreground">Privacy Policy</h1>
 
         <div className="prose prose-lg max-w-none text-foreground">
-        <p className="text-sm text-gray-600 mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+        <p className="text-sm text-muted-foreground mb-6">Last updated: {new Date().toLocaleDateString()}</p>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
@@ -184,7 +184,7 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">12. How to Exercise Your Rights</h2>
           <p className="mb-4">To exercise any of these rights, please contact us:</p>
-          <div className="bg-blue-50 p-4 rounded mb-4">
+          <div className="bg-primary/10 border border-primary/20 p-4 rounded mb-4">
             <p className="mb-2"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
             <p className="mb-2"><strong>Response Time:</strong> We will respond within 30 days</p>
             <p className="mb-2"><strong>Verification:</strong> We may request additional information to verify your identity</p>
@@ -195,7 +195,7 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">13. Data Protection Officer</h2>
           <p className="mb-4">We have appointed a Data Protection Officer (DPO) to oversee our privacy practices:</p>
-          <div className="bg-gray-50 p-4 rounded">
+          <div className="bg-card border border-border p-4 rounded">
             <p className="mb-2"><strong>Data Protection Officer:</strong> Absar Ahmad Rao</p>
             <p className="mb-2"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
             <p><strong>Address:</strong> QuizzicallabzTM, Pakistan</p>
@@ -216,13 +216,13 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">15. Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-4 rounded">
+            <div className="bg-primary/10 border border-primary/20 p-4 rounded">
               <h3 className="font-semibold mb-3">General Inquiries</h3>
-              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-600 hover:underline">quizzicallabz.qzz.io</a></p>
+              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-primary hover:underline">quizzicallabz.qzz.io</a></p>
               <p><strong>Email:</strong> hello@quizzicallabz.qzz.io</p>
               <p><strong>WhatsApp:</strong> +923261536764</p>
             </div>
-            <div className="bg-green-50 p-4 rounded">
+            <div className="bg-accent/10 border border-accent/20 p-4 rounded">
               <h3 className="font-semibold mb-3">Privacy-Specific</h3>
               <p><strong>Privacy Officer:</strong> privacy@quizzicallabz.qzz.io</p>
               <p><strong>Legal Department:</strong> legal@quizzicallabz.qzz.io</p>
@@ -236,7 +236,7 @@ export default function PrivacyPolicy() {
           <p>This Privacy Policy is governed by the laws of Pakistan and applicable international privacy regulations, including GDPR where applicable. Any disputes will be resolved in accordance with our Terms of Service.</p>
         </section>
 
-          <div className="bg-yellow-50 p-4 rounded mt-8">
+          <div className="bg-accent/10 border border-accent/20 p-4 rounded mt-8">
             <p className="font-semibold mb-2">📋 Summary of Key Points:</p>
             <ul className="list-disc pl-6 space-y-1 text-sm">
               <li>We collect minimal data necessary for AI-powered educational services</li>

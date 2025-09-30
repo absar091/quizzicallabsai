@@ -3,13 +3,25 @@ import * as admin from 'firebase-admin';
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   try {
-    const config: any = {
-      credential: admin.credential.cert({
+    // Try to parse service account key from environment variable first
+    let credential;
+
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      // Parse the service account JSON
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+      credential = admin.credential.cert(serviceAccount);
+    } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+      // Fallback to individual environment variables
+      credential = admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    };
+      });
+    } else {
+      throw new Error('Firebase Admin credentials not found in environment variables');
+    }
+
+    const config: any = { credential };
 
     // Only add databaseURL if it exists
     if (process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL) {
