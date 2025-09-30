@@ -78,7 +78,7 @@ export default function Footer() {
         <div className="border-t border-border mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-muted-foreground">
             <p className="text-sm mb-4 md:mb-0">
-              Quizzicallabzᴬᴵ is a product of QuizzicallabzTM. Built with ❤️ for educators and learners worldwide.
+              Quizzicallabzᴬᴵ is a product of QuizzicallabzTM. 
             </p>
             <div className="flex space-x-4 text-sm">
               <a href="https://quizzicallabz.qzz.io" className="hover:text-primary transition-colors">quizzicallabz.qzz.io</a>
