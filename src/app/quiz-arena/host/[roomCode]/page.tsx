@@ -208,6 +208,7 @@ export default function RoomHostPage() {
       const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
         roomCode,
         (players: any[]) => {
+          console.log('Host - Leaderboard updated:', players);
           setRoomData(prev => ({
             ...prev,
             players,
@@ -483,18 +484,46 @@ export default function RoomHostPage() {
                   <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {currentQuestion.options.map((option, index) => (
-                    <div
-                      key={index}
-                      className="p-4 border rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                    >
-                      <div className="flex items-center">
-                        <span className="text-lg font-medium">
-                          {String.fromCharCode(65 + index)}. {option}
-                        </span>
+                  {currentQuestion.options.map((option, index) => {
+                    const isCorrect = index === currentQuestion.correctIndex;
+
+                    return (
+                      <div
+                        key={index}
+                        className={cn(
+                          "p-4 border rounded-lg transition-colors relative",
+                          isCorrect
+                            ? "bg-green-500/10 border-green-500/50"
+                            : "bg-muted/50 border-muted"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
+                              isCorrect
+                                ? "bg-green-500 text-white"
+                                : "bg-muted text-muted-foreground"
+                            )}>
+                              {String.fromCharCode(65 + index)}
+                            </div>
+                            <span className={cn(
+                              "text-lg font-medium",
+                              isCorrect && "text-green-700 font-semibold"
+                            )}>
+                              {option}
+                            </span>
+                          </div>
+                          {isCorrect && (
+                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/50">
+                              <CheckCircle className="mr-1 h-3 w-3" />
+                              Correct Answer
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </CardContent>
                 <CardContent className="pt-0">
                   {isHost && (

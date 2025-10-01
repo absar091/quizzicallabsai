@@ -10,6 +10,7 @@ import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Trophy, LogOut, A
 import { QuizArena, ArenaPlayer } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 
 export default function ParticipantArenaPage() {
@@ -82,6 +83,7 @@ export default function ParticipantArenaPage() {
         const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
           roomCode.toUpperCase(),
           (playerList) => {
+            console.log('Leaderboard updated:', playerList);
             setPlayers(playerList);
           }
         );
@@ -121,14 +123,18 @@ export default function ParticipantArenaPage() {
   }, [timeRemaining, hasSubmitted, currentQuestion]);
 
   const handleSubmitAnswer = async () => {
-    if (hasSubmitted || !selectedAnswer || !currentQuestion) return;
+    if (hasSubmitted || selectedAnswer === null || !currentQuestion) return;
 
     setHasSubmitted(true);
     setIsAnswered(true);
 
     try {
       // Server-side answer submission with authentication
-      const idToken = await user.getIdToken();
+      if (!auth.currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch('/api/quiz-arena/submit-answer', {
         method: 'POST',
         headers: {
@@ -144,14 +150,21 @@ export default function ParticipantArenaPage() {
       });
 
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Submission failed');
       }
 
       // Show results immediately
       setShowResults(true);
-      
+
+      // Log success for debugging
+      console.log('Answer submitted successfully:', {
+        correct: result.correct,
+        points: result.points,
+        questionIndex: roomData.currentQuestion
+      });
+
       toast?.({
         title: result.correct ? 'Correct! 🎉' : 'Incorrect',
         description: result.correct ? `+${result.points} points!` : `Correct answer: ${result.correctAnswer}`,

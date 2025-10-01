@@ -51,15 +51,27 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date(submittedAt || Date.now())
     });
 
-    // Update player score
+    // Update player score with timestamp to trigger real-time updates
     const playerRef = firestore.collection('quiz-rooms').doc(roomCode.toUpperCase())
       .collection('players').doc(userId);
-    
+
     const playerDoc = await playerRef.get();
     if (playerDoc.exists) {
       const currentScore = playerDoc.data()?.score || 0;
       await playerRef.update({
-        score: currentScore + points
+        score: currentScore + points,
+        lastAnswerAt: new Date(submittedAt || Date.now()),
+        lastQuestionIndex: questionIndex
+      });
+    } else {
+      // Create player if doesn't exist (shouldn't happen, but safe fallback)
+      await playerRef.set({
+        userId,
+        name: 'Player',
+        score: points,
+        joinedAt: new Date(),
+        lastAnswerAt: new Date(submittedAt || Date.now()),
+        lastQuestionIndex: questionIndex
       });
     }
 
