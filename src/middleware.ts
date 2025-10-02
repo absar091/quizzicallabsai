@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
   // Content Security Policy (CSP)
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://apis.google.com https://va.vercel-scripts.com https://www.recaptcha.net https://cdn.jsdelivr.net;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://apis.google.com https://va.vercel-scripts.com https://www.recaptcha.net https://cdn.jsdelivr.net https://vercel.live https://*.vercel.live;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
     img-src 'self' blob: data: https: http: https://www.simplesmiles.io https://placehold.co;
     font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;

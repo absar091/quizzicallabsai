@@ -10,7 +10,6 @@ import {
   Trophy, 
   Share2, 
   GamepadIcon, 
-  Zap, 
   TrendingUp, 
   BookOpen, 
   FileText,
@@ -18,11 +17,9 @@ import {
   Sparkles,
   Users,
   BarChart3,
-  Star,
+  Target,
   Play,
-  Shield,
-  Rocket,
-  Target
+  Rocket
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -315,183 +312,68 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-24 bg-secondary/30">
+      {/* How It Works - Simplified */}
+      <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">Simple Process</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Get Started in <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">3 Easy Steps</span>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Get Started in 3 Easy Steps
             </h2>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                step: "01",
-                title: "Create or Upload",
-                desc: "Choose a topic or upload your study materials. AI instantly understands your content.",
-                icon: FileText
-              },
-              {
-                step: "02",
-                title: "Learn & Compete",
-                desc: "Take quizzes solo or battle friends in Quiz Arena. Get instant feedback and explanations.",
-                icon: GamepadIcon
-              },
-              {
-                step: "03",
-                title: "Track Progress",
-                desc: "Monitor your improvement with analytics. Celebrate achievements and master your subjects.",
-                icon: TrendingUp
-              }
-            ].map((item, i) => (
-              <div key={i} className="relative">
-                <Card className="h-full border-2">
-                  <CardContent className="p-8 text-center">
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg">
-                        {item.step}
-                      </div>
-                    </div>
-                    <div className="mt-8 mb-6 mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                      <item.icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                    <p className="text-muted-foreground">{item.desc}</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="text-center p-6">
+              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">1</div>
+              <h3 className="font-bold mb-2">Upload Content</h3>
+              <p className="text-sm text-muted-foreground">Choose a topic or upload study materials</p>
+            </div>
+            <div className="text-center p-6">
+              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">2</div>
+              <h3 className="font-bold mb-2">Generate Quiz</h3>
+              <p className="text-sm text-muted-foreground">AI creates personalized questions instantly</p>
+            </div>
+            <div className="text-center p-6">
+              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">3</div>
+              <h3 className="font-bold mb-2">Learn & Compete</h3>
+              <p className="text-sm text-muted-foreground">Practice solo or battle friends in Quiz Arena</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="py-24 bg-background">
+      {/* Pricing Section - Simplified */}
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Transparent Pricing</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Start Free, <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Upgrade When Ready</span>
-            </h2>
-            <p className="text-xl text-muted-foreground">No credit card required for free plan</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple Pricing</h2>
+            <p className="text-muted-foreground">Start free, upgrade when ready</p>
           </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <Card className="border-2 hover:shadow-xl transition-all">
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Free Forever</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold">$0</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "Unlimited quiz generation",
-                    "Standard AI model",
-                    "Public Quiz Arena",
-                    "Basic analytics",
-                    "Social sharing"
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link href="/signup">Start Free</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Pro Plan */}
-            <Card className="border-2 border-primary/50 shadow-xl relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-gradient-to-r from-primary to-accent text-white border-0 px-4 py-1">
-                  Most Popular
-                </Badge>
-              </div>
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold">$2</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "Everything in Free",
-                    "Gemini 2.0 Pro AI",
-                    "Private Quiz Arena rooms",
-                    "Advanced analytics",
-                    "Priority support"
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="font-medium">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-primary to-accent" asChild>
-                  <Link href="/pricing">Upgrade to Pro</Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <div className="p-6 border rounded-lg">
+              <h3 className="text-xl font-bold mb-2">Free</h3>
+              <div className="text-3xl font-bold mb-4">$0<span className="text-sm text-muted-foreground">/month</span></div>
+              <ul className="space-y-2 mb-6 text-sm">
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Unlimited quizzes</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Public Quiz Arena</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Basic analytics</li>
+              </ul>
+              <Button className="w-full" variant="outline" asChild><Link href="/signup">Start Free</Link></Button>
+            </div>
+            <div className="p-6 border-2 border-primary rounded-lg relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-3 py-1 rounded text-sm">Popular</div>
+              <h3 className="text-xl font-bold mb-2">Pro</h3>
+              <div className="text-3xl font-bold mb-4">$2<span className="text-sm text-muted-foreground">/month</span></div>
+              <ul className="space-y-2 mb-6 text-sm">
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Everything in Free</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Advanced AI models</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Private rooms</li>
+              </ul>
+              <Button className="w-full bg-primary" asChild><Link href="/pricing">Upgrade</Link></Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof / Testimonials */}
-      <section className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Loved by <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Students Worldwide</span>
-            </h2>
-          </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                quote: "After using Quizzicallabz AI, my MDCAT score improved 30%. The Quiz Arena made studying actually fun!",
-                author: "Fatima H.",
-                role: "MDCAT 2024"
-              },
-              {
-                quote: "Spent 4 hours making flash cards that I forgot next day. This app generates them instantly and they STICK!",
-                author: "Ahmed K.",
-                role: "UET Student"
-              },
-              {
-                quote: "My physics class engagement went from 20% to 95%. Students are excited about homework now!",
-                author: "Furqan Ahmad",
-                role: "University Of Education"
-              }
-            ].map((testimonial, i) => (
-              <Card key={i} className="border-2">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-4 italic">"{testimonial.quote}"</p>
-                  <div>
-                    <div className="font-semibold">{testimonial.author}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA */}
       <section className="py-24 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10">

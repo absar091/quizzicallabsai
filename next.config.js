@@ -1,31 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
-  serverExternalPackages: ['firebase-admin'],
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-    dirs: [],
-  },
   experimental: {
-    typedRoutes: false,
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    };
-    
-    // Suppress critical dependency warnings from genkit/express
-    config.module.exprContextCritical = false;
-    config.module.unknownContextCritical = false;
-    
-    return config;
-  }
-};
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000,
+  },
+  compress: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

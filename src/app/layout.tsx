@@ -14,7 +14,7 @@ const poppins = Poppins({
   weight: ["400", "500", "600"],
   variable: '--font-sans',
   display: 'swap',
-  preload: false
+  preload: true
 });
 
 const APP_NAME = "Quizzicallabzᴬᴵ";
@@ -106,8 +106,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-
-
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.google.com" />
+        <link rel="dns-prefetch" href="https://apis.google.com" />
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", poppins.variable)}>
