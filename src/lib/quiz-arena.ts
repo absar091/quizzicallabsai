@@ -15,6 +15,7 @@ import {
   Timestamp,
   deleteDoc
 } from 'firebase/firestore';
+import { ReliableListener } from './firebase-listeners';
 
 // 🎯 TypeScript Interfaces (matching the blueprint)
 
@@ -102,12 +103,19 @@ export class QuizArenaHost {
     if (room.hostId !== hostId) throw new Error('Only host can start the quiz');
     if (room.started) throw new Error('Quiz already started');
 
+    // Check minimum players
+    const playersSnap = await getDocs(collection(db, `quiz-rooms/${roomId}/players`));
+    if (playersSnap.size < 2) {
+      throw new Error('Need at least 2 players to start');
+    }
+
     try {
-      // Start quiz and set first question
+      // Start quiz and set first question with server timestamp
       await updateDoc(roomRef, {
         started: true,
         currentQuestion: 0,
-        startedAt: Timestamp.now()
+        startedAt: Timestamp.now(),
+        questionStartTime: Timestamp.now() // For timer sync
       });
     } catch (error) {
       throw new Error('Failed to start quiz');
@@ -135,7 +143,8 @@ export class QuizArenaHost {
 
     try {
       await updateDoc(roomRef, {
-        currentQuestion: room.currentQuestion + 1
+        currentQuestion: room.currentQuestion + 1,
+        questionStartTime: Timestamp.now() // Reset timer for all clients
       });
     } catch (error) {
       console.error('Failed to advance question:', error);
@@ -169,21 +178,13 @@ export class QuizArenaHost {
    * Listen to room state (for host dashboard)
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
-    const unsubscribe = onSnapshot(
-      doc(db, 'quiz-rooms', roomId), 
-      (doc) => {
-        if (doc.exists()) {
-          callback({ roomId: doc.id, ...doc.data() } as QuizArenaRoom);
-        } else {
-          callback(null);
-        }
-      },
-      (error) => {
-        console.error('Room listener error');
-        callback(null);
-      }
+    const listener = new ReliableListener(
+      doc(db, 'quiz-rooms', roomId),
+      callback,
+      () => callback(null)
     );
-    return unsubscribe;
+    listener.start();
+    return () => listener.stop();
   }
 }
 
@@ -232,68 +233,6 @@ export class QuizArenaPlayer {
   }
 
   /**
-   * Submit answer for current question (with security measures)
-   */
-  static async submitAnswer(
-    roomId: string,
-    userId: string,
-    questionIndex: number,
-    answerIndex: number
-  ): Promise<void> {
-    // Get room data to validate answer
-    const roomRef = doc(db, `quiz-rooms/${roomId}`);
-    const roomSnap = await getDoc(roomRef);
-
-    if (!roomSnap.exists()) {
-      throw new Error('Room not found');
-    }
-
-    const roomData = roomSnap.data() as QuizArenaRoom;
-
-    // ✅ SECURITY: Validate question exists and is active
-    if (!roomData.quiz || questionIndex >= roomData.quiz.length) {
-      throw new Error('Invalid question index');
-    }
-
-    // ✅ SECURITY: Validate answer is within bounds
-    if (answerIndex < 0 || answerIndex > 3) {
-      throw new Error('Invalid answer index');
-    }
-
-    // ✅ SECURITY: Generate hash for anti-cheat (includes roomId, userId, questionIndex)
-    const cryptoObj = {
-      roomId,
-      userId,
-      questionIndex,
-      answerIndex,
-      timestamp: Date.now()
-    };
-
-    const hash = btoa(JSON.stringify(cryptoObj)).replace(/[^\w]/g, '');
-
-    const answer: QuizArenaAnswer = {
-      userId,
-      questionIndex,
-      answerIndex,
-      correct: false, // Will be validated server-side in Cloud Function
-      submittedAt: Timestamp.now()
-    };
-
-    // ✅ SECURITY: Store client-submitted answer for validation
-    const answerId = `${userId}_${questionIndex}_${Date.now()}`;
-    const secureAnswer = { ...answer, hash };
-
-    try {
-      await setDoc(doc(db, `quiz-rooms/${roomId}/answers`, answerId), secureAnswer);
-    } catch (error) {
-      throw new Error('Failed to submit answer');
-    }
-
-    // 🚫 IMPORTANT: Score calculation moved to backend Cloud Function
-    // Client no longer handles scoring to prevent cheating
-  }
-
-  /**
    * Get room players with scores (for leaderboard)
    */
   static async getLeaderboard(roomId: string): Promise<ArenaPlayer[]> {
@@ -314,39 +253,28 @@ export class QuizArenaPlayer {
    * Listen to room state (for player dashboard)
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
-    const unsubscribe = onSnapshot(
-      doc(db, 'quiz-rooms', roomId), 
-      (doc) => {
-        if (doc.exists()) {
-          callback({ roomId: doc.id, ...doc.data() } as QuizArenaRoom);
-        } else {
-          callback(null);
-        }
-      },
-      (error) => {
-        console.error('Room listener error');
-        callback(null);
-      }
+    const listener = new ReliableListener(
+      doc(db, 'quiz-rooms', roomId),
+      callback,
+      () => callback(null)
     );
-    return unsubscribe;
+    listener.start();
+    return () => listener.stop();
   }
 
   /**
    * Listen to leaderboard changes
    */
   static listenToLeaderboard(roomId: string, callback: (players: ArenaPlayer[]) => void): () => void {
-    const unsubscribe = onSnapshot(
+    const listener = new ReliableListener(
       collection(db, `quiz-rooms/${roomId}/players`),
-      (snapshot) => {
-        const players: ArenaPlayer[] = [];
-        snapshot.forEach((doc) => {
-          players.push(doc.data() as ArenaPlayer);
-        });
+      (players: ArenaPlayer[]) => {
         players.sort((a, b) => b.score - a.score);
         callback(players);
       }
     );
-    return unsubscribe;
+    listener.start();
+    return () => listener.stop();
   }
 }
 
@@ -404,6 +332,26 @@ export class QuizArenaDiscovery {
       return !room.finished; // Can't join finished rooms
     } catch (error) {
       console.error('Error validating room:', error);
+      return false;
+    }
+  }
+}
+
+// 🎊 Real-Time Event Types (for when we implement socket-like features)
+export interface QuizArenaEvent {
+  type: 'QUESTION_START' | 'QUESTION_END' | 'SCORE_UPDATE' | 'PLAYER_JOIN' | 'PLAYER_LEAVE' | 'QUIZ_FINISH';
+  roomId: string;
+  data: any;
+}
+
+// Singleton for arena management
+export const QuizArena = {
+  Host: QuizArenaHost,
+  Player: QuizArenaPlayer,
+  Discovery: QuizArenaDiscovery
+};
+
+export default QuizArena;rror);
       return false;
     }
   }

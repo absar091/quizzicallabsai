@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Trophy, LogOut, AlertTriangle } from 'lucide-react';
+import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Trophy, LogOut, AlertTriangle, WifiOff } from 'lucide-react';
 import { QuizArena, ArenaPlayer } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useQuizTimer } from '@/hooks/useQuizTimer';
+import { useConnectionRecovery } from '@/hooks/useConnectionRecovery';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 
@@ -26,7 +28,9 @@ export default function ParticipantArenaPage() {
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
+  const { timeLeft: timeRemaining, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
+  const { isOnline, reconnecting, reconnect } = useConnectionRecovery();
+  const [submitting, setSubmitting] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
 
@@ -69,7 +73,6 @@ export default function ParticipantArenaPage() {
               const questionIndex = data.currentQuestion || 0;
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
                 setCurrentQuestion(data.quiz[questionIndex]);
-                setTimeRemaining(30); // Reset timer for new question
                 setHasSubmitted(false);
                 setSelectedAnswer(null);
                 setShowResults(false);
@@ -109,24 +112,24 @@ export default function ParticipantArenaPage() {
     initializeParticipant();
   }, [roomCode, user, router]);
 
-  // Timer effect
+  // Auto-submit when timer expires
   useEffect(() => {
-    if (timeRemaining > 0 && !hasSubmitted) {
-      const timer = setTimeout(() => {
-        setTimeRemaining(prev => prev - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (timeRemaining === 0 && !hasSubmitted && currentQuestion) {
-      // Auto-submit when time runs out
+    if (timeRemaining === 0 && !hasSubmitted && currentQuestion && timerActive) {
       handleSubmitAnswer();
     }
-  }, [timeRemaining, hasSubmitted, currentQuestion]);
+  }, [timeRemaining, hasSubmitted, currentQuestion, timerActive]);
 
   const handleSubmitAnswer = async () => {
-    if (hasSubmitted || selectedAnswer === null || !currentQuestion) return;
+    // Immediate guard to prevent race conditions
+    if (hasSubmitted || selectedAnswer === null || !currentQuestion || submitting) return;
 
+    // Set all blocking states immediately before any async operations
+    setSubmitting(true);
     setHasSubmitted(true);
     setIsAnswered(true);
+
+    // Additional safety check after state updates
+    if (submitting) return;
 
     try {
       // Server-side answer submission with authentication
@@ -173,7 +176,7 @@ export default function ParticipantArenaPage() {
 
     } catch (error: any) {
       console.error('Error submitting answer');
-      setHasSubmitted(false); // Allow retry on error
+      setHasSubmitted(false);
       setIsAnswered(false);
 
       toast?.({
@@ -181,6 +184,8 @@ export default function ParticipantArenaPage() {
         description: error.message || 'Your answer may not have been recorded. Please try again.',
         variant: 'destructive'
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -465,10 +470,11 @@ export default function ParticipantArenaPage() {
                         {!hasSubmitted && selectedAnswer !== null && timeRemaining > 0 && (
                           <Button
                             onClick={handleSubmitAnswer}
+                            disabled={submitting}
                             className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                             size="lg"
                           >
-                            SUBMIT ANSWER
+                            {submitting ? 'SUBMITTING...' : 'SUBMIT ANSWER'}
                           </Button>
                         )}
 

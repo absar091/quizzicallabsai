@@ -45,13 +45,20 @@ export default function JoinQuizPage() {
           signal: AbortSignal.timeout(1000) // 1 second timeout
         });
 
-        if (!response.ok) {
-          throw new Error('Room validation failed');
+        if (response.ok) {
+          const data = await response.json();
+          setRoomValid(data.exists);
+        } else if (response.status === 404) {
+          setRoomValid(false);
         }
-
-        setRoomValid(true);
       } catch (error) {
-        console.warn('Quick validation failed, using fallback');
+        // Fallback to Firebase validation if API fails
+        try {
+          const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
+          setRoomValid(isValid);
+        } catch {
+          setRoomValid(false);
+        }
       }
     };
 

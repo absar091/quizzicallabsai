@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Users, Clock, Trophy, Play, Pause, Settings, CheckCircle, X, Share2, Copy, MessageCircle, Send } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useQuizTimer } from '@/hooks/useQuizTimer';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
@@ -48,8 +49,7 @@ export default function RoomHostPage() {
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [timerActive, setTimerActive] = useState(false);
+  const { timeLeft, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
 
   useEffect(() => {
@@ -71,34 +71,16 @@ export default function RoomHostPage() {
     };
   }, [roomCode, user]);
 
-  // Timer effect
+  // Auto advance when timer expires
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (timerActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            setTimerActive(false);
-            // Auto advance to next question when timer ends (host only)
-            if (isHost) {
-              if (currentQuestionIndex < (roomData?.quiz.length || 0) - 1) {
-                setTimeout(() => handleNextQuestion(), 2000);
-              } else {
-                setTimeout(() => handleFinishQuiz(), 2000);
-              }
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (timeLeft === 0 && !timerActive && isHost && currentQuestionIndex >= 0) {
+      if (currentQuestionIndex < (roomData?.quiz.length || 0) - 1) {
+        setTimeout(() => handleNextQuestion(), 2000);
+      } else {
+        setTimeout(() => handleFinishQuiz(), 2000);
+      }
     }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerActive, timeLeft, currentQuestionIndex, roomData?.quiz.length]);
+  }, [timeLeft, timerActive, isHost, currentQuestionIndex, roomData?.quiz.length]);
 
   const loadRoomData = async () => {
     try {
@@ -268,8 +250,6 @@ export default function RoomHostPage() {
 
         setQuizStarted(true);
         setCurrentQuestionIndex(0);
-        setTimeLeft(30);
-        setTimerActive(true);
 
         toast?.({
           title: 'Quiz Started! 🎯',
@@ -298,8 +278,6 @@ export default function RoomHostPage() {
 
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
-      setTimeLeft(30);
-      setTimerActive(true);
 
       toast?.({
         title: 'Next Question',
