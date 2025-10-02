@@ -48,28 +48,38 @@ export default function RoomHostPage() {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
+  const [QuizArena, setQuizArena] = useState<any>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const { timeLeft, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
 
+  // Load QuizArena module once
   useEffect(() => {
-    if (!roomCode || !user) return;
+    const loadQuizArena = async () => {
+      const module = await import('@/lib/quiz-arena');
+      setQuizArena(module.QuizArena);
+    };
+    loadQuizArena();
+  }, []);
+
+  useEffect(() => {
+    if (!roomCode || !user || !QuizArena) return;
 
     loadRoomData();
 
     // Set up real-time listener
     const cleanup = setupRoomListener();
-    
+
     // Monitor connection status
     const connectionInterval = setInterval(() => {
       setConnectionStatus(getConnectionStatus());
     }, 5000);
-    
+
     return () => {
       cleanup?.();
       clearInterval(connectionInterval);
     };
-  }, [roomCode, user]);
+  }, [roomCode, user, QuizArena]);
 
   // Auto advance when timer expires
   useEffect(() => {
@@ -83,11 +93,10 @@ export default function RoomHostPage() {
   }, [timeLeft, timerActive, isHost, currentQuestionIndex, roomData?.quiz.length]);
 
   const loadRoomData = async () => {
+    if (!QuizArena) return;
+
     try {
       // Loading room data
-
-      // Load room data from Firestore using QuizArena Discovery
-      const { QuizArena } = await import('@/lib/quiz-arena');
 
       // Try to get room data from Firestore
       const { firestore } = await import('@/lib/firebase');
@@ -215,9 +224,9 @@ export default function RoomHostPage() {
       return;
     }
 
-    try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
+    if (!QuizArena) return;
 
+    try {
       toast?.({
         title: 'Starting Quiz...',
         description: 'Get ready, players! Quiz begins in 3 seconds...',
@@ -262,11 +271,9 @@ export default function RoomHostPage() {
   };
 
   const handleNextQuestion = async () => {
-    if (!roomData || currentQuestionIndex >= roomData.quiz.length - 1) return;
+    if (!roomData || currentQuestionIndex >= roomData.quiz.length - 1 || !QuizArena) return;
 
     try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
-
       // Move to next question in Firebase
       await QuizArena.Host.nextQuestion(roomCode, user!.uid);
 
@@ -289,9 +296,9 @@ export default function RoomHostPage() {
   };
 
   const handleFinishQuiz = async () => {
-    try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
+    if (!QuizArena) return;
 
+    try {
       // Finish quiz in Firebase
       await QuizArena.Host.finishQuiz(roomCode, user!.uid);
 
