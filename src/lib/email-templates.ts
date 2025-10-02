@@ -35,7 +35,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -159,7 +159,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -287,7 +287,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -411,7 +411,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
                 <!-- Logo -->
                 <td align="left">
                   <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
