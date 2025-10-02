@@ -75,6 +75,16 @@ export default function QuizArenaPage() {
 
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [roomCode, setRoomCode] = useState('');
+  const [QuizArena, setQuizArena] = useState<any>(null);
+
+  // Load QuizArena module once
+  useEffect(() => {
+    const loadQuizArena = async () => {
+      const module = await import('@/lib/quiz-arena');
+      setQuizArena(module.QuizArena);
+    };
+    loadQuizArena();
+  }, []);
 
   useEffect(() => {
     // Custom styles removed to prevent conflicts
@@ -229,7 +239,10 @@ export default function QuizArenaPage() {
 
         console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-        const { QuizArena } = await import('@/lib/quiz-arena');
+        if (!QuizArena) {
+          throw new Error('Quiz Arena module not loaded');
+        }
+
         const roomCode = await QuizArena.Discovery.generateRoomCode();
         console.log('🔖 Room code:', roomCode);
 
@@ -400,7 +413,10 @@ export default function QuizArenaPage() {
 
       console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-      const { QuizArena } = await import('@/lib/quiz-arena');
+      if (!QuizArena) {
+        throw new Error('Quiz Arena module not loaded');
+      }
+
       const roomCode = await QuizArena.Discovery.generateRoomCode();
       console.log('🔖 Room code:', roomCode);
 
