@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { auth } from '@/lib/firebase';
 import { AchievementShowcase } from '@/components/achievements/achievement-showcase';
 import { getUserAchievements } from '@/lib/achievement-system';
 import { Achievement } from '@/components/achievements/achievement-badge';
@@ -18,10 +19,14 @@ export default function AchievementsPage() {
 
     const loadAchievements = async () => {
       try {
+        // Get Firebase auth user for token
+        const firebaseUser = auth.currentUser;
+        if (!firebaseUser) throw new Error('Not authenticated');
+        
         // Fetch user's earned achievements from API
         const response = await fetch('/api/achievements', {
           headers: {
-            Authorization: `Bearer ${await user.getIdToken()}`,
+            Authorization: `Bearer ${await firebaseUser.getIdToken()}`,
           },
         });
 
