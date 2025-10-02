@@ -1,7 +1,7 @@
 // 🔥 Quiz Arena - Live Multiplayer Quiz Architecture
 // Based on the user's expert blueprint
 
-import { firestore as db } from './firebase';
+import { firestore } from './firebase';
 import {
   collection,
   doc,
