@@ -424,23 +424,30 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
   subject: `Security Alert: New Login Detected`,
   html: `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>Security Alert</title>
+      <!--[if mso]>
+      <style type="text/css">
+        table {border-collapse: collapse;}
+      </style>
+      <![endif]-->
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
-          .logo { width: 100px !important; }
+          .logo { width: 80px !important; }
           .button-container { text-align: center !important; }
         }
+        .icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; }
       </style>
     </head>
-    <body>
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
+    <body style="margin:0;padding:0;background:#f9fafb;">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
           <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
@@ -448,8 +455,8 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
               <tr>
                 <!-- Logo -->
                 <td align="left">
-                  <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                  <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=security_alert&utm_campaign=account_security" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabz AI Logo" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -462,32 +469,101 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           </td>
         </tr>
         <!-- HEADER END -->
-        
+
         <tr>
           <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
-            <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
-              Security Alert: New Login Detected
-            </h2>
+            <!-- Security Alert Badge -->
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
+              <tr>
+                <td align="center" style="padding:20px;">
+                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#f59e0b;color:#fff;line-height:80px;font-size:40px;text-align:center;">
+                    ⚠
+                  </div>
+                  <h2 style="margin:15px 0 5px;font-size:22px;color:#dc2626;font-weight:600;">
+                    Security Alert: New Login Detected
+                  </h2>
+                  <p style="margin:0;color:#6b7280;">Account activity notification</p>
+                </td>
+              </tr>
+            </table>
+
             <p style="margin:0 0 20px;">Hello <strong>${userName}</strong>,</p>
             <p style="margin:0 0 20px;">
-              A new login was detected on your Quizzicallabzᴬᴵ account. If this was you, no action is required.  
+              A new login was detected on your Quizzicallabzᴬᴵ account. If this was you, no action is required.
               If not, please take immediate steps to protect your account.
             </p>
 
-            <!-- Info Card -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;border-radius:6px;margin-bottom:20px;">
+            <!-- Info Card with Icons -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:6px;margin-bottom:20px;">
               <tr><td style="padding:15px;">
-                <p style="margin:0;font-size:14px;"><strong>Device:</strong> ${loginData.device}</p>
-                <p style="margin:0;font-size:14px;"><strong>Location:</strong> ${loginData.location}</p>
-                <p style="margin:0;font-size:14px;"><strong>IP Address:</strong> ${loginData.ipAddress}</p>
-                <p style="margin:0;font-size:14px;"><strong>Time:</strong> ${loginData.time}</p>
+                <p style="margin:0 0 8px;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                  <strong>Device:</strong> ${loginData.device}
+                </p>
+                <p style="margin:0 0 8px;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <strong>Location:</strong> ${loginData.location}
+                </p>
+                <p style="margin:0 0 8px;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                  </svg>
+                  <strong>IP Address:</strong> ${loginData.ipAddress}
+                </p>
+                <p style="margin:0;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <strong>Time:</strong> ${loginData.time}
+                </p>
+              </td></tr>
+            </table>
+
+            <!-- Security Tips -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border-left:4px solid #3b82f6;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#1e40af;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  Security Tips
+                </p>
+                <p style="margin:0;font-size:13px;color:#1e40af;line-height:1.6;">
+                  • If this wasn't you, change your password immediately<br>
+                  • Enable two-factor authentication for extra security<br>
+                  • Review recent account activity regularly
+                </p>
               </td></tr>
             </table>
 
             <!-- Buttons -->
             <div class="button-container" style="text-align:left;">
-              <a href="https://quizzicallabz.qzz.io/reset-password" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Change Password</a>
-              <a href="https://quizzicallabz.qzz.io/profile" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Activity</a>
+              <a href="https://quizzicallabz.qzz.io/reset-password?utm_source=email&utm_medium=security_alert&utm_campaign=account_security" target="_blank" rel="noopener noreferrer" style="background:#dc2626;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Change Password
+              </a>
+              <a href="https://quizzicallabz.qzz.io/profile?utm_source=email&utm_medium=security_alert&utm_campaign=account_security" target="_blank" rel="noopener noreferrer" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Review Activity
+              </a>
             </div>
           </td>
         </tr>
@@ -495,25 +571,35 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
         <!-- FOOTER START -->
         <tr>
           <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
-            
+
+            <!-- System Generated Notice -->
+            <p style="margin:0 0 12px;font-size:10px;color:#9ca3af;">
+              ⚙️ This is a system-generated email. Please do not reply to this message.
+            </p>
+
             <!-- Legal & Branding -->
             <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are trademarks of Quizzicallabz™.</em>
             </p>
-            
+
             <!-- Links -->
             <p style="margin:0 0 8px;font-size:11px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
-              <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Privacy Policy</a> ·
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Terms of Use</a> ·
+              <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;font-size:10px;">
+            <p style="margin:0 0 8px;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> ·
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
+            </p>
+
+            <!-- Unsubscribe Link -->
+            <p style="margin:0;font-size:10px;">
+              <a href="https://quizzicallabz.qzz.io/unsubscribe" style="color:#9ca3af;text-decoration:underline;" rel="noopener noreferrer" target="_blank">Manage email preferences</a>
             </p>
           </td>
         </tr>
@@ -548,23 +634,30 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
   subject: `Reminder: Stay on Track with Your Learning - ${userName}`,
   html: `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>Study Reminder</title>
+      <!--[if mso]>
+      <style type="text/css">
+        table {border-collapse: collapse;}
+      </style>
+      <![endif]-->
       <style>
         @media only screen and (max-width: 600px) {
           .mobile-padding { padding: 15px !important; }
           .mobile-button { display: block !important; width: 90% !important; margin: 10px auto !important; text-align: center !important; box-sizing: border-box !important; }
           .mobile-text { font-size: 14px !important; }
-          .logo { width: 100px !important; }
+          .logo { width: 80px !important; }
           .button-container { text-align: center !important; }
         }
+        .icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; }
       </style>
     </head>
-    <body>
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f9fafb;">
+    <body style="margin:0;padding:0;background:#f9fafb;">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;background:#f9fafb;">
         <!-- HEADER START -->
         <tr>
           <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;" class="mobile-padding">
@@ -572,8 +665,8 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
               <tr>
                 <!-- Logo -->
                 <td align="left">
-                  <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
-                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
+                  <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=reminder&utm_campaign=engagement" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                    <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabz AI Logo" width="120" style="display:block;max-width:120px;height:auto;" class="logo">
                   </a>
                 </td>
                 <!-- App Name + Tagline -->
@@ -586,36 +679,106 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
           </td>
         </tr>
         <!-- HEADER END -->
-        
+
         <tr>
           <td style="padding:30px;color:#333;font-size:15px;line-height:1.7;" class="mobile-padding">
-            <h2 style="margin-top:0;margin-bottom:15px;font-size:20px;color:#111;font-weight:600;">
-              Reminder: Stay on Track with Your Learning
-            </h2>
+            <!-- Reminder Badge -->
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
+              <tr>
+                <td align="center" style="padding:20px;">
+                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#8b5cf6;color:#fff;line-height:80px;font-size:40px;text-align:center;">
+                    📚
+                  </div>
+                  <h2 style="margin:15px 0 5px;font-size:22px;color:#111;font-weight:600;">
+                    Keep Up the Great Work!
+                  </h2>
+                  <p style="margin:0;color:#6b7280;">Time to level up your skills</p>
+                </td>
+              </tr>
+            </table>
+
             <p style="margin:0 0 20px;">Hello <strong>${userName}</strong>,</p>
             <p style="margin:0 0 20px;">
-              This is a reminder that you have pending activities in your account.  
-              Here are some insights about your performance:
+              We noticed you have some pending learning activities. Consistency is key to mastering any subject!
+              Here's a quick overview of your progress:
             </p>
 
-            <!-- Info Card -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;border-radius:6px;margin-bottom:20px;">
+            <!-- Info Card with Icons -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;border-radius:6px;margin-bottom:20px;">
               <tr><td style="padding:15px;">
-                <p style="margin:0;font-size:14px;"><strong>Topic:</strong> ${reminderData?.topic || 'General Study'}</p>
-                <p style="margin:0;font-size:14px;"><strong>Weak Areas:</strong> ${reminderData?.weakAreas || 'Review recommended'}</p>
-                <p style="margin:0;font-size:14px;"><strong>Last Activity:</strong> ${reminderData?.lastActivityDate || 'Recently'}</p>
+                <p style="margin:0 0 8px;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                  <strong>Topic:</strong> ${reminderData?.topic || 'General Study'}
+                </p>
+                <p style="margin:0 0 8px;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  <strong>Weak Areas:</strong> ${reminderData?.weakAreas || 'Review recommended'}
+                </p>
+                <p style="margin:0;font-size:14px;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <strong>Last Activity:</strong> ${reminderData?.lastActivityDate || 'Recently'}
+                </p>
               </td></tr>
             </table>
 
             <!-- Motivational Quote -->
-            <blockquote style="border-left:4px solid #4f46e5;margin:10px 0;padding:10px;color:#444;font-style:italic;">
-              "Success is the sum of small efforts, repeated day in and day out."
-            </blockquote>
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#92400e;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Daily Motivation
+                </p>
+                <p style="margin:0;font-size:13px;color:#78350f;font-style:italic;line-height:1.6;">
+                  "Success is the sum of small efforts, repeated day in and day out."
+                </p>
+              </td></tr>
+            </table>
+
+            <!-- Study Stats (if available) -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border-left:4px solid #3b82f6;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#1e40af;">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                  </svg>
+                  Quick Tips
+                </p>
+                <p style="margin:0;font-size:13px;color:#1e40af;line-height:1.6;">
+                  • Review your weak areas first for maximum impact<br>
+                  • Take short practice quizzes to stay sharp<br>
+                  • Set aside 15 minutes daily for consistent progress
+                </p>
+              </td></tr>
+            </table>
 
             <!-- Buttons -->
             <div class="button-container" style="text-align:left;">
-              <a href="https://quizzicallabz.qzz.io/generate-quiz" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">Take Quiz</a>
-              <a href="https://quizzicallabz.qzz.io/practice" style="border:1px solid #4f46e5;color:#4f46e5;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">Review Weak Areas</a>
+              <a href="https://quizzicallabz.qzz.io/generate-quiz?utm_source=email&utm_medium=reminder&utm_campaign=engagement" target="_blank" rel="noopener noreferrer" style="background:#8b5cf6;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                Take a Quiz
+              </a>
+              <a href="https://quizzicallabz.qzz.io/practice?utm_source=email&utm_medium=reminder&utm_campaign=engagement" target="_blank" rel="noopener noreferrer" style="border:1px solid #8b5cf6;color:#8b5cf6;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;" class="mobile-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Practice Weak Areas
+              </a>
             </div>
           </td>
         </tr>
@@ -623,25 +786,35 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
         <!-- FOOTER START -->
         <tr>
           <td style="padding:20px 15px;background:#f9fafb;color:#6b7280;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.4;text-align:center;border-top:1px solid #e5e7eb;">
-            
+
+            <!-- System Generated Notice -->
+            <p style="margin:0 0 12px;font-size:10px;color:#9ca3af;">
+              ⚙️ This is a system-generated email. Please do not reply to this message.
+            </p>
+
             <!-- Legal & Branding -->
             <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are trademarks of Quizzicallabz™.</em>
             </p>
-            
+
             <!-- Links -->
             <p style="margin:0 0 8px;font-size:11px;">
-              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;">Privacy Policy</a><br>
-              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;">Terms of Use</a><br>
-              <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;">Disclaimer</a>
+              <a href="https://quizzicallabz.qzz.io/privacy-policy" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Privacy Policy</a> ·
+              <a href="https://quizzicallabz.qzz.io/terms-of-use" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Terms of Use</a> ·
+              <a href="https://quizzicallabz.qzz.io/disclaimer" style="color:#4f46e5;text-decoration:none;" rel="noopener noreferrer" target="_blank">Disclaimer</a>
             </p>
 
             <!-- Contact Info -->
-            <p style="margin:0;font-size:10px;">
+            <p style="margin:0 0 8px;font-size:10px;">
               Vehari, Punjab, Pakistan<br>
-              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a><br>
+              <a href="mailto:support@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">support@quizzicallabz.qzz.io</a> ·
               <a href="mailto:info@quizzicallabz.qzz.io" style="color:#4f46e5;text-decoration:none;">info@quizzicallabz.qzz.io</a>
+            </p>
+
+            <!-- Unsubscribe Link -->
+            <p style="margin:0;font-size:10px;">
+              <a href="https://quizzicallabz.qzz.io/unsubscribe" style="color:#9ca3af;text-decoration:underline;" rel="noopener noreferrer" target="_blank">Unsubscribe from reminder emails</a>
             </p>
           </td>
         </tr>
@@ -654,7 +827,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
 
 Hello ${userName},
 
-This is a reminder that you have pending activities in your account.
+We noticed you have some pending learning activities. Consistency is key to mastering any subject!
 
 Topic: ${reminderData?.topic || 'General Study'}
 Weak Areas: ${reminderData?.weakAreas || 'Review recommended'}
@@ -662,8 +835,15 @@ Last Activity: ${reminderData?.lastActivityDate || 'Recently'}
 
 "Success is the sum of small efforts, repeated day in and day out."
 
-Take Quiz: https://quizzicallabz.qzz.io/generate-quiz
-Review Weak Areas: https://quizzicallabz.qzz.io/practice
+Quick Tips:
+• Review your weak areas first for maximum impact
+• Take short practice quizzes to stay sharp
+• Set aside 15 minutes daily for consistent progress
 
-© 2025 Quizzicallabzᴬᴵ. All rights reserved.`
+Take a Quiz: https://quizzicallabz.qzz.io/generate-quiz
+Practice Weak Areas: https://quizzicallabz.qzz.io/practice
+
+© 2025 Quizzicallabzᴬᴵ. All rights reserved.
+
+Unsubscribe: https://quizzicallabz.qzz.io/unsubscribe`
 });
