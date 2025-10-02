@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { QuizGenerationLoading } from "@/components/enhanced-loading";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import type { Quiz } from "@/types/quiz";

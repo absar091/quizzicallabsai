@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { shouldShowAds } from '@/lib/plan-restrictions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link';
 import { ArrowRight, FilePlus, Lightbulb, FileArrowUp, FileText, Cards, ClipboardText, Users, Trophy } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { canDownloadExamPaper } from '@/lib/plan-restrictions';
 import { Badge } from '@/components/ui/badge';
 import { Crown } from 'lucide-react';

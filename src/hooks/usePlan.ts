@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useAuth, UserPlan } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+import { UserPlan } from "@/context/AuthContext";
 
 // Client-side model name getter to avoid importing Genkit on client
 function getModelName(isPro: boolean): string {

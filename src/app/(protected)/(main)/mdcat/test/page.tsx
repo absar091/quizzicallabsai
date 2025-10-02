@@ -19,7 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 // Dynamic import for AI function
 import { motion } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { QuizGenerationLoading } from "@/components/enhanced-loading";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import type { Quiz } from "@/types/quiz";

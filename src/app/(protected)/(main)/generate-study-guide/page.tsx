@@ -27,7 +27,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { usePlan } from "@/hooks/usePlan";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { GenerationAd } from "@/components/ads/ad-banner";
 import { shouldAddWatermark } from "@/lib/plan-restrictions";
 
