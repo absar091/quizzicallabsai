@@ -181,7 +181,7 @@ export class QuizArenaHost {
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
     const listener = new ReliableListener(
-      doc(db, 'quiz-rooms', roomId),
+      doc(firestore, 'quiz-rooms', roomId),
       callback,
       () => callback(null)
     );
@@ -209,7 +209,7 @@ export class QuizArenaPlayer {
     };
 
     // Optimized: Use setDoc with merge to reduce database operations
-    const playerRef = doc(db, `quiz-rooms/${roomId}/players`, userId);
+    const playerRef = doc(firestore, `quiz-rooms/${roomId}/players`, userId);
     
     try {
       await setDoc(playerRef, player, { merge: true });
@@ -228,7 +228,7 @@ export class QuizArenaPlayer {
   ): Promise<void> {
     try {
       // Remove player from players subcollection
-      await deleteDoc(doc(db, `quiz-rooms/${roomId}/players`, userId));
+      await deleteDoc(doc(firestore, `quiz-rooms/${roomId}/players`, userId));
     } catch (error) {
       console.error('Failed to leave room:', error);
       throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.LEAVE_FAILED);
@@ -240,7 +240,7 @@ export class QuizArenaPlayer {
    */
   static async getLeaderboard(roomId: string): Promise<ArenaPlayer[]> {
     const playersSnapshot = await getDocs(
-      collection(db, `quiz-rooms/${roomId}/players`)
+      collection(firestore, `quiz-rooms/${roomId}/players`)
     );
 
     const players: ArenaPlayer[] = [];
@@ -257,7 +257,7 @@ export class QuizArenaPlayer {
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
     const listener = new ReliableListener(
-      doc(db, 'quiz-rooms', roomId),
+      doc(firestore, 'quiz-rooms', roomId),
       callback,
       () => callback(null)
     );
@@ -270,7 +270,7 @@ export class QuizArenaPlayer {
    */
   static listenToLeaderboard(roomId: string, callback: (players: ArenaPlayer[]) => void): () => void {
     const listener = new ReliableListener(
-      collection(db, `quiz-rooms/${roomId}/players`),
+      collection(firestore, `quiz-rooms/${roomId}/players`),
       (players: ArenaPlayer[]) => {
         players.sort((a, b) => b.score - a.score);
         callback(players);
@@ -289,7 +289,7 @@ export class QuizArenaDiscovery {
    */
   static async getPublicRooms(): Promise<QuizArenaRoom[]> {
     const q = query(
-      collection(db, 'quiz-rooms'),
+      collection(firestore, 'quiz-rooms'),
       where('isPublic', '==', true),
       where('started', '==', false)
     );
@@ -318,7 +318,7 @@ export class QuizArenaDiscovery {
       }
 
       // Check if room code already exists
-      const roomRef = doc(db, 'quiz-rooms', code);
+      const roomRef = doc(firestore, 'quiz-rooms', code);
       const roomSnap = await getDoc(roomRef);
 
       if (!roomSnap.exists()) {
@@ -344,7 +344,7 @@ export class QuizArenaDiscovery {
    */
   static async validateRoom(roomId: string): Promise<boolean> {
     try {
-      const roomRef = doc(db, 'quiz-rooms', roomId);
+      const roomRef = doc(firestore, 'quiz-rooms', roomId);
       const roomSnap = await getDoc(roomRef);
 
       if (!roomSnap.exists()) return false;
