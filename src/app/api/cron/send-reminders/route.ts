@@ -56,11 +56,11 @@ export async function GET(request: NextRequest) {
     const threshold = Timestamp.fromDate(threeDaysAgo);
 
     // Fetch users who need reminders
+    // Note: Using simple query to avoid composite index requirement
     const usersRef = collection(firestore, 'users');
     const usersQuery = query(
       usersRef,
       where('lastActivityAt', '<=', threshold),
-      orderBy('lastActivityAt', 'asc'),
       limit(100) // Limit to 100 users per run to avoid timeouts
     );
 
@@ -170,10 +170,12 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error('❌ Cron job error:', error);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to send reminder emails'
+        error: error.message || 'Failed to send reminder emails',
+        details: error.stack || 'No stack trace available'
       },
       { status: 500 }
     );

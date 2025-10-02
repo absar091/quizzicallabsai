@@ -15,3 +15,206 @@
      · optimizePackageImports
 
    Creating an optimized production build ...
+
+
+Source path: c:\Users\User\Downloads\quizzicallabsai\src\app\globals.css
+Setting up new context...
+Finding changed files: 105.708ms
+Reading changed files: 772.362ms
+Sorting candidates: 18.883ms
+Generate rules: 544.188ms
+Build stylesheet: 10.466ms
+Potential classes:  13285
+Active contexts:  1
+JIT TOTAL: 2.154s
+
+
+
+
+Source path: c:\Users\User\Downloads\quizzicallabsai\src\styles\splash.css
+JIT TOTAL: 2.099ms
+
+
+ ⚠ Compiled with warnings in 89s
+
+./node_modules/handlebars/lib/index.js
+require.extensions is not supported by webpack. Use a loader instead.
+
+Import trace for requested module:
+./node_modules/handlebars/lib/index.js
+./node_modules/dotprompt/dist/index.js
+./node_modules/@genkit-ai/core/lib/registry.js
+./node_modules/genkit/lib/registry.js
+./node_modules/genkit/lib/genkit.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/health/route.ts
+
+./node_modules/handlebars/lib/index.js
+require.extensions is not supported by webpack. Use a loader instead.
+
+Import trace for requested module:
+./node_modules/handlebars/lib/index.js
+./node_modules/dotprompt/dist/index.js
+./node_modules/@genkit-ai/core/lib/registry.js
+./node_modules/genkit/lib/registry.js
+./node_modules/genkit/lib/genkit.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/health/route.ts
+
+./node_modules/handlebars/lib/index.js
+require.extensions is not supported by webpack. Use a loader instead.
+
+Import trace for requested module:
+./node_modules/handlebars/lib/index.js
+./node_modules/dotprompt/dist/index.js
+./node_modules/@genkit-ai/core/lib/registry.js
+./node_modules/genkit/lib/registry.js
+./node_modules/genkit/lib/genkit.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/genkit.ts
+./src/app/api/ai/health/route.ts
+
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/111) ...
+   Generating static pages (27/111) 
+   Generating static pages (55/111) 
+   Generating static pages (83/111) 
+ ✓ Generating static pages (111/111)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                                                              Size  First Load JS
+┌ ○ /                                                                                                 8.77 kB         291 kB
+├ ○ /_not-found                                                                                          1 kB         103 kB
+├ ○ /.well-known/acme-challenge/ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO        269 B         102 kB
+├ ○ /about-us                                                                                           269 B         102 kB
+├ ○ /achievements                                                                                     5.46 kB         292 kB
+├ ○ /admin/quiz-arena-dashboard                                                                       6.05 kB         293 kB
+├ ○ /api-docs                                                                                           269 B         102 kB
+├ ƒ /api/.well-known/acme-challenge/[token]                                                             269 B         102 kB
+├ ƒ /api/.well-known/acme-challenge/ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO    269 B         102 kB
+├ ƒ /api/achievements                                                                                   269 B         102 kB
+├ ƒ /api/admin/api-keys                                                                                 269 B         102 kB
+├ ƒ /api/ai/custom-quiz                                                                                 269 B         102 kB
+├ ƒ /api/ai/dashboard-insights                                                                          269 B         102 kB
+├ ƒ /api/ai/explain-image                                                                               269 B         102 kB
+├ ƒ /api/ai/explanation                                                                                 269 B         102 kB
+├ ƒ /api/ai/flashcards                                                                                  269 B         102 kB
+├ ƒ /api/ai/health                                                                                      269 B         102 kB
+├ ƒ /api/ai/help-bot                                                                                    269 B         102 kB
+├ ƒ /api/ai/nts-quiz                                                                                    269 B         102 kB
+├ ƒ /api/ai/quiz-from-document                                                                          269 B         102 kB
+├ ƒ /api/ai/simple-explanation                                                                          269 B         102 kB
+├ ƒ /api/ai/study-guide                                                                                 269 B         102 kB
+├ ƒ /api/auth/configure                                                                                 269 B         102 kB
+├ ƒ /api/background-quiz                                                                                735 B         103 kB
+├ ƒ /api/content-safety-check                                                                           269 B         102 kB
+├ ƒ /api/cron                                                                                           734 B         103 kB
+├ ƒ /api/cron/send-reminders                                                                            269 B         102 kB
+├ ƒ /api/debug-email                                                                                    269 B         102 kB
+├ ƒ /api/email-status                                                                                   269 B         102 kB
+├ ƒ /api/email/preferences                                                                              269 B         102 kB
+├ ƒ /api/email/unsubscribe                                                                              269 B         102 kB
+├ ƒ /api/generate-explanation                                                                           269 B         102 kB
+├ ƒ /api/generate-flashcards                                                                            269 B         102 kB
+├ ƒ /api/generate-questions                                                                             269 B         102 kB
+├ ƒ /api/generate-quiz                                                                                  269 B         102 kB
+├ ƒ /api/generate-simple-explanation                                                                    269 B         102 kB
+├ ƒ /api/handle-email-verification                                                                      269 B         102 kB
+├ ƒ /api/notifications/login                                                                            269 B         102 kB
+├ ƒ /api/notifications/reminder                                                                         269 B         102 kB
+├ ƒ /api/notifications/welcome                                                                          269 B         102 kB
+├ ƒ /api/quick-room-check                                                                               269 B         102 kB
+├ ƒ /api/quiz-arena/cleanup                                                                             269 B         102 kB
+├ ƒ /api/quiz-arena/room-analytics                                                                      269 B         102 kB
+├ ƒ /api/quiz-arena/room-state                                                                          269 B         102 kB
+├ ƒ /api/quiz-arena/submit-answer                                                                       269 B         102 kB
+├ ƒ /api/quiz-arena/validate-room                                                                       269 B         102 kB
+├ ƒ /api/send-email                                                                                     269 B         102 kB
+├ ƒ /api/send-verification-email                                                                        269 B         102 kB
+├ ƒ /api/study-rooms                                                                                    269 B         102 kB
+├ ƒ /api/study-rooms/[roomId]/join                                                                      269 B         102 kB
+├ ƒ /api/test-email-fix                                                                                 269 B         102 kB
+├ ƒ /api/test-mongo                                                                                     269 B         102 kB
+├ ƒ /api/test-quiz-email                                                                                269 B         102 kB
+├ ƒ /api/verification-token                                                                             269 B         102 kB
+├ ○ /auth/action                                                                                      4.77 kB         275 kB
+├ ○ /billing                                                                                          4.75 kB         287 kB
+├ ○ /bookmarks                                                                                        12.1 kB         326 kB
+├ ○ /careers                                                                                          2.05 kB         112 kB
+├ ○ /changelog                                                                                          269 B         102 kB
+├ ○ /cookies                                                                                            170 B         106 kB
+├ ○ /dashboard                                                                                        9.38 kB         449 kB
+├ ○ /debug-all                                                                                        5.28 kB         284 kB
+├ ○ /disclaimer                                                                                         269 B         102 kB
+├ ○ /ecat                                                                                             6.57 kB         288 kB
+├ ƒ /ecat/[subject]                                                                                   4.21 kB         286 kB
+├ ○ /ecat/mock-test                                                                                   5.46 kB         323 kB
+├ ○ /ecat/test                                                                                        2.92 kB         331 kB
+├ ○ /email-status                                                                                     3.87 kB         113 kB
+├ ○ /exam-prep                                                                                        2.67 kB         346 kB
+├ ○ /force-welcome-test                                                                               4.79 kB         283 kB
+├ ○ /forgot-password                                                                                  5.35 kB         301 kB
+├ ○ /generate-from-file                                                                               9.75 kB         359 kB
+├ ○ /generate-paper                                                                                   18.9 kB         333 kB
+├ ○ /generate-questions                                                                                9.4 kB         320 kB
+├ ○ /generate-quiz                                                                                     114 kB         585 kB
+├ ○ /generate-study-guide                                                                             9.97 kB         317 kB
+├ ○ /genlab                                                                                            8.2 kB         326 kB
+├ ○ /help                                                                                             2.07 kB         115 kB
+├ ○ /how-to-use                                                                                       4.53 kB         117 kB
+├ ƒ /how-to-use/[slug]                                                                                8.03 kB         121 kB
+├ ○ /how-to-use/contact-support                                                                       5.92 kB         178 kB
+├ ○ /image-to-explanation                                                                             8.02 kB         350 kB
+├ ○ /login                                                                                            9.04 kB         313 kB
+├ ○ /manifest.webmanifest                                                                               269 B         102 kB
+├ ○ /mdcat                                                                                            3.25 kB         301 kB
+├ ƒ /mdcat/[subject]                                                                                  5.04 kB         293 kB
+├ ○ /mdcat/mock-test                                                                                  5.38 kB         323 kB
+├ ○ /mdcat/test                                                                                       2.91 kB         331 kB
+├ ○ /nts                                                                                              5.07 kB         290 kB
+├ ƒ /nts/[category]                                                                                   2.41 kB         122 kB
+├ ○ /nts/mock-test                                                                                    5.61 kB         353 kB
+├ ○ /nts/test                                                                                         2.85 kB         331 kB
+├ ○ /offline                                                                                          3.92 kB         113 kB
+├ ○ /pricing                                                                                          2.07 kB         115 kB
+├ ○ /privacy-policy                                                                                     269 B         102 kB
+├ ○ /profile                                                                                          21.8 kB         343 kB
+├ ○ /quiz-arena                                                                                       12.4 kB         325 kB
+├ ƒ /quiz-arena/host/[roomCode]                                                                       8.76 kB         291 kB
+├ ƒ /quiz-arena/join/[roomCode]                                                                       7.19 kB         289 kB
+├ ƒ /quiz-arena/participant/[roomCode]                                                                10.5 kB         292 kB
+├ ○ /reset-password                                                                                   1.35 kB         264 kB
+├ ○ /review                                                                                           5.43 kB         326 kB
+├ ○ /security                                                                                           269 B         102 kB
+├ ○ /shared-quiz                                                                                      7.15 kB         289 kB
+├ ○ /signup                                                                                           14.6 kB         319 kB
+├ ○ /status                                                                                             269 B         102 kB
+├ ○ /study-rooms                                                                                      6.43 kB         285 kB
+├ ƒ /study-rooms/[roomId]                                                                             8.02 kB         295 kB
+├ ○ /study-rooms/create                                                                               8.08 kB         317 kB
+├ ○ /terms-of-service                                                                                   269 B         102 kB
+├ ○ /terms-of-use                                                                                       170 B         106 kB
+├ ○ /test-auto-emails                                                                                 4.76 kB         283 kB
+├ ○ /test-email-colors                                                                                 3.1 kB         113 kB
+├ ○ /test-email-fix                                                                                   3.68 kB         113 kB
+├ ○ /test-email-speed                                                                                 4.05 kB         282 kB
+├ ○ /test-enhanced-emails                                                                             3.98 kB         114 kB
+├ ○ /test-pro-status                                                                                  3.81 kB         282 kB
+├ ○ /test-quiz-email                                                                                  5.08 kB         283 kB
+└ ○ /unsubscribe                                                                                       9.1 kB         122 kB
++ First Load JS shared by all                                                                          102 kB
+  ├ chunks/1255-2521aee507f9edc4.js                                                                   44.9 kB
+  ├ chunks/4bd1b696-182b6b13bdad92e3.js                                                               54.2 kB
+  └ other shared chunks (total)                                                                       2.82 kB
+
+
+ƒ Middleware                                                                                          33.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
