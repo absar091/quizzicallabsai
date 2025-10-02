@@ -133,6 +133,38 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
               </td></tr>
             </table>
 
+            <!-- QR Code Section -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:20px;">
+              <tr><td style="padding:15px;text-align:center;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#475569;">📱 Quick Mobile Access</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://quizzicallabz.qzz.io/dashboard?utm_source=email_qr" alt="QR Code" style="width:80px;height:80px;border:2px solid #e2e8f0;border-radius:8px;">
+                <p style="margin:10px 0 0;font-size:12px;color:#64748b;">Scan to open on mobile</p>
+              </td></tr>
+            </table>
+
+            <!-- Calendar Integration -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#92400e;">📅 Schedule Your Next Study Session</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Study+Session+-+${encodeURIComponent(quizData.quizTitle)}&dates=20250115T180000Z/20250115T190000Z&details=Continue+improving+on+${encodeURIComponent(quizData.quizTitle)}+%7C+Current+score:+${quizData.score}%25&location=Quizzicallabz.qzz.io" target="_blank" style="background:#4285f4;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">+ Google Calendar</a>
+                  <a href="https://outlook.live.com/calendar/0/deeplink/compose?subject=Study+Session+-+${encodeURIComponent(quizData.quizTitle)}&startdt=2025-01-15T18:00:00&enddt=2025-01-15T19:00:00&body=Continue+improving+on+${encodeURIComponent(quizData.quizTitle)}" target="_blank" style="background:#0078d4;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">+ Outlook</a>
+                </div>
+              </td></tr>
+            </table>
+
+            <!-- Social Sharing -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f9ff;border-left:4px solid #0ea5e9;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#0c4a6e;">🎉 Share Your Achievement</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <a href="https://twitter.com/intent/tweet?text=Just+scored+${quizData.score}%25+on+${encodeURIComponent(quizData.quizTitle)}+quiz+with+@QuizzicallabzAI!+%F0%9F%8E%AF%0A%0AReady+to+test+your+knowledge?+Try+it+here:&url=https://quizzicallabz.qzz.io" target="_blank" style="background:#1da1f2;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">📱 Twitter</a>
+                  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://quizzicallabz.qzz.io&summary=I+just+scored+${quizData.score}%25+on+a+${encodeURIComponent(quizData.quizTitle)}+quiz+using+QuizzicallabzAI!+This+AI-powered+platform+makes+learning+so+much+more+effective." target="_blank" style="background:#0077b5;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">💼 LinkedIn</a>
+                  <a href="https://wa.me/?text=I+just+scored+${quizData.score}%25+on+a+${encodeURIComponent(quizData.quizTitle)}+quiz!+%F0%9F%8E%AF%0A%0ACheck+out+this+amazing+AI+study+platform:+https://quizzicallabz.qzz.io" target="_blank" style="background:#25d366;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">💬 WhatsApp</a>
+                </div>
+              </td></tr>
+            </table>
+
             <!-- Buttons -->
             <div class="button-container" style="text-align:left;">
               <a href="https://quizzicallabz.qzz.io/review?utm_source=email&utm_medium=quiz_results&utm_campaign=engagement" target="_blank" rel="noopener noreferrer" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;margin-right:10px;margin-bottom:10px;" class="mobile-button">
@@ -777,6 +809,26 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
                   • Take short practice quizzes to stay sharp<br>
                   • Set aside 15 minutes daily for consistent progress
                 </p>
+              </td></tr>
+            </table>
+
+            <!-- Calendar Reminder -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf4;border-left:4px solid #22c55e;border-radius:6px;margin-bottom:20px;">
+              <tr><td style="padding:15px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#15803d;">📅 Set Study Reminder</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Daily+Study+Session&dates=20250116T180000Z/20250116T183000Z&details=Time+to+practice+${encodeURIComponent(reminderData?.topic || 'your+studies')}+on+Quizzicallabz&recur=RRULE:FREQ=DAILY" target="_blank" style="background:#4285f4;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">+ Daily Reminder</a>
+                  <a href="https://outlook.live.com/calendar/0/deeplink/compose?subject=Study+Session&startdt=2025-01-16T18:00:00&enddt=2025-01-16T18:30:00&body=Practice+${encodeURIComponent(reminderData?.topic || 'studies')}+on+Quizzicallabz" target="_blank" style="background:#0078d4;color:#fff;text-decoration:none;padding:8px 12px;border-radius:4px;font-size:12px;display:inline-block;">+ Outlook</a>
+                </div>
+              </td></tr>
+            </table>
+
+            <!-- QR Code -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:20px;">
+              <tr><td style="padding:15px;text-align:center;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#475569;">📱 Quick Access</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://quizzicallabz.qzz.io/generate-quiz?utm_source=email_qr" alt="QR Code" style="width:80px;height:80px;border:2px solid #e2e8f0;border-radius:8px;">
+                <p style="margin:10px 0 0;font-size:12px;color:#64748b;">Scan to start studying</p>
               </td></tr>
             </table>
 
