@@ -28,7 +28,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           .mobile-text { font-size: 14px !important; }
           .logo { width: 80px !important; }
           .button-container { text-align: center !important; }
-          .score-badge { font-size: 32px !important; }
+          .score-badge { font-size: 28px !important; width: 80px !important; height: 80px !important; line-height: 80px !important; }
         }
         .icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; }
       </style>
@@ -75,7 +75,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
               <tr>
                 <td align="center" style="padding:20px;">
-                  <div style="display:inline-block;width:100px;height:100px;border-radius:50%;background:${Number(quizData.score) >= 80 ? '#10b981' : Number(quizData.score) >= 60 ? '#f59e0b' : '#ef4444'};color:#fff;line-height:100px;font-size:36px;font-weight:bold;" class="score-badge">
+                  <div style="display:inline-block;width:100px;height:100px;border-radius:50%;background:${Number(quizData.score) >= 80 ? '#10b981' : Number(quizData.score) >= 60 ? '#f59e0b' : '#ef4444'};color:#fff;line-height:100px;font-size:36px;font-weight:bold;text-align:center;box-sizing:border-box;" class="score-badge">
                     ${quizData.score}%
                   </div>
                   ${Number(quizData.score) >= 80 ? '<p style="margin:10px 0 0;color:#10b981;font-weight:600;">🎉 Excellent Performance!</p>' : Number(quizData.score) >= 60 ? '<p style="margin:10px 0 0;color:#f59e0b;font-weight:600;">👍 Good Job!</p>' : '<p style="margin:10px 0 0;color:#ef4444;font-weight:600;">💪 Keep Practicing!</p>'}
