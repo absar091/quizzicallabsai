@@ -229,8 +229,8 @@ export default function QuizArenaPage() {
 
         console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-        const { QuizArena: QuizArenaDiscovery } = await import('@/lib/quiz-arena');
-        const roomCode = await QuizArenaDiscovery.Discovery.generateRoomCode();
+        const { QuizArena } = await import('@/lib/quiz-arena');
+        const roomCode = await QuizArena.Discovery.generateRoomCode();
         console.log('🔖 Room code:', roomCode);
 
         const quizArenaData = quizContent.map((q: any, index: number) => ({
@@ -401,8 +401,8 @@ export default function QuizArenaPage() {
 
       console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-      const { QuizArena: QuizArenaDiscovery } = await import('@/lib/quiz-arena');
-      const roomCode = await QuizArenaDiscovery.Discovery.generateRoomCode();
+      const { QuizArena } = await import('@/lib/quiz-arena');
+      const roomCode = await QuizArena.Discovery.generateRoomCode();
       console.log('🔖 Room code:', roomCode);
 
       const quizArenaData = quizContent.map((q: any, index: number) => ({
