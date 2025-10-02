@@ -37,6 +37,7 @@ interface RoomData {
   quiz: QuizQuestion[];
   playerCount: number;
   players: RoomPlayer[];
+  questionStartTime?: any; // Add questionStartTime property
 }
 
 export default function RoomHostPage() {
@@ -49,8 +50,16 @@ export default function RoomHostPage() {
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
-  const { timeLeft, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
+  
+  // Define isHost early to prevent undefined references
+  const isHost = user && roomData?.hostId === user.uid;
+  
+  // Use questionStartTime from roomData, with fallback
+  const { timeLeft, isActive: timerActive } = useQuizTimer(
+    (roomData as any)?.questionStartTime || null, 
+    30
+  );
 
   useEffect(() => {
     if (!roomCode || !user) return;
@@ -58,7 +67,12 @@ export default function RoomHostPage() {
     loadRoomData();
 
     // Set up real-time listener
-    const cleanup = setupRoomListener();
+    let cleanup: (() => void) | undefined;
+    setupRoomListener().then(cleanupFn => {
+      cleanup = cleanupFn;
+    }).catch(error => {
+      console.error('Failed to setup room listeners:', error);
+    });
 
     // Monitor connection status
     const connectionInterval = setInterval(() => {
@@ -66,7 +80,7 @@ export default function RoomHostPage() {
     }, 5000);
 
     return () => {
-      cleanup?.();
+      if (cleanup) cleanup();
       clearInterval(connectionInterval);
     };
   }, [roomCode, user]);
@@ -84,9 +98,6 @@ export default function RoomHostPage() {
 
   const loadRoomData = async () => {
     try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
-      // Loading room data
-
       // Try to get room data from Firestore
       const { firestore } = await import('@/lib/firebase');
       const { doc, getDoc } = await import('firebase/firestore');
@@ -139,7 +150,8 @@ export default function RoomHostPage() {
         currentQuestion: firebaseRoomData.currentQuestion || -1,
         quiz: firebaseRoomData.quiz || [],
         playerCount: roomPlayers.length,
-        players: roomPlayers
+        players: roomPlayers,
+        questionStartTime: firebaseRoomData.questionStartTime || null
       };
 
       // Room data loaded successfully
@@ -172,7 +184,11 @@ export default function RoomHostPage() {
         roomCode,
         (data: any) => {
           if (data) {
-            setRoomData(prev => ({ ...prev, ...data }));
+            setRoomData(prev => ({ 
+              ...prev, 
+              ...data,
+              questionStartTime: data.questionStartTime || prev?.questionStartTime
+            }));
             setCurrentQuestionIndex(data.currentQuestion || -1);
             setQuizStarted(data.started || false);
           }
@@ -184,11 +200,11 @@ export default function RoomHostPage() {
         roomCode,
         (players: any[]) => {
           console.log('Host - Leaderboard updated:', players);
-          setRoomData(prev => ({
+          setRoomData(prev => prev ? ({
             ...prev,
             players,
             playerCount: players.length
-          }));
+          }) : null);
         }
       );
 
@@ -198,6 +214,7 @@ export default function RoomHostPage() {
         };
       } catch (error) {
         console.error('Error setting up listeners:', error);
+        return () => {}; // Return empty cleanup function on error
       }
     };
     
@@ -205,7 +222,7 @@ export default function RoomHostPage() {
   };
 
   const handleStartQuiz = async () => {
-    if (!roomData) return;
+    if (!roomData || !user) return;
 
     // Require at least 2 players (host + 1 other)
     if (roomData.playerCount < 2) {
@@ -242,7 +259,7 @@ export default function RoomHostPage() {
       // Small delay to let participants prepare
       setTimeout(async () => {
         // Start quiz in Firebase
-        await QuizArena.Host.startQuiz(roomCode, user!.uid);
+        await QuizArena.Host.startQuiz(roomCode, user.uid);
 
         setQuizStarted(true);
         setCurrentQuestionIndex(0);
@@ -264,13 +281,13 @@ export default function RoomHostPage() {
   };
 
   const handleNextQuestion = async () => {
-    if (!roomData || currentQuestionIndex >= roomData.quiz.length - 1) return;
+    if (!roomData || !user || currentQuestionIndex >= roomData.quiz.length - 1) return;
 
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
       
       // Move to next question in Firebase
-      await QuizArena.Host.nextQuestion(roomCode, user!.uid);
+      await QuizArena.Host.nextQuestion(roomCode, user.uid);
 
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
@@ -291,11 +308,13 @@ export default function RoomHostPage() {
   };
 
   const handleFinishQuiz = async () => {
+    if (!user) return;
+    
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
       
       // Finish quiz in Firebase
-      await QuizArena.Host.finishQuiz(roomCode, user!.uid);
+      await QuizArena.Host.finishQuiz(roomCode, user.uid);
 
       setQuizStarted(false);
       setCurrentQuestionIndex(-1);
@@ -323,11 +342,25 @@ export default function RoomHostPage() {
   };
 
   const copyRoomCode = () => {
-    navigator.clipboard.writeText(roomCode);
-    toast?.({
-      title: 'Room Code Copied!',
-      description: 'Share this with your friends to invite them to the quiz.',
-    });
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(roomCode);
+      toast?.({
+        title: 'Room Code Copied!',
+        description: 'Share this with your friends to invite them to the quiz.',
+      });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = roomCode;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast?.({
+        title: 'Room Code Copied!',
+        description: 'Share this with your friends to invite them to the quiz.',
+      });
+    }
   };
 
   if (loading) {
@@ -361,8 +394,6 @@ export default function RoomHostPage() {
     );
   }
 
-  // Define isHost early to prevent undefined behavior
-  const isHost = user && roomData?.hostId === user.uid;
   const currentQuestion = roomData?.quiz[currentQuestionIndex];
 
   return (
@@ -403,7 +434,17 @@ export default function RoomHostPage() {
               variant="outline"
               onClick={() => {
                 const joinLink = `${window.location.origin}/quiz-arena/join/${roomCode}`;
-                navigator.clipboard.writeText(joinLink);
+                if (navigator?.clipboard) {
+                  navigator.clipboard.writeText(joinLink);
+                } else {
+                  // Fallback for older browsers
+                  const textArea = document.createElement('textarea');
+                  textArea.value = joinLink;
+                  document.body.appendChild(textArea);
+                  textArea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textArea);
+                }
                 toast?.({
                   title: 'Link Copied to Clipboard!',
                   description: 'Share this link with your friends to invite them to the quiz.',
@@ -416,9 +457,11 @@ export default function RoomHostPage() {
             <Button
               variant="outline"
               onClick={() => {
-                const message = `🎯 Join my live quiz battle!\n\nRoom: ${roomCode}\n\nLink: ${window.location.origin}/quiz-arena/join/${roomCode}\n\nGet ready for some epic competition! 🏆`;
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
+                if (typeof window !== 'undefined') {
+                  const message = `🎯 Join my live quiz battle!\n\nRoom: ${roomCode}\n\nLink: ${window.location.origin}/quiz-arena/join/${roomCode}\n\nGet ready for some epic competition! 🏆`;
+                  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                  window.open(whatsappUrl, '_blank');
+                }
               }}
             >
               <MessageCircle className="mr-2 h-4 w-4" />
