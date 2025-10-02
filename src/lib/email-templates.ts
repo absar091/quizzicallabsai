@@ -28,9 +28,19 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           .mobile-text { font-size: 14px !important; }
           .logo { width: 80px !important; }
           .button-container { text-align: center !important; }
-          .score-badge { font-size: 32px !important; }
+          .score-badge { font-size: 28px !important; width: 80px !important; height: 80px !important; line-height: 80px !important; }
+          .welcome-badge, .alert-badge, .reminder-badge { width: 60px !important; height: 60px !important; line-height: 60px !important; font-size: 30px !important; }
+          .progress-bar { width: 100% !important; }
+        }
+        @media (prefers-color-scheme: dark) {
+          .dark-bg { background: #1f2937 !important; }
+          .dark-text { color: #f9fafb !important; }
+          .dark-border { border-color: #374151 !important; }
         }
         .icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
       </style>
     </head>
     <body style="margin:0;padding:0;background:#f9fafb;">
@@ -71,14 +81,21 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
               Here are the results of your recent quiz attempt:
             </p>
 
-            <!-- Score Badge -->
+            <!-- Score Badge with Progress Ring -->
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
               <tr>
                 <td align="center" style="padding:20px;">
-                  <div style="display:inline-block;width:100px;height:100px;border-radius:50%;background:${Number(quizData.score) >= 80 ? '#10b981' : Number(quizData.score) >= 60 ? '#f59e0b' : '#ef4444'};color:#fff;line-height:100px;font-size:36px;font-weight:bold;" class="score-badge">
-                    ${quizData.score}%
+                  <div style="position:relative;display:inline-block;">
+                    <svg width="120" height="120" style="transform:rotate(-90deg);">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="${Number(quizData.score) >= 80 ? '#10b981' : Number(quizData.score) >= 60 ? '#f59e0b' : '#ef4444'}" stroke-width="8" stroke-dasharray="${Math.PI * 100}" stroke-dashoffset="${Math.PI * 100 * (1 - Number(quizData.score) / 100)}" stroke-linecap="round"/>
+                    </svg>
+                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;border-radius:50%;background:${Number(quizData.score) >= 80 ? '#10b981' : Number(quizData.score) >= 60 ? '#f59e0b' : '#ef4444'};color:#fff;line-height:100px;font-size:36px;font-weight:bold;text-align:center;box-sizing:border-box;" class="score-badge">
+                      ${quizData.score}%
+                    </div>
                   </div>
-                  ${Number(quizData.score) >= 80 ? '<p style="margin:10px 0 0;color:#10b981;font-weight:600;">🎉 Excellent Performance!</p>' : Number(quizData.score) >= 60 ? '<p style="margin:10px 0 0;color:#f59e0b;font-weight:600;">👍 Good Job!</p>' : '<p style="margin:10px 0 0;color:#ef4444;font-weight:600;">💪 Keep Practicing!</p>'}
+                  ${Number(quizData.score) >= 80 ? '<p style="margin:15px 0 0;color:#10b981;font-weight:600;font-size:16px;">🎉 Excellent Performance!</p>' : Number(quizData.score) >= 60 ? '<p style="margin:15px 0 0;color:#f59e0b;font-weight:600;font-size:16px;">👍 Good Job!</p>' : '<p style="margin:15px 0 0;color:#ef4444;font-weight:600;font-size:16px;">💪 Keep Practicing!</p>'}
+                  <div style="margin-top:10px;padding:8px 16px;background:#f3f4f6;border-radius:20px;display:inline-block;font-size:12px;color:#6b7280;">Score: ${quizData.correct}/${Number(quizData.correct) + Number(quizData.incorrect)} questions</div>
                 </td>
               </tr>
             </table>
@@ -254,7 +271,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
               <tr>
                 <td align="center" style="padding:20px;">
-                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#10b981;color:#fff;line-height:80px;font-size:40px;text-align:center;">
+                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#10b981;color:#fff;line-height:80px;font-size:40px;text-align:center;box-sizing:border-box;" class="welcome-badge">
                     ✓
                   </div>
                   <h2 style="margin:15px 0 5px;font-size:24px;color:#111;font-weight:600;">
@@ -476,7 +493,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
               <tr>
                 <td align="center" style="padding:20px;">
-                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#f59e0b;color:#fff;line-height:80px;font-size:40px;text-align:center;">
+                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#f59e0b;color:#fff;line-height:80px;font-size:40px;text-align:center;box-sizing:border-box;" class="alert-badge">
                     ⚠
                   </div>
                   <h2 style="margin:15px 0 5px;font-size:22px;color:#dc2626;font-weight:600;">
@@ -686,7 +703,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
             <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:20px;">
               <tr>
                 <td align="center" style="padding:20px;">
-                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#8b5cf6;color:#fff;line-height:80px;font-size:40px;text-align:center;">
+                  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;background:#8b5cf6;color:#fff;line-height:80px;font-size:40px;text-align:center;box-sizing:border-box;" class="reminder-badge">
                     📚
                   </div>
                   <h2 style="margin:15px 0 5px;font-size:22px;color:#111;font-weight:600;">
