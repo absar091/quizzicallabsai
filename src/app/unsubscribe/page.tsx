@@ -36,15 +36,17 @@ export default function UnsubscribePage() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with actual unsubscribe logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/email/unsubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, preferences: { ...preferences, all: true } })
+      });
 
-      // TODO: Call your unsubscribe API endpoint
-      // const response = await fetch('/api/email/unsubscribe', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, preferences: { ...preferences, all: true } })
-      // });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to unsubscribe');
+      }
 
       setIsUnsubscribed(true);
       toast({
@@ -75,15 +77,17 @@ export default function UnsubscribePage() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with actual update logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/email/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, preferences })
+      });
 
-      // TODO: Call your preferences API endpoint
-      // const response = await fetch('/api/email/preferences', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, preferences })
-      // });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update preferences');
+      }
 
       toast({
         title: 'Preferences Updated',
