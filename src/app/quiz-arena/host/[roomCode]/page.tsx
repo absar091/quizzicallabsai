@@ -48,22 +48,12 @@ export default function RoomHostPage() {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
-  const [QuizArena, setQuizArena] = useState<any>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const { timeLeft, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
 
-  // Load QuizArena module once
   useEffect(() => {
-    const loadQuizArena = async () => {
-      const module = await import('@/lib/quiz-arena');
-      setQuizArena(module.QuizArena);
-    };
-    loadQuizArena();
-  }, []);
-
-  useEffect(() => {
-    if (!roomCode || !user || !QuizArena) return;
+    if (!roomCode || !user) return;
 
     loadRoomData();
 
@@ -79,7 +69,7 @@ export default function RoomHostPage() {
       cleanup?.();
       clearInterval(connectionInterval);
     };
-  }, [roomCode, user, QuizArena]);
+  }, [roomCode, user]);
 
   // Auto advance when timer expires
   useEffect(() => {
@@ -93,9 +83,8 @@ export default function RoomHostPage() {
   }, [timeLeft, timerActive, isHost, currentQuestionIndex, roomData?.quiz.length]);
 
   const loadRoomData = async () => {
-    if (!QuizArena) return;
-
     try {
+      const { QuizArena } = await import('@/lib/quiz-arena');
       // Loading room data
 
       // Try to get room data from Firestore
@@ -172,11 +161,14 @@ export default function RoomHostPage() {
   };
 
   const setupRoomListener = () => {
-    if (!roomCode || !user || !QuizArena) return;
+    if (!roomCode || !user) return;
 
-    try {
-      // Real-time room state listener
-      const unsubscribeRoom = QuizArena.Host.listenToRoom(
+    const setupListeners = async () => {
+      try {
+        const { QuizArena } = await import('@/lib/quiz-arena');
+        
+        // Real-time room state listener
+        const unsubscribeRoom = QuizArena.Host.listenToRoom(
         roomCode,
         (data: any) => {
           if (data) {
@@ -200,13 +192,16 @@ export default function RoomHostPage() {
         }
       );
 
-      return () => {
-        unsubscribeRoom?.();
-        unsubscribePlayers?.();
-      };
-    } catch (error) {
-      console.error('Error setting up listeners:', error);
-    }
+        return () => {
+          unsubscribeRoom?.();
+          unsubscribePlayers?.();
+        };
+      } catch (error) {
+        console.error('Error setting up listeners:', error);
+      }
+    };
+    
+    return setupListeners();
   };
 
   const handleStartQuiz = async () => {
@@ -222,9 +217,9 @@ export default function RoomHostPage() {
       return;
     }
 
-    if (!QuizArena) return;
-
     try {
+      const { QuizArena } = await import('@/lib/quiz-arena');
+      
       toast?.({
         title: 'Starting Quiz...',
         description: 'Get ready, players! Quiz begins in 3 seconds...',
@@ -269,9 +264,11 @@ export default function RoomHostPage() {
   };
 
   const handleNextQuestion = async () => {
-    if (!roomData || currentQuestionIndex >= roomData.quiz.length - 1 || !QuizArena) return;
+    if (!roomData || currentQuestionIndex >= roomData.quiz.length - 1) return;
 
     try {
+      const { QuizArena } = await import('@/lib/quiz-arena');
+      
       // Move to next question in Firebase
       await QuizArena.Host.nextQuestion(roomCode, user!.uid);
 
@@ -294,9 +291,9 @@ export default function RoomHostPage() {
   };
 
   const handleFinishQuiz = async () => {
-    if (!QuizArena) return;
-
     try {
+      const { QuizArena } = await import('@/lib/quiz-arena');
+      
       // Finish quiz in Firebase
       await QuizArena.Host.finishQuiz(roomCode, user!.uid);
 
