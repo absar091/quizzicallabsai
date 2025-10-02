@@ -80,7 +80,7 @@ export class QuizArenaHost {
 
     try {
       // Create room document
-      await setDoc(doc(db, 'quiz-rooms', roomId), room);
+      await setDoc(doc(firestore, 'quiz-rooms', roomId), room);
 
       // Add host as first player
       await QuizArenaPlayer.joinRoom(roomId, hostId, hostName);
@@ -96,7 +96,7 @@ export class QuizArenaHost {
    * Start the quiz - only host can do this
    */
   static async startQuiz(roomId: string, hostId: string): Promise<void> {
-    const roomRef = doc(db, 'quiz-rooms', roomId);
+    const roomRef = doc(firestore, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
     if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
@@ -106,7 +106,7 @@ export class QuizArenaHost {
     if (room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_ALREADY_STARTED);
 
     // Check minimum players
-    const playersSnap = await getDocs(collection(db, `quiz-rooms/${roomId}/players`));
+    const playersSnap = await getDocs(collection(firestore, `quiz-rooms/${roomId}/players`));
     if (playersSnap.size < QUIZ_ARENA_CONSTANTS.MIN_PLAYERS_TO_START) {
       throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.MIN_PLAYERS);
     }
