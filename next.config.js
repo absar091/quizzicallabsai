@@ -19,6 +19,24 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
+    // Suppress Express warning from Genkit
+    config.ignoreWarnings = [
+      { module: /node_modules\/@genkit-ai\/core\/node_modules\/express/ },
+      /Critical dependency: the request of a dependency is an expression/,
+    ];
+    
+    return config;
+  },
 }
 
 module.exports = nextConfig
