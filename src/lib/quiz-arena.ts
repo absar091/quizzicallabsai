@@ -16,6 +16,7 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { ReliableListener } from './firebase-listeners';
+import { QUIZ_ARENA_CONSTANTS } from './quiz-arena-constants';
 
 // 🎯 TypeScript Interfaces (matching the blueprint)
 
@@ -36,6 +37,7 @@ export interface QuizArenaRoom {
   createdAt: Timestamp;
   startedAt?: Timestamp;
   finishedAt?: Timestamp;
+  questionStartTime?: Timestamp;
   isPublic?: boolean;
 }
 
@@ -86,7 +88,7 @@ export class QuizArenaHost {
       return room;
     } catch (error) {
       console.error('Failed to create room:', error);
-      throw new Error('Failed to create quiz room');
+      throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.CREATION_FAILED);
     }
   }
 
@@ -97,16 +99,16 @@ export class QuizArenaHost {
     const roomRef = doc(db, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
-    if (!roomSnap.exists()) throw new Error('Room not found');
+    if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
     const room = roomSnap.data() as QuizArenaRoom;
 
-    if (room.hostId !== hostId) throw new Error('Only host can start the quiz');
-    if (room.started) throw new Error('Quiz already started');
+    if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
+    if (room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_ALREADY_STARTED);
 
     // Check minimum players
     const playersSnap = await getDocs(collection(db, `quiz-rooms/${roomId}/players`));
-    if (playersSnap.size < 2) {
-      throw new Error('Need at least 2 players to start');
+    if (playersSnap.size < QUIZ_ARENA_CONSTANTS.MIN_PLAYERS_TO_START) {
+      throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.MIN_PLAYERS);
     }
 
     try {
@@ -129,12 +131,12 @@ export class QuizArenaHost {
     const roomRef = doc(db, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
-    if (!roomSnap.exists()) throw new Error('Room not found');
+    if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
     const room = roomSnap.data() as QuizArenaRoom;
 
-    if (room.hostId !== hostId) throw new Error('Only host can advance questions');
-    if (!room.started) throw new Error('Quiz not started yet');
-    if (room.finished) throw new Error('Quiz already finished');
+    if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
+    if (!room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_NOT_STARTED);
+    if (room.finished) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_FINISHED);
     if (room.currentQuestion >= room.quiz.length - 1) {
       // Finish the quiz
       await this.finishQuiz(roomId, hostId);
@@ -159,10 +161,10 @@ export class QuizArenaHost {
     const roomRef = doc(db, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
-    if (!roomSnap.exists()) throw new Error('Room not found');
+    if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
     const room = roomSnap.data() as QuizArenaRoom;
 
-    if (room.hostId !== hostId) throw new Error('Only host can finish the quiz');
+    if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
 
     try {
       await updateDoc(roomRef, {
@@ -213,7 +215,7 @@ export class QuizArenaPlayer {
       await setDoc(playerRef, player, { merge: true });
     } catch (error) {
       console.error('Failed to join room:', error);
-      throw new Error('Failed to join quiz room');
+      throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.JOIN_FAILED);
     }
   }
 
@@ -228,7 +230,8 @@ export class QuizArenaPlayer {
       // Remove player from players subcollection
       await deleteDoc(doc(db, `quiz-rooms/${roomId}/players`, userId));
     } catch (error) {
-      throw new Error('Failed to leave room');
+      console.error('Failed to leave room:', error);
+      throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.LEAVE_FAILED);
     }
   }
 
@@ -302,13 +305,31 @@ export class QuizArenaDiscovery {
   }
 
   /**
-   * Generate unique room code
+   * Generate unique room code with collision detection
    */
-  static generateRoomCode(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID().substring(0, 6).toUpperCase();
+  static async generateRoomCode(): Promise<string> {
+    const maxAttempts = 10;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      let code: string;
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        code = crypto.randomUUID().substring(0, 6).toUpperCase();
+      } else {
+        code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      }
+
+      // Check if room code already exists
+      const roomRef = doc(db, 'quiz-rooms', code);
+      const roomSnap = await getDoc(roomRef);
+
+      if (!roomSnap.exists()) {
+        return code; // Unique code found
+      }
+      // If exists, loop will retry
     }
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    // Fallback: add timestamp to ensure uniqueness
+    const timestamp = Date.now().toString(36).substring(-3).toUpperCase();
+    return `${Math.random().toString(36).substring(2, 5).toUpperCase()}${timestamp}`;
   }
 
   /**

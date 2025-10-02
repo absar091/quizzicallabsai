@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Trophy, LogOut, AlertTriangle, WifiOff } from 'lucide-react';
-import { QuizArena, ArenaPlayer } from '@/lib/quiz-arena';
+import { QuizArena, ArenaPlayer, QuizArenaRoom, QuizQuestion } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
@@ -23,9 +23,9 @@ export default function ParticipantArenaPage() {
 
   const [loading, setLoading] = useState(true);
   const [leaving, setLeaving] = useState(false);
-  const [roomData, setRoomData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<QuizArenaRoom | null>(null);
   const [players, setPlayers] = useState<ArenaPlayer[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<any>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { timeLeft: timeRemaining, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
@@ -33,10 +33,15 @@ export default function ParticipantArenaPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+  const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
+    // Fix redirect loop: use ref to prevent multiple redirects
     if (!roomCode || !user) {
-      router.push(`/quiz-arena/join/${roomCode}`);
+      if (!hasRedirectedRef.current) {
+        hasRedirectedRef.current = true;
+        router.push(`/quiz-arena/join/${roomCode}`);
+      }
       return;
     }
 
@@ -69,7 +74,8 @@ export default function ParticipantArenaPage() {
               return;
             }
 
-            if (data.quiz?.length > 0) {
+            // Fix: Add null checks for quiz array
+            if (data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
               const questionIndex = data.currentQuestion || 0;
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
                 setCurrentQuestion(data.quiz[questionIndex]);
@@ -99,27 +105,23 @@ export default function ParticipantArenaPage() {
         };
 
       } catch (error) {
-        console.error('Error initializing participant');
+        console.error('Error initializing participant:', error);
         toast?.({
           title: 'Connection Failed',
           description: 'Unable to join the room. Please try again.',
           variant: 'destructive'
         });
-        router.push(`/quiz-arena/join/${roomCode}`);
+        if (!hasRedirectedRef.current) {
+          hasRedirectedRef.current = true;
+          router.push(`/quiz-arena/join/${roomCode}`);
+        }
       }
     };
 
     initializeParticipant();
-  }, [roomCode, user, router]);
+  }, [roomCode, user]); // Removed router from dependencies to prevent re-initialization
 
-  // Auto-submit when timer expires
-  useEffect(() => {
-    if (timeRemaining === 0 && !hasSubmitted && currentQuestion && timerActive) {
-      handleSubmitAnswer();
-    }
-  }, [timeRemaining, hasSubmitted, currentQuestion, timerActive]);
-
-  const handleSubmitAnswer = async () => {
+  const handleSubmitAnswer = useCallback(async () => {
     // Immediate guard to prevent race conditions
     if (hasSubmitted || selectedAnswer === null || !currentQuestion || submitting) return;
 
@@ -175,7 +177,7 @@ export default function ParticipantArenaPage() {
       });
 
     } catch (error: any) {
-      console.error('Error submitting answer');
+      console.error('Error submitting answer:', error);
       setHasSubmitted(false);
       setIsAnswered(false);
 
@@ -187,7 +189,14 @@ export default function ParticipantArenaPage() {
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [hasSubmitted, selectedAnswer, currentQuestion, submitting, roomData, roomCode, user, toast]);
+
+  // Auto-submit when timer expires
+  useEffect(() => {
+    if (timeRemaining === 0 && !hasSubmitted && currentQuestion && timerActive) {
+      handleSubmitAnswer();
+    }
+  }, [timeRemaining, hasSubmitted, currentQuestion, timerActive, handleSubmitAnswer]);
 
   const leaveRoom = async () => {
     if (leaving) return;
@@ -197,7 +206,7 @@ export default function ParticipantArenaPage() {
       await QuizArena.Player.leaveRoom(roomCode.toUpperCase(), user.uid);
       router.push('/dashboard');
     } catch (error: any) {
-      console.error('Error leaving room');
+      console.error('Error leaving room:', error);
       toast?.({
         title: 'Failed to Leave Room',
         description: error.message || 'Please try again',
@@ -305,8 +314,8 @@ export default function ParticipantArenaPage() {
                   </div>
                 </div>
 
-                {/* Enhanced Timer */}
-                {roomData.started && !hasSubmitted && (
+                {/* Enhanced Timer - Always show when quiz started */}
+                {roomData.started && (
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Timer className={`h-5 w-5 ${timeRemaining <= 10 ? 'text-red-500 animate-pulse' : 'text-orange-500'}`} />
@@ -328,8 +337,8 @@ export default function ParticipantArenaPage() {
                       </span>
                     </div>
 
-                    {/* Critical time warning */}
-                    {timeRemaining <= 10 && (
+                    {/* Critical time warning - only if not submitted */}
+                    {timeRemaining <= 10 && !hasSubmitted && (
                       <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2">
                         <div className="flex items-center justify-center gap-2 text-red-600 font-semibold text-sm">
                           <AlertTriangle className="h-4 w-4 animate-pulse" />

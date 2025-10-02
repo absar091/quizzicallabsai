@@ -229,7 +229,8 @@ export default function QuizArenaPage() {
 
         console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-        const roomCode = generateRoomCode();
+        const { QuizArena: QuizArenaDiscovery } = await import('@/lib/quiz-arena');
+        const roomCode = await QuizArenaDiscovery.Discovery.generateRoomCode();
         console.log('🔖 Room code:', roomCode);
 
         const quizArenaData = quizContent.map((q: any, index: number) => ({
@@ -255,7 +256,7 @@ export default function QuizArenaPage() {
           description: `Battle code: ${roomCode} - ${quizContent.length} questions loaded`,
         });
 
-        window.location.href = `/quiz-arena/host/${roomCode}`;
+        router.push(`/quiz-arena/host/${roomCode}`);
 
       } catch (fetchError: any) {
         clearTimeout(timeoutId);
@@ -400,7 +401,8 @@ export default function QuizArenaPage() {
 
       console.log(`✅ Quiz generated in ${Date.now() - startTime}ms:`, quizContent.length, 'questions');
 
-      const roomCode = generateRoomCode();
+      const { QuizArena: QuizArenaDiscovery } = await import('@/lib/quiz-arena');
+      const roomCode = await QuizArenaDiscovery.Discovery.generateRoomCode();
       console.log('🔖 Room code:', roomCode);
 
       const quizArenaData = quizContent.map((q: any, index: number) => ({
@@ -426,7 +428,7 @@ export default function QuizArenaPage() {
         description: `Battle code: ${roomCode} - ${quizContent.length} questions loaded`,
       });
 
-      window.location.href = `/quiz-arena/host/${roomCode}`;
+      router.push(`/quiz-arena/host/${roomCode}`);
 
     } catch (error: any) {
       console.error('❌ Error creating arena:', error);
@@ -458,9 +460,7 @@ export default function QuizArenaPage() {
     }
   };
 
-  const generateRoomCode = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  };
+  // generateRoomCode removed - now using QuizArena.Discovery.generateRoomCode() with collision detection
 
   if (setupMode === 'select') {
     return (
@@ -781,8 +781,8 @@ export default function QuizArenaPage() {
   const handleJoinArena = () => {
     if (!roomCode.trim() || !user) return;
 
-    // Redirect to the join URL
-    window.location.href = `/quiz-arena/join/${roomCode.toUpperCase().trim()}`;
+    // Use Next.js router instead of window.location for better performance
+    router.push(`/quiz-arena/join/${roomCode.toUpperCase().trim()}`);
   };
 
   if (setupMode === 'join') {

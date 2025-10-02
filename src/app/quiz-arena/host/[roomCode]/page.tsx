@@ -151,7 +151,7 @@ export default function RoomHostPage() {
       setQuizStarted(roomData.started);
 
     } catch (error) {
-      console.error('Error loading room data');
+      console.error('Error loading room data:', error);
       toast?.({
         title: 'Error Loading Room',
         description: 'Could not load room data. Please check the room code.',
@@ -252,7 +252,7 @@ export default function RoomHostPage() {
       }, 3000);
 
     } catch (error) {
-      console.error('Error starting quiz');
+      console.error('Error starting quiz:', error);
       toast?.({
         title: 'Error Starting Quiz',
         description: 'Please try again.',
@@ -279,7 +279,12 @@ export default function RoomHostPage() {
       });
 
     } catch (error) {
-      console.error('Error advancing question');
+      console.error('Error advancing question:', error);
+      toast?.({
+        title: 'Error',
+        description: 'Failed to advance to next question',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -299,7 +304,12 @@ export default function RoomHostPage() {
       });
 
     } catch (error) {
-      console.error('Error finishing quiz');
+      console.error('Error finishing quiz:', error);
+      toast?.({
+        title: 'Error',
+        description: 'Failed to finish quiz',
+        variant: 'destructive'
+      });
     }
   };
 

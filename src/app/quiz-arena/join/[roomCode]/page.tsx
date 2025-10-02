@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Lock, Gamepad2 } from 'lucide-react';
-import { QuizArena, ArenaPlayer } from '@/lib/quiz-arena';
+import { QuizArena, ArenaPlayer, QuizArenaRoom } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -19,8 +19,9 @@ export default function JoinQuizPage() {
 
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
+  const [hasAttemptedJoin, setHasAttemptedJoin] = useState(false);
   const [roomValid, setRoomValid] = useState<boolean | null>(null);
-  const [roomData, setRoomData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<QuizArenaRoom | null>(null);
   const [players, setPlayers] = useState<ArenaPlayer[]>([]);
 
   useEffect(() => {
@@ -37,28 +38,14 @@ export default function JoinQuizPage() {
       return;
     }
 
-    // IMMEDIATE VALIDATION: Try to speed up validation
-    const quickValidate = async () => {
+    // Direct Firebase validation (removed non-existent API call)
+    const validateRoom = async () => {
       try {
-        // Ultra-fast validation (under 1 second)
-        const response = await fetch(`/api/quick-room-check?code=${roomCode.toUpperCase()}`, {
-          signal: AbortSignal.timeout(1000) // 1 second timeout
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setRoomValid(data.exists);
-        } else if (response.status === 404) {
-          setRoomValid(false);
-        }
+        const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
+        setRoomValid(isValid);
       } catch (error) {
-        // Fallback to Firebase validation if API fails
-        try {
-          const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
-          setRoomValid(isValid);
-        } catch {
-          setRoomValid(false);
-        }
+        console.error('Room validation error:', error);
+        setRoomValid(false);
       }
     };
 
@@ -77,8 +64,9 @@ export default function JoinQuizPage() {
             setRoomData(data);
             setLoading(false);
 
-            // AUTO-JOIN FIX: Only auto-join once, don't keep retrying
-            if (user && data && !data.started && !data.finished && !joining) {
+            // AUTO-JOIN FIX: Only auto-join once using hasAttemptedJoin flag
+            if (user && data && !data.started && !data.finished && !joining && !hasAttemptedJoin) {
+              setHasAttemptedJoin(true);
               joinRoom(data);
             }
           }
@@ -105,11 +93,11 @@ export default function JoinQuizPage() {
     };
 
     // Execute validation and setup
-    quickValidate();
+    validateRoom();
     return setupRealTimeListeners();
-  }, [roomCode, user]); // Removed 'joining' dependency to prevent re-setup
+  }, [roomCode, user]); // Removed 'joining' and 'hasAttemptedJoin' to prevent re-setup
 
-  const joinRoom = async (roomData: any) => {
+  const joinRoom = async (roomData: QuizArenaRoom) => {
     if (!user || !roomData || joining) return;
 
     setJoining(true);
