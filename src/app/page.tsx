@@ -70,19 +70,21 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Modern Minimalist Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-9 h-9 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <BrainCircuit className="h-5 w-5 text-white" />
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-xl">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+              <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <BrainCircuit className="h-4 w-4 md:h-5 md:w-5 text-white" />
               </div>
-              <span className="text-foreground font-bold text-xl">
-                Quizzicallabz<sup className="text-accent text-xs">AI</sup>
+              <span className="text-foreground font-bold text-lg md:text-xl">
+                <span className="hidden sm:inline">Quizzicallabz</span>
+                <span className="sm:hidden">Quiz</span>
+                <sup className="text-accent text-xs">AI</sup>
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-1">
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/#features">Features</Link>
               </Button>
@@ -94,13 +96,15 @@ export default function Home() {
               </Button>
             </nav>
 
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
+            <div className="flex items-center gap-2 md:gap-3">
+              <Button variant="ghost" size="sm" className="hidden sm:flex" asChild>
                 <Link href="/login">Login</Link>
               </Button>
-              <Button size="sm" className="bg-gradient-to-r from-primary to-accent shadow-lg" asChild>
+              <Button size="sm" className="bg-gradient-to-r from-primary to-accent shadow-lg text-xs md:text-sm px-3 md:px-4" asChild>
                 <Link href="/signup">
-                  Get Started <ArrowRight className="ml-1 h-4 w-4" />
+                  <span className="hidden sm:inline">Get Started</span>
+                  <span className="sm:hidden">Start</span>
+                  <ArrowRight className="ml-1 h-3 w-3 md:h-4 md:w-4" />
                 </Link>
               </Button>
             </div>
