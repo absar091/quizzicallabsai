@@ -58,12 +58,7 @@ initializeAnalytics();
 
 export { app, auth, analytics };
 
-// Initialize connection manager
-if (typeof window !== 'undefined') {
-  import('./firebase-connection').then(({ connectionManager }) => {
-    console.log('🔥 Firebase connection manager initialized');
-  }).catch(console.error);
-}
+
 
 // Re-export database functions for convenience
 export { ref, set, get, push, remove, update, query, orderByChild, equalTo, limitToFirst, limitToLast } from 'firebase/database';
