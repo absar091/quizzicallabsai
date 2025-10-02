@@ -7,20 +7,22 @@ import {
   Loader2, 
   BrainCircuit, 
   Check, 
-  Trophy, 
-  Share2, 
-  GamepadIcon, 
-  TrendingUp, 
-  BookOpen, 
-  FileText,
   ArrowRight,
   Sparkles,
-  Users,
-  BarChart3,
-  Target,
   Play,
   Rocket
 } from "lucide-react";
+
+// Simple icon components to avoid circular dependencies
+const Trophy = ({ className }: { className?: string }) => <div className={className}>🏆</div>;
+const Share2 = ({ className }: { className?: string }) => <div className={className}>📤</div>;
+const GamepadIcon = ({ className }: { className?: string }) => <div className={className}>🎮</div>;
+const TrendingUp = ({ className }: { className?: string }) => <div className={className}>📈</div>;
+const BookOpen = ({ className }: { className?: string }) => <div className={className}>📚</div>;
+const FileText = ({ className }: { className?: string }) => <div className={className}>📄</div>;
+const Users = ({ className }: { className?: string }) => <div className={className}>👥</div>;
+const BarChart3 = ({ className }: { className?: string }) => <div className={className}>📊</div>;
+const Target = ({ className }: { className?: string }) => <div className={className}>🎯</div>;
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
