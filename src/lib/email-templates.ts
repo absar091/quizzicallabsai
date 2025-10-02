@@ -85,7 +85,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             <!-- Legal & Branding -->
             <p style="margin:0 0 8px;font-size:11px;">
               © 2025 <strong>Quizzicallabzᴬᴵ</strong>. All rights reserved.<br>
-              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are products of Quizzicallabz™.</em>
+              <em style="font-size:10px;">Quizzicallabzᴬᴵ and its logo are trademarks of Quizzicallabz™.</em>
             </p>
             
             <!-- Links -->

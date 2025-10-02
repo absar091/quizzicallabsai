@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 // Removed direct AI import - using API route instead
 import { sanitizeHtml, validateInput, sanitizeLogInput } from "@/lib/security";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
