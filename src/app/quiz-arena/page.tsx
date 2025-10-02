@@ -245,7 +245,6 @@ export default function QuizArenaPage() {
           description: `${template.title} setup complete!`,
         });
 
-        const { QuizArena } = await import('@/lib/quiz-arena');
         await QuizArena.Host.createRoom(roomCode, user.uid, user.displayName || 'Anonymous', quizArenaData);
 
         const totalTime = Date.now() - startTime;
@@ -417,7 +416,6 @@ export default function QuizArenaPage() {
         description: `${template?.title || quizSetup.title} setup complete!`,
       });
 
-      const { QuizArena } = await import('@/lib/quiz-arena');
       await QuizArena.Host.createRoom(roomCode, user.uid, user.displayName || 'Anonymous', quizArenaData);
 
       const totalTime = Date.now() - startTime;
