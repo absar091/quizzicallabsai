@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Lock, Gamepad2 } from 'lucide-react';
-import { QuizArena, ArenaPlayer, QuizArenaRoom } from '@/lib/quiz-arena';
+import type { ArenaPlayer, QuizArenaRoom } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -23,6 +23,16 @@ export default function JoinQuizPage() {
   const [roomValid, setRoomValid] = useState<boolean | null>(null);
   const [roomData, setRoomData] = useState<QuizArenaRoom | null>(null);
   const [players, setPlayers] = useState<ArenaPlayer[]>([]);
+  const [QuizArena, setQuizArena] = useState<any>(null);
+
+  // Load QuizArena module once
+  useEffect(() => {
+    const loadQuizArena = async () => {
+      const module = await import('@/lib/quiz-arena');
+      setQuizArena(module.QuizArena);
+    };
+    loadQuizArena();
+  }, []);
 
   useEffect(() => {
     // Redirect unauthenticated users with proper flow

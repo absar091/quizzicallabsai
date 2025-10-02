@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Loader2, Users, Crown, Timer, ArrowLeft, CheckCircle, Trophy, LogOut, AlertTriangle, WifiOff } from 'lucide-react';
-import { QuizArena, ArenaPlayer, QuizArenaRoom, QuizQuestion } from '@/lib/quiz-arena';
+import type { ArenaPlayer, QuizArenaRoom, QuizQuestion } from '@/lib/quiz-arena';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
@@ -33,6 +33,16 @@ export default function ParticipantArenaPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [QuizArena, setQuizArena] = useState<any>(null);
+
+  // Load QuizArena module once
+  useEffect(() => {
+    const loadQuizArena = async () => {
+      const module = await import('@/lib/quiz-arena');
+      setQuizArena(module.QuizArena);
+    };
+    loadQuizArena();
+  }, []);
   const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
