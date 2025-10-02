@@ -128,7 +128,7 @@ export class QuizArenaHost {
    * Move to next question - only host can do this
    */
   static async nextQuestion(roomId: string, hostId: string): Promise<void> {
-    const roomRef = doc(db, 'quiz-rooms', roomId);
+    const roomRef = doc(firestore, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
     if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
@@ -158,7 +158,7 @@ export class QuizArenaHost {
    * Finish the quiz
    */
   static async finishQuiz(roomId: string, hostId: string): Promise<void> {
-    const roomRef = doc(db, 'quiz-rooms', roomId);
+    const roomRef = doc(firestore, 'quiz-rooms', roomId);
     const roomSnap = await getDoc(roomRef);
 
     if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
