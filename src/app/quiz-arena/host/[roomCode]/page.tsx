@@ -167,7 +167,7 @@ export default function RoomHostPage() {
 
     try {
       const { QuizArena } = require('@/lib/quiz-arena');
-      
+
       // Real-time room state listener
       const unsubscribeRoom = QuizArena.Host.listenToRoom(
         roomCode,
@@ -176,12 +176,6 @@ export default function RoomHostPage() {
             setRoomData(prev => ({ ...prev, ...data }));
             setCurrentQuestionIndex(data.currentQuestion || -1);
             setQuizStarted(data.started || false);
-            
-            // Sync timer with room state
-            if (data.started && data.currentQuestion >= 0) {
-              setTimeLeft(30);
-              setTimerActive(true);
-            }
           }
         }
       );
@@ -539,18 +533,17 @@ export default function RoomHostPage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => {
-                          setTimerActive(!timerActive);
                           toast?.({
-                            title: timerActive ? 'Timer Paused' : 'Timer Resumed',
-                            description: timerActive ? 'Quiz timer has been paused' : 'Quiz timer is now running',
+                            title: 'Timer Control',
+                            description: 'Timer is controlled automatically by the quiz system',
                           });
                         }}
                       >
                         <Pause className="mr-2 h-4 w-4" />
-                        {timerActive ? 'Pause' : 'Resume'} Timer
+                        Timer Control
                       </Button>
                       <Button variant="outline">
                         <Settings className="mr-2 h-4 w-4" />
