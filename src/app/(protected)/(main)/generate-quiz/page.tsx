@@ -997,23 +997,30 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             question: q.question,
             userAnswer: q.userAnswer || null,
             correctAnswer: q.correctAnswer || '',
-          }))
+          })),
+          isPro: user?.subscription?.isPro || false,
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to generate flashcards");
+        throw new Error(result.error || "Failed to generate flashcards");
       }
 
-      const result = await response.json();
-      if (result.flashcards.length === 0) {
+      if (!result.flashcards || result.flashcards.length === 0) {
         toast({ title: "No flashcards generated", description: "The AI didn't find any concepts from your incorrect answers to turn into flashcards." });
       } else {
         setGeneratedFlashcards(result.flashcards);
         setShowFlashcardViewer(true);
       }
-    } catch (error) {
-        toast({ title: "Error Generating Flashcards", description: "Could not generate flashcards at this time.", variant: "destructive" });
+    } catch (error: any) {
+        console.error('Flashcard generation error:', error);
+        toast({
+          title: "Error Generating Flashcards",
+          description: error.message || "Could not generate flashcards at this time.",
+          variant: "destructive"
+        });
     } finally {
         setIsGeneratingFlashcards(false);
     }

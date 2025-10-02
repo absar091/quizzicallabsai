@@ -38,8 +38,13 @@ export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSc
 export async function generateFlashcards(
   input: GenerateFlashcardsInput
 ): Promise<GenerateFlashcardsOutput> {
+  console.log('🔍 Flashcards - Checking AI availability...');
+  console.log('🔍 isAiAvailable():', isAiAvailable());
+  console.log('🔍 ai object:', ai ? 'exists' : 'null');
+
   if (!isAiAvailable() || !ai) {
-    throw new Error('AI service is not configured. Please contact support.');
+    console.error('❌ AI service is not available for flashcards generation');
+    throw new Error('AI service is not configured. Please check your API keys or contact support.');
   }
   if (!input.topic || input.topic.trim().length === 0) {
       throw new Error("Invalid input: 'topic' cannot be empty.");
@@ -48,6 +53,7 @@ export async function generateFlashcards(
       return { flashcards: [] }; // Return empty if there's nothing to process
   }
 
+  console.log('✅ AI available, starting flashcards generation flow...');
   return generateFlashcardsFlow(input);
 }
 
