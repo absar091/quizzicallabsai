@@ -172,11 +172,9 @@ export default function RoomHostPage() {
   };
 
   const setupRoomListener = () => {
-    if (!roomCode || !user) return;
+    if (!roomCode || !user || !QuizArena) return;
 
     try {
-      const { QuizArena } = require('@/lib/quiz-arena');
-
       // Real-time room state listener
       const unsubscribeRoom = QuizArena.Host.listenToRoom(
         roomCode,
