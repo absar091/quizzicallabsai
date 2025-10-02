@@ -351,24 +351,4 @@ export const QuizArena = {
   Discovery: QuizArenaDiscovery
 };
 
-export default QuizArena;rror);
-      return false;
-    }
-  }
-}
-
-// 🎊 Real-Time Event Types (for when we implement socket-like features)
-export interface QuizArenaEvent {
-  type: 'QUESTION_START' | 'QUESTION_END' | 'SCORE_UPDATE' | 'PLAYER_JOIN' | 'PLAYER_LEAVE' | 'QUIZ_FINISH';
-  roomId: string;
-  data: any;
-}
-
-// Singleton for arena management
-export const QuizArena = {
-  Host: QuizArenaHost,
-  Player: QuizArenaPlayer,
-  Discovery: QuizArenaDiscovery
-};
-
 export default QuizArena;
