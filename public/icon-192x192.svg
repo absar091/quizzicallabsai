@@ -1,6 +1,52 @@
-<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="192" height="192" rx="48" fill="#003322"/>
-<path d="M96 39.75C69.8362 39.75 48.75 60.8363 48.75 87C48.75 101.044 54.72 113.468 64.185 122.94C69.0825 127.832 75.105 131.46 81.75 133.549V133.552C83.2088 134.018 84.705 134.374 86.25 134.629V152.25H105.75V134.629C107.295 134.374 108.791 134.018 110.25 133.552V133.549C116.895 131.46 122.917 127.832 127.815 122.94C137.28 113.468 143.25 101.044 143.25 87C143.25 60.8363 122.164 39.75 96 39.75ZM96 127.875C75.2812 127.875 58.5 111.094 58.5 90.375C58.5 69.6562 75.2812 52.875 96 52.875C116.719 52.875 133.5 69.6562 133.5 90.375C133.5 111.094 116.719 127.875 96 127.875Z" fill="white"/>
-<path d="M101.25 90.375H90.75V80.625H101.25V90.375Z" fill="white"/>
-<path d="M101.25 100.125V110.25H90.75V100.125H101.25Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="brain192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="circuit192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" rx="36" fill="url(#bg192)"/>
+  
+  <!-- Brain Shape -->
+  <g transform="translate(24, 36)">
+    <path d="M72 12c21 0 36 12 42 27 6 15 3 30-6 42-9 12-24 18-39 18-9 0-18-3-27-9-9-6-15-15-18-27-3-12 0-24 9-33C42 21 57 12 72 12z" fill="url(#brain192)" opacity="0.95"/>
+    
+    <!-- Quiz/Question Mark -->
+    <g fill="url(#circuit192)" stroke="none">
+      <path d="M60 54c0-6 3-9 9-9s9 3 9 9-3 6-6 7.2v4.8h-6v-6c0-3 3-4.8 6-6 1.8-1.2 3-2.4 3-4.8 0-1.8-1.2-3-3-3s-3 1.2-3 3h-9z"/>
+      <circle cx="69" cy="84" r="3"/>
+    </g>
+    
+    <!-- AI Circuit Nodes -->
+    <g fill="#fbbf24" opacity="0.8">
+      <circle cx="42" cy="36" r="4.8"/>
+      <circle cx="96" cy="48" r="4.8"/>
+      <circle cx="36" cy="72" r="4.8"/>
+      <circle cx="102" cy="84" r="4.8"/>
+    </g>
+    
+    <!-- Circuit Lines -->
+    <g stroke="url(#circuit192)" stroke-width="7.2" fill="none" opacity="0.7">
+      <path d="M42 36L60 48"/>
+      <path d="M78 48L96 48"/>
+      <path d="M36 72L54 60"/>
+      <path d="M84 72L102 84"/>
+    </g>
+  </g>
+  
+  <!-- AI Sparkle -->
+  <g transform="translate(132, 24)" fill="#ffd700" opacity="0.9">
+    <path d="M18 0L24 12L36 6L30 18L42 24L30 30L36 42L24 36L18 48L12 36L0 42L6 30L-6 24L6 18L0 6L12 12L18 0Z"/>
+  </g>
 </svg>
