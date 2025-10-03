@@ -155,35 +155,61 @@ export class LoginCredentialsManager {
     };
   }
 
-  // Database operations (mock implementations)
+  // Database operations (Firebase Firestore implementation)
   private async saveToDatabase(userId: string, credentials: UserLoginCredentials[]): Promise<void> {
-    // In a real application, save to your database (Firestore, MongoDB, etc.)
-    console.log(`Saving ${credentials.length} login credentials for user ${userId} to database`);
-
-    // Example Firestore implementation:
-    // await db.collection('userLoginCredentials').doc(userId).set({
-    //   credentials,
-    //   updatedAt: new Date().toISOString()
-    // });
+    try {
+      console.log(`💾 Saving ${credentials.length} login credentials for user ${userId} to Firestore`);
+      
+      const { firestore } = await import('./firebase');
+      const { doc, setDoc } = await import('firebase/firestore');
+      
+      await setDoc(doc(firestore, 'userLoginCredentials', userId), {
+        credentials,
+        updatedAt: new Date().toISOString()
+      });
+      
+      console.log('✅ Login credentials saved successfully');
+    } catch (error) {
+      console.error('❌ Error saving login credentials:', error);
+    }
   }
 
   private async loadFromDatabase(userId: string): Promise<UserLoginCredentials[]> {
-    // In a real application, load from your database
-    console.log(`Loading login credentials for user ${userId} from database`);
-
-    // Example Firestore implementation:
-    // const doc = await db.collection('userLoginCredentials').doc(userId).get();
-    // return doc.exists ? doc.data().credentials : [];
-
-    return [];
+    try {
+      console.log(`📖 Loading login credentials for user ${userId} from Firestore`);
+      
+      const { firestore } = await import('./firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
+      const docRef = doc(firestore, 'userLoginCredentials', userId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log(`✅ Loaded ${data.credentials?.length || 0} credentials from Firestore`);
+        return data.credentials || [];
+      } else {
+        console.log('ℹ️ No stored credentials found for user');
+        return [];
+      }
+    } catch (error) {
+      console.error('❌ Error loading login credentials:', error);
+      return [];
+    }
   }
 
   private async clearDatabaseCredentials(userId: string): Promise<void> {
-    // In a real application, clear from database
-    console.log(`Clearing login credentials for user ${userId} from database`);
-
-    // Example Firestore implementation:
-    // await db.collection('userLoginCredentials').doc(userId).delete();
+    try {
+      console.log(`🗑️ Clearing login credentials for user ${userId} from Firestore`);
+      
+      const { firestore } = await import('./firebase');
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      
+      await deleteDoc(doc(firestore, 'userLoginCredentials', userId));
+      console.log('✅ Login credentials cleared successfully');
+    } catch (error) {
+      console.error('❌ Error clearing login credentials:', error);
+    }
   }
 }
 

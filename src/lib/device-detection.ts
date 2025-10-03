@@ -193,33 +193,43 @@ export const compareLoginCredentials = (
 ): boolean => {
   // Check if device matches
   if (currentCredentials.device !== storedCredentials.device) {
+    console.log('Device mismatch:', currentCredentials.device, 'vs', storedCredentials.device);
     return false;
   }
 
-  // Check if browser matches (this was missing!)
+  // Check if browser matches
   if (currentCredentials.browser !== storedCredentials.browser) {
+    console.log('Browser mismatch:', currentCredentials.browser, 'vs', storedCredentials.browser);
     return false;
   }
 
   // Check if OS matches
   if (currentCredentials.os !== storedCredentials.os) {
+    console.log('OS mismatch:', currentCredentials.os, 'vs', storedCredentials.os);
     return false;
   }
 
-  // Check if IP matches (allow for dynamic IPs with some tolerance)
+  // ENHANCED: Always flag IP changes (VPN detection)
   if (currentCredentials.ip !== storedCredentials.ip) {
-    // For trusted devices, we might allow IP changes
-    // But for security, we'll flag IP changes
-    return false;
+    console.log('IP change detected:', currentCredentials.ip, 'vs', storedCredentials.ip);
+    return false; // Always send notification for IP changes
   }
 
-  // Check if location matches (country level)
+  // ENHANCED: Flag location changes (country or city level)
   if (currentCredentials.country !== storedCredentials.country) {
+    console.log('Country change detected:', currentCredentials.country, 'vs', storedCredentials.country);
     return false;
   }
 
-  // Check if timezone matches
+  // ENHANCED: Also check city-level changes for VPN detection
+  if (currentCredentials.city !== storedCredentials.city) {
+    console.log('City change detected:', currentCredentials.city, 'vs', storedCredentials.city);
+    return false;
+  }
+
+  // Check if timezone matches (can indicate VPN usage)
   if (currentCredentials.timezone !== storedCredentials.timezone) {
+    console.log('Timezone change detected:', currentCredentials.timezone, 'vs', storedCredentials.timezone);
     return false;
   }
 
@@ -230,19 +240,43 @@ export const shouldSendLoginNotification = (
   currentCredentials: DeviceInfo,
   storedCredentials: UserLoginCredentials[]
 ): boolean => {
-  // If no stored credentials, this is first login - don't send notification
+  console.log('🔍 Checking login notification requirements...');
+  console.log('Current credentials:', {
+    device: currentCredentials.device,
+    browser: currentCredentials.browser,
+    os: currentCredentials.os,
+    ip: currentCredentials.ip,
+    country: currentCredentials.country,
+    city: currentCredentials.city
+  });
+  console.log('Stored credentials count:', storedCredentials.length);
+
+  // ENHANCED: Always send notification for first login
   if (storedCredentials.length === 0) {
-    return false;
+    console.log('✅ First login detected - sending welcome notification');
+    return true; // Changed: Send notification for first login too
   }
 
   // Check if current login matches any stored trusted credentials
   for (const stored of storedCredentials) {
+    console.log('Comparing with stored credential:', {
+      device: stored.device,
+      browser: stored.browser,
+      os: stored.os,
+      ip: stored.ip,
+      country: stored.country,
+      city: stored.city,
+      isTrusted: stored.isTrusted
+    });
+
     if (stored.isTrusted && compareLoginCredentials(currentCredentials, stored)) {
+      console.log('✅ Match found with trusted device - no notification needed');
       return false; // Match found, no notification needed
     }
   }
 
   // No match found with trusted credentials, send notification
+  console.log('🚨 No match found - sending security notification');
   return true;
 };
 
