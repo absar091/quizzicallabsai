@@ -402,7 +402,7 @@ Date: ${quizData.date}
 View detailed analytics: https://quizzicallabz.qzz.io/analytics
 Continue learning: https://quizzicallabz.qzz.io/practice
 
-QuizzicallabzAI - Advanced AI-Powered Learning Platform
+Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 });
 
@@ -485,7 +485,7 @@ Getting Started:
 1. Launch Learning Dashboard: https://quizzicallabz.qzz.io/dashboard
 2. Start AI Assessment: https://quizzicallabz.qzz.io/assessment
 
-QuizzicallabzAI - Advanced AI-Powered Learning Platform
+Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 });
 
@@ -565,7 +565,7 @@ ${reminderData?.weakAreas && reminderData.weakAreas.length > 0 ? `- Priority Are
 Resume Learning: https://quizzicallabz.qzz.io/continue-learning
 Quick Review: https://quizzicallabz.qzz.io/quick-review
 
-QuizzicallabzAI - Advanced AI-Powered Learning Platform
+Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 });
 
@@ -658,6 +658,6 @@ Time: ${loginData.time}
 If this wasn't you, secure your account: https://quizzicallabz.qzz.io/security/secure-account
 Review activity: https://quizzicallabz.qzz.io/security/review-activity
 
-QuizzicallabzAI Security Team
+Quizzicallabzᴬᴵ Security Team
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 });
