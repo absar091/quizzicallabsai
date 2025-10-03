@@ -85,13 +85,16 @@ INSTRUCTIONS:
 
 Keep it brief. Focus on positives.`;
 
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => ai!.definePrompt({
-    name: 'generateDashboardInsightsPrompt',
+const createPrompt = (isPro: boolean, useFallback: boolean = false) => {
+  const { getUniquePromptName } = require('@/ai/utils/prompt-registry');
+  return ai!.definePrompt({
+    name: getUniquePromptName('generateDashboardInsightsPrompt'),
     model: `googleai/${getModel(isPro, useFallback)}`,
     prompt: getPromptText(isPro),
     input: { schema: GenerateDashboardInsightsInputSchema },
     output: { schema: GenerateDashboardInsightsOutputSchema },
-});
+  });
+};
 
 
 const generateDashboardInsightsFlow = ai!.defineFlow(

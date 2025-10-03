@@ -227,8 +227,12 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
         // Convert model name to genkit model reference
         const model = `googleai/${modelName}`;
         
+        // Import the registry utility
+        const { getUniquePromptName } = await import('@/ai/utils/prompt-registry');
+        const promptName = getUniquePromptName('generateCustomQuizPrompt');
+        
         const prompt = aiInstance.definePrompt({
-          name: "generateCustomQuizPrompt",
+          name: promptName,
           model: model,
           prompt: getPromptText(input.isPro),
           input: { schema: GenerateCustomQuizInputSchema },

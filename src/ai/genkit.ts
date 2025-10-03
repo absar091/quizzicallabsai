@@ -2,6 +2,9 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 import { getNextApiKey, handleApiKeyError, getNextWorkingApiKey } from '@/lib/api-key-manager';
 
+// Suppress Genkit registry warnings during development
+import '@/lib/suppress-genkit-warnings';
+
 // Check if we're in a server environment and API key is available
 const isServer = typeof process !== 'undefined';
 

@@ -29,10 +29,11 @@ const nextConfig = {
       };
     }
     
-    // Suppress Express warning from Genkit
+    // Suppress Express warning from Genkit and registry warnings
     config.ignoreWarnings = [
       { module: /node_modules\/@genkit-ai\/core\/node_modules\/express/ },
       /Critical dependency: the request of a dependency is an expression/,
+      /WARNING.*already has an entry in the registry/,
     ];
     
     return config;
