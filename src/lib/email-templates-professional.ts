@@ -616,31 +616,31 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0,0,0,0.05);">
               <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
                 <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  <span style="margin-right: 8px;">💻</span>Device
+                  Device
                 </td>
                 <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.device || 'Desktop Computer'}</td>
               </tr>
               <tr style="background: white;">
                 <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  <span style="margin-right: 8px;">🌐</span>Browser
+                  Browser
                 </td>
                 <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.browser || 'Unknown Browser'}</td>
               </tr>
               <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
                 <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  <span style="margin-right: 8px;">📍</span>Location
+                  Location
                 </td>
                 <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
               </tr>
               <tr style="background: white;">
                 <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  <span style="margin-right: 8px;">🌍</span>IP Address
+                  IP Address
                 </td>
                 <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-family: 'Courier New', monospace; border-bottom: 1px solid #dbeafe; font-size: 15px; background: #f1f5f9; border-radius: 6px; margin: 4px 0;">${loginData.ipAddress || '39.50.139.118'}</td>
               </tr>
               <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
                 <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; font-size: 15px;">
-                  <span style="margin-right: 8px;">⏰</span>Login Time
+                  Login Time
                 </td>
                 <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-size: 15px;">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
               </tr>
