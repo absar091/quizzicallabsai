@@ -94,7 +94,7 @@ export class EmailAutomation {
           return {
             email,
             success: result.success,
-            reason: result.blocked ? result.reason : undefined
+            reason: 'blocked' in result ? result.reason : undefined
           };
         } catch (error: any) {
           return {
