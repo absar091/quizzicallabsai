@@ -4,12 +4,21 @@ import { doc, setDoc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Add timeout for request parsing
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), 10000)
+    );
+    
+    const body = await Promise.race([
+      request.json(),
+      timeoutPromise
+    ]) as any;
+
     const { email, preferences } = body;
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       return NextResponse.json(
-        { success: false, error: 'Email address is required' },
+        { success: false, error: 'Valid email address is required' },
         { status: 400 }
       );
     }
@@ -23,20 +32,18 @@ export async function POST(request: NextRequest) {
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(cleanEmail)) {
       return NextResponse.json(
         { success: false, error: 'Invalid email format' },
         { status: 400 }
       );
     }
 
-    const preferencesRef = doc(firestore, 'email-preferences', email);
-
-    // Check if document exists
-    const docSnap = await getDoc(preferencesRef);
+    const preferencesRef = doc(firestore, 'email-preferences', cleanEmail);
 
     const preferenceData = {
-      email,
+      email: cleanEmail,
       preferences: {
         quizResults: preferences.quizResults ?? true,
         studyReminders: preferences.studyReminders ?? true,
@@ -48,16 +55,11 @@ export async function POST(request: NextRequest) {
       updatedAt: Timestamp.now()
     };
 
-    if (docSnap.exists()) {
-      // Update existing document
-      await updateDoc(preferencesRef, preferenceData);
-    } else {
-      // Create new document
-      await setDoc(preferencesRef, {
-        ...preferenceData,
-        createdAt: Timestamp.now()
-      });
-    }
+    // Use setDoc with merge to handle both create and update cases
+    await setDoc(preferencesRef, {
+      ...preferenceData,
+      createdAt: Timestamp.now()
+    }, { merge: true });
 
     return NextResponse.json({
       success: true,
@@ -67,10 +69,21 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error updating preferences:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to update preferences. Please try again later.';
+    if (error.message === 'Request timeout') {
+      errorMessage = 'Request timed out. Please check your connection and try again.';
+    } else if (error.code === 'permission-denied') {
+      errorMessage = 'Permission denied. Please contact support.';
+    } else if (error.code === 'unavailable') {
+      errorMessage = 'Service temporarily unavailable. Please try again in a few minutes.';
+    }
+    
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to update preferences. Please try again later.'
+        error: errorMessage
       },
       { status: 500 }
     );
