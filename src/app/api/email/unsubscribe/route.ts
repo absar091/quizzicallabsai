@@ -4,19 +4,29 @@ import { doc, setDoc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Add timeout for request parsing
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), 10000)
+    );
+    
+    const body = await Promise.race([
+      request.json(),
+      timeoutPromise
+    ]) as any;
+
     const { email, preferences } = body;
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       return NextResponse.json(
-        { success: false, error: 'Email address is required' },
+        { success: false, error: 'Valid email address is required' },
         { status: 400 }
       );
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!emailRegex.test(cleanEmail)) {
       return NextResponse.json(
         { success: false, error: 'Invalid email format' },
         { status: 400 }
