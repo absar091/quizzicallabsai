@@ -103,29 +103,58 @@ export default function UnsubscribePage() {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await fetch('/api/email/preferences', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, preferences })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), 
+          preferences 
+        })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
 
       const data = await response.json();
 
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || 'Failed to update preferences');
       }
 
       toast({
         title: 'Preferences Updated',
-        description: 'Your email preferences have been saved.',
+        description: 'Your email preferences have been saved successfully.',
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Update preferences error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update preferences. Please try again.',
+        description: error.message || 'Failed to update preferences. Please try again.',
         variant: 'destructive'
       });
     } finally {
@@ -201,19 +230,20 @@ export default function UnsubscribePage() {
             <h3 className="font-semibold text-sm">Choose which emails you want to receive:</h3>
 
             <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div className="flex items-start space-x-3 p-4 rounded-xl border-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-200 border-blue-200 dark:border-blue-800">
                 <Checkbox
                   id="quizResults"
                   checked={preferences.quizResults}
                   onCheckedChange={(checked) =>
                     setPreferences({ ...preferences, quizResults: checked as boolean })
                   }
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="quizResults" className="text-sm font-medium cursor-pointer">
-                    Quiz Results
+                  <label htmlFor="quizResults" className="text-sm font-semibold cursor-pointer text-blue-900 dark:text-blue-100">
+                    📊 Quiz Results
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                     Receive your quiz scores and performance analysis
                   </p>
                 </div>
