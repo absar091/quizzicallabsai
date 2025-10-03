@@ -142,26 +142,26 @@ export async function sendQuizResultEmail(to: string, quizData: {
     date: quizData.date || new Date().toLocaleDateString()
   });
 
-  return sendEmail({ 
+  return sendEmailWithPreferences({ 
     to, 
     subject: template.subject, 
     html: template.html, 
     text: template.text 
-  });
+  }, 'quizResults');
 }
 
 export async function sendStudyReminderEmail(to: string, userName: string) {
   const template = studyReminderEmailTemplate(userName);
-  return sendEmail({ 
+  return sendEmailWithPreferences({ 
     to, 
     subject: template.subject, 
     html: template.html, 
     text: template.text 
-  });
+  }, 'studyReminders');
 }
 
 export async function sendEmailVerificationEmail(to: string, userName: string, verificationLink: string) {
-  // Use a simple verification email template since it's not in the templates file
+  // Verification emails bypass preferences (critical emails)
   const template = {
     subject: `Verify Your Email - Complete Your Quizzicallabzᴬᴵ Registration`,
     html: `
@@ -251,7 +251,7 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
 }
 
 export async function sendPasswordResetEmail(to: string, userName: string, resetLink: string) {
-  // Use a simple password reset email template since it's not in the templates file
+  // Password reset emails bypass preferences (critical emails)
   const template = {
     subject: `Reset Your Quizzicallabzᴬᴵ Password`,
     html: `
@@ -355,10 +355,10 @@ export async function sendLoginNotificationEmail(to: string, userName: string, l
     ipAddress: loginData.ipAddress,
     time: loginData.timestamp
   });
-  return sendEmail({
+  return sendEmailWithPreferences({
     to,
     subject: template.subject,
     html: template.html,
     text: template.text
-  });
+  }, 'loginAlerts');
 }

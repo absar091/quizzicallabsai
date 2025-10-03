@@ -62,8 +62,23 @@ export async function POST(request: NextRequest) {
         userAgent: userAgent || 'Unknown'
       };
 
-      // Send login notification email using the fixed function
-      const emailResult = await sendLoginNotificationEmail(userEmail, userName, loginData);
+      // Send login notification email using preferences system
+      const { sendEmailWithPreferences } = await import('@/lib/email');
+      const { loginNotificationEmailTemplate } = await import('@/lib/email-templates');
+      
+      const template = loginNotificationEmailTemplate(userName, {
+        device: loginData.device,
+        location: loginData.location,
+        ipAddress: loginData.ipAddress,
+        time: loginData.timestamp
+      });
+      
+      const emailResult = await sendEmailWithPreferences({
+        to: userEmail,
+        subject: template.subject,
+        html: template.html,
+        text: template.text
+      }, 'loginAlerts');
 
       console.log('✅ Login notification sent successfully for untrusted device');
     } else {
