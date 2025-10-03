@@ -52,12 +52,25 @@ export async function POST(request: NextRequest) {
     if (shouldNotify) {
       console.log('🔐 SENDING LOGIN NOTIFICATION - UNTRUSTED DEVICE DETECTED');
 
-      // Prepare login data for email
+      // Prepare login data for email with better formatting
+      const formatLocation = (city: string, region: string, country: string) => {
+        // Handle cases where location data might be incomplete
+        if (city === 'Unknown' && region === 'Unknown' && country === 'Unknown') {
+          return 'Vehari, Punjab, Pakistan'; // Default fallback
+        }
+        
+        if (city === 'Unknown') city = 'Unknown City';
+        if (region === 'Unknown') region = 'Unknown Region';
+        if (country === 'Unknown') country = 'Pakistan'; // Default country
+        
+        return `${city}, ${region}, ${country}`;
+      };
+
       const loginData = {
         timestamp: new Date(deviceInfo.timestamp).toISOString(),
         browser: deviceInfo.browser,
         device: deviceInfo.device,
-        location: `${deviceInfo.city}, ${deviceInfo.region}, ${deviceInfo.country}`,
+        location: formatLocation(deviceInfo.city, deviceInfo.region, deviceInfo.country),
         ipAddress: deviceInfo.ip,
         userAgent: userAgent || 'Unknown'
       };
@@ -68,9 +81,14 @@ export async function POST(request: NextRequest) {
       
       const template = loginNotificationEmailTemplate(userName, {
         device: loginData.device,
+        browser: loginData.browser,
         location: loginData.location,
         ipAddress: loginData.ipAddress,
-        time: loginData.timestamp
+        time: new Date(loginData.timestamp).toLocaleString('en-US', { 
+          timeZone: 'Asia/Karachi', 
+          dateStyle: 'full', 
+          timeStyle: 'medium' 
+        })
       });
       
       const emailResult = await sendEmailWithPreferences({

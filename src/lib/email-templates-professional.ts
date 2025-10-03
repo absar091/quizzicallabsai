@@ -28,7 +28,12 @@ const PROFESSIONAL_STYLES = `
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 32px 40px;
     text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 
+      0 8px 32px rgba(102, 126, 234, 0.3),
+      0 4px 16px rgba(118, 75, 162, 0.2),
+      0 2px 8px rgba(255, 107, 107, 0.1),
+      0 1px 4px rgba(255, 193, 7, 0.1),
+      0 0 20px rgba(76, 175, 80, 0.1);
   }
   
   .logo-img {
