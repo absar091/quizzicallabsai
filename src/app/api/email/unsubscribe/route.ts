@@ -33,13 +33,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const unsubscribeRef = doc(firestore, 'email-preferences', email);
-
-    // Check if document exists
-    const docSnap = await getDoc(unsubscribeRef);
+    const unsubscribeRef = doc(firestore, 'email-preferences', cleanEmail);
 
     const unsubscribeData = {
-      email,
+      email: cleanEmail,
       unsubscribedAt: Timestamp.now(),
       preferences: preferences || {
         quizResults: false,
@@ -52,16 +49,11 @@ export async function POST(request: NextRequest) {
       updatedAt: Timestamp.now()
     };
 
-    if (docSnap.exists()) {
-      // Update existing document
-      await updateDoc(unsubscribeRef, unsubscribeData);
-    } else {
-      // Create new document
-      await setDoc(unsubscribeRef, {
-        ...unsubscribeData,
-        createdAt: Timestamp.now()
-      });
-    }
+    // Use setDoc with merge to handle both create and update cases
+    await setDoc(unsubscribeRef, {
+      ...unsubscribeData,
+      createdAt: Timestamp.now()
+    }, { merge: true });
 
     return NextResponse.json({
       success: true,
@@ -70,10 +62,21 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error unsubscribing:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to unsubscribe. Please try again later.';
+    if (error.message === 'Request timeout') {
+      errorMessage = 'Request timed out. Please check your connection and try again.';
+    } else if (error.code === 'permission-denied') {
+      errorMessage = 'Permission denied. Please contact support.';
+    } else if (error.code === 'unavailable') {
+      errorMessage = 'Service temporarily unavailable. Please try again in a few minutes.';
+    }
+    
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to unsubscribe. Please try again later.'
+        error: errorMessage
       },
       { status: 500 }
     );
