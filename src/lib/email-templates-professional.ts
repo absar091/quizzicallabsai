@@ -606,7 +606,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           <div style="background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #e8f2ff 100%); border: 2px solid #3b82f6; border-radius: 20px; padding: 32px; margin: 32px 0; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);">
             <div style="display: flex; align-items: center; margin-bottom: 24px;">
               <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                <span style="color: white; font-size: 24px; font-weight: bold;">🔐</span>
+                <div style="width: 20px; height: 20px; background: white; border-radius: 3px;"></div>
               </div>
               <div>
                 <h3 style="color: #1e40af; margin: 0; font-size: 22px; font-weight: 700;">Access Details</h3>
