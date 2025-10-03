@@ -116,12 +116,13 @@ export async function sendWelcomeEmail(to: string, userName: string, emailDetail
     planName: emailDetails.accountType || 'Free',
     signupDate: emailDetails.signUpDate || new Date().toLocaleDateString()
   });
-  return sendEmail({
+  
+  return sendEmailWithPreferences({
     to,
     subject: template.subject,
     html: template.html,
     text: template.text
-  });
+  }, 'promotions'); // Welcome emails are promotional
 }
 
 export async function sendQuizResultEmail(to: string, quizData: {
