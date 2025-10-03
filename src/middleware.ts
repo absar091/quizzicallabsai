@@ -30,7 +30,7 @@ export function middleware(request: NextRequest) {
     img-src 'self' blob: data: https: http: https://www.simplesmiles.io https://placehold.co;
     font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;
     connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live;
-    frame-src https://www.google.com https://*.firebaseapp.com https://www.recaptcha.net;
+    frame-src https://www.google.com https://*.firebaseapp.com https://www.recaptcha.net https://vercel.live https://*.vercel.live https://*.firebaseio.com;
     worker-src 'self' blob:;
     object-src 'none';
   `.replace(/\s{2,}/g, ' ').trim();
