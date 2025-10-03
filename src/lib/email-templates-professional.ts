@@ -19,13 +19,16 @@ const PROFESSIONAL_STYLES = `
     max-width: 600px;
     margin: 0 auto;
     background: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    overflow: hidden;
   }
   
   .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 32px 40px;
     text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
   .logo-img {
@@ -34,20 +37,21 @@ const PROFESSIONAL_STYLES = `
     border-radius: 12px;
     background: #ffffff;
     padding: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     display: block;
     margin: 0 auto;
   }
   
   .company-name {
     color: #ffffff;
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 26px;
+    font-weight: 700;
     margin-bottom: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
   .tagline {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
     font-weight: 400;
   }
@@ -113,30 +117,48 @@ const PROFESSIONAL_STYLES = `
   .button-primary {
     display: inline-block;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
+    color: #ffffff !important;
     text-decoration: none;
-    padding: 14px 28px;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-weight: 700;
     font-size: 16px;
     text-align: center;
     margin: 8px 8px 8px 0;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+  }
+  
+  .button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
   }
   
   .button-secondary {
     display: inline-block;
     background: #ffffff;
-    color: #667eea;
+    color: #667eea !important;
     text-decoration: none;
-    padding: 14px 28px;
+    padding: 16px 32px;
     border: 2px solid #667eea;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: 600;
     font-size: 16px;
     text-align: center;
     margin: 8px 8px 8px 0;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .button-secondary:hover {
+    background: #667eea;
+    color: #ffffff !important;
+    transform: translateY(-2px);
   }
   
   .qr-section {
@@ -246,12 +268,12 @@ const PROFESSIONAL_HEADER = `
 <div class="header">
   <div style="text-align: center; margin-bottom: 16px;">
     <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=header_logo&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-      <img src="https://iili.io/K1oSsrx.png" alt="QuizzicallabzAI" class="logo-img" style="width: 64px; height: 64px; border-radius: 12px; background: #ffffff; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;">
+      <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" class="logo-img" style="width: 64px; height: 64px; border-radius: 12px; background: #ffffff; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
     </a>
   </div>
   <div class="company-name">
     <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=header_text&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none;">
-      QuizzicallabzAI
+      Quizzicallabzᴬᴵ
     </a>
   </div>
   <div class="tagline">Advanced AI-Powered Learning Platform</div>
@@ -264,9 +286,9 @@ const PROFESSIONAL_FOOTER = `
   <div class="footer-content">
     <div style="text-align: center; margin-bottom: 16px;">
       <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=footer_logo&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-        <img src="https://iili.io/K1oSsrx.png" alt="QuizzicallabzAI" style="width: 32px; height: 32px; border-radius: 6px; background: #ffffff; padding: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); display: inline-block; vertical-align: middle; margin-right: 8px;">
+        <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" style="width: 32px; height: 32px; border-radius: 6px; background: #ffffff; padding: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); display: inline-block; vertical-align: middle; margin-right: 8px;">
       </a>
-      <strong style="color: #374151;">QuizzicallabzAI</strong> - Transforming Education Through Artificial Intelligence
+      <strong style="color: #374151;">Quizzicallabzᴬᴵ</strong> - Transforming Education Through Artificial Intelligence
     </div>
     
     <div class="footer-links">
@@ -277,7 +299,7 @@ const PROFESSIONAL_FOOTER = `
     </div>
     
     <div style="margin: 16px 0; color: #9ca3af;">
-      QuizzicallabzAI Inc. | Advanced Learning Technologies Division<br>
+      Quizzicallabzᴬᴵ Inc. | Advanced Learning Technologies Division<br>
       Global Headquarters: Innovation District, Tech Valley
     </div>
     
@@ -389,14 +411,14 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
   planName: string;
   signupDate: string;
 }) => ({
-  subject: `Welcome to QuizzicallabzAI - Your AI Learning Journey Begins`,
+  subject: `Welcome to Quizzicallabzᴬᴵ - Your AI Learning Journey Begins`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Welcome to QuizzicallabzAI</title>
+      <title>Welcome to Quizzicallabzᴬᴵ</title>
       ${PROFESSIONAL_STYLES}
     </head>
     <body>
@@ -409,7 +431,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           
           <p class="greeting">Hello ${userName},</p>
           
-          <p>Welcome to QuizzicallabzAI, where artificial intelligence meets personalized education. Your account has been successfully activated and you're ready to begin your transformative learning journey.</p>
+          <p>Welcome to <strong>Quizzicallabzᴬᴵ</strong>, where artificial intelligence meets personalized education. Your account has been successfully activated and you're ready to begin your transformative learning journey.</p>
           
           <div class="card">
             <h3 class="card-title">Account Information</h3>
@@ -448,7 +470,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     </body>
     </html>
   `,
-  text: `Welcome to QuizzicallabzAI - Your AI Learning Journey Begins
+  text: `Welcome to Quizzicallabzᴬᴵ - Your AI Learning Journey Begins
 
 Hello ${userName},
 
@@ -573,28 +595,38 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           
           <p class="greeting">Hello ${userName},</p>
           
-          <p>We detected a new sign-in to your QuizzicallabzAI account. If this was you, no action is required. If you don't recognize this activity, please secure your account immediately.</p>
+          <p>We detected a new sign-in to your <strong>Quizzicallabzᴬᴵ</strong> account. If this was you, no action is required. If you don't recognize this activity, please secure your account immediately.</p>
           
-          <div style="background: #fef2f2; border: 1px solid #ef4444; border-radius: 12px; padding: 24px; margin: 24px 0;">
-            <h3 style="color: #dc2626; margin-bottom: 16px;">Access Details</h3>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr style="border-bottom: 1px solid #fecaca;">
-                <td style="padding: 12px 0; font-weight: 600; color: #991b1b;">Device</td>
-                <td style="padding: 12px 0; text-align: right; color: #991b1b;">${loginData.device}</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #fecaca;">
-                <td style="padding: 12px 0; font-weight: 600; color: #991b1b;">Location</td>
-                <td style="padding: 12px 0; text-align: right; color: #991b1b;">${loginData.location}</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #fecaca;">
-                <td style="padding: 12px 0; font-weight: 600; color: #991b1b;">IP Address</td>
-                <td style="padding: 12px 0; text-align: right; color: #991b1b;">${loginData.ipAddress}</td>
+          <div style="background: linear-gradient(135deg, #fef7f0 0%, #fff1f1 100%); border: 2px solid #f97316; border-radius: 16px; padding: 28px; margin: 28px 0; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1);">
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+              <div style="width: 40px; height: 40px; background: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                <span style="color: white; font-size: 20px; font-weight: bold;">⚠</span>
+              </div>
+              <h3 style="color: #ea580c; margin: 0; font-size: 20px; font-weight: 700;">Access Details</h3>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <tr style="background: #f8fafc;">
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Device Type</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.device || 'Desktop Computer'}</td>
               </tr>
               <tr>
-                <td style="padding: 12px 0; font-weight: 600; color: #991b1b;">Time</td>
-                <td style="padding: 12px 0; text-align: right; color: #991b1b;">${loginData.time}</td>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Location</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.location || 'Unknown Location'}</td>
+              </tr>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">IP Address</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; font-family: monospace; border-bottom: 1px solid #e5e7eb;">${loginData.ipAddress || '192.168.1.1'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151;">Login Time</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500;">${loginData.time || new Date().toLocaleString()}</td>
               </tr>
             </table>
+            <div style="margin-top: 20px; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+              <p style="margin: 0; color: #92400e; font-size: 14px; font-weight: 500;">
+                <strong>Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication.
+              </p>
+            </div>
           </div>
           
           <div style="text-align: center; margin: 32px 0;">
