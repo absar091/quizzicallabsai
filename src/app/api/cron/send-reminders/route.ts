@@ -11,18 +11,24 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('Authorization');
     const cronSecret = process.env.CRON_SECRET;
 
+    console.log('🔐 Cron job authentication check...');
+    console.log('Auth header present:', !!authHeader);
+    console.log('CRON_SECRET configured:', !!cronSecret);
+
     if (!cronSecret) {
       console.error('❌ CRON_SECRET not configured');
       return NextResponse.json(
-        { error: 'Cron job not configured properly' },
+        { error: 'Cron job not configured properly', success: false },
         { status: 500 }
       );
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
       console.error('❌ Unauthorized cron job access attempt');
+      console.log('Expected:', `Bearer ${cronSecret}`);
+      console.log('Received:', authHeader);
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized', success: false },
         { status: 401 }
       );
     }
@@ -30,36 +36,39 @@ export async function GET(request: NextRequest) {
     console.log('🔔 Starting reminder email cron job...');
 
     // Check if email service is configured
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    const emailConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+    console.log('📧 Email service configured:', emailConfigured);
+    
+    if (!emailConfigured) {
       console.error('❌ Email service not configured');
+      console.log('SMTP_HOST:', !!process.env.SMTP_HOST);
+      console.log('SMTP_USER:', !!process.env.SMTP_USER);
+      console.log('SMTP_PASS:', !!process.env.SMTP_PASS);
       return NextResponse.json(
-        { error: 'Email service not configured' },
+        { error: 'Email service not configured', success: false },
         { status: 500 }
       );
     }
 
-    // Calculate date threshold (users inactive for 3+ days)
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    const threshold = Timestamp.fromDate(threeDaysAgo);
-
-    // Fetch users who need reminders
-    // Note: Using simple query to avoid composite index requirement
+    // For testing, let's get all users first (we'll add the date filter later)
+    console.log('📊 Fetching users for reminder emails...');
+    
     const usersRef = collection(firestore, 'users');
-    const usersQuery = query(
-      usersRef,
-      where('lastActivityAt', '<=', threshold),
-      limit(100) // Limit to 100 users per run to avoid timeouts
-    );
-
+    // Start with a simple query to test
+    const usersQuery = query(usersRef, limit(10)); // Start with just 10 users for testing
+    
     const usersSnapshot = await getDocs(usersQuery);
-    console.log(`📊 Found ${usersSnapshot.size} users eligible for reminders`);
+    console.log(`📊 Found ${usersSnapshot.size} users in database`);
 
     if (usersSnapshot.empty) {
+      console.log('ℹ️ No users found in database');
       return NextResponse.json({
         success: true,
-        message: 'No users need reminders at this time',
-        sent: 0
+        message: 'No users found in database',
+        sent: 0,
+        blocked: 0,
+        failed: 0,
+        total: 0
       });
     }
 
@@ -110,7 +119,21 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    console.log(`📧 Prepared ${recipients.length} recipients for batch sending`);
+
+    if (recipients.length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'No valid recipients found',
+        sent: 0,
+        blocked: 0,
+        failed: 0,
+        total: 0
+      });
+    }
+
     // Send batch emails using the new automation system
+    console.log('📤 Starting batch email sending...');
     const batchResult = await EmailAutomation.sendBatchEmails(
       recipients,
       'studyReminders',
@@ -119,8 +142,8 @@ export async function GET(request: NextRequest) {
         return studyReminderEmailTemplate(userName, reminderData);
       },
       {
-        batchSize: 10,
-        delayBetweenBatches: 1000
+        batchSize: 5, // Smaller batch size for testing
+        delayBetweenBatches: 2000 // Longer delay for testing
       }
     );
 

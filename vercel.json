@@ -1,14 +1,16 @@
 {
-  "rewrites": [
-    {
-      "source": "/.well-known/acme-challenge/ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO",
-      "destination": "/api/verification-token"
-    }
-  ],
   "crons": [
     {
-      "path": "/api/cron/send-reminders",
-      "schedule": "0 10 * * *"
+      "path": "/api/cron?type=reminders",
+      "schedule": "0 9 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/cron/send-reminders/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/cron/route.ts": {
+      "maxDuration": 30
+    }
+  }
 }
