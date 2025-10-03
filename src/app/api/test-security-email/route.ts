@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
     
     // Create sample login data with real device detection
     const sampleLoginData = {
-      device: deviceInfo.device,
-      browser: deviceInfo.browser,
-      location: deviceInfo.location,
-      ipAddress: deviceInfo.ip,
+      device: deviceInfo.device || 'Windows Computer',
+      browser: deviceInfo.browser || 'Google Chrome',
+      location: deviceInfo.location && deviceInfo.location !== 'Unknown, Unknown, Unknown' ? deviceInfo.location : 'Vehari, Punjab, Pakistan',
+      ipAddress: deviceInfo.ip || '39.50.139.118',
       time: new Date().toLocaleString('en-US', { 
         timeZone: 'Asia/Karachi', 
         dateStyle: 'full', 
