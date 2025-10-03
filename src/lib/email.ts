@@ -1,4 +1,5 @@
 import { welcomeEmailTemplate, quizResultEmailTemplate, studyReminderEmailTemplate } from './email-templates';
+import { checkEmailPreferences, logEmailAttempt, type EmailType } from './email-preferences';
 
 interface EmailOptions {
   to: string;
@@ -71,6 +72,35 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
     return { success: true, messageId: result.messageId };
   } catch (error: any) {
     console.error('❌ Email sending failed:', error.message);
+    throw error;
+  }
+}
+
+// Enhanced email sending with preference checking
+export async function sendEmailWithPreferences(
+  { to, subject, html, text }: EmailOptions, 
+  emailType: EmailType
+) {
+  try {
+    // Check user preferences first
+    const { canSend, reason } = await checkEmailPreferences(to, emailType);
+    
+    if (!canSend) {
+      await logEmailAttempt(to, emailType, false, reason);
+      return { 
+        success: false, 
+        blocked: true, 
+        reason: reason || 'User has opted out of this email type' 
+      };
+    }
+
+    // Send the email
+    const result = await sendEmail({ to, subject, html, text });
+    await logEmailAttempt(to, emailType, true);
+    
+    return result;
+  } catch (error: any) {
+    await logEmailAttempt(to, emailType, false, error.message);
     throw error;
   }
 }
