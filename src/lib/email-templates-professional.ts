@@ -603,12 +603,15 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           
           <p>We detected a new sign-in to your <strong>Quizzicallabzᴬᴵ</strong> account. If this was you, no action is required. If you don't recognize this activity, please secure your account immediately.</p>
           
-          <div style="background: linear-gradient(135deg, #fef7f0 0%, #fff1f1 100%); border: 2px solid #f97316; border-radius: 16px; padding: 28px; margin: 28px 0; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1);">
-            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-              <div style="width: 40px; height: 40px; background: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
-                <span style="color: white; font-size: 20px; font-weight: bold;">⚠</span>
+          <div style="background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #e8f2ff 100%); border: 2px solid #3b82f6; border-radius: 20px; padding: 32px; margin: 32px 0; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);">
+            <div style="display: flex; align-items: center; margin-bottom: 24px;">
+              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                <span style="color: white; font-size: 24px; font-weight: bold;">🔐</span>
               </div>
-              <h3 style="color: #ea580c; margin: 0; font-size: 20px; font-weight: 700;">Access Details</h3>
+              <div>
+                <h3 style="color: #1e40af; margin: 0; font-size: 22px; font-weight: 700;">Access Details</h3>
+                <p style="color: #3730a3; margin: 4px 0 0 0; font-size: 14px; opacity: 0.8;">Security information for this login</p>
+              </div>
             </div>
             <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
               <tr style="background: #f8fafc;">
