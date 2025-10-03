@@ -118,10 +118,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const preferencesRef = doc(firestore, 'email-preferences', email);
-    const docSnap = await getDoc(preferencesRef);
+    // Check if Firebase Admin is initialized
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database service unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
 
-    if (!docSnap.exists()) {
+    // Use email as key (replace dots with underscores for Firebase key compatibility)
+    const emailKey = email.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
+    const snapshot = await preferencesRef.once('value');
+
+    if (!snapshot.exists()) {
       // Return default preferences (all enabled)
       return NextResponse.json({
         success: true,
@@ -136,7 +146,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const data = docSnap.data();
+    const data = snapshot.val();
 
     return NextResponse.json({
       success: true,
