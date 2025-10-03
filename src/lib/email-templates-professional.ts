@@ -646,14 +646,9 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
               </tr>
             </table>
             <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border-left: 5px solid #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
-              <div style="display: flex; align-items: flex-start;">
-                <span style="font-size: 20px; margin-right: 12px; margin-top: 2px;">💡</span>
-                <div>
-                  <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600; line-height: 1.5;">
-                    <strong style="color: #78350f;">Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication for better security.
-                  </p>
-                </div>
-              </div>
+              <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600; line-height: 1.5;">
+                <strong style="color: #78350f;">Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication for better security.
+              </p>
             </div>
           </div>
           
