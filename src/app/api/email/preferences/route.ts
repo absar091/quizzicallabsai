@@ -39,7 +39,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const preferencesRef = doc(firestore, 'email-preferences', cleanEmail);
+    // Check if Firebase Admin is initialized
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database service unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
+
+    // Use email as key (replace dots with underscores for Firebase key compatibility)
+    const emailKey = cleanEmail.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
 
     const preferenceData = {
       email: cleanEmail,
@@ -51,14 +61,20 @@ export async function POST(request: NextRequest) {
         newsletters: preferences.newsletters ?? true,
         all: false // Not fully unsubscribed if updating preferences
       },
-      updatedAt: Timestamp.now()
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
 
-    // Use setDoc with merge to handle both create and update cases
-    await setDoc(preferencesRef, {
-      ...preferenceData,
-      createdAt: Timestamp.now()
-    }, { merge: true });
+    // Check if preferences already exist
+    const existingSnapshot = await preferencesRef.once('value');
+    if (existingSnapshot.exists()) {
+      // Update existing preferences, preserve createdAt
+      const existingData = existingSnapshot.val();
+      preferenceData.createdAt = existingData.createdAt || preferenceData.createdAt;
+    }
+
+    // Save to Realtime Database
+    await preferencesRef.set(preferenceData);
 
     return NextResponse.json({
       success: true,
