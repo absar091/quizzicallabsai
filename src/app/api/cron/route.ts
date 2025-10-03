@@ -25,12 +25,13 @@ export async function GET(request: NextRequest) {
         switch (type) {
             case 'reminders':
                 console.log('🔔 Running study reminder notifications job...');
-                // Call the send-reminders endpoint internally
-                const reminderResponse = await fetch(`${request.nextUrl.origin}/api/cron/send-reminders`, {
-                    headers: {
-                        'Authorization': authHeader
-                    }
+                // Import and call the reminder function directly to avoid fetch issues
+                const { GET: sendReminders } = await import('../send-reminders/route');
+                const reminderRequest = new Request(request.url, {
+                    method: 'GET',
+                    headers: request.headers
                 });
+                const reminderResponse = await sendReminders(reminderRequest as NextRequest);
                 result = await reminderResponse.json();
                 break;
             
