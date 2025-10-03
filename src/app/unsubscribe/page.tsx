@@ -287,37 +287,39 @@ export default function UnsubscribePage() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div className="flex items-start space-x-3 p-4 rounded-xl border-2 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-900/30 dark:hover:to-pink-900/30 transition-all duration-200 border-purple-200 dark:border-purple-800">
                 <Checkbox
                   id="promotions"
                   checked={preferences.promotions}
                   onCheckedChange={(checked) =>
                     setPreferences({ ...preferences, promotions: checked as boolean })
                   }
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="promotions" className="text-sm font-medium cursor-pointer">
-                    Promotions & Updates
+                  <label htmlFor="promotions" className="text-sm font-semibold cursor-pointer text-purple-900 dark:text-purple-100">
+                    🎁 Promotions & Updates
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
                     Special offers, new features, and product updates
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div className="flex items-start space-x-3 p-4 rounded-xl border-2 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 hover:from-teal-100 hover:to-cyan-100 dark:hover:from-teal-900/30 dark:hover:to-cyan-900/30 transition-all duration-200 border-teal-200 dark:border-teal-800">
                 <Checkbox
                   id="newsletters"
                   checked={preferences.newsletters}
                   onCheckedChange={(checked) =>
                     setPreferences({ ...preferences, newsletters: checked as boolean })
                   }
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="newsletters" className="text-sm font-medium cursor-pointer">
-                    Educational Newsletter
+                  <label htmlFor="newsletters" className="text-sm font-semibold cursor-pointer text-teal-900 dark:text-teal-100">
+                    📰 Educational Newsletter
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-teal-700 dark:text-teal-300 mt-1">
                     Study tips, educational content, and learning resources
                   </p>
                 </div>
@@ -326,23 +328,41 @@ export default function UnsubscribePage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
             <Button
               onClick={handleUpdatePreferences}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              <Bell className="w-4 h-4 mr-2" />
-              {isLoading ? 'Saving...' : 'Save Preferences'}
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Bell className="w-4 h-4 mr-2" />
+                  Save Preferences
+                </>
+              )}
             </Button>
             <Button
               onClick={handleUnsubscribeAll}
               disabled={isLoading}
               variant="destructive"
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              <BellOff className="w-4 h-4 mr-2" />
-              {isLoading ? 'Processing...' : 'Unsubscribe All'}
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <BellOff className="w-4 h-4 mr-2" />
+                  Unsubscribe All
+                </>
+              )}
             </Button>
           </div>
 
