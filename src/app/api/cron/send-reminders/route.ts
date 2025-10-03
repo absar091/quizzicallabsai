@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore } from '@/lib/firebase';
-import { collection, query, getDocs, orderBy, limit } from 'firebase/firestore';
+import { db } from '@/lib/firebase-admin';
 import { EmailAutomation } from '@/lib/email-automation';
 
 // Using the new email automation system with built-in preference checking
@@ -50,17 +49,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if Firebase Admin is initialized
+    if (!db) {
+      console.error('❌ Firebase Admin Realtime Database not initialized');
+      return NextResponse.json(
+        { error: 'Firebase Admin Database not configured', success: false },
+        { status: 500 }
+      );
+    }
+
     // For testing, let's get all users first (we'll add the date filter later)
     console.log('📊 Fetching users for reminder emails...');
     
-    const usersRef = collection(firestore, 'users');
-    // Start with a simple query to test
-    const usersQuery = query(usersRef, limit(10)); // Start with just 10 users for testing
+    const usersRef = db.ref('users');
+    // Start with a simple query to test - limit to 10 users
+    const usersQuery = usersRef.limitToFirst(10);
     
-    const usersSnapshot = await getDocs(usersQuery);
-    console.log(`📊 Found ${usersSnapshot.size} users in database`);
+    const usersSnapshot = await usersQuery.once('value');
+    const usersData = usersSnapshot.val();
+    
+    console.log(`📊 Found ${usersData ? Object.keys(usersData).length : 0} users in database`);
 
-    if (usersSnapshot.empty) {
+    if (!usersData || Object.keys(usersData).length === 0) {
       console.log('ℹ️ No users found in database');
       return NextResponse.json({
         success: true,
@@ -75,27 +85,27 @@ export async function GET(request: NextRequest) {
     // Prepare user data for batch sending
     const recipients = [];
     
-    for (const userDoc of usersSnapshot.docs) {
-      const userData = userDoc.data();
-      const userId = userDoc.id;
+    for (const [userId, userData] of Object.entries(usersData)) {
+      const user = userData as any;
 
-      if (!userData.email) continue;
+      if (!user.email) continue;
 
       // Fetch user's quiz history for personalized data
       try {
-        const quizzesRef = collection(firestore, 'users', userId, 'quizHistory');
-        const quizzesQuery = query(quizzesRef, orderBy('completedAt', 'desc'), limit(5));
-        const quizzesSnapshot = await getDocs(quizzesQuery);
+        const quizzesRef = db.ref(`users/${userId}/quizHistory`);
+        const quizzesQuery = quizzesRef.orderByChild('completedAt').limitToLast(5);
+        const quizzesSnapshot = await quizzesQuery.once('value');
+        const quizzesData = quizzesSnapshot.val();
 
         let reminderData = {
-          lastActivity: userData.lastActivityAt?.toDate()?.toLocaleDateString() || 'A while ago',
+          lastActivity: user.lastActivityAt ? new Date(user.lastActivityAt).toLocaleDateString() : 'A while ago',
           weakAreas: [] as string[],
-          streakDays: userData.streakDays || 0
+          streakDays: user.streakDays || 0
         };
 
         // Analyze recent quiz data for weak areas
-        if (!quizzesSnapshot.empty) {
-          const recentQuizzes = quizzesSnapshot.docs.map(doc => doc.data());
+        if (quizzesData) {
+          const recentQuizzes = Object.values(quizzesData);
           const weakTopics = new Set<string>();
 
           recentQuizzes.forEach((quiz: any) => {
@@ -108,9 +118,9 @@ export async function GET(request: NextRequest) {
         }
 
         recipients.push({
-          email: userData.email,
+          email: user.email,
           data: {
-            userName: userData.displayName || userData.name || 'Student',
+            userName: user.displayName || user.name || 'Student',
             reminderData
           }
         });

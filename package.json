@@ -9,7 +9,9 @@
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:cron": "node test-cron-job.js",
+    "test:cron:prod": "TEST_URL=https://your-app.vercel.app node test-cron-job.js"
   },
   "dependencies": {
     "@genkit-ai/google-cloud": "^1.12.0",
