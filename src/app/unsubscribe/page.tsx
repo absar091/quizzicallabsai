@@ -33,18 +33,46 @@ export default function UnsubscribePage() {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await fetch('/api/email/unsubscribe', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, preferences: { ...preferences, all: true } })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), 
+          preferences: { ...preferences, all: true } 
+        })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
 
       const data = await response.json();
 
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || 'Failed to unsubscribe');
       }
 
@@ -53,10 +81,11 @@ export default function UnsubscribePage() {
         title: 'Successfully Unsubscribed',
         description: 'You will no longer receive emails from us.',
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Unsubscribe error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to unsubscribe. Please try again.',
+        description: error.message || 'Failed to unsubscribe. Please try again.',
         variant: 'destructive'
       });
     } finally {
