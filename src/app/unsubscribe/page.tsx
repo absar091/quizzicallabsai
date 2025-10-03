@@ -249,37 +249,39 @@ export default function UnsubscribePage() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div className="flex items-start space-x-3 p-4 rounded-xl border-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-200 border-green-200 dark:border-green-800">
                 <Checkbox
                   id="studyReminders"
                   checked={preferences.studyReminders}
                   onCheckedChange={(checked) =>
                     setPreferences({ ...preferences, studyReminders: checked as boolean })
                   }
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="studyReminders" className="text-sm font-medium cursor-pointer">
-                    Study Reminders
+                  <label htmlFor="studyReminders" className="text-sm font-semibold cursor-pointer text-green-900 dark:text-green-100">
+                    📚 Study Reminders
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-green-700 dark:text-green-300 mt-1">
                     Get reminded to practice and review weak areas
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+              <div className="flex items-start space-x-3 p-4 rounded-xl border-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 hover:from-red-100 hover:to-orange-100 dark:hover:from-red-900/30 dark:hover:to-orange-900/30 transition-all duration-200 border-red-200 dark:border-red-800">
                 <Checkbox
                   id="loginAlerts"
                   checked={preferences.loginAlerts}
                   onCheckedChange={(checked) =>
                     setPreferences({ ...preferences, loginAlerts: checked as boolean })
                   }
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <label htmlFor="loginAlerts" className="text-sm font-medium cursor-pointer">
-                    Security Alerts
+                  <label htmlFor="loginAlerts" className="text-sm font-semibold cursor-pointer text-red-900 dark:text-red-100">
+                    🔒 Security Alerts
                   </label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-red-700 dark:text-red-300 mt-1">
                     Important login and security notifications (recommended)
                   </p>
                 </div>
