@@ -613,32 +613,47 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
                 <p style="color: #3730a3; margin: 4px 0 0 0; font-size: 14px; opacity: 0.8;">Security information for this login</p>
               </div>
             </div>
-            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-              <tr style="background: #f8fafc;">
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Device</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.device || 'Desktop Computer'}</td>
+            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0,0,0,0.05);">
+              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
+                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
+                  <span style="margin-right: 8px;">💻</span>Device
+                </td>
+                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.device || 'Desktop Computer'}</td>
               </tr>
-              <tr>
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Browser</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.browser || 'Unknown Browser'}</td>
+              <tr style="background: white;">
+                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
+                  <span style="margin-right: 8px;">🌐</span>Browser
+                </td>
+                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.browser || 'Unknown Browser'}</td>
               </tr>
-              <tr style="background: #f8fafc;">
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Location</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
+              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
+                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
+                  <span style="margin-right: 8px;">📍</span>Location
+                </td>
+                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
               </tr>
-              <tr>
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">IP Address</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; font-family: monospace; border-bottom: 1px solid #e5e7eb;">${loginData.ipAddress || '39.50.139.118'}</td>
+              <tr style="background: white;">
+                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
+                  <span style="margin-right: 8px;">🌍</span>IP Address
+                </td>
+                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-family: 'Courier New', monospace; border-bottom: 1px solid #dbeafe; font-size: 15px; background: #f1f5f9; border-radius: 6px; margin: 4px 0;">${loginData.ipAddress || '39.50.139.118'}</td>
               </tr>
-              <tr style="background: #f8fafc;">
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151;">Login Time</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500;">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
+              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
+                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; font-size: 15px;">
+                  <span style="margin-right: 8px;">⏰</span>Login Time
+                </td>
+                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-size: 15px;">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
               </tr>
             </table>
-            <div style="margin-top: 20px; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
-              <p style="margin: 0; color: #92400e; font-size: 14px; font-weight: 500;">
-                <strong>Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication.
-              </p>
+            <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border-left: 5px solid #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
+              <div style="display: flex; align-items: flex-start;">
+                <span style="font-size: 20px; margin-right: 12px; margin-top: 2px;">💡</span>
+                <div>
+                  <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600; line-height: 1.5;">
+                    <strong style="color: #78350f;">Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication for better security.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           
