@@ -657,12 +657,12 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             </div>
           </div>
           
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/security/review-activity" class="button-primary">
-              Review Account Activity
+          <div style="text-align: center; margin: 40px 0;">
+            <a href="https://quizzicallabz.qzz.io/security/review-activity" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #ffffff !important; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; margin: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); text-transform: uppercase; letter-spacing: 0.5px; border: none;">
+              🔍 Review Account Activity
             </a>
-            <a href="https://quizzicallabz.qzz.io/security/secure-account" class="button-secondary" style="background: #dc2626; color: #ffffff; border: 2px solid #dc2626;">
-              Secure My Account
+            <a href="https://quizzicallabz.qzz.io/security/secure-account" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; margin: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 0.5px; border: none;">
+              🔒 Secure My Account
             </a>
           </div>
         </div>
