@@ -58,7 +58,7 @@ export function middleware(request: NextRequest) {
 
   // Rate limiting check (basic implementation)
   // Note: More sophisticated rate limiting is handled in individual API routes
-  const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
   // Add IP to request headers for downstream processing
   response.headers.set('x-client-ip', ip);

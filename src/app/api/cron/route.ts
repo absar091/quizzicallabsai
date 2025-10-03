@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
             case 'reminders':
                 console.log('🔔 Running study reminder notifications job...');
                 // Import and call the reminder function directly to avoid fetch issues
-                const { GET: sendReminders } = await import('../send-reminders/route');
+                const { GET: sendReminders } = await import('./send-reminders/route');
                 const reminderRequest = new Request(request.url, {
                     method: 'GET',
                     headers: request.headers

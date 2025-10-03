@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore } from '@/lib/firebase';
-import { collection, query, where, getDocs, Timestamp, orderBy, limit } from 'firebase/firestore';
-import { EmailAutomation, sendAutomatedStudyReminder } from '@/lib/email-automation';
+import { collection, query, getDocs, orderBy, limit } from 'firebase/firestore';
+import { EmailAutomation } from '@/lib/email-automation';
 
 // Using the new email automation system with built-in preference checking
 
@@ -134,11 +134,14 @@ export async function GET(request: NextRequest) {
 
     // Send batch emails using the new automation system
     console.log('📤 Starting batch email sending...');
+    
+    // Import the template function
+    const { studyReminderEmailTemplate } = await import('@/lib/email-templates-professional');
+    
     const batchResult = await EmailAutomation.sendBatchEmails(
       recipients,
       'studyReminders',
       ({ userName, reminderData }) => {
-        const { studyReminderEmailTemplate } = require('@/lib/email-templates-professional');
         return studyReminderEmailTemplate(userName, reminderData);
       },
       {
