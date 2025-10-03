@@ -932,22 +932,7 @@ Practice Weak Areas: https://quizzicallabz.qzz.io/practice
 Unsubscribe: https://quizzicallabz.qzz.io/unsubscribe`
 });
 
-export const studyReminderEmailTemplate = (userName: string, reminderData?: {
-  lastActivity?: string;
-  weakAreas?: string[];
-  streakDays?: number;
-}) => ({
-  subject: `Don't Break Your Streak! - ${userName}`,
-  html: `
-    <!DOCTYPE html>
-    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>Study Reminder</title>
-      <!--[if mso]>
-      <style type="text/css">
+
         table {border-collapse: collapse;}
       </style>
       <![endif]-->

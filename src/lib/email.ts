@@ -1,4 +1,9 @@
-import { welcomeEmailTemplate, quizResultEmailTemplate, studyReminderEmailTemplate } from './email-templates';
+import { 
+  welcomeEmailTemplate, 
+  quizResultEmailTemplate, 
+  studyReminderEmailTemplate,
+  loginNotificationEmailTemplate 
+} from './email-templates-professional';
 import { checkEmailPreferences, logEmailAttempt, type EmailType } from './email-preferences';
 
 interface EmailOptions {
@@ -61,11 +66,16 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
     console.log('📧 Sending email to:', to.substring(0, 20) + '...');
 
     const result = await emailTransporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      from: `"QuizzicallabzAI" <${process.env.EMAIL_FROM || process.env.SMTP_USER}>`,
       to,
       subject,
       html,
       text,
+      headers: {
+        'X-Mailer': 'QuizzicallabzAI Learning Platform',
+        'X-Priority': '3',
+        'X-MSMail-Priority': 'Normal'
+      }
     });
 
     console.log('✅ Email sent successfully:', result.messageId);
@@ -348,7 +358,6 @@ export async function sendLoginNotificationEmail(to: string, userName: string, l
   ipAddress: string;
   userAgent: string;
 }) {
-  const { loginNotificationEmailTemplate } = await import('./email-templates');
   const template = loginNotificationEmailTemplate(userName, {
     device: loginData.device,
     location: loginData.location,

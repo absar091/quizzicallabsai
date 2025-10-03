@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
       // Send login notification email using preferences system
       const { sendEmailWithPreferences } = await import('@/lib/email');
-      const { loginNotificationEmailTemplate } = await import('@/lib/email-templates');
+      const { loginNotificationEmailTemplate } = await import('@/lib/email-templates-professional');
       
       const template = loginNotificationEmailTemplate(userName, {
         device: loginData.device,

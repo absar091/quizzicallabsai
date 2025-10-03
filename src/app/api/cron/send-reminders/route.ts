@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
       recipients,
       'studyReminders',
       ({ userName, reminderData }) => {
-        const { studyReminderEmailTemplate } = require('@/lib/email-templates');
+        const { studyReminderEmailTemplate } = require('@/lib/email-templates-professional');
         return studyReminderEmailTemplate(userName, reminderData);
       },
       {

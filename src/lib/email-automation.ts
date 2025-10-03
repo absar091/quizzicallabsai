@@ -184,7 +184,7 @@ export async function sendAutomatedQuizResult(
     date?: string;
   }
 ) {
-  const { quizResultEmailTemplate } = await import('./email-templates');
+  const { quizResultEmailTemplate } = await import('./email-templates-professional');
   
   const template = quizResultEmailTemplate(userName, {
     quizTitle: quizData.topic,
@@ -206,7 +206,7 @@ export async function sendAutomatedStudyReminder(
     streakDays?: number;
   }
 ) {
-  const { studyReminderEmailTemplate } = await import('./email-templates');
+  const { studyReminderEmailTemplate } = await import('./email-templates-professional');
   const template = studyReminderEmailTemplate(userName, reminderData);
 
   return EmailAutomation.sendAutomatedEmail(userEmail, 'studyReminders', template);
@@ -220,7 +220,7 @@ export async function sendAutomatedWelcomeEmail(
     signupDate?: string;
   }
 ) {
-  const { welcomeEmailTemplate } = await import('./email-templates');
+  const { welcomeEmailTemplate } = await import('./email-templates-professional');
   
   const template = welcomeEmailTemplate(userName, {
     userEmail,
@@ -241,7 +241,7 @@ export async function sendAutomatedLoginAlert(
     time: string;
   }
 ) {
-  const { loginNotificationEmailTemplate } = await import('./email-templates');
+  const { loginNotificationEmailTemplate } = await import('./email-templates-professional');
   const template = loginNotificationEmailTemplate(userName, loginData);
 
   return EmailAutomation.sendAutomatedEmail(userEmail, 'loginAlerts', template);
