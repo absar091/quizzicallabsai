@@ -61,10 +61,6 @@
         "preferences": {
           ".read": "auth != null && auth.uid == $uid",
           ".write": "auth != null && auth.uid == $uid"
-        },
-        "emailPreferences": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid"
         }
       }
     },
@@ -204,6 +200,11 @@
           }
         }
       }
+    },
+    "emailPreferences": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["email", "updatedAt"]
     },
     "emailLogs": {
       ".read": "auth != null",
