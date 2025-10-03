@@ -93,8 +93,9 @@ export async function GET(request: NextRequest) {
       // Fetch user's quiz history for personalized data
       try {
         const quizzesRef = db.ref(`users/${userId}/quizHistory`);
-        const quizzesQuery = quizzesRef.orderByChild('completedAt').limitToLast(5);
-        const quizzesSnapshot = await quizzesQuery.once('value');
+        // Get quiz history without ordering to avoid index warning
+        // We'll sort client-side for the small dataset
+        const quizzesSnapshot = await quizzesRef.limitToLast(10).once('value');
         const quizzesData = quizzesSnapshot.val();
 
         let reminderData = {
@@ -105,10 +106,17 @@ export async function GET(request: NextRequest) {
 
         // Analyze recent quiz data for weak areas
         if (quizzesData) {
-          const recentQuizzes = Object.values(quizzesData);
+          const recentQuizzes = Object.values(quizzesData) as any[];
+          
+          // Sort by completedAt client-side to get most recent
+          const sortedQuizzes = recentQuizzes
+            .filter(quiz => quiz.completedAt)
+            .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+            .slice(0, 5); // Take only 5 most recent
+          
           const weakTopics = new Set<string>();
 
-          recentQuizzes.forEach((quiz: any) => {
+          sortedQuizzes.forEach((quiz: any) => {
             if (quiz.score < 70 && quiz.topic) weakTopics.add(quiz.topic);
           });
 

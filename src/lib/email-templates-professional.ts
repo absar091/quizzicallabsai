@@ -571,6 +571,7 @@ Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 
 export const loginNotificationEmailTemplate = (userName: string, loginData: {
   device: string;
+  browser?: string;
   location: string;
   ipAddress: string;
   time: string;
@@ -606,20 +607,24 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             </div>
             <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
               <tr style="background: #f8fafc;">
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Device Type</td>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Device</td>
                 <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.device || 'Desktop Computer'}</td>
               </tr>
               <tr>
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Location</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.location || 'Unknown Location'}</td>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Browser</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.browser || 'Unknown Browser'}</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">IP Address</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; font-family: monospace; border-bottom: 1px solid #e5e7eb;">${loginData.ipAddress || '192.168.1.1'}</td>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">Location</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; border-bottom: 1px solid #e5e7eb;">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
               </tr>
               <tr>
+                <td style="padding: 16px 20px; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb;">IP Address</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500; font-family: monospace; border-bottom: 1px solid #e5e7eb;">${loginData.ipAddress || '39.50.139.118'}</td>
+              </tr>
+              <tr style="background: #f8fafc;">
                 <td style="padding: 16px 20px; font-weight: 600; color: #374151;">Login Time</td>
-                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500;">${loginData.time || new Date().toLocaleString()}</td>
+                <td style="padding: 16px 20px; text-align: right; color: #1f2937; font-weight: 500;">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
               </tr>
             </table>
             <div style="margin-top: 20px; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">

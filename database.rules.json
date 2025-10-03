@@ -1,0 +1,262 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "shared_quizzes": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["shareCode", "createdAt", "ownerId", "subject", "difficulty", "isPublic"],
+      "$quizId": {
+        ".read": "auth != null || (data.exists() && data.child('isPublic').val() == true)",
+        ".write": "auth != null",
+        "$child": {
+          ".read": "auth != null || (data.exists() && data.parent().child('isPublic').val() == true)"
+        },
+        "attempts": {
+          ".indexOn": ["completedAt", "score", "userId"],
+          "$attemptId": {
+            ".read": true,
+            ".write": "auth != null"
+          }
+        },
+        "ratings": {
+          ".indexOn": ["rating", "createdAt"],
+          "$userId": {
+            ".read": true,
+            ".write": "auth != null && auth.uid == $userId"
+          }
+        },
+        "comments": {
+          ".indexOn": ["createdAt", "userId"],
+          "$commentId": {
+            ".read": true,
+            ".write": "auth != null"
+          }
+        }
+      }
+    },
+    "quizResults": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["createdAt", "topic", "difficulty", "score", "completedAt"]
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "lastLogin", "lastActivityAt"],
+        "quizHistory": {
+          ".indexOn": ["completedAt", "score", "topic", "subject", "category"],
+          "$quizId": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid"
+          }
+        },
+        "profile": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        },
+        "preferences": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        },
+        "emailPreferences": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+    "bookmarks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "createdAt", "subject", "type"]
+      }
+    },
+    "studyStreaks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "lastActivity", "streakCount", "longestStreak"]
+      }
+    },
+    "studyTime": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "date", "subject", "duration", "sessionStart"]
+      }
+    },
+    "userPreferences": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    "achievements": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified", "unlockedAt", "category", "type"]
+      }
+    },
+    "syncMetadata": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastSync"]
+      }
+    },
+    "quiz-rooms": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["createdAt", "hostId", "isActive", "gameMode"],
+      "$roomId": {
+        ".read": true,
+        ".write": "auth != null",
+        "players": {
+          ".indexOn": ["joinedAt", "score", "isActive"],
+          "$playerId": {
+            ".read": true,
+            ".write": "auth != null"
+          }
+        },
+        "answers": {
+          ".indexOn": ["submittedAt", "questionIndex", "userId"],
+          "$answerId": {
+            ".read": true,
+            ".write": "auth != null"
+          }
+        },
+        "chat": {
+          ".indexOn": ["timestamp", "userId"],
+          "$messageId": {
+            ".read": true,
+            ".write": "auth != null"
+          }
+        }
+      }
+    },
+    "quiz_likes": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["userId", "quizId", "createdAt"]
+    },
+    "questionBank": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["topic", "difficulty", "lastModified", "subject", "category"]
+      }
+    },
+    "user_quiz_history": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["topic", "timestamp", "score", "completedAt", "subject"]
+      }
+    },
+    "fcmTokens": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["updatedAt", "platform", "isActive"]
+      }
+    },
+    "public": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "leaderboards": {
+      ".read": true,
+      ".indexOn": ["score", "subject", "timeframe", "lastUpdated"],
+      "$leaderboardId": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "analytics": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId",
+        "daily": {
+          ".indexOn": ["date", "subject", "totalTime"],
+          "$date": {
+            ".read": "auth != null && auth.uid == $userId",
+            ".write": "auth != null && auth.uid == $userId"
+          }
+        },
+        "weekly": {
+          ".indexOn": ["week", "subject", "totalQuizzes"],
+          "$week": {
+            ".read": "auth != null && auth.uid == $userId",
+            ".write": "auth != null && auth.uid == $userId"
+          }
+        },
+        "monthly": {
+          ".indexOn": ["month", "subject", "averageScore"],
+          "$month": {
+            ".read": "auth != null && auth.uid == $userId",
+            ".write": "auth != null && auth.uid == $userId"
+          }
+        }
+      }
+    },
+    "emailLogs": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["timestamp", "emailType", "userId", "status"]
+    },
+    "loginNotifications": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["timestamp", "userId", "deviceType", "location"]
+    },
+    "deviceTracking": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId",
+        ".indexOn": ["lastSeen", "firstSeen", "deviceType", "isActive"]
+      }
+    },
+    "app-settings": {
+      ".read": true,
+      ".write": false
+    },
+    "maintenance": {
+      ".read": true,
+      ".write": false
+    },
+    "announcements": {
+      ".read": true,
+      ".indexOn": ["createdAt", "priority", "isActive"],
+      "$announcementId": {
+        ".read": true,
+        ".write": false
+      }
+    },
+    "feedback": {
+      ".read": false,
+      ".write": "auth != null",
+      ".indexOn": ["createdAt", "type", "userId"],
+      "$feedbackId": {
+        ".write": "auth != null && (!data.exists() || auth.uid == data.child('userId').val())"
+      }
+    },
+    "reports": {
+      ".read": false,
+      ".write": "auth != null",
+      ".indexOn": ["createdAt", "type", "reportedBy"],
+      "$reportId": {
+        ".write": "auth != null"
+      }
+    },
+    "system-logs": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
