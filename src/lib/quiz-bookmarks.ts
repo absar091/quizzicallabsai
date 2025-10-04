@@ -30,12 +30,13 @@ export class QuizBookmarkManager {
     tags?: string[];
   }, notes?: string): Promise<string> {
     try {
-      const bookmarksRef = ref(db, `bookmarks/${this.userId}`);
-      const newBookmarkRef = push(bookmarksRef);
+      // Create a safe key by encoding the quiz ID
+      const safeQuizId = this.encodeFirebaseKey(quiz.id);
+      const bookmarkRef = ref(db, `bookmarks/${this.userId}/${safeQuizId}`);
       
       const bookmark: Omit<QuizBookmark, 'id'> = {
         userId: this.userId,
-        quizId: quiz.id,
+        quizId: quiz.id, // Store the original quiz ID
         quizTitle: quiz.title,
         subject: quiz.subject,
         difficulty: quiz.difficulty,
@@ -45,12 +46,38 @@ export class QuizBookmarkManager {
         notes: notes || ''
       };
 
-      await set(newBookmarkRef, bookmark);
-      return newBookmarkRef.key!;
+      await set(bookmarkRef, bookmark);
+      return safeQuizId;
     } catch (error) {
       console.error('Error adding bookmark:', error);
       throw error;
     }
+  }
+
+  private encodeFirebaseKey(key: string): string {
+    // Replace Firebase-invalid characters with safe alternatives
+    return key
+      .replace(/\./g, '%2E')
+      .replace(/#/g, '%23')
+      .replace(/\$/g, '%24')
+      .replace(/\[/g, '%5B')
+      .replace(/\]/g, '%5D')
+      .replace(/=/g, '%3D')
+      .replace(/\?/g, '%3F')
+      .replace(/\//g, '%2F');
+  }
+
+  private decodeFirebaseKey(key: string): string {
+    // Reverse the encoding
+    return key
+      .replace(/%2E/g, '.')
+      .replace(/%23/g, '#')
+      .replace(/%24/g, '$')
+      .replace(/%5B/g, '[')
+      .replace(/%5D/g, ']')
+      .replace(/%3D/g, '=')
+      .replace(/%3F/g, '?')
+      .replace(/%2F/g, '/');
   }
 
   async removeBookmark(bookmarkId: string): Promise<void> {
@@ -85,12 +112,14 @@ export class QuizBookmarkManager {
 
   async isBookmarked(quizId: string): Promise<{ isBookmarked: boolean; bookmarkId?: string }> {
     try {
-      const bookmarks = await this.getBookmarks();
-      const bookmark = bookmarks.find(b => b.quizId === quizId);
+      // Check directly using the encoded key for better performance
+      const safeQuizId = this.encodeFirebaseKey(quizId);
+      const bookmarkRef = ref(db, `bookmarks/${this.userId}/${safeQuizId}`);
+      const snapshot = await get(bookmarkRef);
       
       return {
-        isBookmarked: !!bookmark,
-        bookmarkId: bookmark?.id
+        isBookmarked: snapshot.exists(),
+        bookmarkId: snapshot.exists() ? safeQuizId : undefined
       };
     } catch (error) {
       console.error('Error checking bookmark status:', error);
