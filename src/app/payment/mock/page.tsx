@@ -18,6 +18,15 @@ export default function MockPaymentPage() {
   const handlePaymentSuccess = async () => {
     setProcessing(true);
     
+    // Store mock user info for confirmation email
+    const mockUserInfo = {
+      email: 'demo@example.com',
+      name: 'Demo User',
+      idToken: 'mock-token',
+      displayName: 'Demo User'
+    };
+    localStorage.setItem('userInfo', JSON.stringify(mockUserInfo));
+    
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
     

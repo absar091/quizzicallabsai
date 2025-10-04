@@ -5,5 +5,6 @@ export {
   quizResultEmailTemplate,
   welcomeEmailTemplate,
   studyReminderEmailTemplate,
-  loginNotificationEmailTemplate
+  loginNotificationEmailTemplate,
+  subscriptionConfirmationEmailTemplate
 } from './email-templates-professional';

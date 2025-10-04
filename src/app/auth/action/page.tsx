@@ -46,14 +46,29 @@ export default function AuthActionPage() {
           break;
 
         case 'verifyEmail':
-          // Apply the email verification code
-          await applyActionCode(auth, oobCode!);
-          setSuccess('Email verified successfully! You can now sign in.');
-          setLoading(false);
-          setTimeout(() => {
-            // Always redirect to login after email verification
-            router.push('/login?verified=true');
-          }, 2000);
+          try {
+            // Apply the email verification code with retry logic
+            await applyActionCode(auth, oobCode!);
+            setSuccess('Email verified successfully! You can now sign in.');
+            setLoading(false);
+            setTimeout(() => {
+              // Always redirect to login after email verification
+              router.push('/login?verified=true');
+            }, 2000);
+          } catch (verifyError: any) {
+            // Handle specific Firebase errors
+            if (verifyError.code === 'auth/network-request-failed') {
+              setError('Network error. Please check your internet connection and try again.');
+            } else if (verifyError.code === 'auth/invalid-action-code') {
+              setError('This verification link has expired or is invalid. Please request a new verification email.');
+            } else if (verifyError.code === 'auth/expired-action-code') {
+              setError('This verification link has expired. Please request a new verification email.');
+            } else {
+              setError(verifyError.message || 'Email verification failed');
+            }
+            setLoading(false);
+            throw verifyError;
+          }
           break;
 
         default:

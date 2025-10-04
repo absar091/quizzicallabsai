@@ -1,7 +1,7 @@
 // Professional Email Templates - Enterprise Grade Design
 // Inspired by Google, Microsoft, AWS, and other major tech companies
 
-// Clean Professional Email Templates - Google/AWS Style
+// Clean Professional Email Templates - Modern Enterprise Style
 const PROFESSIONAL_STYLES = `
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -13,83 +13,90 @@ const PROFESSIONAL_STYLES = `
   }
   
   body { 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6;
-    color: #374151;
-    background-color: #f3f4f6;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.7;
+    color: #1f2937;
+    background-color: #f8fafc;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+    font-size: 16px;
   }
   
   .email-container {
-    max-width: 600px;
-    margin: 40px auto;
+    max-width: 640px;
+    margin: 0 auto;
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     overflow: hidden;
   }
   
-  /* Clean Header - Logo Left, App Name Right */
+  /* Clean Header - Minimal and Professional */
   .header {
-    padding: 24px 40px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 32px 48px;
+    border-bottom: 1px solid #f1f5f9;
     background-color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center;
   }
   
   .logo-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    margin-bottom: 12px;
   }
   
   .header-app-name a {
-    color: #4b5563;
-    font-size: 16px;
-    font-weight: 600;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 700;
     text-decoration: none;
+    letter-spacing: -0.025em;
   }
   
-  /* Content Styles */
+  /* Content Styles - Clean Typography */
   .content {
-    padding: 32px 40px;
+    padding: 48px 48px 40px 48px;
   }
   
   .title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 8px;
-    line-height: 1.3;
+    color: #0f172a;
+    margin-bottom: 12px;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
   }
   
   .subtitle {
-    font-size: 16px;
-    color: #6b7280;
-    margin-bottom: 32px;
+    font-size: 18px;
+    color: #64748b;
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.5;
   }
   
   .greeting, .paragraph {
     font-size: 16px;
-    color: #374151;
-    margin-bottom: 24px;
+    color: #334155;
+    margin-bottom: 28px;
+    line-height: 1.7;
   }
   
-  /* Clean Info Sections - No Cards */
+  /* Clean Info Sections - Minimal Design */
   .info-section {
-    margin: 32px 0;
+    margin: 40px 0;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 32px;
   }
   
   .info-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #111827;
-    margin-bottom: 12px;
+    color: #475569;
+    margin-bottom: 20px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
   }
   
   .info-table {
@@ -98,7 +105,7 @@ const PROFESSIONAL_STYLES = `
   }
   
   .info-row {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e2e8f0;
   }
   
   .info-row:last-child {
@@ -106,165 +113,209 @@ const PROFESSIONAL_STYLES = `
   }
   
   .info-label, .info-value {
-    padding: 16px 0;
+    padding: 18px 0;
     font-size: 15px;
     vertical-align: top;
   }
   
   .info-label {
-    color: #6b7280;
-    font-weight: 400;
+    color: #64748b;
+    font-weight: 500;
+    width: 40%;
   }
   
   .info-value {
     text-align: right;
-    color: #111827;
+    color: #0f172a;
     font-weight: 600;
   }
   
-  /* Metric Display */
+  /* Metric Display - Clean and Modern */
   .metric {
     text-align: center;
-    margin: 32px 0;
-    padding: 24px 20px;
-    background-color: #f0fdf4;
-    border-radius: 8px;
+    margin: 40px 0;
+    padding: 40px 32px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+    border: 1px solid #e0f2fe;
   }
   
   .metric-value {
-    font-size: 40px;
-    font-weight: 700;
-    color: #166534;
-    line-height: 1.1;
+    font-size: 48px;
+    font-weight: 800;
+    color: #0369a1;
+    line-height: 1;
+    letter-spacing: -0.025em;
   }
   
   .metric-label {
-    font-size: 14px;
-    color: #15803d;
-    font-weight: 500;
-    margin-top: 4px;
+    font-size: 15px;
+    color: #0284c7;
+    font-weight: 600;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
-  /* Buttons */
+  /* Buttons - Modern and Clean */
   .button-container {
-    margin: 32px 0;
+    margin: 40px 0;
+    text-align: center;
   }
   
   .button-primary, .button-secondary {
-    display: block;
+    display: inline-block;
     text-decoration: none;
-    padding: 14px 24px;
-    border-radius: 6px;
+    padding: 16px 32px;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 16px;
     text-align: center;
-    margin: 16px 0;
+    margin: 8px 12px;
     transition: all 0.2s ease-in-out;
+    letter-spacing: 0.025em;
   }
   
   .button-primary {
-    background-color: #1d4ed8;
+    background-color: #2563eb;
     color: #ffffff !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
   
   .button-primary:hover {
-    background-color: #1e40af;
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
   
   .button-secondary {
     background-color: #ffffff;
-    color: #374151 !important;
-    border: 1px solid #d1d5db;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
   
   .button-secondary:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
+    background-color: #f8fafc;
+    border-color: #94a3b8;
   }
   
-  /* Warning Box */
+  /* Warning Box - Clean Alert Design */
   .warning-box {
-    background-color: #fffbeb;
-    border-left: 4px solid #f59e0b;
-    padding: 16px;
-    margin: 24px 0;
+    background-color: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 32px 0;
   }
   
   .warning-text {
-    color: #78350f;
-    font-size: 14px;
+    color: #92400e;
+    font-size: 15px;
     line-height: 1.6;
+    font-weight: 500;
   }
   
-  /* Professional Footer */
+  /* Professional Footer - Minimal and Clean */
   .footer {
-    padding: 40px;
+    padding: 48px;
     text-align: center;
-    border-top: 1px solid #e5e7eb;
-    background-color: #f9fafb;
+    border-top: 1px solid #f1f5f9;
+    background-color: #fafafa;
   }
   
   .footer-logo {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 24px auto;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 20px auto;
+    border-radius: 10px;
+    opacity: 0.8;
   }
   
   .footer-nav {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
   
   .footer-nav-link {
-    color: #6b7280;
+    color: #64748b;
     text-decoration: none;
-    font-size: 13px;
-    margin: 0 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 16px;
   }
   
   .footer-nav-link:hover {
-    text-decoration: underline;
+    color: #334155;
+    text-decoration: none;
   }
   
   .footer-legal {
-    font-size: 12px;
-    color: #9ca3af;
-    line-height: 1.5;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    font-weight: 400;
   }
   
   .footer-legal a {
-    color: #9ca3af;
+    color: #64748b;
+    text-decoration: none;
+  }
+  
+  .footer-legal a:hover {
+    color: #334155;
     text-decoration: underline;
   }
   
-  /* Mobile Responsive */
-  @media only screen and (max-width: 600px) {
+  /* Mobile Responsive - Optimized for All Devices */
+  @media only screen and (max-width: 640px) {
     .email-container {
       margin: 0;
       border-radius: 0;
+      box-shadow: none;
     }
     
     .header {
-      padding: 20px 16px;
+      padding: 24px 20px;
     }
     
     .content {
-      padding: 24px 16px;
+      padding: 32px 20px;
+    }
+    
+    .info-section {
+      padding: 24px 20px;
     }
     
     .footer {
-      padding: 24px 16px;
+      padding: 32px 20px;
+    }
+    
+    .title {
+      font-size: 24px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
     }
     
     .button-primary,
     .button-secondary {
+      display: block;
       width: 100%;
+      margin: 12px 0;
+    }
+    
+    .metric {
+      padding: 32px 20px;
+    }
+    
+    .metric-value {
+      font-size: 40px;
     }
   }
 </style>
 `;
 
-// Clean Professional Header - Logo Left, App Name Right
+// Clean Professional Header - Centered and Minimal
 const PROFESSIONAL_HEADER = `
 <div class="header">
   <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
@@ -276,23 +327,23 @@ const PROFESSIONAL_HEADER = `
 </div>
 `;
 
-// Professional Footer - Big Tech Company Style
+// Professional Footer - Enterprise Style
 const PROFESSIONAL_FOOTER = `
 <div class="footer">
   <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
     <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ Logo" class="footer-logo">
   </a>
   <div class="footer-nav">
-    <a href="https://quizzicallabz.qzz.io/about-us" class="footer-nav-link">About</a>
+    <a href="https://quizzicallabz.qzz.io/about" class="footer-nav-link">About</a>
     <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-nav-link">Privacy</a>
     <a href="https://quizzicallabz.qzz.io/terms-of-service" class="footer-nav-link">Terms</a>
-    <a href="https://quizzicallabz.qzz.io/help" class="footer-nav-link">Help</a>
+    <a href="https://quizzicallabz.qzz.io/help" class="footer-nav-link">Support</a>
   </div>
   <div class="footer-legal">
-    © 2025 Quizzicallabzᴬᴵ. All Rights Reserved.<br>
+    © 2025 Quizzicallabzᴬᴵ. All rights reserved.<br>
     Vehari, Punjab, Pakistan<br><br>
-    This is an automated message. Please do not reply directly to this email.<br>
-    You can manage your email preferences or <a href="https://quizzicallabz.qzz.io/unsubscribe">unsubscribe</a>.
+    This message was sent to you because you have an account with Quizzicallabzᴬᴵ.<br>
+    <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage email preferences</a>
   </div>
 </div>
 `;
@@ -319,10 +370,10 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">Your Quiz Report is Ready</h1>
-          <p class="subtitle">Here is the performance analysis for your recent assessment.</p>
+          <h1 class="title">Quiz Results</h1>
+          <p class="subtitle">Performance analysis for ${quizData.quizTitle}</p>
           
-          <p class="paragraph">Well done on completing the <strong>${quizData.quizTitle}</strong> quiz. Below is a summary of your results.</p>
+          <p class="paragraph">Your assessment has been completed and analyzed. Here are your results:</p>
           
           <div class="metric">
             <div class="metric-value">${quizData.score}%</div>
@@ -349,7 +400,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           
           <div class="button-container">
             <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">View Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-secondary">Continue Learning</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Take Another Quiz</a>
           </div>
         </div>
         
@@ -397,10 +448,10 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">Welcome, ${userName}!</h1>
-          <p class="subtitle">Your Quizzicallabzᴬᴵ account is now active.</p>
+          <h1 class="title">Welcome to Quizzicallabzᴬᴵ</h1>
+          <p class="subtitle">Your account has been successfully created</p>
           
-          <p class="paragraph">We're excited to have you on board. You're all set to start your AI-powered learning journey. Here are your account details:</p>
+          <p class="paragraph">Hello ${userName}, your AI-powered learning platform is ready. Start creating personalized quizzes and track your progress with advanced analytics.</p>
           
           <div class="info-section">
             <h3 class="info-title">Account Information</h3>
@@ -421,8 +472,8 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           </div>
           
           <div class="button-container">
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">Go to Your Dashboard</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Start Learning</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">Access Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Create First Quiz</a>
           </div>
         </div>
         
@@ -470,10 +521,10 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">Keep Your Momentum Going</h1>
-          <p class="subtitle">A little progress each day adds up to big results.</p>
+          <h1 class="title">Continue Your Learning</h1>
+          <p class="subtitle">Your personalized study session is ready</p>
           
-          <p class="paragraph">It's been a little while since your last session. Consistent practice is the key to mastery. Let's pick up where you left off.</p>
+          <p class="paragraph">Hello ${userName}, our AI has prepared new practice questions based on your learning patterns. Continue your progress with a focused study session.</p>
           
           <div class="info-section">
             <h3 class="info-title">Learning Snapshot</h3>
@@ -497,7 +548,7 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
           
           <div class="button-container">
             <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">Resume Learning</a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Start a 5-Min Quiz</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Quick Practice</a>
           </div>
         </div>
         
@@ -519,6 +570,98 @@ ${reminderData?.weakAreas && reminderData.weakAreas.length > 0 ? `- Priority Are
 
 Resume Learning: https://quizzicallabz.qzz.io/dashboard
 Quick Quiz: https://quizzicallabz.qzz.io/generate-quiz
+
+Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
+Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
+});
+
+export const subscriptionConfirmationEmailTemplate = (userName: string, subscriptionData: {
+  planName: string;
+  amount: string;
+  currency: string;
+  orderId: string;
+  activationDate: string;
+  nextBillingDate?: string;
+}) => ({
+  subject: `Welcome to ${subscriptionData.planName} - Subscription Confirmed`,
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Subscription Confirmed</title>
+      ${PROFESSIONAL_STYLES}
+    </head>
+    <body>
+      <div class="email-container">
+        ${PROFESSIONAL_HEADER}
+        
+        <div class="content">
+          <h1 class="title">Subscription Activated</h1>
+          <p class="subtitle">Your ${subscriptionData.planName} subscription is now active</p>
+          
+          <p class="paragraph">Hello ${userName}, thank you for upgrading to ${subscriptionData.planName}. Your subscription has been successfully activated and you now have access to all premium features.</p>
+          
+          <div class="metric">
+            <div class="metric-value">${subscriptionData.planName}</div>
+            <div class="metric-label">Active Subscription</div>
+          </div>
+          
+          <div class="info-section">
+            <h3 class="info-title">Subscription Details</h3>
+            <table class="info-table">
+              <tr class="info-row">
+                <td class="info-label">Plan</td>
+                <td class="info-value">${subscriptionData.planName}</td>
+              </tr>
+              <tr class="info-row">
+                <td class="info-label">Amount Paid</td>
+                <td class="info-value">${subscriptionData.amount} ${subscriptionData.currency}</td>
+              </tr>
+              <tr class="info-row">
+                <td class="info-label">Order ID</td>
+                <td class="info-value">${subscriptionData.orderId}</td>
+              </tr>
+              <tr class="info-row">
+                <td class="info-label">Activation Date</td>
+                <td class="info-value">${subscriptionData.activationDate}</td>
+              </tr>
+              ${subscriptionData.nextBillingDate ? `
+              <tr class="info-row">
+                <td class="info-label">Next Billing</td>
+                <td class="info-value">${subscriptionData.nextBillingDate}</td>
+              </tr>
+              ` : ''}
+            </table>
+          </div>
+          
+          <div class="button-container">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">Access Premium Features</a>
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-secondary">Manage Subscription</a>
+          </div>
+        </div>
+        
+        ${PROFESSIONAL_FOOTER}
+      </div>
+    </body>
+    </html>
+  `,
+  text: `Subscription Confirmed - ${subscriptionData.planName}
+
+Hello ${userName},
+
+Your ${subscriptionData.planName} subscription has been successfully activated.
+
+Subscription Details:
+- Plan: ${subscriptionData.planName}
+- Amount: ${subscriptionData.amount} ${subscriptionData.currency}
+- Order ID: ${subscriptionData.orderId}
+- Activated: ${subscriptionData.activationDate}
+${subscriptionData.nextBillingDate ? `- Next Billing: ${subscriptionData.nextBillingDate}` : ''}
+
+Access your premium features: https://quizzicallabz.qzz.io/dashboard
+Manage subscription: https://quizzicallabz.qzz.io/profile
 
 Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
@@ -546,10 +689,10 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">New Sign-in Detected</h1>
-          <p class="subtitle">A new device has signed in to your Quizzicallabzᴬᴵ account.</p>
+          <h1 class="title">Account Security Alert</h1>
+          <p class="subtitle">New sign-in detected on your account</p>
           
-          <p class="paragraph">We're writing to let you know about a recent sign-in. If this was you, you can safely disregard this email.</p>
+          <p class="paragraph">Hello ${userName}, we detected a new sign-in to your Quizzicallabzᴬᴵ account. If this was you, no action is required.</p>
           
           <div class="info-section">
             <h3 class="info-title">Login Details</h3>
@@ -578,11 +721,11 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           </div>
           
           <div class="warning-box">
-            <p class="warning-text"><strong>Don't recognize this activity?</strong><br>Please change your password immediately and review your account security settings.</p>
+            <p class="warning-text"><strong>Unrecognized activity?</strong> Secure your account immediately by changing your password and reviewing security settings.</p>
           </div>
           
           <div class="button-container">
-            <a href="https://quizzicallabz.qzz.io/profile" class="button-primary">Secure Your Account</a>
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-primary">Review Security</a>
           </div>
         </div>
         

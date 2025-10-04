@@ -140,7 +140,10 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname === 'apis.google.com' || 
       url.hostname === 'www.gstatic.com' ||
       url.hostname === 'accounts.google.com' ||
-      url.pathname.includes('google')) {
+      url.hostname === 'www.google.com' ||
+      url.hostname === 'recaptcha.google.com' ||
+      url.pathname.includes('google') ||
+      url.pathname.includes('recaptcha')) {
     // Let these requests go directly to network without SW interference
     return;
   }

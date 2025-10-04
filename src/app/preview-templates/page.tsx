@@ -13,7 +13,8 @@ export default function PreviewTemplatesPage() {
     { value: 'login', label: '🔒 Security Alert', description: 'Login notification email' },
     { value: 'welcome', label: '👋 Welcome', description: 'Welcome email for new users' },
     { value: 'reminder', label: '📚 Study Reminder', description: 'Learning continuity alert' },
-    { value: 'quiz', label: '📊 Quiz Results', description: 'Performance report email' }
+    { value: 'quiz', label: '📊 Quiz Results', description: 'Performance report email' },
+    { value: 'subscription', label: '💳 Subscription', description: 'Subscription confirmation email' }
   ];
 
   const previewTemplate = () => {

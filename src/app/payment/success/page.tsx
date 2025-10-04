@@ -19,14 +19,49 @@ export default function PaymentSuccessPage() {
       return;
     }
 
-    // Simulate verification process
-    const timer = setTimeout(() => {
+    const sendConfirmationEmail = async () => {
+      try {
+        // Get user info from auth context or localStorage
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        
+        if (userInfo.email) {
+          const response = await fetch('/api/notifications/subscription-confirmed', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              idToken: userInfo.idToken,
+              userEmail: userInfo.email,
+              userName: userInfo.name || userInfo.displayName,
+              planName: 'Pro Plan',
+              amount: '2.00',
+              currency: 'USD',
+              orderId: orderId
+            })
+          });
+
+          const result = await response.json();
+          console.log('Confirmation email result:', result);
+        }
+      } catch (error) {
+        console.error('Failed to send confirmation email:', error);
+      }
+    };
+
+    // Simulate verification process and send email
+    const timer = setTimeout(async () => {
       setIsVerifying(false);
       setVerificationStatus('success');
+      
+      // Send confirmation email after successful verification
+      if (!isMock) {
+        await sendConfirmationEmail();
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [orderId, router]);
+  }, [orderId, router, isMock]);
 
   if (isVerifying) {
     return (
