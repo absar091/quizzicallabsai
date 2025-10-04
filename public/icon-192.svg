@@ -1,0 +1,64 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pwa192Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="pwa192BrainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="pwa192Glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" rx="48" fill="url(#pwa192Gradient)"/>
+  
+  <!-- Inner highlight -->
+  <rect x="8" y="8" width="176" height="176" rx="40" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  
+  <!-- Brain -->
+  <path d="M60 75 C50 65, 50 55, 60 45 C70 35, 85 35, 95 45 C105 35, 120 35, 130 45 C140 55, 140 65, 130 75 C140 85, 140 95, 130 105 C140 115, 140 125, 130 135 C120 145, 105 145, 95 135 C85 145, 70 145, 60 135 C50 125, 50 115, 60 105 C50 95, 50 85, 60 75 Z" 
+        fill="url(#pwa192BrainGradient)" 
+        opacity="0.9" 
+        stroke="rgba(255,255,255,0.3)" 
+        stroke-width="2"/>
+  
+  <!-- Neural connections -->
+  <g opacity="0.5">
+    <circle cx="75" cy="70" r="3" fill="#4facfe"/>
+    <circle cx="95" cy="80" r="3" fill="#4facfe"/>
+    <circle cx="115" cy="70" r="3" fill="#4facfe"/>
+    <circle cx="85" cy="100" r="3" fill="#4facfe"/>
+    <circle cx="105" cy="110" r="3" fill="#4facfe"/>
+    
+    <line x1="75" y1="70" x2="95" y2="80" stroke="#4facfe" stroke-width="1.5"/>
+    <line x1="95" y1="80" x2="115" y2="70" stroke="#4facfe" stroke-width="1.5"/>
+    <line x1="95" y1="80" x2="85" y2="100" stroke="#4facfe" stroke-width="1.5"/>
+    <line x1="85" y1="100" x2="105" y2="110" stroke="#4facfe" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Question mark -->
+  <path d="M130 55 C130 45, 135 40, 145 40 C155 40, 160 45, 160 55 C160 65, 155 70, 150 75 L150 85 M150 95 L150 100" 
+        stroke="#fee140" 
+        stroke-width="6" 
+        stroke-linecap="round" 
+        fill="none" 
+        filter="url(#pwa192Glow)"/>
+  
+  <!-- AI text -->
+  <text x="96" y="160" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="16" font-weight="bold">AI</text>
+  
+  <!-- Decorative elements -->
+  <path d="M40 40 L43 46 L49 43 L43 49 L40 55 L37 49 L31 43 L37 46 Z" fill="#fee140" opacity="0.7"/>
+  <path d="M150 130 L152 134 L156 132 L152 136 L150 140 L148 136 L144 132 L148 134 Z" fill="#fa709a" opacity="0.7"/>
+</svg>

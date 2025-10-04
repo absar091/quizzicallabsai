@@ -1,52 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4f46e5"/>
-      <stop offset="50%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#ec4899"/>
+    <!-- Main gradient -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="brain" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#f8fafc"/>
+    
+    <!-- Brain gradient -->
+    <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="circuit" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4"/>
-      <stop offset="100%" stop-color="#10b981"/>
+    
+    <!-- Question mark gradient -->
+    <linearGradient id="questionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
     </linearGradient>
+    
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
   
-  <!-- Background -->
-  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <!-- Background circle with gradient -->
+  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" filter="url(#glow)"/>
   
-  <!-- Brain Shape -->
-  <g transform="translate(4, 6)">
-    <path d="M12 2c3.5 0 6 2 7 4.5 1 2.5 0.5 5-1 7-1.5 2-4 3-6.5 3-1.5 0-3-0.5-4.5-1.5-1.5-1-2.5-2.5-3-4.5-0.5-2 0-4 1.5-5.5C7 3.5 9.5 2 12 2z" fill="url(#brain)" opacity="0.95"/>
+  <!-- Inner circle for depth -->
+  <circle cx="256" cy="256" r="200" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+  
+  <!-- Brain outline (simplified) -->
+  <path d="M180 200 C160 180, 160 160, 180 140 C200 120, 240 120, 260 140 C280 120, 320 120, 340 140 C360 160, 360 180, 340 200 C360 220, 360 240, 340 260 C360 280, 360 300, 340 320 C320 340, 280 340, 260 320 C240 340, 200 340, 180 320 C160 300, 160 280, 180 260 C160 240, 160 220, 180 200 Z" 
+        fill="url(#brainGradient)" 
+        opacity="0.8" 
+        stroke="rgba(255,255,255,0.3)" 
+        stroke-width="3"/>
+  
+  <!-- Brain details -->
+  <path d="M200 180 C220 170, 240 170, 260 180" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/>
+  <path d="M200 220 C230 210, 250 210, 280 220" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/>
+  <path d="M190 260 C220 250, 260 250, 290 260" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/>
+  
+  <!-- Question mark -->
+  <path d="M320 160 C320 140, 340 120, 360 120 C380 120, 400 140, 400 160 C400 180, 380 190, 370 200 L370 220 M370 240 L370 260" 
+        stroke="url(#questionGradient)" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        fill="none" 
+        filter="url(#glow)"/>
+  
+  <!-- AI circuit pattern -->
+  <g opacity="0.4">
+    <circle cx="200" cy="180" r="4" fill="#4facfe"/>
+    <circle cx="240" cy="200" r="4" fill="#4facfe"/>
+    <circle cx="280" cy="180" r="4" fill="#4facfe"/>
+    <circle cx="220" cy="240" r="4" fill="#4facfe"/>
+    <circle cx="260" cy="260" r="4" fill="#4facfe"/>
     
-    <!-- Quiz/Question Mark -->
-    <g fill="url(#circuit)" stroke="none">
-      <path d="M10 8c0-1 0.5-1.5 1.5-1.5s1.5 0.5 1.5 1.5-0.5 1-1 1.2v0.8h-1v-1c0-0.5 0.5-0.8 1-1 0.3-0.2 0.5-0.4 0.5-0.8 0-0.3-0.2-0.5-0.5-0.5s-0.5 0.2-0.5 0.5h-1z"/>
-      <circle cx="11.5" cy="12" r="0.5"/>
-    </g>
-    
-    <!-- AI Circuit Nodes -->
-    <g fill="#fbbf24" opacity="0.8">
-      <circle cx="7" cy="6" r="0.8"/>
-      <circle cx="16" cy="8" r="0.8"/>
-      <circle cx="6" cy="12" r="0.8"/>
-      <circle cx="17" cy="14" r="0.8"/>
-    </g>
-    
-    <!-- Circuit Lines -->
-    <g stroke="url(#circuit)" stroke-width="1.2" fill="none" opacity="0.7">
-      <path d="M7 6L10 8"/>
-      <path d="M13 8L16 8"/>
-      <path d="M6 12L9 10"/>
-      <path d="M14 12L17 14"/>
-    </g>
+    <line x1="200" y1="180" x2="240" y2="200" stroke="#4facfe" stroke-width="2"/>
+    <line x1="240" y1="200" x2="280" y2="180" stroke="#4facfe" stroke-width="2"/>
+    <line x1="240" y1="200" x2="220" y2="240" stroke="#4facfe" stroke-width="2"/>
+    <line x1="220" y1="240" x2="260" y2="260" stroke="#4facfe" stroke-width="2"/>
   </g>
   
-  <!-- AI Sparkle -->
-  <g transform="translate(22, 4)" fill="#ffd700" opacity="0.9">
-    <path d="M3 0L4 2L6 1L5 3L7 4L5 5L6 7L4 6L3 8L2 6L0 7L1 5L-1 4L1 3L0 1L2 2L3 0Z" transform="scale(0.6)"/>
+  <!-- Sparkle effects -->
+  <g opacity="0.8">
+    <path d="M150 120 L155 130 L165 125 L155 135 L150 145 L145 135 L135 125 L145 130 Z" fill="#fee140"/>
+    <path d="M380 300 L383 306 L389 303 L383 309 L380 315 L377 309 L371 303 L377 306 Z" fill="#fa709a"/>
+    <path d="M120 280 L122 284 L126 282 L122 286 L120 290 L118 286 L114 282 L118 284 Z" fill="#4facfe"/>
   </g>
+  
+  <!-- AI text indicator -->
+  <text x="256" y="380" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="24" font-weight="bold">AI</text>
 </svg>

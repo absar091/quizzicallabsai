@@ -1,52 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4f46e5"/>
-      <stop offset="50%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#ec4899"/>
-    </linearGradient>
-    <linearGradient id="brain" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#f8fafc"/>
-    </linearGradient>
-    <linearGradient id="circuit" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4"/>
-      <stop offset="100%" stop-color="#10b981"/>
+    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
     </linearGradient>
   </defs>
   
   <!-- Background -->
-  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <rect width="32" height="32" rx="8" fill="url(#faviconGradient)"/>
   
-  <!-- Brain Shape -->
-  <g transform="translate(4, 6)">
-    <path d="M12 2c3.5 0 6 2 7 4.5 1 2.5 0.5 5-1 7-1.5 2-4 3-6.5 3-1.5 0-3-0.5-4.5-1.5-1.5-1-2.5-2.5-3-4.5-0.5-2 0-4 1.5-5.5C7 3.5 9.5 2 12 2z" fill="url(#brain)" opacity="0.95"/>
-    
-    <!-- Quiz/Question Mark -->
-    <g fill="url(#circuit)" stroke="none">
-      <path d="M10 8c0-1 0.5-1.5 1.5-1.5s1.5 0.5 1.5 1.5-0.5 1-1 1.2v0.8h-1v-1c0-0.5 0.5-0.8 1-1 0.3-0.2 0.5-0.4 0.5-0.8 0-0.3-0.2-0.5-0.5-0.5s-0.5 0.2-0.5 0.5h-1z"/>
-      <circle cx="11.5" cy="12" r="0.5"/>
-    </g>
-    
-    <!-- AI Circuit Nodes -->
-    <g fill="#fbbf24" opacity="0.8">
-      <circle cx="7" cy="6" r="0.8"/>
-      <circle cx="16" cy="8" r="0.8"/>
-      <circle cx="6" cy="12" r="0.8"/>
-      <circle cx="17" cy="14" r="0.8"/>
-    </g>
-    
-    <!-- Circuit Lines -->
-    <g stroke="url(#circuit)" stroke-width="1.2" fill="none" opacity="0.7">
-      <path d="M7 6L10 8"/>
-      <path d="M13 8L16 8"/>
-      <path d="M6 12L9 10"/>
-      <path d="M14 12L17 14"/>
-    </g>
-  </g>
+  <!-- Simplified brain -->
+  <path d="M8 12 C6 10, 6 8, 8 6 C10 4, 14 4, 16 6 C18 4, 22 4, 24 6 C26 8, 26 10, 24 12 C26 14, 26 16, 24 18 C26 20, 26 22, 24 24 C22 26, 18 26, 16 24 C14 26, 10 26, 8 24 C6 22, 6 20, 8 18 C6 16, 6 14, 8 12 Z" 
+        fill="rgba(255,255,255,0.9)" 
+        stroke="rgba(255,255,255,0.5)" 
+        stroke-width="0.5"/>
   
-  <!-- AI Sparkle -->
-  <g transform="translate(22, 4)" fill="#ffd700" opacity="0.9">
-    <path d="M3 0L4 2L6 1L5 3L7 4L5 5L6 7L4 6L3 8L2 6L0 7L1 5L-1 4L1 3L0 1L2 2L3 0Z" transform="scale(0.6)"/>
-  </g>
+  <!-- Question mark -->
+  <path d="M22 8 C22 6, 23 5, 25 5 C27 5, 28 6, 28 8 C28 10, 27 11, 26 12 L26 14 M26 16 L26 17" 
+        stroke="#fee140" 
+        stroke-width="1.5" 
+        stroke-linecap="round" 
+        fill="none"/>
+  
+  <!-- AI text -->
+  <text x="16" y="28" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="6" font-weight="bold">AI</text>
 </svg>
