@@ -60,9 +60,12 @@ export async function checkEmailPreferences(
     }
 
     const data = snapshot.val();
+    console.log('📊 Raw database data:', data);
+    
     const preferences = data.preferences || DEFAULT_PREFERENCES;
     
     console.log('📋 User preferences:', preferences);
+    console.log('📋 Default preferences:', DEFAULT_PREFERENCES);
 
     // Check if user is completely unsubscribed
     if (preferences.all === true) {
@@ -74,9 +77,11 @@ export async function checkEmailPreferences(
     }
 
     // Check specific email type preference
-    const canSend = preferences[emailType] !== false;
+    const specificPreference = preferences[emailType];
+    const canSend = specificPreference !== false;
     
-    console.log(`📧 ${emailType} preference: ${canSend ? 'ALLOWED' : 'BLOCKED'}`);
+    console.log(`📧 ${emailType} preference value:`, specificPreference);
+    console.log(`📧 ${emailType} can send: ${canSend ? 'ALLOWED' : 'BLOCKED'}`);
     
     return {
       canSend,

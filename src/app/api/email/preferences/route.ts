@@ -51,16 +51,25 @@ export async function POST(request: NextRequest) {
     const emailKey = cleanEmail.replace(/\./g, '_');
     const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
 
+    // Ensure preferences have proper boolean values
+    const cleanPreferences = {
+      quizResults: preferences.quizResults === true || preferences.quizResults === 'true',
+      studyReminders: preferences.studyReminders === true || preferences.studyReminders === 'true',
+      loginAlerts: preferences.loginAlerts === true || preferences.loginAlerts === 'true',
+      promotions: preferences.promotions === true || preferences.promotions === 'true',
+      newsletters: preferences.newsletters === true || preferences.newsletters === 'true',
+      all: false // Not fully unsubscribed if updating preferences
+    };
+
+    console.log('📝 Processing preferences update:', {
+      email: cleanEmail,
+      receivedPreferences: preferences,
+      cleanedPreferences: cleanPreferences
+    });
+
     const preferenceData = {
       email: cleanEmail,
-      preferences: {
-        quizResults: Boolean(preferences.quizResults),
-        studyReminders: Boolean(preferences.studyReminders),
-        loginAlerts: Boolean(preferences.loginAlerts),
-        promotions: Boolean(preferences.promotions),
-        newsletters: Boolean(preferences.newsletters),
-        all: false // Not fully unsubscribed if updating preferences
-      },
+      preferences: cleanPreferences,
       updatedAt: new Date().toISOString(),
       createdAt: new Date().toISOString()
     };
