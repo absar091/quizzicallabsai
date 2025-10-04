@@ -40,8 +40,8 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 200,
-    currency: 'PKR',
+    price: 2,
+    currency: 'USD',
     interval: 'month',
     description: 'Best for serious students',
     popular: true,
@@ -209,7 +209,7 @@ export default function PricingPage() {
                   <div className="mt-4">
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-3xl font-bold">
-                        {planOption.price === 0 ? 'Free' : `₨${planOption.price}`}
+                        {planOption.price === 0 ? 'Free' : `$${planOption.price}`}
                       </span>
                       {planOption.price > 0 && (
                         <span className="text-muted-foreground">/{planOption.interval}</span>

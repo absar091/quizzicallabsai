@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Create pending subscription
     if (paymentType === 'subscription') {
-      await subscriptionService.createSubscription(userId, planId);
+      await subscriptionService.createSubscription(userId, planId, paymentId);
     }
 
     return NextResponse.json({

@@ -10,8 +10,9 @@ const STATIC_CACHE_URLS = [
   '/icon.svg',
   '/favicon.ico',
   '/apple-icon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/favicon-32x32.png',
+  '/icon-192x192.svg',
+  '/icon-512x512.svg',
   // CSS and JS bundles will be cached by workbox
 ];
 

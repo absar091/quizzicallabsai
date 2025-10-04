@@ -173,7 +173,7 @@ class SubscriptionService {
         currentPeriodEnd: periodEnd.toISOString(),
         cancelAtPeriodEnd: false,
         paymentMethod: 'safepay',
-        lastPaymentId: paymentId,
+        lastPaymentId: paymentId || null,
         createdAt: now.toISOString(),
         updatedAt: now.toISOString()
       };

@@ -75,6 +75,7 @@ class SafePayService {
         currency: paymentRequest.currency,
         order_id: paymentRequest.orderId,
         description: paymentRequest.description,
+        plan_id: process.env.SAFEPAY_PLAN_ID, // Use your actual plan ID
         customer: {
           email: paymentRequest.customerEmail,
           name: paymentRequest.customerName,
@@ -84,6 +85,16 @@ class SafePayService {
         cancel_url: paymentRequest.cancelUrl,
         webhook_url: paymentRequest.webhookUrl
       };
+
+      console.log('📤 SafePay Request:', {
+        url: `${this.baseUrl}/payments`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.config.apiKey.substring(0, 10)}...`,
+          'X-SFPY-Merchant-Secret': `${this.config.secretKey.substring(0, 10)}...`
+        },
+        payload: { ...payload, customer: { ...payload.customer, email: payload.customer.email.substring(0, 5) + '...' } }
+      });
 
       const response = await fetch(`${this.baseUrl}/payments`, {
         method: 'POST',
@@ -95,14 +106,34 @@ class SafePayService {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      console.log('📥 SafePay Response Status:', response.status);
+      console.log('📥 SafePay Response Headers:', Object.fromEntries(response.headers.entries()));
 
-      if (!response.ok) {
-        console.error('❌ SafePay API Error:', data);
+      let data;
+      const responseText = await response.text();
+      console.log('📥 SafePay Raw Response:', responseText);
+
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('❌ Failed to parse SafePay response:', parseError);
         return {
           success: false,
           orderId: paymentRequest.orderId,
-          error: data.message || 'Payment creation failed'
+          error: `Invalid response from SafePay: ${responseText.substring(0, 100)}`
+        };
+      }
+
+      if (!response.ok) {
+        console.error('❌ SafePay API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          data
+        });
+        return {
+          success: false,
+          orderId: paymentRequest.orderId,
+          error: data.message || data.error || `SafePay API error: ${response.status} ${response.statusText}`
         };
       }
 
@@ -116,11 +147,29 @@ class SafePayService {
       };
 
     } catch (error: any) {
-      console.error('❌ SafePay payment creation error:', error);
+      console.error('❌ SafePay payment creation error:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack?.substring(0, 200),
+        cause: error.cause
+      });
+
+      let errorMessage = 'Payment service unavailable';
+      
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        errorMessage = 'Network error: Unable to connect to SafePay. Please check your internet connection.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Request timeout: SafePay is taking too long to respond. Please try again.';
+      } else if (error.message.includes('ENOTFOUND') || error.message.includes('DNS')) {
+        errorMessage = 'DNS error: Cannot resolve SafePay server. Please check your network settings.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       return {
         success: false,
         orderId: paymentRequest.orderId,
-        error: error.message || 'Payment service unavailable'
+        error: errorMessage
       };
     }
   }
@@ -233,12 +282,19 @@ export const createSubscriptionPayment = async (
   userName: string,
   planType: 'pro' | 'premium' = 'pro'
 ): Promise<PaymentResponse> => {
-  const amount = planType === 'pro' ? 200 * 100 : 500 * 100; // Convert to paisas
+  // Use mock service in development if SafePay is unavailable
+  if (process.env.NODE_ENV === 'development' && process.env.USE_MOCK_SAFEPAY === 'true') {
+    console.log('🧪 Using Mock SafePay service for development');
+    const { createMockSubscriptionPayment } = await import('./safepay-mock');
+    return createMockSubscriptionPayment(userEmail, userName, planType);
+  }
+
+  const amount = planType === 'pro' ? 2 * 100 : 5 * 100; // Convert to cents for USD
   const orderId = `sub_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   return safePayService.createPayment({
     amount,
-    currency: 'PKR',
+    currency: 'USD',
     orderId,
     description: `Quizzicallabzᴬᴵ ${planType.toUpperCase()} Subscription`,
     customerEmail: userEmail,
