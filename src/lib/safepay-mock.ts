@@ -22,8 +22,8 @@ export class MockSafePayService {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Simulate successful payment creation
-    const mockPaymentUrl = `https://mock-safepay.example.com/pay?token=mock_${paymentRequest.orderId}`;
+    // Simulate successful payment creation with a local mock payment page
+    const mockPaymentUrl = `${process.env.NEXT_PUBLIC_APP_URL}/payment/mock?orderId=${paymentRequest.orderId}&amount=${paymentRequest.amount}&description=${encodeURIComponent(paymentRequest.description)}`;
 
     console.log('✅ MOCK SafePay: Payment session created successfully');
     console.log('🔗 MOCK Payment URL:', mockPaymentUrl);

@@ -282,9 +282,9 @@ export const createSubscriptionPayment = async (
   userName: string,
   planType: 'pro' | 'premium' = 'pro'
 ): Promise<PaymentResponse> => {
-  // Use mock service in development if SafePay is unavailable
-  if (process.env.NODE_ENV === 'development' && process.env.USE_MOCK_SAFEPAY === 'true') {
-    console.log('🧪 Using Mock SafePay service for development');
+  // Use mock service if enabled (for development or when SafePay is unavailable)
+  if (process.env.USE_MOCK_SAFEPAY === 'true') {
+    console.log('🧪 Using Mock SafePay service (USE_MOCK_SAFEPAY=true)');
     const { createMockSubscriptionPayment } = await import('./safepay-mock');
     return createMockSubscriptionPayment(userEmail, userName, planType);
   }

@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
 
     // Test API connectivity
     const baseUrl = environment === 'production' 
-      ? 'https://api.safepay.pk/v1'
-      : 'https://sandbox.api.safepay.pk/v1';
+      ? 'https://api.getsafepay.com/v1'
+      : 'https://sandbox.api.getsafepay.com/v1';
 
     console.log('🌐 Testing connectivity to:', baseUrl);
 
