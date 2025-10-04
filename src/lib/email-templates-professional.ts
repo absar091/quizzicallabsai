@@ -1,322 +1,430 @@
 // Professional Email Templates - Enterprise Grade Design
 // Inspired by Google, Microsoft, AWS, and other major tech companies
 
-// Common styles for all templates
+// Ultra-Professional, Sleek & Beautiful Email Templates
 const PROFESSIONAL_STYLES = `
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
   
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+  }
   
   body { 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: #1f2937;
+    color: #1e293b;
     background: #f8fafc;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
   }
   
   .email-container {
     max-width: 600px;
     margin: 0 auto;
     background: #ffffff;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 0;
     overflow: hidden;
   }
   
   .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 32px 40px;
+    padding: 32px 20px;
     text-align: center;
-    box-shadow: 
-      0 8px 32px rgba(102, 126, 234, 0.3),
-      0 4px 16px rgba(118, 75, 162, 0.2),
-      0 2px 8px rgba(255, 107, 107, 0.1),
-      0 1px 4px rgba(255, 193, 7, 0.1),
-      0 0 20px rgba(76, 175, 80, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+  }
+  
+  .logo-container {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
   }
   
   .logo-img {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    background: #ffffff;
-    padding: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.95);
+    padding: 12px;
     display: block;
     margin: 0 auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    backdrop-filter: blur(10px);
   }
   
   .company-name {
+    position: relative;
+    z-index: 1;
     color: #ffffff;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: -0.5px;
   }
   
   .tagline {
+    position: relative;
+    z-index: 1;
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
     font-weight: 400;
+    opacity: 0.9;
   }
   
   .content {
-    padding: 40px;
+    padding: 40px 20px;
   }
   
   .title {
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
+    color: #0f172a;
     margin-bottom: 16px;
     text-align: center;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
   }
   
   .subtitle {
     font-size: 16px;
-    color: #6b7280;
+    color: #64748b;
     text-align: center;
     margin-bottom: 32px;
+    line-height: 1.5;
   }
   
   .greeting {
-    font-size: 16px;
-    color: #374151;
+    font-size: 17px;
+    color: #334155;
     margin-bottom: 24px;
+    font-weight: 500;
   }
   
   .card {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 24px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px 20px;
     margin: 24px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
   }
   
   .card-title {
     font-size: 18px;
     font-weight: 600;
-    color: #111827;
-    margin-bottom: 12px;
+    color: #0f172a;
+    margin-bottom: 20px;
   }
   
   .metric {
     text-align: center;
     margin: 32px 0;
+    padding: 32px 20px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-radius: 20px;
+    border: 1px solid #a7f3d0;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
   }
   
   .metric-value {
     font-size: 48px;
-    font-weight: 700;
+    font-weight: 800;
     color: #059669;
     line-height: 1;
+    margin-bottom: 8px;
   }
   
   .metric-label {
     font-size: 14px;
     color: #6b7280;
-    margin-top: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .button-container {
+    text-align: center;
+    margin: 32px 0;
   }
   
   .button-primary {
-    display: inline-block;
+    display: block;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #ffffff !important;
     text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 16px;
-    text-align: center;
-    margin: 8px 8px 8px 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: none;
-  }
-  
-  .button-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-  }
-  
-  .button-secondary {
-    display: inline-block;
-    background: #ffffff;
-    color: #667eea !important;
-    text-decoration: none;
-    padding: 16px 32px;
-    border: 2px solid #667eea;
-    border-radius: 10px;
+    padding: 18px 32px;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 16px;
     text-align: center;
-    margin: 8px 8px 8px 0;
+    margin: 16px 0;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    border: none;
+    width: 100%;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
   }
   
-  .button-secondary:hover {
-    background: #667eea;
-    color: #ffffff !important;
-    transform: translateY(-2px);
-  }
-  
-  .qr-section {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border: 1px solid #0ea5e9;
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    margin: 24px 0;
-  }
-  
-  .qr-code {
-    width: 120px;
-    height: 120px;
+  .button-secondary {
+    display: block;
     background: #ffffff;
-    border-radius: 8px;
-    margin: 16px auto;
-    padding: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .social-section {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border: 1px solid #f59e0b;
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    margin: 24px 0;
-  }
-  
-  .social-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  
-  .social-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #667eea;
-    color: #ffffff;
+    color: #667eea !important;
     text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: 500;
+    padding: 18px 32px;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    margin: 16px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    width: 100%;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  
+  .data-row {
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .data-row:last-child {
+    border-bottom: none;
+  }
+  
+  .data-label {
+    padding: 20px 16px;
+    font-weight: 600;
+    color: #475569;
     font-size: 14px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    width: 40%;
+  }
+  
+  .data-value {
+    padding: 20px 16px;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 15px;
+    text-align: right;
+    width: 60%;
   }
   
   .footer {
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
-    padding: 32px 40px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 1px solid #e2e8f0;
+    padding: 32px 20px;
     text-align: center;
   }
   
   .footer-content {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.5;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.6;
+  }
+  
+  .footer-brand {
+    margin-bottom: 20px;
+  }
+  
+  .footer-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 12px;
   }
   
   .footer-links {
     margin: 16px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
   }
   
   .footer-link {
     color: #667eea;
     text-decoration: none;
-    margin: 0 8px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  
+  .footer-link:hover {
+    background: rgba(102, 126, 234, 0.1);
   }
   
   .unsubscribe {
-    margin-top: 16px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
     font-size: 11px;
-    color: #9ca3af;
+    color: #94a3b8;
   }
   
   .unsubscribe a {
-    color: #9ca3af;
+    color: #94a3b8;
     text-decoration: underline;
   }
   
-  @media only screen and (max-width: 600px) {
-    .header { padding: 24px 20px; }
-    .content { padding: 24px 20px; }
-    .footer { padding: 24px 20px; }
-    .title { font-size: 24px; }
-    .metric-value { font-size: 36px; }
-    .logo-img { width: 48px; height: 48px; }
-    .button-primary, .button-secondary { 
-      display: block; 
-      width: 100%; 
-      margin: 8px 0; 
-      text-align: center; 
+  /* Desktop optimizations */
+  @media only screen and (min-width: 600px) {
+    .email-container {
+      border-radius: 20px;
+      margin: 40px auto;
     }
-    .social-buttons { flex-direction: column; }
-    .social-button { justify-content: center; }
+    
+    .header {
+      padding: 48px 40px;
+    }
+    
+    .content {
+      padding: 48px 40px;
+    }
+    
+    .footer {
+      padding: 40px;
+    }
+    
+    .title {
+      font-size: 32px;
+    }
+    
+    .metric-value {
+      font-size: 56px;
+    }
+    
+    .logo-img {
+      width: 64px;
+      height: 64px;
+    }
+    
+    .company-name {
+      font-size: 32px;
+    }
+    
+    .tagline {
+      font-size: 16px;
+    }
+    
+    .button-primary,
+    .button-secondary {
+      display: inline-block;
+      width: auto;
+      margin: 8px 12px 8px 0;
+      min-width: 200px;
+    }
+    
+    .footer-links {
+      gap: 16px;
+    }
+    
+    .data-label {
+      padding: 24px 20px;
+    }
+    
+    .data-value {
+      padding: 24px 20px;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .card {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-color: #475569;
+    }
+    
+    .data-label {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #cbd5e1;
+    }
+    
+    .data-value {
+      color: #f1f5f9;
+    }
   }
 </style>
 `;
 
-// Professional Header Component
+// Ultra-Professional Header Component
 const PROFESSIONAL_HEADER = `
 <div class="header">
-  <div style="text-align: center; margin-bottom: 16px;">
-    <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=header_logo&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-      <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" class="logo-img" style="width: 64px; height: 64px; border-radius: 12px; background: #ffffff; padding: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
+  <div class="logo-container">
+    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      <img src="https://iili.io/KlQOQSe.png" alt="QuizzicallabzAI" class="logo-img" style="width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.95); padding: 8px; display: block; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); backdrop-filter: blur(10px);">
     </a>
   </div>
   <div class="company-name">
-    <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=header_text&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none;">
-      Quizzicallabzᴬᴵ
+    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none;">
+      QuizzicallabzAI
     </a>
   </div>
-  <div class="tagline">Advanced AI-Powered Learning Platform</div>
+  <div class="tagline">AI-Powered Learning Excellence</div>
 </div>
 `;
 
-// Professional Footer Component
+// Mobile-Optimized Professional Footer
 const PROFESSIONAL_FOOTER = `
 <div class="footer">
   <div class="footer-content">
-    <div style="text-align: center; margin-bottom: 16px;">
-      <a href="https://quizzicallabz.qzz.io?utm_source=email&utm_medium=footer_logo&utm_campaign=branding" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-        <img src="https://iili.io/K1oSsrx.png" alt="Quizzicallabzᴬᴵ" style="width: 32px; height: 32px; border-radius: 6px; background: #ffffff; padding: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); display: inline-block; vertical-align: middle; margin-right: 8px;">
+    <div class="footer-brand">
+      <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+        <img src="https://iili.io/KlQOQSe.png" alt="QuizzicallabzAI" class="footer-logo" style="width: 32px; height: 32px; border-radius: 8px; background: #ffffff; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; vertical-align: middle; margin-right: 12px;">
       </a>
-      <strong style="color: #374151;">Quizzicallabzᴬᴵ</strong> - Transforming Education Through Artificial Intelligence
+      <strong style="color: #334155; font-size: 16px;">QuizzicallabzAI</strong>
+    </div>
+    
+    <div style="margin: 16px 0; color: #64748b; font-size: 14px;">
+      Transforming Education Through Artificial Intelligence
     </div>
     
     <div class="footer-links">
-      <a href="https://quizzicallabz.qzz.io/privacy-policy?utm_source=email&utm_medium=footer&utm_campaign=legal" class="footer-link">Privacy Policy</a>
-      <a href="https://quizzicallabz.qzz.io/terms-of-service?utm_source=email&utm_medium=footer&utm_campaign=legal" class="footer-link">Terms of Service</a>
-      <a href="https://quizzicallabz.qzz.io/support?utm_source=email&utm_medium=footer&utm_campaign=support" class="footer-link">Support Center</a>
-      <a href="https://quizzicallabz.qzz.io/about?utm_source=email&utm_medium=footer&utm_campaign=about" class="footer-link">About Us</a>
+      <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-link">Privacy</a>
+      <a href="https://quizzicallabz.qzz.io/terms-of-service" class="footer-link">Terms</a>
+      <a href="https://quizzicallabz.qzz.io/help" class="footer-link">Help</a>
+      <a href="https://quizzicallabz.qzz.io/about-us" class="footer-link">About</a>
     </div>
     
-    <div style="margin: 16px 0; color: #9ca3af;">
-      Quizzicallabzᴬᴵ Inc. | Advanced Learning Technologies Division<br>
-      Global Headquarters: Innovation District, Tech Valley
-    </div>
-    
-    <div style="margin: 16px 0; font-size: 11px; color: #9ca3af;">
-      This email was sent from a monitored address. Please do not reply directly to this message.<br>
-      For support inquiries, visit our <a href="https://quizzicallabz.qzz.io/support?utm_source=email&utm_medium=footer&utm_campaign=support" style="color: #667eea;">Support Center</a>.
+    <div style="margin: 20px 0; color: #94a3b8; font-size: 12px;">
+      © 2025 QuizzicallabzAI. All rights reserved.<br>
+      Vehari, Punjab, Pakistan
     </div>
   </div>
   
   <div class="unsubscribe">
-    <a href="https://quizzicallabz.qzz.io/unsubscribe?utm_source=email&utm_medium=footer&utm_campaign=preferences">Manage email preferences</a> | 
-    <a href="https://quizzicallabz.qzz.io/unsubscribe?utm_source=email&utm_medium=footer&utm_campaign=unsubscribe">Unsubscribe</a>
+    <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage preferences</a> • 
+    <a href="https://quizzicallabz.qzz.io/unsubscribe">Unsubscribe</a>
   </div>
 </div>
 `;
@@ -581,7 +689,7 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
   ipAddress: string;
   time: string;
 }) => ({
-  subject: `Security Alert: Account Access Notification`,
+  subject: `Security Alert - New Login Detected`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -590,6 +698,78 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Security Alert</title>
       ${PROFESSIONAL_STYLES}
+      <style>
+        .security-card {
+          background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+          border: 2px solid #3b82f6;
+          border-radius: 20px;
+          padding: 24px 20px;
+          margin: 24px 0;
+          box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .security-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(59,130,246,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+          pointer-events: none;
+        }
+        
+        .security-header {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          margin-bottom: 24px;
+          flex-direction: column;
+          text-align: center;
+        }
+        
+        .security-icon {
+          width: 64px;
+          height: 64px;
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 16px;
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+          font-size: 28px;
+          color: white;
+        }
+        
+        .warning-box {
+          background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+          border: 2px solid #f87171;
+          border-radius: 16px;
+          padding: 20px;
+          margin: 24px 0;
+          box-shadow: 0 4px 16px rgba(248, 113, 113, 0.15);
+        }
+        
+        @media only screen and (min-width: 600px) {
+          .security-card {
+            padding: 32px;
+          }
+          
+          .security-header {
+            flex-direction: row;
+            text-align: left;
+          }
+          
+          .security-icon {
+            margin-bottom: 0;
+            margin-right: 20px;
+          }
+        }
+      </style>
     </head>
     <body>
       <div class="email-container">
@@ -597,66 +777,63 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
         
         <div class="content">
           <h1 class="title">Security Alert</h1>
-          <p class="subtitle">New account access detected</p>
+          <p class="subtitle">New login detected on your account</p>
           
-          <p class="greeting">Hello ${userName},</p>
+          <p class="greeting">Hello <strong>${userName}</strong>,</p>
           
-          <p>We detected a new sign-in to your <strong>Quizzicallabzᴬᴵ</strong> account. If this was you, no action is required. If you don't recognize this activity, please secure your account immediately.</p>
+          <p style="font-size: 17px; color: #334155; line-height: 1.6; margin-bottom: 24px;">
+            We detected a new sign-in to your <strong>QuizzicallabzAI</strong> account. If this was you, no action is required. If you don't recognize this activity, please secure your account immediately.
+          </p>
           
-          <div style="background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #e8f2ff 100%); border: 2px solid #3b82f6; border-radius: 20px; padding: 32px; margin: 32px 0; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1);">
-            <div style="display: flex; align-items: center; margin-bottom: 24px;">
-              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-                <div style="width: 20px; height: 20px; background: white; border-radius: 3px;"></div>
-              </div>
-              <div>
-                <h3 style="color: #1e40af; margin: 0; font-size: 22px; font-weight: 700;">Access Details</h3>
-                <p style="color: #3730a3; margin: 4px 0 0 0; font-size: 14px; opacity: 0.8;">Security information for this login</p>
+          <div class="security-card">
+            <div class="security-header">
+              <div class="security-icon">!</div>
+              <div style="position: relative; z-index: 1;">
+                <h3 style="color: #1e40af; margin: 0; font-size: 20px; font-weight: 700;">Access Details</h3>
+                <p style="color: #3730a3; margin: 8px 0 0 0; font-size: 15px;">Security information for this login</p>
               </div>
             </div>
-            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0,0,0,0.05);">
-              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
-                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  Device
-                </td>
-                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.device || 'Desktop Computer'}</td>
-              </tr>
-              <tr style="background: white;">
-                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  Browser
-                </td>
-                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.browser || 'Unknown Browser'}</td>
-              </tr>
-              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
-                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  Location
-                </td>
-                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; border-bottom: 1px solid #dbeafe; font-size: 15px;">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
-              </tr>
-              <tr style="background: white;">
-                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; border-bottom: 1px solid #dbeafe; font-size: 15px;">
-                  IP Address
-                </td>
-                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-family: 'Courier New', monospace; border-bottom: 1px solid #dbeafe; font-size: 15px; background: #f1f5f9; border-radius: 6px; margin: 4px 0;">${loginData.ipAddress || '39.50.139.118'}</td>
-              </tr>
-              <tr style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);">
-                <td style="padding: 20px 24px; font-weight: 700; color: #1e40af; font-size: 15px;">
-                  Login Time
-                </td>
-                <td style="padding: 20px 24px; text-align: right; color: #1e3a8a; font-weight: 600; font-size: 15px;">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
-              </tr>
-            </table>
-            <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border-left: 5px solid #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
-              <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600; line-height: 1.5;">
-                <strong style="color: #78350f;">Security Tip:</strong> If this wasn't you, change your password immediately and enable two-factor authentication for better security.
-              </p>
+            
+            <div style="position: relative; z-index: 1;">
+              <table class="data-table">
+                <tr class="data-row">
+                  <td class="data-label">Device</td>
+                  <td class="data-value">${loginData.device || 'Desktop Computer'}</td>
+                </tr>
+                <tr class="data-row">
+                  <td class="data-label">Browser</td>
+                  <td class="data-value">${loginData.browser || 'Unknown Browser'}</td>
+                </tr>
+                <tr class="data-row">
+                  <td class="data-label">Location</td>
+                  <td class="data-value">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
+                </tr>
+                <tr class="data-row">
+                  <td class="data-label">IP Address</td>
+                  <td class="data-value" style="font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); padding: 16px 12px; border-radius: 8px; font-weight: 600;">${loginData.ipAddress || '39.50.139.118'}</td>
+                </tr>
+                <tr class="data-row">
+                  <td class="data-label">Login Time</td>
+                  <td class="data-value">${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}</td>
+                </tr>
+              </table>
             </div>
           </div>
           
-          <div style="text-align: center; margin: 40px 0;">
-            <a href="https://quizzicallabz.qzz.io/security/review-activity" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #ffffff !important; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; margin: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); text-transform: uppercase; letter-spacing: 0.5px; border: none;">
+          <div class="warning-box">
+            <p style="margin: 0 0 12px; color: #dc2626; font-weight: 700; font-size: 16px;">
+              If this wasn't you:
+            </p>
+            <p style="margin: 0; color: #374151; font-size: 15px; line-height: 1.6;">
+              Please change your password immediately and enable two-factor authentication for better security.
+            </p>
+          </div>
+          
+          <div class="button-container">
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-primary">
               Review Account Activity
             </a>
-            <a href="https://quizzicallabz.qzz.io/security/secure-account" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff !important; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; margin: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 0.5px; border: none;">
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-secondary">
               Secure My Account
             </a>
           </div>
@@ -667,20 +844,21 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
     </body>
     </html>
   `,
-  text: `Security Alert: Account Access Notification
+  text: `Security Alert - New Login Detected
 
 Hello ${userName},
 
-New sign-in detected:
+We detected a new sign-in to your QuizzicallabzAI account:
 
-Device: ${loginData.device}
-Location: ${loginData.location}
-IP: ${loginData.ipAddress}
-Time: ${loginData.time}
+Device: ${loginData.device || 'Desktop Computer'}
+Browser: ${loginData.browser || 'Unknown Browser'}
+Location: ${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}
+IP Address: ${loginData.ipAddress || '39.50.139.118'}
+Time: ${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}
 
-If this wasn't you, secure your account: https://quizzicallabz.qzz.io/security/secure-account
-Review activity: https://quizzicallabz.qzz.io/security/review-activity
+If this wasn't you, secure your account immediately:
+https://quizzicallabz.qzz.io/profile
 
-Quizzicallabzᴬᴵ Security Team
+QuizzicallabzAI Security Team
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
 });

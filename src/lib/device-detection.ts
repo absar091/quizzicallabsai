@@ -293,48 +293,76 @@ export const compareLoginCredentials = (
   currentCredentials: DeviceInfo,
   storedCredentials: UserLoginCredentials
 ): boolean => {
-  // Check if device matches
-  if (currentCredentials.device !== storedCredentials.device) {
-    console.log('Device mismatch:', currentCredentials.device, 'vs', storedCredentials.device);
+  console.log('🔍 Comparing login credentials:');
+  console.log('Current:', {
+    device: currentCredentials.device,
+    browser: currentCredentials.browser,
+    os: currentCredentials.os,
+    ip: currentCredentials.ip,
+    country: currentCredentials.country,
+    city: currentCredentials.city
+  });
+  console.log('Stored:', {
+    device: storedCredentials.device,
+    browser: storedCredentials.browser,
+    os: storedCredentials.os,
+    ip: storedCredentials.ip,
+    country: storedCredentials.country,
+    city: storedCredentials.city,
+    isTrusted: storedCredentials.isTrusted
+  });
+
+  // Primary device fingerprint (must match exactly)
+  const deviceMatches = currentCredentials.device === storedCredentials.device;
+  const browserMatches = currentCredentials.browser === storedCredentials.browser;
+  const osMatches = currentCredentials.os === storedCredentials.os;
+
+  if (!deviceMatches) {
+    console.log('❌ Device mismatch:', currentCredentials.device, 'vs', storedCredentials.device);
     return false;
   }
 
-  // Check if browser matches
-  if (currentCredentials.browser !== storedCredentials.browser) {
-    console.log('Browser mismatch:', currentCredentials.browser, 'vs', storedCredentials.browser);
+  if (!browserMatches) {
+    console.log('❌ Browser mismatch:', currentCredentials.browser, 'vs', storedCredentials.browser);
     return false;
   }
 
-  // Check if OS matches
-  if (currentCredentials.os !== storedCredentials.os) {
-    console.log('OS mismatch:', currentCredentials.os, 'vs', storedCredentials.os);
+  if (!osMatches) {
+    console.log('❌ OS mismatch:', currentCredentials.os, 'vs', storedCredentials.os);
     return false;
   }
 
-  // ENHANCED: Always flag IP changes (VPN detection)
-  if (currentCredentials.ip !== storedCredentials.ip) {
-    console.log('IP change detected:', currentCredentials.ip, 'vs', storedCredentials.ip);
-    return false; // Always send notification for IP changes
+  // Secondary checks for suspicious activity (IP/Location changes)
+  const ipMatches = currentCredentials.ip === storedCredentials.ip;
+  const countryMatches = currentCredentials.country === storedCredentials.country;
+  const cityMatches = currentCredentials.city === storedCredentials.city;
+
+  // For same device/browser/OS, allow some flexibility but flag suspicious changes
+  if (!ipMatches) {
+    console.log('⚠️ IP change detected:', currentCredentials.ip, 'vs', storedCredentials.ip);
+    
+    // If country also changed, it's very suspicious (VPN/travel)
+    if (!countryMatches) {
+      console.log('🚨 Country change detected - likely VPN or travel');
+      return false;
+    }
+    
+    // If only IP changed within same country, allow but log
+    console.log('ℹ️ IP changed within same country - allowing but monitoring');
   }
 
-  // ENHANCED: Flag location changes (country or city level)
-  if (currentCredentials.country !== storedCredentials.country) {
-    console.log('Country change detected:', currentCredentials.country, 'vs', storedCredentials.country);
+  if (!countryMatches) {
+    console.log('🚨 Country change detected:', currentCredentials.country, 'vs', storedCredentials.country);
     return false;
   }
 
-  // ENHANCED: Also check city-level changes for VPN detection
-  if (currentCredentials.city !== storedCredentials.city) {
-    console.log('City change detected:', currentCredentials.city, 'vs', storedCredentials.city);
-    return false;
+  // City changes are less critical but worth noting
+  if (!cityMatches) {
+    console.log('ℹ️ City change detected:', currentCredentials.city, 'vs', storedCredentials.city);
+    // Allow city changes within same country (user might be traveling locally)
   }
 
-  // Check if timezone matches (can indicate VPN usage)
-  if (currentCredentials.timezone !== storedCredentials.timezone) {
-    console.log('Timezone change detected:', currentCredentials.timezone, 'vs', storedCredentials.timezone);
-    return false;
-  }
-
+  console.log('✅ Device credentials match - trusted device');
   return true;
 };
 
@@ -353,32 +381,61 @@ export const shouldSendLoginNotification = (
   });
   console.log('Stored credentials count:', storedCredentials.length);
 
-  // ENHANCED: Always send notification for first login
+  // First login - send welcome notification
   if (storedCredentials.length === 0) {
-    console.log('✅ First login detected - sending welcome notification');
-    return true; // Changed: Send notification for first login too
+    console.log('🎉 First login detected - sending welcome security notification');
+    return true;
   }
 
   // Check if current login matches any stored trusted credentials
+  let hasExactMatch = false;
+  let hasSimilarDevice = false;
+
   for (const stored of storedCredentials) {
-    console.log('Comparing with stored credential:', {
+    console.log(`Checking stored credential ${stored.id}:`, {
       device: stored.device,
       browser: stored.browser,
       os: stored.os,
       ip: stored.ip,
       country: stored.country,
       city: stored.city,
-      isTrusted: stored.isTrusted
+      isTrusted: stored.isTrusted,
+      loginCount: stored.loginCount
     });
 
-    if (stored.isTrusted && compareLoginCredentials(currentCredentials, stored)) {
-      console.log('✅ Match found with trusted device - no notification needed');
-      return false; // Match found, no notification needed
+    // Only check trusted devices
+    if (!stored.isTrusted) {
+      console.log('⏭️ Skipping untrusted device');
+      continue;
+    }
+
+    // Check for exact match
+    if (compareLoginCredentials(currentCredentials, stored)) {
+      console.log('✅ Exact match found with trusted device - no notification needed');
+      hasExactMatch = true;
+      break;
+    }
+
+    // Check for similar device (same device/browser/OS but different location)
+    if (currentCredentials.device === stored.device &&
+        currentCredentials.browser === stored.browser &&
+        currentCredentials.os === stored.os) {
+      hasSimilarDevice = true;
+      console.log('⚠️ Similar device found but location/IP differs');
     }
   }
 
-  // No match found with trusted credentials, send notification
-  console.log('🚨 No match found - sending security notification');
+  if (hasExactMatch) {
+    return false; // Trusted device, no notification
+  }
+
+  if (hasSimilarDevice) {
+    console.log('🚨 Same device but suspicious location change - sending notification');
+    return true; // Same device but suspicious activity
+  }
+
+  // Completely new device
+  console.log('🚨 New device detected - sending security notification');
   return true;
 };
 
