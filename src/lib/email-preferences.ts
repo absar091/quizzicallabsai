@@ -1,5 +1,4 @@
-import { firestore } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase-admin';
 
 export interface EmailPreferences {
   quizResults: boolean;
@@ -36,25 +35,38 @@ export async function checkEmailPreferences(
   emailType: EmailType
 ): Promise<{ canSend: boolean; reason?: string }> {
   try {
+    console.log(`🔍 Checking email preferences for ${email.substring(0, 10)}... (${emailType})`);
+    
     // Always allow critical emails
     if (emailType === 'verification' || emailType === 'passwordReset') {
+      console.log('✅ Critical email type - always allowed');
+      return { canSend: true };
+    }
+
+    // Check if Firebase Admin is available
+    if (!db) {
+      console.warn('⚠️ Firebase Admin not available - defaulting to allow email');
       return { canSend: true };
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const preferencesRef = doc(firestore, 'email-preferences', cleanEmail);
-    const docSnap = await getDoc(preferencesRef);
+    const emailKey = cleanEmail.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
+    const snapshot = await preferencesRef.once('value');
 
-    if (!docSnap.exists()) {
-      // No preferences set, use defaults (allow all)
+    if (!snapshot.exists()) {
+      console.log('ℹ️ No preferences found - using defaults (allow all)');
       return { canSend: true };
     }
 
-    const data = docSnap.data();
+    const data = snapshot.val();
     const preferences = data.preferences || DEFAULT_PREFERENCES;
+    
+    console.log('📋 User preferences:', preferences);
 
     // Check if user is completely unsubscribed
     if (preferences.all === true) {
+      console.log('🚫 User completely unsubscribed');
       return { 
         canSend: false, 
         reason: 'User has unsubscribed from all emails' 
@@ -64,14 +76,17 @@ export async function checkEmailPreferences(
     // Check specific email type preference
     const canSend = preferences[emailType] !== false;
     
+    console.log(`📧 ${emailType} preference: ${canSend ? 'ALLOWED' : 'BLOCKED'}`);
+    
     return {
       canSend,
       reason: canSend ? undefined : `User has opted out of ${emailType} emails`
     };
 
   } catch (error) {
-    console.error('Error checking email preferences:', error);
+    console.error('❌ Error checking email preferences:', error);
     // On error, default to allowing the email (fail-safe)
+    console.log('⚠️ Error occurred - defaulting to allow email');
     return { canSend: true };
   }
 }
@@ -81,19 +96,32 @@ export async function checkEmailPreferences(
  */
 export async function getUserEmailPreferences(email: string): Promise<EmailPreferences> {
   try {
-    const cleanEmail = email.trim().toLowerCase();
-    const preferencesRef = doc(firestore, 'email-preferences', cleanEmail);
-    const docSnap = await getDoc(preferencesRef);
-
-    if (!docSnap.exists()) {
+    console.log(`📖 Getting email preferences for ${email.substring(0, 10)}...`);
+    
+    // Check if Firebase Admin is available
+    if (!db) {
+      console.warn('⚠️ Firebase Admin not available - returning defaults');
       return DEFAULT_PREFERENCES;
     }
 
-    const data = docSnap.data();
-    return data.preferences || DEFAULT_PREFERENCES;
+    const cleanEmail = email.trim().toLowerCase();
+    const emailKey = cleanEmail.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
+    const snapshot = await preferencesRef.once('value');
+
+    if (!snapshot.exists()) {
+      console.log('ℹ️ No preferences found - returning defaults');
+      return DEFAULT_PREFERENCES;
+    }
+
+    const data = snapshot.val();
+    const preferences = data.preferences || DEFAULT_PREFERENCES;
+    
+    console.log('📋 Retrieved preferences:', preferences);
+    return preferences;
 
   } catch (error) {
-    console.error('Error getting email preferences:', error);
+    console.error('❌ Error getting email preferences:', error);
     return DEFAULT_PREFERENCES;
   }
 }

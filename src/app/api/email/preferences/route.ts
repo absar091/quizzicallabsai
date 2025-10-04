@@ -54,11 +54,11 @@ export async function POST(request: NextRequest) {
     const preferenceData = {
       email: cleanEmail,
       preferences: {
-        quizResults: preferences.quizResults ?? true,
-        studyReminders: preferences.studyReminders ?? true,
-        loginAlerts: preferences.loginAlerts ?? true,
-        promotions: preferences.promotions ?? true,
-        newsletters: preferences.newsletters ?? true,
+        quizResults: Boolean(preferences.quizResults),
+        studyReminders: Boolean(preferences.studyReminders),
+        loginAlerts: Boolean(preferences.loginAlerts),
+        promotions: Boolean(preferences.promotions),
+        newsletters: Boolean(preferences.newsletters),
         all: false // Not fully unsubscribed if updating preferences
       },
       updatedAt: new Date().toISOString(),

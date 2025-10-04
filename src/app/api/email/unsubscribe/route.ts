@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore } from '@/lib/firebase';
-import { doc, setDoc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,27 +32,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const unsubscribeRef = doc(firestore, 'email-preferences', cleanEmail);
+    // Check if Firebase Admin is initialized
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database service unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
+
+    // Use email as key (replace dots with underscores for Firebase key compatibility)
+    const emailKey = cleanEmail.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
 
     const unsubscribeData = {
       email: cleanEmail,
-      unsubscribedAt: Timestamp.now(),
       preferences: preferences || {
         quizResults: false,
         studyReminders: false,
         loginAlerts: false,
         promotions: false,
         newsletters: false,
-        all: true
+        all: true // Complete unsubscribe
       },
-      updatedAt: Timestamp.now()
+      updatedAt: new Date().toISOString(),
+      unsubscribedAt: new Date().toISOString()
     };
 
-    // Use setDoc with merge to handle both create and update cases
-    await setDoc(unsubscribeRef, {
-      ...unsubscribeData,
-      createdAt: Timestamp.now()
-    }, { merge: true });
+    // Check if preferences already exist
+    const existingSnapshot = await preferencesRef.once('value');
+    if (existingSnapshot.exists()) {
+      // Update existing preferences, preserve createdAt
+      const existingData = existingSnapshot.val();
+      unsubscribeData.createdAt = existingData.createdAt || new Date().toISOString();
+    } else {
+      unsubscribeData.createdAt = new Date().toISOString();
+    }
+
+    // Save to Realtime Database
+    await preferencesRef.set(unsubscribeData);
 
     return NextResponse.json({
       success: true,
@@ -96,10 +112,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const unsubscribeRef = doc(firestore, 'email-preferences', email);
-    const docSnap = await getDoc(unsubscribeRef);
+    // Check if Firebase Admin is initialized
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database service unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
 
-    if (!docSnap.exists()) {
+    // Use email as key (replace dots with underscores for Firebase key compatibility)
+    const emailKey = email.replace(/\./g, '_');
+    const preferencesRef = db.ref(`emailPreferences/${emailKey}`);
+    const snapshot = await preferencesRef.once('value');
+
+    if (!snapshot.exists()) {
       return NextResponse.json({
         success: true,
         subscribed: true,
@@ -108,17 +134,25 @@ export async function GET(request: NextRequest) {
           studyReminders: true,
           loginAlerts: true,
           promotions: true,
-          newsletters: true
+          newsletters: true,
+          all: false
         }
       });
     }
 
-    const data = docSnap.data();
+    const data = snapshot.val();
 
     return NextResponse.json({
       success: true,
       subscribed: !data.preferences?.all,
-      preferences: data.preferences || {}
+      preferences: data.preferences || {
+        quizResults: true,
+        studyReminders: true,
+        loginAlerts: true,
+        promotions: true,
+        newsletters: true,
+        all: false
+      }
     });
 
   } catch (error: any) {
