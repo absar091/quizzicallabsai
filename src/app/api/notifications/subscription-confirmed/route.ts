@@ -69,36 +69,33 @@ export async function POST(request: NextRequest) {
     );
 
     // Send email
-    try {
-      const emailResult = await sendEmail({
-        to: userEmail,
-        subject: emailTemplate.subject,
-        html: emailTemplate.html,
-        text: emailTemplate.text
-      });
+    const emailResult = await sendEmail({
+      to: userEmail,
+      subject: emailTemplate.subject,
+      html: emailTemplate.html,
+      text: emailTemplate.text
+    });
 
+    if (emailResult.success) {
       SecureLogger.info('Subscription confirmation email sent successfully', {
         userId,
         userEmail,
-        planName,
-        messageId: emailResult.messageId
+        planName
       });
 
       return NextResponse.json({
         success: true,
-        message: 'Subscription confirmation email sent successfully',
-        messageId: emailResult.messageId
+        message: 'Subscription confirmation email sent successfully'
       });
-
-    } catch (emailError: any) {
+    } else {
       SecureLogger.error('Failed to send subscription confirmation email', {
         userId,
         userEmail,
-        error: emailError.message
+        error: emailResult.error
       });
 
       return NextResponse.json(
-        { success: false, error: 'Failed to send confirmation email: ' + emailError.message },
+        { success: false, error: 'Failed to send confirmation email' },
         { status: 500 }
       );
     }
