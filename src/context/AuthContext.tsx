@@ -175,11 +175,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               } else {
                 SecureLogger.error('Failed to send welcome email', {
                   status: response.status,
-                  error: responseData.error
+                  error: responseData?.error || 'Unknown error',
+                  response: responseData
                 });
               }
             } catch (error: any) {
-              SecureLogger.error('Welcome email network error', { message: error.message });
+              SecureLogger.error('Welcome email network error', {
+                message: error.message,
+                name: error.name,
+                stack: error.stack?.substring(0, 200) // Truncate stack trace
+              });
             }
           } else if (isNewUser && !firebaseUser.emailVerified) {
             SecureLogger.info('New unverified user - welcome email pending verification');

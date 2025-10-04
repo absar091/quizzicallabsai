@@ -1,27 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { confirmPasswordReset, applyActionCode, verifyPasswordResetCode } from 'firebase/auth';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
+import { 
+  verifyPasswordResetCode, 
+  confirmPasswordReset,
+  applyActionCode 
+} from 'firebase/auth';
+import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 export default function AuthActionPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
+  const router = useRouter();
+  
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
 
   const mode = searchParams.get('mode');
   const oobCode = searchParams.get('oobCode');
+  const continueUrl = searchParams.get('continueUrl');
 
   useEffect(() => {
     if (!mode || !oobCode) {
@@ -30,34 +32,36 @@ export default function AuthActionPage() {
       return;
     }
 
-    if (mode === 'verifyEmail') {
-      handleEmailVerification();
-    } else if (mode === 'resetPassword') {
-      handlePasswordResetVerification();
-    }
+    handleAuthAction();
   }, [mode, oobCode]);
 
-  const handleEmailVerification = async () => {
+  const handleAuthAction = async () => {
     try {
-      await applyActionCode(auth, oobCode!);
-      setSuccess('Email verified successfully!');
-      toast({
-        title: "Email Verified!",
-        description: "Your email has been verified. You can now sign in.",
-      });
-      setTimeout(() => router.push('/login'), 2000);
-    } catch (error: any) {
-      setError('Invalid or expired verification link');
-    }
-    setLoading(false);
-  };
+      switch (mode) {
+        case 'resetPassword':
+          // Verify the password reset code
+          await verifyPasswordResetCode(auth, oobCode!);
+          setShowPasswordForm(true);
+          setLoading(false);
+          break;
 
-  const handlePasswordResetVerification = async () => {
-    try {
-      await verifyPasswordResetCode(auth, oobCode!);
-      setLoading(false);
+        case 'verifyEmail':
+          // Apply the email verification code
+          await applyActionCode(auth, oobCode!);
+          setSuccess('Email verified successfully!');
+          setLoading(false);
+          setTimeout(() => {
+            router.push(continueUrl || '/dashboard');
+          }, 2000);
+          break;
+
+        default:
+          setError('Invalid action mode');
+          setLoading(false);
+      }
     } catch (error: any) {
-      setError('Invalid or expired password reset link');
+      console.error('Auth action error:', error);
+      setError(error.message || 'Action failed');
       setLoading(false);
     }
   };
@@ -75,98 +79,122 @@ export default function AuthActionPage() {
       return;
     }
 
-    setLoading(true);
     try {
+      setLoading(true);
       await confirmPasswordReset(auth, oobCode!, newPassword);
       setSuccess('Password reset successfully!');
-      toast({
-        title: "Password Reset!",
-        description: "Your password has been updated. Redirecting to login...",
-      });
-      setTimeout(() => router.push('/login'), 2000);
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
     } catch (error: any) {
-      setError('Failed to reset password. Please try again.');
+      setError(error.message || 'Password reset failed');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  if (loading) {
+  if (loading && !showPasswordForm) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <p className="mt-4 text-muted-foreground">Processing...</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Processing your request...</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>
-            {mode === 'resetPassword' ? 'Reset Password' : 'Email Verification'}
-          </CardTitle>
-          <CardDescription>
-            {mode === 'resetPassword' 
-              ? 'Enter your new password below' 
-              : 'Verifying your email address...'}
-          </CardDescription>
-        </CardHeader>
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <XCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Action Failed</h1>
+            <p className="text-red-600 mb-6">{error}</p>
+            <button
+              onClick={() => router.push('/')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Go Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Success!</h1>
+            <p className="text-green-600 mb-6">{success}</p>
+            <p className="text-gray-500 text-sm">Redirecting...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-          {success && (
-            <Alert>
-              <AlertDescription className="text-green-600">{success}</AlertDescription>
-            </Alert>
-          )}
-
-          {mode === 'resetPassword' && !success && !error && (
+  if (showPasswordForm) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+              Reset Your Password
+            </h1>
+            
             <form onSubmit={handlePasswordReset} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">New Password</label>
-                <Input
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  New Password
+                </label>
+                <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
+                  minLength={6}
                 />
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Confirm Password</label>
-                <Input
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm Password
+                </label>
+                <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
+                  minLength={6}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Resetting...' : 'Reset Password'}
-              </Button>
-            </form>
-          )}
-        </CardContent>
+              {error && (
+                <div className="text-red-600 text-sm text-center">{error}</div>
+              )}
 
-        <CardFooter>
-          <Button variant="outline" onClick={() => router.push('/login')} className="w-full">
-            Back to Login
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Reset Password
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

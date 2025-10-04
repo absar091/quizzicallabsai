@@ -41,7 +41,18 @@ export class SecureLogger {
   static error(message: string, error?: any): void {
     const sanitizedMessage = this.sanitizeInput(message);
     if (error) {
-      const sanitizedError = this.sanitizeInput(error.message || error);
+      let errorString: string;
+      if (typeof error === 'object') {
+        // Handle objects by stringifying them properly
+        try {
+          errorString = JSON.stringify(error, null, 2);
+        } catch (e) {
+          errorString = error.toString();
+        }
+      } else {
+        errorString = String(error);
+      }
+      const sanitizedError = this.sanitizeInput(errorString);
       console.error(`[ERROR] ${sanitizedMessage}`, sanitizedError);
     } else {
       console.error(`[ERROR] ${sanitizedMessage}`);

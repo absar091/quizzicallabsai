@@ -135,6 +135,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Handle Google APIs and external scripts - bypass service worker
+  if (url.hostname === 'apis.google.com' || 
+      url.hostname === 'www.gstatic.com' ||
+      url.hostname === 'accounts.google.com' ||
+      url.pathname.includes('google')) {
+    // Let these requests go directly to network without SW interference
+    return;
+  }
+
   // Handle static assets
   if (request.destination === 'style' ||
       request.destination === 'script' ||

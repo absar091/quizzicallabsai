@@ -258,6 +258,27 @@
     "system-logs": {
       ".read": false,
       ".write": false
+    },
+    "subscriptions": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId",
+        ".indexOn": ["status", "planId", "createdAt", "currentPeriodEnd"]
+      }
+    },
+    "payments": {
+      "$paymentId": {
+        ".read": "auth != null && auth.uid == data.child('userId').val()",
+        ".write": "auth != null && auth.uid == data.child('userId').val()",
+        ".indexOn": ["userId", "status", "createdAt", "orderId"]
+      }
+    },
+    "loginCredentials": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId",
+        ".indexOn": ["timestamp", "deviceFingerprint", "location"]
+      }
     }
   }
 }

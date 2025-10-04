@@ -246,3 +246,92 @@ export async function sendAutomatedLoginAlert(
 
   return EmailAutomation.sendAutomatedEmail(userEmail, 'loginAlerts', template);
 }
+
+export async function sendAutomatedPaymentConfirmation(
+  userEmail: string,
+  userName: string,
+  paymentData: {
+    amount: number;
+    planName: string;
+    transactionId: string;
+    date: string;
+  }
+) {
+  const template = {
+    subject: `Payment Confirmation - ${paymentData.planName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin: 0;">Quizzicallabzᴬᴵ</h1>
+          <p style="color: #6b7280; margin: 5px 0;">Payment Confirmation</p>
+        </div>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h2 style="color: #1f2937; margin-top: 0;">Hi ${userName},</h2>
+          <p style="color: #4b5563; line-height: 1.6;">
+            Thank you for your payment! Your subscription has been successfully activated.
+          </p>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">Payment Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Plan:</td>
+              <td style="padding: 8px 0; color: #1f2937; font-weight: 600;">${paymentData.planName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Amount:</td>
+              <td style="padding: 8px 0; color: #1f2937; font-weight: 600;">PKR ${paymentData.amount}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Transaction ID:</td>
+              <td style="padding: 8px 0; color: #1f2937; font-family: monospace;">${paymentData.transactionId}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Date:</td>
+              <td style="padding: 8px 0; color: #1f2937;">${paymentData.date}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" 
+             style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            Go to Dashboard
+          </a>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+          <p style="color: #6b7280; font-size: 14px; margin: 0;">
+            If you have any questions, please contact our support team.
+          </p>
+        </div>
+      </div>
+    `,
+    text: `
+Payment Confirmation - ${paymentData.planName}
+
+Hi ${userName},
+
+Thank you for your payment! Your subscription has been successfully activated.
+
+Payment Details:
+- Plan: ${paymentData.planName}
+- Amount: PKR ${paymentData.amount}
+- Transaction ID: ${paymentData.transactionId}
+- Date: ${paymentData.date}
+
+Visit your dashboard: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard
+
+If you have any questions, please contact our support team.
+
+Best regards,
+Quizzicallabzᴬᴵ Team
+    `
+  };
+
+  return EmailAutomation.sendAutomatedEmail(userEmail, 'promotions', template, {
+    skipPreferenceCheck: true // Payment confirmations are critical emails
+  });
+}

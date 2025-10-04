@@ -1,90 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { detectDeviceInfo } from '@/lib/device-detection';
-import { loginCredentialsManager } from '@/lib/login-credentials';
+import { detectDevice, shouldSendLoginNotification } from '@/lib/device-detection';
+import { getStoredCredentials, storeLoginCredentials, clearStoredCredentials } from '@/lib/login-credentials';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || 'test-user-123';
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'userId parameter required' },
+        { status: 400 }
+      );
+    }
+
+    // Get current device info
+    const userAgent = request.headers.get('user-agent') || '';
+    const xForwardedFor = request.headers.get('x-forwarded-for');
+    const xRealIp = request.headers.get('x-real-ip');
+    const cfConnectingIp = request.headers.get('cf-connecting-ip');
     
-    // Get real IP address
-    const forwardedFor = request.headers.get('x-forwarded-for');
-    const realIP = request.headers.get('x-real-ip');
-    const clientIP = request.headers.get('x-client-ip');
-    const ipAddress = forwardedFor?.split(',')[0] || realIP || clientIP || '39.50.139.118';
+    const ipAddress = cfConnectingIp || xRealIp || xForwardedFor?.split(',')[0] || 'unknown';
 
-    console.log('🧪 Debug Device Detection Test');
-    console.log('User ID:', userId);
-    console.log('User Agent:', userAgent);
-    console.log('IP Address:', ipAddress);
-
-    // Detect current device info
-    const currentDeviceInfo = await detectDeviceInfo(userAgent, ipAddress);
-    console.log('Current Device Info:', currentDeviceInfo);
-
+    const currentDeviceInfo = detectDevice(userAgent, ipAddress);
+    
     // Get stored credentials
-    const storedCredentials = await loginCredentialsManager.getLoginCredentials(userId);
-    console.log('Stored Credentials:', storedCredentials);
-
+    const storedCredentials = await getStoredCredentials(userId);
+    
     // Check if notification should be sent
-    const shouldNotify = await loginCredentialsManager.shouldSendNotification(userId, currentDeviceInfo);
-    console.log('Should Send Notification:', shouldNotify);
+    const shouldSendNotification = shouldSendLoginNotification(currentDeviceInfo, storedCredentials);
 
-    // Get login stats
-    const loginStats = await loginCredentialsManager.getLoginStats(userId);
-    console.log('Login Stats:', loginStats);
+    // Calculate login stats
+    const loginStats = {
+      totalLogins: storedCredentials.length,
+      uniqueDevices: new Set(storedCredentials.map(c => c.deviceFingerprint)).size,
+      uniqueLocations: new Set(storedCredentials.map(c => c.location)).size,
+      lastLogin: storedCredentials.length > 0 ? storedCredentials[storedCredentials.length - 1].timestamp : null
+    };
 
     return NextResponse.json({
       success: true,
       debug: {
-        userId,
-        userAgent,
-        ipAddress,
         currentDeviceInfo,
         storedCredentials,
-        shouldSendNotification: shouldNotify,
-        loginStats,
-        timestamp: new Date().toISOString()
+        shouldSendNotification,
+        loginStats
       }
     });
 
   } catch (error: any) {
     console.error('❌ Debug device detection error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message,
-      stack: error.stack
-    }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Debug failed' },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId = 'test-user-123', action = 'simulate-login' } = body;
-    
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
-    const forwardedFor = request.headers.get('x-forwarded-for');
-    const realIP = request.headers.get('x-real-ip');
-    const clientIP = request.headers.get('x-client-ip');
-    const ipAddress = forwardedFor?.split(',')[0] || realIP || clientIP || '39.50.139.118';
+    const { action, userId } = body;
 
-    console.log('🧪 Debug Device Detection Action:', action);
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'userId required' },
+        { status: 400 }
+      );
+    }
 
     if (action === 'simulate-login') {
-      // Simulate a login
-      const deviceInfo = await detectDeviceInfo(userAgent, ipAddress);
+      // Simulate a login from current device
+      const userAgent = request.headers.get('user-agent') || '';
+      const xForwardedFor = request.headers.get('x-forwarded-for');
+      const xRealIp = request.headers.get('x-real-ip');
+      const cfConnectingIp = request.headers.get('cf-connecting-ip');
       
-      // Check if notification should be sent BEFORE storing
-      const shouldNotifyBefore = await loginCredentialsManager.shouldSendNotification(userId, deviceInfo);
+      const ipAddress = cfConnectingIp || xRealIp || xForwardedFor?.split(',')[0] || 'unknown';
+
+      const deviceInfo = detectDevice(userAgent, ipAddress);
+      
+      // Get stored credentials before
+      const credentialsBefore = await getStoredCredentials(userId);
+      const shouldNotifyBefore = shouldSendLoginNotification(deviceInfo, credentialsBefore);
       
       // Store the login
-      await loginCredentialsManager.storeLoginCredentials(userId, deviceInfo);
+      await storeLoginCredentials(userId, deviceInfo);
       
-      // Check again after storing
-      const shouldNotifyAfter = await loginCredentialsManager.shouldSendNotification(userId, deviceInfo);
-      
+      // Get stored credentials after
+      const credentialsAfter = await getStoredCredentials(userId);
+      const shouldNotifyAfter = shouldSendLoginNotification(deviceInfo, credentialsAfter);
+
       return NextResponse.json({
         success: true,
         message: 'Login simulated successfully',
@@ -92,38 +98,32 @@ export async function POST(request: NextRequest) {
           deviceInfo,
           shouldNotifyBefore,
           shouldNotifyAfter,
-          timestamp: new Date().toISOString()
+          credentialsCountBefore: credentialsBefore.length,
+          credentialsCountAfter: credentialsAfter.length
         }
       });
-    }
 
-    if (action === 'clear-credentials') {
-      await loginCredentialsManager.clearUserCredentials(userId);
+    } else if (action === 'clear-credentials') {
+      // Clear all stored credentials
+      await clearStoredCredentials(userId);
+
       return NextResponse.json({
         success: true,
-        message: 'User credentials cleared successfully'
+        message: 'All stored credentials cleared'
       });
-    }
 
-    if (action === 'get-trusted-devices') {
-      const trustedDevices = await loginCredentialsManager.getTrustedDevices(userId);
-      return NextResponse.json({
-        success: true,
-        trustedDevices
-      });
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'Invalid action. Use "simulate-login" or "clear-credentials"' },
+        { status: 400 }
+      );
     }
-
-    return NextResponse.json({
-      success: false,
-      error: 'Unknown action'
-    }, { status: 400 });
 
   } catch (error: any) {
     console.error('❌ Debug device detection POST error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message,
-      stack: error.stack
-    }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Debug action failed' },
+      { status: 500 }
+    );
   }
 }

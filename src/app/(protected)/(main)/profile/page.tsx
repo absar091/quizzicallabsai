@@ -266,9 +266,18 @@ export default function ProfilePage() {
                     You are on the <span className="font-bold text-primary">{plan} Plan</span>
                   </CardDescription>
                 </div>
-                <Button asChild variant="outline">
-                  <Link href="/billing">Manage <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                </Button>
+                {plan === 'Pro' ? (
+                  <Button asChild variant="outline">
+                    <Link href="/billing">Manage <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                  </Button>
+                ) : (
+                  <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                    <Link href="/pricing">
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Upgrade to Pro
+                    </Link>
+                  </Button>
+                )}
               </div>
             </CardHeader>
             {plan === 'Free' && (
