@@ -32,7 +32,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://apis.google.com https://www.gstatic.com https://accounts.google.com wss://*.pusher.com https://*.pusher.com wss://ws-*.pusher.com https://api.safepay.pk https://sandbox.api.safepay.pk https://*.safepay.pk",
+              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://apis.google.com https://www.gstatic.com https://accounts.google.com wss://*.pusher.com https://*.pusher.com wss://ws-*.pusher.com https://api.getsafepay.com https://sandbox.api.getsafepay.com https://*.getsafepay.com",
               "frame-src 'self' https://accounts.google.com https://www.google.com",
               "worker-src 'self' blob:",
               "manifest-src 'self'",

@@ -55,8 +55,8 @@ class SafePayService {
     };
 
     this.baseUrl = this.config.environment === 'production' 
-      ? 'https://api.safepay.pk/v1'
-      : 'https://sandbox.api.safepay.pk/v1';
+      ? 'https://api.getsafepay.com/v1'
+      : 'https://sandbox.api.getsafepay.com/v1';
   }
 
   /**
