@@ -264,54 +264,35 @@ const PROFESSIONAL_STYLES = `
 </style>
 `;
 
-// Ultra-Professional Header Component
+// Clean Professional Header - Logo Left, App Name Right
 const PROFESSIONAL_HEADER = `
 <div class="header">
-  <div class="logo-container">
-    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-      <img src="https://iili.io/KlQOQSe.png" alt="QuizzicallabzAI" class="logo-img" style="width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.95); padding: 8px; display: block; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); backdrop-filter: blur(10px);">
-    </a>
+  <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
+    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ Logo" class="logo-img">
+  </a>
+  <div class="header-app-name">
+    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">Quizzicallabzᴬᴵ</a>
   </div>
-  <div class="company-name">
-    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none;">
-      QuizzicallabzAI
-    </a>
-  </div>
-  <div class="tagline">AI-Powered Learning Excellence</div>
 </div>
 `;
 
-// Mobile-Optimized Professional Footer
+// Professional Footer - Big Tech Company Style
 const PROFESSIONAL_FOOTER = `
 <div class="footer">
-  <div class="footer-content">
-    <div class="footer-brand">
-      <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-        <img src="https://iili.io/KlQOQSe.png" alt="QuizzicallabzAI" class="footer-logo" style="width: 32px; height: 32px; border-radius: 8px; background: #ffffff; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block; vertical-align: middle; margin-right: 12px;">
-      </a>
-      <strong style="color: #334155; font-size: 16px;">QuizzicallabzAI</strong>
-    </div>
-    
-    <div style="margin: 16px 0; color: #64748b; font-size: 14px;">
-      Transforming Education Through Artificial Intelligence
-    </div>
-    
-    <div class="footer-links">
-      <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-link">Privacy</a>
-      <a href="https://quizzicallabz.qzz.io/terms-of-service" class="footer-link">Terms</a>
-      <a href="https://quizzicallabz.qzz.io/help" class="footer-link">Help</a>
-      <a href="https://quizzicallabz.qzz.io/about-us" class="footer-link">About</a>
-    </div>
-    
-    <div style="margin: 20px 0; color: #94a3b8; font-size: 12px;">
-      © 2025 QuizzicallabzAI. All rights reserved.<br>
-      Vehari, Punjab, Pakistan
-    </div>
+  <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
+    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ Logo" class="footer-logo">
+  </a>
+  <div class="footer-nav">
+    <a href="https://quizzicallabz.qzz.io/about-us" class="footer-nav-link">About</a>
+    <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-nav-link">Privacy</a>
+    <a href="https://quizzicallabz.qzz.io/terms-of-service" class="footer-nav-link">Terms</a>
+    <a href="https://quizzicallabz.qzz.io/help" class="footer-nav-link">Help</a>
   </div>
-  
-  <div class="unsubscribe">
-    <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage preferences</a> • 
-    <a href="https://quizzicallabz.qzz.io/unsubscribe">Unsubscribe</a>
+  <div class="footer-legal">
+    © 2025 Quizzicallabzᴬᴵ. All Rights Reserved.<br>
+    Vehari, Punjab, Pakistan<br><br>
+    This is an automated message. Please do not reply directly to this email.<br>
+    You can manage your email preferences or <a href="https://quizzicallabz.qzz.io/unsubscribe">unsubscribe</a>.
   </div>
 </div>
 `;
@@ -323,7 +304,7 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
   incorrect: string;
   date: string;
 }) => ({
-  subject: `Performance Report: ${quizData.quizTitle} - ${userName}`,
+  subject: `Your Performance Report for ${quizData.quizTitle}`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -338,47 +319,37 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">Performance Analysis Complete</h1>
-          <p class="subtitle">Your detailed quiz results and insights are ready</p>
+          <h1 class="title">Your Quiz Report is Ready</h1>
+          <p class="subtitle">Here is the performance analysis for your recent assessment.</p>
           
-          <p class="greeting">Hello ${userName},</p>
-          
-          <p>Your performance analysis for <strong>${quizData.quizTitle}</strong> has been completed. Here's your comprehensive report:</p>
+          <p class="paragraph">Well done on completing the <strong>${quizData.quizTitle}</strong> quiz. Below is a summary of your results.</p>
           
           <div class="metric">
             <div class="metric-value">${quizData.score}%</div>
-            <div class="metric-label">Overall Performance Score</div>
+            <div class="metric-label">Overall Score</div>
           </div>
           
-          <div class="card">
-            <h3 class="card-title">Detailed Breakdown</h3>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Assessment</td>
-                <td style="padding: 12px 0; text-align: right;">${quizData.quizTitle}</td>
+          <div class="info-section">
+            <h3 class="info-title">Result Details</h3>
+            <table class="info-table">
+              <tr class="info-row">
+                <td class="info-label">Correct Answers</td>
+                <td class="info-value" style="color: #16a34a;">${quizData.correct}</td>
               </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Correct Answers</td>
-                <td style="padding: 12px 0; text-align: right; color: #059669;">${quizData.correct}</td>
+              <tr class="info-row">
+                <td class="info-label">Incorrect Answers</td>
+                <td class="info-value" style="color: #dc2626;">${quizData.incorrect}</td>
               </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Incorrect Answers</td>
-                <td style="padding: 12px 0; text-align: right; color: #dc2626;">${quizData.incorrect}</td>
-              </tr>
-              <tr>
-                <td style="padding: 12px 0; font-weight: 600;">Completion Date</td>
-                <td style="padding: 12px 0; text-align: right;">${quizData.date}</td>
+              <tr class="info-row">
+                <td class="info-label">Completion Date</td>
+                <td class="info-value">${quizData.date}</td>
               </tr>
             </table>
           </div>
           
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">
-              View Dashboard
-            </a>
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-secondary">
-              Continue Learning
-            </a>
+          <div class="button-container">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">View Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-secondary">Continue Learning</a>
           </div>
         </div>
         
@@ -411,7 +382,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
   planName: string;
   signupDate: string;
 }) => ({
-  subject: `Welcome to Quizzicallabzᴬᴵ - Your AI Learning Journey Begins`,
+  subject: `Welcome to Quizzicallabzᴬᴵ`,
   html: `
     <!DOCTYPE html>
     <html lang="en">
@@ -426,42 +397,32 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
         ${PROFESSIONAL_HEADER}
         
         <div class="content">
-          <h1 class="title">Welcome to the Future of Learning</h1>
-          <p class="subtitle">Your AI-powered education platform is ready</p>
+          <h1 class="title">Welcome, ${userName}!</h1>
+          <p class="subtitle">Your Quizzicallabzᴬᴵ account is now active.</p>
           
-          <p class="greeting">Hello ${userName},</p>
+          <p class="paragraph">We're excited to have you on board. You're all set to start your AI-powered learning journey. Here are your account details:</p>
           
-          <p>Welcome to <strong>Quizzicallabzᴬᴵ</strong>, where artificial intelligence meets personalized education. Your account has been successfully activated and you're ready to begin your transformative learning journey.</p>
-          
-          <div class="card">
-            <h3 class="card-title">Account Information</h3>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Account Holder</td>
-                <td style="padding: 12px 0; text-align: right;">${userName}</td>
+          <div class="info-section">
+            <h3 class="info-title">Account Information</h3>
+            <table class="info-table">
+              <tr class="info-row">
+                <td class="info-label">Email Address</td>
+                <td class="info-value">${emailDetails.userEmail}</td>
               </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Email Address</td>
-                <td style="padding: 12px 0; text-align: right;">${emailDetails.userEmail}</td>
+              <tr class="info-row">
+                <td class="info-label">Subscription Plan</td>
+                <td class="info-value">${emailDetails.planName}</td>
               </tr>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 12px 0; font-weight: 600;">Subscription Plan</td>
-                <td style="padding: 12px 0; text-align: right; color: #059669;">${emailDetails.planName}</td>
-              </tr>
-              <tr>
-                <td style="padding: 12px 0; font-weight: 600;">Activation Date</td>
-                <td style="padding: 12px 0; text-align: right;">${emailDetails.signupDate}</td>
+              <tr class="info-row">
+                <td class="info-label">Activation Date</td>
+                <td class="info-value">${emailDetails.signupDate}</td>
               </tr>
             </table>
           </div>
           
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">
-              Launch Learning Dashboard
-            </a>
-            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">
-              Start Learning
-            </a>
+          <div class="button-container">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">Go to Your Dashboard</a>
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">Start Learning</a>
           </div>
         </div>
         
@@ -470,7 +431,7 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
     </body>
     </html>
   `,
-  text: `Welcome to Quizzicallabzᴬᴵ - Your AI Learning Journey Begins
+  text: `Welcome to Quizzicallabzᴬᴵ
 
 Hello ${userName},
 
