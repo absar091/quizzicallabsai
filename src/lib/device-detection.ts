@@ -478,6 +478,7 @@ export const updateLoginCredentials = (
 
   return {
     ...existingCredentials,
+    timestamp: now,
     lastLoginTime: now,
     loginCount: existingCredentials.loginCount + 1,
     updatedAt: now
