@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
+import { db as adminDb } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
     console.log('🔧 Starting bookmark migration...');
+    
+    if (!adminDb) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Firebase Admin Database not initialized' 
+      }, { status: 500 });
+    }
     
     // Get all users with bookmarks
     const bookmarksRef = adminDb.ref('bookmarks');
