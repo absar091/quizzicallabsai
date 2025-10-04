@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
         all: true // Complete unsubscribe
       },
       updatedAt: new Date().toISOString(),
-      unsubscribedAt: new Date().toISOString()
+      unsubscribedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
 
     // Check if preferences already exist
