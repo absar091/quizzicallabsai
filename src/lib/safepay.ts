@@ -9,8 +9,8 @@ export interface SafePayConfig {
 }
 
 export interface PaymentRequest {
-  amount: number; // Amount in PKR (smallest unit - paisas)
-  currency: 'PKR';
+  amount: number; // Amount in USD (smallest unit - cents)
+  currency: 'USD';
   orderId: string;
   description: string;
   customerEmail: string;

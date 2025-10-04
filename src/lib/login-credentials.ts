@@ -178,7 +178,7 @@ export class LoginCredentialsManager {
       const { firestore } = await import('./firebase');
       const { doc, setDoc } = await import('firebase/firestore');
       
-      await setDoc(doc(firestore, 'userLoginCredentials', userId), {
+      await setDoc(doc(firestore, 'loginCredentials', userId), {
         credentials,
         updatedAt: new Date().toISOString()
       });
@@ -196,7 +196,7 @@ export class LoginCredentialsManager {
       const { firestore } = await import('./firebase');
       const { doc, getDoc } = await import('firebase/firestore');
       
-      const docRef = doc(firestore, 'userLoginCredentials', userId);
+      const docRef = doc(firestore, 'loginCredentials', userId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -220,7 +220,7 @@ export class LoginCredentialsManager {
       const { firestore } = await import('./firebase');
       const { doc, deleteDoc } = await import('firebase/firestore');
       
-      await deleteDoc(doc(firestore, 'userLoginCredentials', userId));
+      await deleteDoc(doc(firestore, 'loginCredentials', userId));
       console.log('✅ Login credentials cleared successfully');
     } catch (error) {
       console.error('❌ Error clearing login credentials:', error);

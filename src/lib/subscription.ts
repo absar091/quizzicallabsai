@@ -35,7 +35,7 @@ export interface PaymentRecord {
   userId: string;
   subscriptionId?: string;
   amount: number;
-  currency: 'PKR';
+  currency: 'USD';
   status: 'pending' | 'completed' | 'failed' | 'refunded';
   paymentMethod: 'safepay';
   transactionId?: string;
@@ -71,8 +71,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 200,
-    currency: 'PKR',
+    price: 2,
+    currency: 'USD',
     interval: 'monthly',
     features: [
       'Advanced AI (higher accuracy)',
@@ -93,8 +93,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'premium',
     name: 'Premium',
-    price: 500,
-    currency: 'PKR',
+    price: 5,
+    currency: 'USD',
     interval: 'monthly',
     features: [
       'Everything in Pro',

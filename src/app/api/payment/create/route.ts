@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
     // Record payment in database
     const paymentId = await subscriptionService.recordPayment({
       userId,
-      amount: planId === 'pro' ? 200 : 500,
-      currency: 'PKR',
+      amount: planId === 'pro' ? 2 : 5,
+      currency: 'USD',
       status: 'pending',
       paymentMethod: 'safepay',
       orderId: paymentResponse.orderId!,
