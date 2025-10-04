@@ -20,6 +20,13 @@ import { usePlan } from "@/hooks/usePlan";
 import { sanitizeString } from "@/lib/sanitize";
 import { EmailTestButton } from "@/components/email-test-button";
 import { StudyStreakWidget } from "@/components/study-streak-widget";
+import { StudyStreakCard, StudyStreakBadge } from "@/components/study-streak";
+import { BookmarkButton, BookmarksList } from "@/components/bookmark-button";
+import { useQuizBookmarks } from "@/lib/quiz-bookmarks";
+import { useStudyStreak } from "@/lib/study-streak";
+import { DashboardSkeleton } from "@/components/loading-skeletons";
+import { useGlobalKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { KeyboardShortcutsHelp } from "@/components/keyboard-shortcuts-help";
 import { QuizAccessDialog } from "@/components/quiz-sharing";
 import { AdminAccess } from "@/components/admin-access";
 import { SyncStatus, FloatingSyncIndicator, SyncStatusToast } from "@/components/sync-status";
@@ -167,6 +174,25 @@ export default function HomePage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [studyTime, setStudyTime] = useState(0);
   const [studyStreak, setStudyStreak] = useState(0);
+
+  // New feature hooks
+  const { bookmarks } = useQuizBookmarks(user?.uid || null);
+  const { streak: studyStreakData, updateStreak } = useStudyStreak(user?.uid || null);
+
+  // Global keyboard shortcuts
+  const shortcuts = useGlobalKeyboardShortcuts({
+    onSearch: () => {
+      // Focus search if available or navigate to search page
+      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    },
+    onProfile: () => window.location.href = '/profile',
+    onDashboard: () => window.location.href = '/dashboard',
+    onNewQuiz: () => window.location.href = '/generate-quiz',
+    enabled: true
+  });
 
   // Load data from both local and cloud sources
   useEffect(() => {
@@ -334,7 +360,7 @@ export default function HomePage() {
     return streak;
   };
 
-  const streak = calculateStreak(recentActivity);
+  const calculatedStreak = calculateStreak(recentActivity);
 
   return (
     <div className="space-y-8">
@@ -388,7 +414,7 @@ export default function HomePage() {
           variants={containerVariants}
         >
           <motion.div variants={itemVariants} className="md:col-span-1">
-            <StudyStreakWidget />
+            <StudyStreakCard />
           </motion.div>
           
           <motion.div variants={itemVariants}>
@@ -437,8 +463,8 @@ export default function HomePage() {
                 <BookMarked className="h-4 w-4 text-purple-500"/>
                 <span className="text-sm font-medium">Bookmarks</span>
               </div>
-              <p className="text-2xl font-bold">{bookmarksCount}</p>
-              <p className="text-xs text-muted-foreground">saved questions</p>
+              <p className="text-2xl font-bold">{bookmarks.length || bookmarksCount}</p>
+              <p className="text-xs text-muted-foreground">saved quizzes</p>
             </Card>
           </motion.div>
         </motion.div>
@@ -479,9 +505,12 @@ export default function HomePage() {
         <motion.div variants={itemVariants}>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <PlusSquare className="h-5 w-5"/>
-                Quick Actions
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <PlusSquare className="h-5 w-5"/>
+                  Quick Actions
+                </div>
+                <KeyboardShortcutsHelp shortcuts={shortcuts} />
               </CardTitle>
               <CardDescription>Jump into your favorite study tools</CardDescription>
             </CardHeader>

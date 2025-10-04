@@ -1,185 +1,263 @@
+'use client';
 
-"use client";
-
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookMarked, Trash2, Lightbulb, Eye, EyeOff, PlayCircle, Loader2, ArrowRight, BrainCircuit, Sparkles } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAuth } from "@/hooks/useAuth";
-import { PageHeader } from "@/components/page-header";
-import { get, ref, remove } from "firebase/database";
-import { db } from "@/lib/firebase";
-import { getBookmarks, deleteBookmark, BookmarkedQuestion } from "@/lib/indexed-db";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuizBookmarks } from '@/lib/quiz-bookmarks';
+import { BookmarksList } from '@/components/bookmark-button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BookMarked, Search, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { PageHeader } from '@/components/page-header';
+import { DashboardSkeleton } from '@/components/loading-skeletons';
+import { useGlobalKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { KeyboardShortcutsHelp } from '@/components/keyboard-shortcuts-help';
 
 export default function BookmarksPage() {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useState<BookmarkedQuestion[]>([]);
-  
-  const [reviewing, setReviewing] = useState(false);
-  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
+  const { bookmarks, loading, error } = useQuizBookmarks(user?.uid || null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'title' | 'subject'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    async function loadBookmarks() {
-      if (!user) return;
-      setLoading(true);
-      // Load from IndexedDB first
-      const localBookmarks = await getBookmarks(user.uid);
-      setBookmarkedQuestions(localBookmarks);
-      setLoading(false);
-
-      // Then sync with Firebase
-      const bookmarksRef = ref(db, `bookmarks/${user.uid}`);
-      const snapshot = await get(bookmarksRef);
-      if (snapshot.exists()) {
-        const firebaseBookmarks: BookmarkedQuestion[] = Object.values(snapshot.val());
-        if (firebaseBookmarks.length !== localBookmarks.length) {
-          setBookmarkedQuestions(firebaseBookmarks);
-          // Optionally, re-sync IndexedDB here if needed
-        }
+  // Keyboard shortcuts
+  const shortcuts = useGlobalKeyboardShortcuts({
+    onSearch: () => {
+      const searchInput = document.getElementById('bookmark-search') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
       }
-    }
-    loadBookmarks();
-  }, [user]);
+    },
+    onProfile: () => window.location.href = '/profile',
+    onDashboard: () => window.location.href = '/dashboard',
+    onNewQuiz: () => window.location.href = '/generate-quiz',
+    enabled: true
+  });
 
-  const clearBookmark = async (questionToRemove: string) => {
-    if (user) {
-      const bookmarkId = btoa(questionToRemove);
-      const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
-      await remove(bookmarkRef);
-      await deleteBookmark(user.uid, questionToRemove);
-      const updatedBookmarks = bookmarkedQuestions.filter(q => q.question !== questionToRemove);
-      setBookmarkedQuestions(updatedBookmarks);
-      
-      // If the deleted question was the last one in review, end review mode
-      if (reviewing && updatedBookmarks.length === 0) {
-        setReviewing(false);
-      } else if (reviewing && currentReviewIndex >= updatedBookmarks.length) {
-        setCurrentReviewIndex(updatedBookmarks.length - 1);
-      }
-    }
-  };
-
-  const startReview = () => {
-    setReviewing(true);
-    setCurrentReviewIndex(0);
-    setShowAnswer(false);
-  };
-
-  const nextReviewQuestion = () => {
-    if (currentReviewIndex < bookmarkedQuestions.length - 1) {
-      setCurrentReviewIndex(currentReviewIndex + 1);
-      setShowAnswer(false);
-    } else {
-      setReviewing(false);
-    }
-  };
-
-  if (loading) {
+  if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60svh] text-center p-4">
-        <div className="relative">
-            <BrainCircuit className="h-20 w-20 text-primary" />
-            <motion.div
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-                <Sparkles className="h-8 w-8 text-accent animate-pulse" />
-            </motion.div>
-        </div>
-        <h2 className="text-2xl font-semibold mb-2 mt-6">Loading Your Bookmarks...</h2>
-        <p className="text-muted-foreground max-w-sm mb-6">Just a moment, please.</p>
+      <div className="space-y-6">
+        <PageHeader 
+          title="Bookmarks" 
+          description="Sign in to view your bookmarked quizzes"
+        />
+        <Card>
+          <CardContent className="text-center py-12">
+            <BookMarked className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <h3 className="text-lg font-medium mb-2">Sign in required</h3>
+            <p className="text-muted-foreground">Please sign in to access your bookmarked quizzes</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      <PageHeader
-        title="Bookmarked Questions"
-        description="Review questions you've saved to master tough concepts."
-      />
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader 
+          title="Bookmarks" 
+          description="Loading your bookmarked quizzes..."
+        />
+        <DashboardSkeleton />
+      </div>
+    );
+  }
 
-      {reviewing && bookmarkedQuestions.length > 0 ? (
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader 
+          title="Bookmarks" 
+          description="Error loading bookmarks"
+        />
         <Card>
-            <CardHeader>
-                <CardTitle>Review Session</CardTitle>
-                <CardDescription>Question {currentReviewIndex + 1} of {bookmarkedQuestions.length}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Alert className="bg-muted/50">
-                    <AlertTitle className="text-xl font-semibold">{bookmarkedQuestions[currentReviewIndex].question}</AlertTitle>
-                    <AlertDescription className="text-xs text-muted-foreground mt-1">
-                        Topic: {bookmarkedQuestions[currentReviewIndex].topic}
-                    </AlertDescription>
-                     <div className="mt-4">
-                        {showAnswer ? (
-                           <div>
-                            <p className="text-base text-primary mt-2 font-semibold">Correct Answer: {bookmarkedQuestions[currentReviewIndex].correctAnswer}</p>
-                            <Button onClick={() => setShowAnswer(false)} variant="outline" size="sm" className="mt-2"><EyeOff className="mr-2 h-4 w-4" /> Hide Answer</Button>
-                           </div>
-                        ) : (
-                           <Button onClick={() => setShowAnswer(true)} variant="outline" size="sm"><Eye className="mr-2 h-4 w-4" /> Show Answer</Button>
-                        )}
-                     </div>
-                </Alert>
-            </CardContent>
-             <CardFooter className="flex-col sm:flex-row justify-between gap-2">
-                <Button variant="ghost" onClick={() => setReviewing(false)}>End Session</Button>
-                <Button onClick={nextReviewQuestion}>
-                    {currentReviewIndex < bookmarkedQuestions.length - 1 ? "Next Question" : "Finish Review"}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-             </CardFooter>
-        </Card>
-      ) : (
-        <Card>
-            <CardHeader className="flex-row justify-between items-center">
-                 <div>
-                    <CardTitle>Your Saved Questions</CardTitle>
-                    <CardDescription>{bookmarkedQuestions.length} questions saved.</CardDescription>
-                 </div>
-                 <Button onClick={startReview} disabled={bookmarkedQuestions.length === 0}>
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    Start Review Session
-                </Button>
-            </CardHeader>
-          <CardContent>
-            {bookmarkedQuestions.length > 0 ? (
-              <ScrollArea className="h-[60vh] pr-4">
-                <ul className="space-y-4">
-                  {bookmarkedQuestions.map((q, index) => (
-                    <li key={index} className="p-4 bg-muted rounded-lg">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <p className="font-semibold pr-4">{q.question}</p>
-                          <p className="text-sm text-primary mt-2">Correct Answer: {q.correctAnswer}</p>
-                          <p className="text-xs text-muted-foreground mt-1">Topic: {q.topic}</p>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={() => clearBookmark(q.question)}>
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete bookmark</span>
-                        </Button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </ScrollArea>
-            ) : (
-              <div className="text-center py-16">
-                <Lightbulb className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground font-semibold">No Bookmarks Yet</p>
-                <p className="text-sm text-muted-foreground mt-1">Bookmark questions during a quiz to find them here later.</p>
-              </div>
-            )}
+          <CardContent className="text-center py-12 text-red-600">
+            Error loading bookmarks: {error}
           </CardContent>
         </Card>
-      )}
+      </div>
+    );
+  }
+
+  // Get unique subjects
+  const subjects = Array.from(new Set(bookmarks.map(b => b.subject)));
+
+  // Filter and sort bookmarks
+  const filteredBookmarks = bookmarks
+    .filter(bookmark => {
+      const matchesSearch = searchQuery === '' || 
+        bookmark.quizTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.notes?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesSubject = selectedSubject === 'all' || bookmark.subject === selectedSubject;
+      
+      return matchesSearch && matchesSubject;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'date':
+          comparison = a.bookmarkedAt - b.bookmarkedAt;
+          break;
+        case 'title':
+          comparison = a.quizTitle.localeCompare(b.quizTitle);
+          break;
+        case 'subject':
+          comparison = a.subject.localeCompare(b.subject);
+          break;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+  return (
+    <div className="space-y-6">
+      <PageHeader 
+        title="Bookmarks" 
+        description={`${bookmarks.length} saved quizzes`}
+        action={
+          <KeyboardShortcutsHelp shortcuts={shortcuts} />
+        }
+      />
+
+      {/* Search and Filter Controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="h-5 w-5" />
+            Search & Filter
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                id="bookmark-search"
+                placeholder="Search bookmarks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              >
+                {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={selectedSubject === 'all' ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => setSelectedSubject('all')}
+            >
+              All ({bookmarks.length})
+            </Badge>
+            {subjects.map(subject => (
+              <Badge
+                key={subject}
+                variant={selectedSubject === subject ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => setSelectedSubject(subject)}
+              >
+                {subject} ({bookmarks.filter(b => b.subject === subject).length})
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant={sortBy === 'date' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('date')}
+            >
+              Date
+            </Button>
+            <Button
+              variant={sortBy === 'title' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('title')}
+            >
+              Title
+            </Button>
+            <Button
+              variant={sortBy === 'subject' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('subject')}
+            >
+              Subject
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Results */}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {filteredBookmarks.length === bookmarks.length 
+              ? `All Bookmarks (${bookmarks.length})`
+              : `Filtered Results (${filteredBookmarks.length} of ${bookmarks.length})`
+            }
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {filteredBookmarks.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <BookMarked className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-2">
+                {searchQuery || selectedSubject !== 'all' 
+                  ? 'No matching bookmarks' 
+                  : 'No bookmarks yet'
+                }
+              </h3>
+              <p>
+                {searchQuery || selectedSubject !== 'all'
+                  ? 'Try adjusting your search or filter criteria'
+                  : 'Start bookmarking quizzes to access them quickly later'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredBookmarks.map((bookmark) => (
+                <div key={bookmark.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-lg mb-1">{bookmark.quizTitle}</h3>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                        <Badge variant="secondary">{bookmark.subject}</Badge>
+                        <span>{bookmark.difficulty}</span>
+                        <span>{bookmark.questionCount} questions</span>
+                      </div>
+                      {bookmark.notes && (
+                        <p className="text-sm text-muted-foreground italic mb-2">
+                          "{bookmark.notes}"
+                        </p>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        Bookmarked {new Date(bookmark.bookmarkedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

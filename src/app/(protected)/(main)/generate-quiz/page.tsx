@@ -28,6 +28,10 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { QuizSharingDialog } from "@/components/quiz-sharing";
 import { SafeComponent } from "@/components/safe-component";
+import { QuizQuestionSkeleton } from "@/components/loading-skeletons";
+import { useQuizKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { KeyboardShortcutsHelp } from "@/components/keyboard-shortcuts-help";
+import { BookmarkButton } from "@/components/bookmark-button";
 
 // Dynamic imports for code splitting
 const QuizSetupForm = dynamic(() => import('@/components/quiz-wizard/quiz-setup-form').catch(() => ({ default: () => <QuizLoadingSkeleton /> })), {
@@ -998,7 +1002,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
             userAnswer: q.userAnswer || null,
             correctAnswer: q.correctAnswer || '',
           })),
-          isPro: user?.subscription?.isPro || false,
+          isPro: user?.plan === 'Pro' || false,
         }),
       });
 

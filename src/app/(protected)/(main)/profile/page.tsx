@@ -26,6 +26,9 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { getQuizResults } from "@/lib/indexed-db";
 import ShareAppPopup from "@/components/share-app-popup";
+import { StudyStreakCard, StudyStreakBadge } from "@/components/study-streak";
+import { useStudyStreak } from "@/lib/study-streak";
+import { ProfileSkeleton } from "@/components/loading-skeletons";
 
 const supportLinks = [
     { href: "/how-to-use", label: "How to Use Guide", icon: Question, description: "Learn how to use all features" },
@@ -204,7 +207,7 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           <Card className="text-center p-4">
             <div className="flex items-center justify-center w-10 h-10 bg-blue-500/10 rounded-full mx-auto mb-2">
@@ -220,13 +223,9 @@ export default function ProfilePage() {
             <p className="text-2xl font-bold">{stats.averageScore}%</p>
             <p className="text-sm text-muted-foreground">Avg Score</p>
           </Card>
-          <Card className="text-center p-4">
-            <div className="flex items-center justify-center w-10 h-10 bg-orange-500/10 rounded-full mx-auto mb-2">
-              <Star className="h-5 w-5 text-orange-600" />
-            </div>
-            <p className="text-2xl font-bold">{stats.streak}</p>
-            <p className="text-sm text-muted-foreground">Day Streak</p>
-          </Card>
+          <div className="md:col-span-1">
+            <StudyStreakCard />
+          </div>
         </motion.div>
 
         {/* Quick Actions */}
