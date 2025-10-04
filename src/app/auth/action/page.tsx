@@ -48,10 +48,11 @@ export default function AuthActionPage() {
         case 'verifyEmail':
           // Apply the email verification code
           await applyActionCode(auth, oobCode!);
-          setSuccess('Email verified successfully!');
+          setSuccess('Email verified successfully! You can now sign in.');
           setLoading(false);
           setTimeout(() => {
-            router.push(continueUrl || '/dashboard');
+            // Always redirect to login after email verification
+            router.push('/login?verified=true');
           }, 2000);
           break;
 

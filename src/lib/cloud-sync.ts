@@ -556,6 +556,13 @@ class CloudSyncManager {
     if (!this.userId) return;
 
     try {
+      // Check if user is authenticated before attempting update
+      const { auth } = await import('@/lib/firebase');
+      if (!auth.currentUser) {
+        console.warn('User not authenticated, skipping remote data update');
+        return;
+      }
+
       const userRef = ref(db, `users/${this.userId}`);
       const updateData = {
         ...data,

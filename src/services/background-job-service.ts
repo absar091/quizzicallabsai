@@ -57,6 +57,13 @@ class BackgroundJobService {
    */
   async startJob(jobId: string, userId: string): Promise<void> {
     try {
+      // Check if user is authenticated before attempting update
+      const { auth } = await import('@/lib/firebase');
+      if (!auth.currentUser || auth.currentUser.uid !== userId) {
+        SecureLogger.warn('User not authenticated or mismatched, skipping job start');
+        return;
+      }
+
       const jobRef = ref(db, `backgroundJobs/${userId}/${jobId}`);
       await update(jobRef, {
         status: 'processing',

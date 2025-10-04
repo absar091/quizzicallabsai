@@ -10,6 +10,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } 
 import { useState } from "react";
 import { ref, set } from "firebase/database";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +49,7 @@ export default function SignupPage() {
   const { signInWithGoogle } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -85,10 +87,10 @@ export default function SignupPage() {
       });
 
       // Send email verification with continue URL
-      const continueUrl = `${window.location.origin}/auth/action?mode=verifyEmail`;
+      const continueUrl = `${window.location.origin}/login?verified=true`;
       await sendEmailVerification(userCredential.user, {
         url: continueUrl,
-        handleCodeInApp: true
+        handleCodeInApp: false // Let Firebase handle the action page
       });
 
       toast({
@@ -96,6 +98,12 @@ export default function SignupPage() {
         description: "A verification email has been sent with a continue link. Please check your main inbox and also your spam/junk folder.",
         duration: 9000,
       });
+      
+      // Reset reCAPTCHA
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
+      
       router.push("/login");
     } catch (error: any) {
         let errorMessage = "An unknown error occurred.";
@@ -109,6 +117,12 @@ export default function SignupPage() {
         description: errorMessage,
         variant: "destructive",
       });
+      
+      // Reset reCAPTCHA on error
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
+      form.setValue('recaptcha', '');
     } finally {
         setIsSubmitting(false);
     }
@@ -257,10 +271,22 @@ export default function SignupPage() {
                 render={({ field }) => (
                     <FormItem className="flex flex-col items-center">
                     <FormControl>
-                        <ReCAPTCHA
-                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                            onChange={(value) => field.onChange(value || "")}
-                        />
+                        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
+                          <ReCAPTCHA
+                              ref={recaptchaRef}
+                              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                              onChange={(value) => field.onChange(value || "")}
+                              onExpired={() => field.onChange("")}
+                              onError={() => {
+                                console.error('reCAPTCHA error');
+                                field.onChange("");
+                              }}
+                          />
+                        ) : (
+                          <div className="text-red-500 text-sm">
+                            reCAPTCHA configuration missing. Please contact support.
+                          </div>
+                        )}
                     </FormControl>
                     <FormMessage />
                     </FormItem>
