@@ -26,6 +26,8 @@ export interface UserLoginCredentials {
   city: string;
   region: string;
   timezone: string;
+  deviceFingerprint: string;
+  timestamp: string;
   firstLoginTime: string;
   lastLoginTime: string;
   loginCount: number;
@@ -457,6 +459,8 @@ export const createLoginCredentials = (
     city: deviceInfo.city,
     region: deviceInfo.region,
     timezone: deviceInfo.timezone,
+    deviceFingerprint: `${deviceInfo.device}_${deviceInfo.browser}_${deviceInfo.os}`,
+    timestamp: now,
     firstLoginTime: now,
     lastLoginTime: now,
     loginCount: 1,

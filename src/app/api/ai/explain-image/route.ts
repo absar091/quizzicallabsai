@@ -1,44 +1,171 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { explainImageServer } from '@/ai/server-only';
+import { auth } from '@/lib/firebase-admin';
+import { explainImage } from '@/ai/flows/explain-image';
+import { checkContentSafety } from '@/lib/content-safety';
+import { SecureLogger } from '@/lib/secure-logger';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🖼️ Explain image API called');
-    
     const body = await request.json();
-    console.log('📝 Image explanation input:', { 
-      hasImage: !!body.imageDataUri,
-      query: body.query?.substring(0, 50)
-    });
+    const { idToken, imageDataUri, query } = body;
 
-    // Add timeout wrapper
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Image explanation timed out after 90 seconds')), 90000);
-    });
-
-    const result = await Promise.race([
-      explainImageServer(body),
-      timeoutPromise
-    ]);
-
-    console.log('✅ Image explanation generated successfully');
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('❌ Image explanation error:', error.message);
-    
-    let errorMessage = error.message || 'Failed to explain image';
-    
-    if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
-      errorMessage = 'Image explanation is taking longer than expected. Please try again.';
-    } else if (error.message?.includes('quota') || error.message?.includes('rate limit')) {
-      errorMessage = 'AI service is currently busy. Please wait a moment and try again.';
-    } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
-      errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+    // Verify authentication
+    if (!idToken) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
+    let decodedToken;
+    try {
+      decodedToken = await auth.verifyIdToken(idToken);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid authentication token' },
+        { status: 401 }
+      );
+    }
+
+    // Validate input
+    if (!imageDataUri || !query) {
+      return NextResponse.json(
+        { success: false, error: 'Image and query are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate image data URI format
+    if (!imageDataUri.startsWith('data:image/') || !imageDataUri.includes('base64,')) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid image format. Please provide a valid base64 image data URI.' },
+        { status: 400 }
+      );
+    }
+
+    // Content safety check for query
+    const safetyCheck = await checkContentSafety(query, 'image explanation query');
+    if (!safetyCheck.isSafe) {
+      SecureLogger.warn('Unsafe content detected in image explanation query', {
+        userId: decodedToken.uid,
+        reason: safetyCheck.reason
+      });
+      return NextResponse.json(
+        { success: false, error: 'Content not allowed. Please modify your query.' },
+        { status: 400 }
+      );
+    }
+
+    const userId = decodedToken.uid;
+    const userEmail = decodedToken.email;
+
+    SecureLogger.info('Image explanation request', {
+      userId,
+      queryLength: query.length,
+      imageSize: imageDataUri.length
+    });
+
+    try {
+      // Call the AI flow
+      const result = await explainImage({
+        imageDataUri,
+        query
+      });
+
+      if (!result || !result.explanation) {
+        throw new Error('AI failed to generate explanation');
+      }
+
+      SecureLogger.info('Image explanation generated successfully', {
+        userId,
+        explanationLength: result.explanation.length
+      });
+
+      return NextResponse.json({
+        success: true,
+        explanation: result.explanation,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (aiError: any) {
+      SecureLogger.error('AI image explanation error', {
+        userId,
+        error: aiError.message,
+        queryLength: query.length
+      });
+
+      // Handle specific AI errors
+      if (aiError.message.includes('quota') || aiError.message.includes('rate limit')) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'AI service quota exceeded. Please try again in a few minutes.',
+            retryAfter: 300 // 5 minutes
+          },
+          { status: 429 }
+        );
+      } else if (aiError.message.includes('timeout')) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Request timeout. The AI service is busy. Please try again.',
+            retryAfter: 60 // 1 minute
+          },
+          { status: 408 }
+        );
+      } else if (aiError.message.includes('network')) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Network connection issue. Please check your internet connection.',
+            retryAfter: 30 // 30 seconds
+          },
+          { status: 503 }
+        );
+      } else {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Failed to generate image explanation. Please try again.',
+            retryAfter: 60
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+  } catch (error: any) {
+    SecureLogger.error('Image explanation API error', {
+      error: error.message,
+      stack: error.stack?.substring(0, 500)
+    });
+
     return NextResponse.json(
-      { error: errorMessage },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
+}
+
+// Handle GET requests for API documentation
+export async function GET() {
+  return NextResponse.json({
+    success: true,
+    message: 'Image Explanation API',
+    description: 'Upload an image and get AI-powered explanations',
+    usage: {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: {
+        idToken: 'Firebase ID token',
+        imageDataUri: 'Base64 encoded image data URI',
+        query: 'Question about the image'
+      }
+    },
+    supportedFormats: ['image/jpeg', 'image/png', 'image/webp'],
+    maxImageSize: '10MB',
+    rateLimit: '10 requests per minute'
+  });
 }

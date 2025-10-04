@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { detectDevice, shouldSendLoginNotification } from '@/lib/device-detection';
-import { getStoredCredentials, storeLoginCredentials, clearStoredCredentials } from '@/lib/login-credentials';
+import { detectDeviceInfo, shouldSendLoginNotification } from '@/lib/device-detection';
+import { LoginCredentialsManager } from '@/lib/login-credentials';
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,10 +22,11 @@ export async function GET(request: NextRequest) {
     
     const ipAddress = cfConnectingIp || xRealIp || xForwardedFor?.split(',')[0] || 'unknown';
 
-    const currentDeviceInfo = detectDevice(userAgent, ipAddress);
+    const currentDeviceInfo = await detectDeviceInfo(userAgent, ipAddress);
     
     // Get stored credentials
-    const storedCredentials = await getStoredCredentials(userId);
+    const credentialsManager = LoginCredentialsManager.getInstance();
+    const storedCredentials = await credentialsManager.getStoredCredentials(userId);
     
     // Check if notification should be sent
     const shouldSendNotification = shouldSendLoginNotification(currentDeviceInfo, storedCredentials);
@@ -78,17 +79,18 @@ export async function POST(request: NextRequest) {
       
       const ipAddress = cfConnectingIp || xRealIp || xForwardedFor?.split(',')[0] || 'unknown';
 
-      const deviceInfo = detectDevice(userAgent, ipAddress);
+      const deviceInfo = await detectDeviceInfo(userAgent, ipAddress);
       
       // Get stored credentials before
-      const credentialsBefore = await getStoredCredentials(userId);
+      const credentialsManager = LoginCredentialsManager.getInstance();
+      const credentialsBefore = await credentialsManager.getStoredCredentials(userId);
       const shouldNotifyBefore = shouldSendLoginNotification(deviceInfo, credentialsBefore);
       
       // Store the login
-      await storeLoginCredentials(userId, deviceInfo);
+      await credentialsManager.storeLoginCredentials(userId, deviceInfo);
       
       // Get stored credentials after
-      const credentialsAfter = await getStoredCredentials(userId);
+      const credentialsAfter = await credentialsManager.getStoredCredentials(userId);
       const shouldNotifyAfter = shouldSendLoginNotification(deviceInfo, credentialsAfter);
 
       return NextResponse.json({
@@ -105,7 +107,8 @@ export async function POST(request: NextRequest) {
 
     } else if (action === 'clear-credentials') {
       // Clear all stored credentials
-      await clearStoredCredentials(userId);
+      const credentialsManager = LoginCredentialsManager.getInstance();
+      await credentialsManager.clearStoredCredentials(userId);
 
       return NextResponse.json({
         success: true,

@@ -115,6 +115,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 🔑 Login Credentials - For device tracking and security
+    match /loginCredentials/{userId} {
+      // ✅ Users can read/write their own login credentials
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
     // 🛡️ Security Logs - For audit trails
     match /securityLogs/{logId} {
       // ✅ Users can read their own security logs

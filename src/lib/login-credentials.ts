@@ -115,6 +115,21 @@ export class LoginCredentialsManager {
   }
 
   /**
+   * Get stored credentials (alias for getLoginCredentials)
+   */
+  async getStoredCredentials(userId: string): Promise<UserLoginCredentials[]> {
+    return this.getLoginCredentials(userId);
+  }
+
+  /**
+   * Clear all stored credentials (alias for clearUserCredentials)
+   */
+  async clearStoredCredentials(userId: string): Promise<void> {
+    this.credentials.delete(userId);
+    await this.clearDatabaseCredentials(userId);
+  }
+
+  /**
    * Clear all credentials for a user
    */
   async clearUserCredentials(userId: string): Promise<void> {
