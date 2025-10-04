@@ -1,10 +1,10 @@
 // Professional Email Templates - Enterprise Grade Design
 // Inspired by Google, Microsoft, AWS, and other major tech companies
 
-// Ultra-Professional, Sleek & Beautiful Email Templates
+// Clean Professional Email Templates - Google/AWS Style
 const PROFESSIONAL_STYLES = `
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   
   * { 
     margin: 0; 
@@ -15,363 +15,250 @@ const PROFESSIONAL_STYLES = `
   body { 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: #1e293b;
-    background: #f8fafc;
+    color: #374151;
+    background-color: #f3f4f6;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
   }
   
   .email-container {
     max-width: 600px;
-    margin: 0 auto;
-    background: #ffffff;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    border-radius: 0;
+    margin: 40px auto;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     overflow: hidden;
   }
   
+  /* Clean Header - Logo Left, App Name Right */
   .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 32px 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    pointer-events: none;
-  }
-  
-  .logo-container {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 20px;
+    padding: 24px 40px;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .logo-img {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.95);
-    padding: 12px;
-    display: block;
-    margin: 0 auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    backdrop-filter: blur(10px);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
   }
   
-  .company-name {
-    position: relative;
-    z-index: 1;
-    color: #ffffff;
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    letter-spacing: -0.5px;
+  .header-app-name a {
+    color: #4b5563;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
   }
   
-  .tagline {
-    position: relative;
-    z-index: 1;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 400;
-    opacity: 0.9;
-  }
-  
+  /* Content Styles */
   .content {
-    padding: 40px 20px;
+    padding: 32px 40px;
   }
   
   .title {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 16px;
-    text-align: center;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
+    color: #111827;
+    margin-bottom: 8px;
+    line-height: 1.3;
   }
   
   .subtitle {
     font-size: 16px;
-    color: #64748b;
-    text-align: center;
-    margin-bottom: 32px;
-    line-height: 1.5;
-  }
-  
-  .greeting {
-    font-size: 17px;
-    color: #334155;
-    margin-bottom: 24px;
-    font-weight: 500;
-  }
-  
-  .card {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 24px 20px;
-    margin: 24px 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-  }
-  
-  .card-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 20px;
-  }
-  
-  .metric {
-    text-align: center;
-    margin: 32px 0;
-    padding: 32px 20px;
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-    border-radius: 20px;
-    border: 1px solid #a7f3d0;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
-  }
-  
-  .metric-value {
-    font-size: 48px;
-    font-weight: 800;
-    color: #059669;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  
-  .metric-label {
-    font-size: 14px;
     color: #6b7280;
-    font-weight: 500;
+    margin-bottom: 32px;
+  }
+  
+  .greeting, .paragraph {
+    font-size: 16px;
+    color: #374151;
+    margin-bottom: 24px;
+  }
+  
+  /* Clean Info Sections - No Cards */
+  .info-section {
+    margin: 32px 0;
+  }
+  
+  .info-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
   
-  .button-container {
-    text-align: center;
-    margin: 32px 0;
-  }
-  
-  .button-primary {
-    display: block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff !important;
-    text-decoration: none;
-    padding: 18px 32px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    margin: 16px 0;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-    border: none;
-    width: 100%;
-    transition: all 0.3s ease;
-    letter-spacing: 0.3px;
-  }
-  
-  .button-secondary {
-    display: block;
-    background: #ffffff;
-    color: #667eea !important;
-    text-decoration: none;
-    padding: 18px 32px;
-    border: 2px solid #667eea;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    margin: 16px 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    width: 100%;
-    transition: all 0.3s ease;
-    letter-spacing: 0.3px;
-  }
-  
-  .data-table {
+  .info-table {
     width: 100%;
     border-collapse: collapse;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
   
-  .data-row {
-    border-bottom: 1px solid #f1f5f9;
+  .info-row {
+    border-bottom: 1px solid #e5e7eb;
   }
   
-  .data-row:last-child {
+  .info-row:last-child {
     border-bottom: none;
   }
   
-  .data-label {
-    padding: 20px 16px;
-    font-weight: 600;
-    color: #475569;
-    font-size: 14px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    width: 40%;
-  }
-  
-  .data-value {
-    padding: 20px 16px;
-    color: #0f172a;
-    font-weight: 500;
+  .info-label, .info-value {
+    padding: 16px 0;
     font-size: 15px;
+    vertical-align: top;
+  }
+  
+  .info-label {
+    color: #6b7280;
+    font-weight: 400;
+  }
+  
+  .info-value {
     text-align: right;
-    width: 60%;
+    color: #111827;
+    font-weight: 600;
   }
   
-  .footer {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-top: 1px solid #e2e8f0;
-    padding: 32px 20px;
+  /* Metric Display */
+  .metric {
     text-align: center;
+    margin: 32px 0;
+    padding: 24px 20px;
+    background-color: #f0fdf4;
+    border-radius: 8px;
   }
   
-  .footer-content {
-    font-size: 13px;
-    color: #64748b;
+  .metric-value {
+    font-size: 40px;
+    font-weight: 700;
+    color: #166534;
+    line-height: 1.1;
+  }
+  
+  .metric-label {
+    font-size: 14px;
+    color: #15803d;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  
+  /* Buttons */
+  .button-container {
+    margin: 32px 0;
+  }
+  
+  .button-primary, .button-secondary {
+    display: block;
+    text-decoration: none;
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    margin: 16px 0;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .button-primary {
+    background-color: #1d4ed8;
+    color: #ffffff !important;
+  }
+  
+  .button-primary:hover {
+    background-color: #1e40af;
+  }
+  
+  .button-secondary {
+    background-color: #ffffff;
+    color: #374151 !important;
+    border: 1px solid #d1d5db;
+  }
+  
+  .button-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  /* Warning Box */
+  .warning-box {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 16px;
+    margin: 24px 0;
+  }
+  
+  .warning-text {
+    color: #78350f;
+    font-size: 14px;
     line-height: 1.6;
   }
   
-  .footer-brand {
-    margin-bottom: 20px;
+  /* Professional Footer */
+  .footer {
+    padding: 40px;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
   }
   
   .footer-logo {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 24px auto;
     border-radius: 8px;
-    background: #ffffff;
-    padding: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 12px;
   }
   
-  .footer-links {
-    margin: 16px 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+  .footer-nav {
+    margin-bottom: 16px;
   }
   
-  .footer-link {
-    color: #667eea;
+  .footer-nav-link {
+    color: #6b7280;
     text-decoration: none;
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    font-size: 13px;
+    margin: 0 10px;
   }
   
-  .footer-link:hover {
-    background: rgba(102, 126, 234, 0.1);
-  }
-  
-  .unsubscribe {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid #e2e8f0;
-    font-size: 11px;
-    color: #94a3b8;
-  }
-  
-  .unsubscribe a {
-    color: #94a3b8;
+  .footer-nav-link:hover {
     text-decoration: underline;
   }
   
-  /* Desktop optimizations */
-  @media only screen and (min-width: 600px) {
+  .footer-legal {
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+  
+  .footer-legal a {
+    color: #9ca3af;
+    text-decoration: underline;
+  }
+  
+  /* Mobile Responsive */
+  @media only screen and (max-width: 600px) {
     .email-container {
-      border-radius: 20px;
-      margin: 40px auto;
+      margin: 0;
+      border-radius: 0;
     }
     
     .header {
-      padding: 48px 40px;
+      padding: 20px 16px;
     }
     
     .content {
-      padding: 48px 40px;
+      padding: 24px 16px;
     }
     
     .footer {
-      padding: 40px;
-    }
-    
-    .title {
-      font-size: 32px;
-    }
-    
-    .metric-value {
-      font-size: 56px;
-    }
-    
-    .logo-img {
-      width: 64px;
-      height: 64px;
-    }
-    
-    .company-name {
-      font-size: 32px;
-    }
-    
-    .tagline {
-      font-size: 16px;
+      padding: 24px 16px;
     }
     
     .button-primary,
     .button-secondary {
-      display: inline-block;
-      width: auto;
-      margin: 8px 12px 8px 0;
-      min-width: 200px;
-    }
-    
-    .footer-links {
-      gap: 16px;
-    }
-    
-    .data-label {
-      padding: 24px 20px;
-    }
-    
-    .data-value {
-      padding: 24px 20px;
-    }
-  }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .card {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      border-color: #475569;
-    }
-    
-    .data-label {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      color: #cbd5e1;
-    }
-    
-    .data-value {
-      color: #f1f5f9;
+      width: 100%;
     }
   }
 </style>
@@ -486,10 +373,10 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
           </div>
           
           <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/analytics?utm_source=email&utm_medium=quiz_results&utm_campaign=engagement" class="button-primary">
-              View Detailed Analytics
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">
+              View Dashboard
             </a>
-            <a href="https://quizzicallabz.qzz.io/practice?topic=${encodeURIComponent(quizData.quizTitle)}&utm_source=email&utm_medium=quiz_results&utm_campaign=engagement" class="button-secondary">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-secondary">
               Continue Learning
             </a>
           </div>
@@ -512,8 +399,8 @@ Correct: ${quizData.correct}
 Incorrect: ${quizData.incorrect}
 Date: ${quizData.date}
 
-View detailed analytics: https://quizzicallabz.qzz.io/analytics
-Continue learning: https://quizzicallabz.qzz.io/practice
+View dashboard: https://quizzicallabz.qzz.io/dashboard
+Continue learning: https://quizzicallabz.qzz.io/dashboard
 
 Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
@@ -569,11 +456,11 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
           </div>
           
           <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/dashboard?utm_source=email&utm_medium=welcome&utm_campaign=onboarding" class="button-primary">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">
               Launch Learning Dashboard
             </a>
-            <a href="https://quizzicallabz.qzz.io/assessment?utm_source=email&utm_medium=welcome&utm_campaign=onboarding" class="button-secondary">
-              Start AI Assessment
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">
+              Start Learning
             </a>
           </div>
         </div>
@@ -596,7 +483,7 @@ Activated: ${emailDetails.signupDate}
 
 Getting Started:
 1. Launch Learning Dashboard: https://quizzicallabz.qzz.io/dashboard
-2. Start AI Assessment: https://quizzicallabz.qzz.io/assessment
+2. Start Learning: https://quizzicallabz.qzz.io/generate-quiz
 
 Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
@@ -650,11 +537,11 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
           </div>
           
           <div style="text-align: center; margin: 32px 0;">
-            <a href="https://quizzicallabz.qzz.io/continue-learning?utm_source=email&utm_medium=reminder&utm_campaign=retention" class="button-primary">
+            <a href="https://quizzicallabz.qzz.io/dashboard" class="button-primary">
               Resume Learning Session
             </a>
-            <a href="https://quizzicallabz.qzz.io/quick-review?utm_source=email&utm_medium=reminder&utm_campaign=retention" class="button-secondary">
-              5-Minute Review
+            <a href="https://quizzicallabz.qzz.io/generate-quiz" class="button-secondary">
+              Start Quick Quiz
             </a>
           </div>
         </div>
@@ -675,8 +562,8 @@ Learning Summary:
 - Current Streak: ${reminderData?.streakDays || 0} days
 ${reminderData?.weakAreas && reminderData.weakAreas.length > 0 ? `- Priority Areas: ${reminderData.weakAreas.join(', ')}` : ''}
 
-Resume Learning: https://quizzicallabz.qzz.io/continue-learning
-Quick Review: https://quizzicallabz.qzz.io/quick-review
+Resume Learning: https://quizzicallabz.qzz.io/dashboard
+Quick Quiz: https://quizzicallabz.qzz.io/generate-quiz
 
 Quizzicallabzᴬᴵ - Advanced AI-Powered Learning Platform
 Manage preferences: https://quizzicallabz.qzz.io/unsubscribe`
