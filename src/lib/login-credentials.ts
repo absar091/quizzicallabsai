@@ -170,15 +170,14 @@ export class LoginCredentialsManager {
     };
   }
 
-  // Database operations (Firebase Firestore implementation)
+  // Database operations (Firebase Realtime Database implementation)
   private async saveToDatabase(userId: string, credentials: UserLoginCredentials[]): Promise<void> {
     try {
-      console.log(`💾 Saving ${credentials.length} login credentials for user ${userId} to Firestore`);
+      console.log(`💾 Saving ${credentials.length} login credentials for user ${userId} to Realtime Database`);
       
-      const { firestore } = await import('./firebase');
-      const { doc, setDoc } = await import('firebase/firestore');
+      const { db, ref, set } = await import('./firebase');
       
-      await setDoc(doc(firestore, 'loginCredentials', userId), {
+      await set(ref(db, `loginCredentials/${userId}`), {
         credentials,
         updatedAt: new Date().toISOString()
       });
@@ -191,17 +190,15 @@ export class LoginCredentialsManager {
 
   private async loadFromDatabase(userId: string): Promise<UserLoginCredentials[]> {
     try {
-      console.log(`📖 Loading login credentials for user ${userId} from Firestore`);
+      console.log(`📖 Loading login credentials for user ${userId} from Realtime Database`);
       
-      const { firestore } = await import('./firebase');
-      const { doc, getDoc } = await import('firebase/firestore');
+      const { db, ref, get } = await import('./firebase');
       
-      const docRef = doc(firestore, 'loginCredentials', userId);
-      const docSnap = await getDoc(docRef);
+      const snapshot = await get(ref(db, `loginCredentials/${userId}`));
       
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log(`✅ Loaded ${data.credentials?.length || 0} credentials from Firestore`);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log(`✅ Loaded ${data.credentials?.length || 0} credentials from Realtime Database`);
         return data.credentials || [];
       } else {
         console.log('ℹ️ No stored credentials found for user');
@@ -215,12 +212,11 @@ export class LoginCredentialsManager {
 
   private async clearDatabaseCredentials(userId: string): Promise<void> {
     try {
-      console.log(`🗑️ Clearing login credentials for user ${userId} from Firestore`);
+      console.log(`🗑️ Clearing login credentials for user ${userId} from Realtime Database`);
       
-      const { firestore } = await import('./firebase');
-      const { doc, deleteDoc } = await import('firebase/firestore');
+      const { db, ref, remove } = await import('./firebase');
       
-      await deleteDoc(doc(firestore, 'loginCredentials', userId));
+      await remove(ref(db, `loginCredentials/${userId}`));
       console.log('✅ Login credentials cleared successfully');
     } catch (error) {
       console.error('❌ Error clearing login credentials:', error);
