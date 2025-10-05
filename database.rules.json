@@ -2,6 +2,7 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
+    ".validate": "newData.exists()",
     "shared_quizzes": {
       ".read": true,
       ".write": "auth != null",
