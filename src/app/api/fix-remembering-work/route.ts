@@ -12,6 +12,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Check if Firebase Admin is initialized
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Firebase Admin not initialized' 
+      }, { status: 500 });
+    }
+
     // Verify the user
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     const userId = decodedToken.uid;
