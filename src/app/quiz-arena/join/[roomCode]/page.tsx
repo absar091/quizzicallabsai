@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Users, Clock, Trophy, Play, X, CheckCircle, AlertTriangle, Gamepad2, Zap } from 'lucide-react';
+import { Users, Clock, Trophy, Play, X, CheckCircle, AlertTriangle, Gamepad2, Zap, Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';

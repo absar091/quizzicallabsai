@@ -1,31 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  Loader2, 
-  BrainCircuit, 
-  Check, 
-  ArrowRight,
-  Sparkles,
-  Play,
-  Rocket
-} from "lucide-react";
-
-// Simple icon components to avoid circular dependencies
-const Trophy = ({ className }: { className?: string }) => <div className={className}>🏆</div>;
-const Share2 = ({ className }: { className?: string }) => <div className={className}>📤</div>;
-const GamepadIcon = ({ className }: { className?: string }) => <div className={className}>🎮</div>;
-const TrendingUp = ({ className }: { className?: string }) => <div className={className}>📈</div>;
-const BookOpen = ({ className }: { className?: string }) => <div className={className}>📚</div>;
-const FileText = ({ className }: { className?: string }) => <div className={className}>📄</div>;
-const Users = ({ className }: { className?: string }) => <div className={className}>👥</div>;
-const BarChart3 = ({ className }: { className?: string }) => <div className={className}>📊</div>;
-const Target = ({ className }: { className?: string }) => <div className={className}>🎯</div>;
+import { GraduationCap, Loader2, BrainCircuit, Check, Trophy, Share2, GamepadIcon, Target, Zap, TrendingUp, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,6 +14,8 @@ export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+
+  // Navigation states to prevent multiple clicks and show feedback
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,18 +24,87 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
+  // Enhanced navigation with instant feedback - OPTIMIZED
   const handleNavigation = useCallback((path: string, buttonText: string, e?: React.MouseEvent) => {
-    if (navigatingTo) return;
+    if (navigatingTo) return; // Prevent multiple clicks
+
     e?.preventDefault();
     setNavigatingTo(path);
+
+    // Show immediate feedback
     toast({
-      title: ` Taking you there...`,
+      title: `🚀 Taking you there...`,
       description: `Navigating to ${buttonText}`,
-      duration: 800,
+      duration: 800, // Reduced duration for performance
     });
+
+    // Navigate immediately without delay
     router.push(path);
     setNavigatingTo(null);
   }, [navigatingTo, router, toast]);
+
+  // OPTIMIZED: Memoize static data
+  const featuresList = useMemo(() => [
+    {
+      icon: BrainCircuit,
+      title: "Personalized Learning",
+      description: "Our AI adapts to your learning style and pace, creating custom study plans that optimize your retention and understanding.",
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: GamepadIcon,
+      title: "Live Quiz Battles",
+      description: "Challenge friends in real-time multiplayer quizzes. Turn studying into engaging competitions with instant scoring and leaderboards.",
+      color: "from-cyan-500 to-teal-500",
+    },
+    {
+      icon: FileText,
+      title: "Document Quiz Generator",
+      description: "Upload your notes, PDF files, or documents. Our AI automatically generates comprehensive quizzes to test your knowledge.",
+      color: "from-blue-500 to-purple-500",
+    },
+    {
+      icon: Share2,
+      title: "Social Learning",
+      description: "Share your quiz creations with friends and classmates. Learn together through collaborative educational experiences.",
+      color: "from-green-500 to-teal-500",
+    },
+    {
+      icon: TrendingUp,
+      title: "Progress Tracking",
+      description: "Monitor your improvement with detailed analytics and insights. See how your study habits improve over time.",
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      icon: BrainCircuit,
+      title: '<span className="text-yellow-600">AI</span>-Powered Insights',
+      description: "Get intelligent explanations and study tips based on your quiz performance. Learn what works best for you.",
+      color: "from-indigo-500 to-purple-500",
+    }
+  ], []);
+
+  // OPTIMIZED: State for lazy loading sections
+  const [visibleSections, setVisibleSections] = useState({ features: false });
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => ({ ...prev, [entry.target.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    // Observe sections lazily
+    const sectionsToObserve = document.querySelectorAll('[data-lazy-section]');
+    sectionsToObserve.forEach(section => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
 
   if (loading) {
     return (
@@ -68,68 +120,57 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Modern Minimalist Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-              <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <BrainCircuit className="h-4 w-4 md:h-5 md:w-5 text-white" />
+      {/* Simple Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <BrainCircuit className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-foreground font-bold text-lg md:text-xl">
-                <span className="hidden sm:inline">Quizzicallabz</span>
-                <span className="sm:hidden">Quiz</span>
-                <sup className="text-accent text-xs">AI</sup>
-              </span>
-            </Link>
-
-            <nav className="hidden lg:flex items-center gap-1">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/#features">Features</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/pricing">Pricing</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/about-us">About</Link>
-              </Button>
-            </nav>
-
-            <div className="flex items-center gap-2 md:gap-3">
-              <Button variant="ghost" size="sm" className="hidden sm:flex" asChild>
+              <span className="text-foreground font-bold text-xl">Quizzicallabz<sup className="text-accent">AI</sup></span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground" asChild>
                 <Link href="/login">Login</Link>
               </Button>
-              <Button size="sm" className="bg-gradient-to-r from-primary to-accent shadow-lg text-xs md:text-sm px-3 md:px-4" asChild>
-                <Link href="/signup">
-                  <span className="hidden sm:inline">Get Started</span>
-                  <span className="sm:hidden">Start</span>
-                  <ArrowRight className="ml-1 h-3 w-3 md:h-4 md:w-4" />
-                </Link>
+              <Button className="bg-gradient-to-r from-primary to-accent" asChild>
+                <Link href="/signup">Sign Up</Link>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Revolutionary Hero Section */}
-      <section className="relative overflow-hidden py-20 md:py-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        
-        <div className="container relative mx-auto px-4">
-          <div className="mx-auto max-w-5xl text-center">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Powered by Quizzicallabz Studio</span>
+      {/* Hero Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            {/* Badge Chips */}
+            <div className="flex justify-center gap-3 mb-8 flex-wrap">
+              <div className="flex items-center gap-2 bg-primary/10 text-primary px-5 py-3 rounded-full text-sm font-semibold border border-primary/20 backdrop-blur-sm">
+                <BrainCircuit className="h-5 w-5" />
+                <span className="text-accent">AI</span>-Powered Learning
+              </div>
+              <div className="flex items-center gap-2 bg-secondary/10 text-foreground px-5 py-3 rounded-full text-sm font-semibold border border-border backdrop-blur-sm">
+                <Zap className="h-5 w-5" />
+                Smart Quiz Generation
+              </div>
+              <div className="flex items-center gap-2 bg-accent/10 text-accent-foreground px-5 py-3 rounded-full text-sm font-semibold border border-accent/20 backdrop-blur-sm">
+                <GamepadIcon className="h-5 w-5" />
+                Multiplayer Battles
+              </div>
             </div>
 
-            <h1 className="mb-6 text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
-              Turn <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">3 Hours</span> of Study Into{" "}
-              <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">30 Seconds</span>
+            {/* Main Hero Content */}
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+              Study Smarter, <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Not Longer</span>
+              <span className="block bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent mt-2">Turn Hours into Seconds</span>
+              <span className="block text-3xl md:text-5xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-1">with <span className="text-accent">AI</span>-Powered Quizzes</span>
             </h1>
 
-            <p className="mb-10 text-xl text-muted-foreground md:text-2xl max-w-3xl mx-auto">
-              AI-powered quiz generation, live multiplayer battles, and social learning that makes studying actually fun
+            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Transform your study routine with intelligent AI that creates personalized quizzes, tracks your progress, and makes learning competitive and engaging.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -137,342 +178,1065 @@ export default function Home() {
                 size="lg"
                 onClick={(e) => handleNavigation('/signup', 'Sign Up')}
                 disabled={!!navigatingTo}
-                className="group font-bold text-lg shadow-2xl bg-gradient-to-r from-primary to-accent hover:shadow-primary/50"
+                className="font-bold text-lg shadow-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground px-8 py-4"
               >
-                {navigatingTo === '/signup' ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Taking you there...
-                  </>
-                ) : (
-                  <>
-                    Start Free Trial <Rocket className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+                <Zap className="mr-2 h-5 w-5" />
+                {navigatingTo === '/signup' ? 'Taking you there...' : 'Start Free Trial'}
               </Button>
               <Button
                 size="lg"
-                variant="outline"
                 onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
                 disabled={!!navigatingTo}
-                className="font-bold text-lg"
+                className="font-bold text-lg shadow-2xl bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 text-accent-foreground px-8 py-4"
+              >
+                <GamepadIcon className="mr-2 h-5 w-5" />
+                {navigatingTo === '/quiz-arena' ? 'Loading Arena...' : 'Play Live Quiz Arena'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quiz Arena Highlight Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-cyan-500/5 via-teal-500/3 to-blue-500/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">Revolutionary Quiz Arena</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              The first <strong>real-time multiplayer quiz platform</strong> where learning meets competition. <span className="font-semibold text-primary">Join thousands of students getting smarter while having fun!</span>
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
+                  <GamepadIcon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Live Battles</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Compete with friends in real-time quiz competitions. See your ranking update instantly as you answer questions with time pressure.
+                <strong className="text-primary">Experience the thrill of competitive learning!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Real-time leaderboards update live with every answer",
+                  "Host controls for seamless session management",
+                  "Private rooms perfect for class competitions",
+                  "Achievement system with unlockable badges",
+                  "Comprehensive performance analytics per battle"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                size="lg"
+                variant="premium"
+                onClick={(e) => handleNavigation('/quiz-arena', 'Quiz Arena')}
+                disabled={!!navigatingTo}
+                className="font-bold"
               >
                 {navigatingTo === '/quiz-arena' ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Loading...
-                  </>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 ) : (
                   <>
-                    <Play className="mr-2 h-5 w-5" />
-                    Try Quiz Arena
+                    Join Live Battles Now
+                    <TrendingUp className="ml-2 h-5 w-5" />
                   </>
                 )}
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span>Free Tier</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span>Cancel anytime</span>
+            <div className="bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10 p-8 rounded-2xl border border-primary/20 dark:border-primary/30">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">📧 Quiz Result Email Reports</h4>
+                  <p className="text-muted-foreground">
+                    Receive comprehensive quiz performance reports with detailed analysis, personalized recommendations, and learning insights delivered via email.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <span className="font-medium">Performance Analysis</span>
+                    </div>
+                    <div className="text-sm text-primary font-semibold">Detailed Breakdown</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Personalized Feedback</span>
+                    </div>
+                    <div className="text-sm text-accent font-semibold">AI-Generated Tips</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/15 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">⏰</div>
+                      <span className="font-medium">Scheduled Delivery</span>
+                    </div>
+                    <div className="text-sm text-primary font-semibold">Immediate After Quiz</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 border-y bg-secondary/30">
+      {/* Smart Document Quiz Generator Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-teal-500/5 via-cyan-500/3 to-blue-500/5">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-                10x
-              </div>
-              <div className="text-sm text-muted-foreground">Faster Quiz Creation</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-                90%
-              </div>
-              <div className="text-sm text-muted-foreground">Retention Rate</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-                24/7
-              </div>
-              <div className="text-sm text-muted-foreground">AI Availability</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-                ∞
-              </div>
-              <div className="text-sm text-muted-foreground">Unlimited Quizzes</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Features - 3 Column Grid */}
-      <section id="features" className="py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Why Choose Us</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Everything You Need to <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Succeed</span>
-            </h2>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">📄 Smart Document Quiz Generator</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Powerful features that transform how you learn
+              Revolutionize your study routine with AI that transforms <strong>ANY document</strong> into perfect quizzes instantly. <span className="font-semibold text-accent">Study smarter, not harder!</span>
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Feature 1 */}
-            <Card className="group border-2 hover:border-primary/50 transition-all hover:shadow-xl">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <GamepadIcon className="h-7 w-7 text-primary" />
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Live Quiz Arena</h3>
-                <p className="text-muted-foreground mb-4">
-                  Compete in real-time multiplayer battles. Turn studying into an addictive gaming experience with instant scoring and leaderboards.
-                </p>
-                <Button variant="link" className="p-0 h-auto" asChild>
-                  <Link href="/quiz-arena">
-                    Try it now <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <h3 className="text-2xl font-bold">Instant AI Quiz Generation</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Upload PDFs, DOCX files, PowerPoints, images, or even handwritten notes. Our AI extracts key concepts and generates comprehensive quizzes in seconds.
+                <strong className="text-accent">No more manual quiz creation!</strong>
+              </p>
 
-            {/* Feature 2 */}
-            <Card className="group border-2 hover:border-primary/50 transition-all hover:shadow-xl">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <FileText className="h-7 w-7 text-accent" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3">Smart Document Quiz</h3>
-                <p className="text-muted-foreground mb-4">
-                  Upload any document and get perfect quizzes instantly. AI analyzes your content and generates comprehensive questions in seconds.
-                </p>
-                <Button variant="link" className="p-0 h-auto" asChild>
-                  <Link href="/generate-quiz">
-                    Generate quiz <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+              <div className="space-y-4">
+                {[
+                  "Upload any document format - PDFs, images, documents",
+                  "Advanced OCR for handwritten notes and images",
+                  "AI automatically identifies key concepts and knowledge gaps",
+                  "Instant quiz generation with difficulty adaptation",
+                  "Perfect for teachers, students, and professionals alike"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-accent to-primary rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
 
-            {/* Feature 3 */}
-            <Card className="group border-2 hover:border-primary/50 transition-all hover:shadow-xl">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <BrainCircuit className="h-7 w-7 text-primary" />
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90" asChild>
+                <Link href="/generate-quiz">
+                  Transform Documents Now
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-accent/5 to-primary/5 dark:from-accent/10 dark:to-primary/10 p-8 rounded-2xl border border-accent/20 dark:border-accent/30">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">🎯 The Magic Happens Here</h4>
+                  <p className="text-muted-foreground">
+                    Upload any document and watch as our AI transforms it into educational excellence
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold mb-3">AI Personalization</h3>
-                <p className="text-muted-foreground mb-4">
-                  Adaptive difficulty that learns from you. Get personalized study paths, smart recommendations, and performance insights.
-                </p>
-                <Button variant="link" className="p-0 h-auto" asChild>
-                  <Link href="/signup">
-                    Start learning <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                      <span className="font-medium">Upload Document</span>
+                    </div>
+                    <div className="text-sm text-accent font-semibold">Instant</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">2</div>
+                      <span className="font-medium">AI Analysis</span>
+                    </div>
+                    <div className="text-sm text-primary font-semibold">30s</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-accent/10 dark:bg-accent/15 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white font-semibold">3</div>
+                      <span className="font-medium">Perfect Quiz Ready</span>
+                    </div>
+                    <div className="text-sm text-accent font-semibold">Done!</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Personalized AI Tutoring Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-blue-500/5 via-purple-500/3 to-indigo-500/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">🧠 Ultra-Personalized AI Tutoring</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Experience learning that adapts to <strong>YOUR pace</strong>! Our advanced AI analyzes your performance in real-time, adjusts difficulty levels perfectly, and creates customized study paths.
+              <span className="font-semibold text-blue-600">Master concepts efficiently while staying engaged and motivated!</span>
+            </p>
           </div>
 
-          {/* Additional Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <BrainCircuit className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Adaptive Learning Intelligence</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Smart tracking ensures you master concepts efficiently. No more wasting time on topics you know or struggling with overly difficult content.
+                <strong className="text-blue-600">Learn at the perfect pace for YOU!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Real-time difficulty adjustment based on your performance",
+                  "Personalized study paths tailored to your learning style",
+                  "Smart content recommendations for optimal mastery",
+                  "Progress tracking with detailed analytics and insights",
+                  "Motivational feedback and achievement milestones"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600" asChild>
+                <Link href="/generate-quiz">
+                  Experience AI Personalization
+                  <BrainCircuit className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-blue-200 dark:border-blue-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">🎓 Your AI Learning Journey</h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Current Difficulty Level</span>
+                      <span className="text-blue-600 font-semibold">Adaptive</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full w-3/5"></div>
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">Adjusting based on your performance...</div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">📘</div>
+                        <span className="font-medium">Content Adaptation</span>
+                      </div>
+                      <div className="text-sm text-blue-600 font-semibold">Real-time</div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                        <span className="font-medium">Difficulty Adjustment</span>
+                      </div>
+                      <div className="text-sm text-purple-600 font-semibold">Auto-Optimized</div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">🏆</div>
+                        <span className="font-medium">Achievement Tracking</span>
+                      </div>
+                      <div className="text-sm text-indigo-600 font-semibold">Comprehensive</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Viral Quiz Sharing Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-purple-500/5 via-indigo-500/3 to-blue-500/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">🌐 Viral Educational Sharing</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Transform your quiz creations into viral sensations! Share your masterpiece quizzes across platforms, build massive learning communities, and track viral engagement with advanced analytics.
+              <span className="font-semibold text-purple-600">Watch your educational content spread globally while helping students worldwide succeed!</span>
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+                  <Share2 className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Social Learning Revolution</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Connect learners worldwide through viral quiz sharing. Build your educational community while tracking engagement and helping students excel globally.
+                <strong className="text-purple-600">Turn learning into a social experience!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Viral sharing capabilities across all major platforms",
+                  "Advanced analytics for engagement tracking and insights",
+                  "Community building tools for connected learning",
+                  "Global reach to help students worldwide succeed",
+                  "Monetization opportunities for top content creators"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600" asChild>
+                <Link href="/generate-quiz">
+                  Create Shareable Content
+                  <Share2 className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 p-8 rounded-2xl border border-purple-200 dark:border-purple-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">📬 Quiz Sharing Features</h4>
+                  <p className="text-muted-foreground">
+                    Share your quiz creations and results across social platforms with customizable settings and advanced engagement tracking.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🖥️</div>
+                      <span className="font-medium">Dashboard Sharing</span>
+                    </div>
+                    <div className="text-sm text-purple-600 font-semibold">Easy Export</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">🎨</div>
+                      <span className="font-medium">Custom Branding</span>
+                    </div>
+                    <div className="text-sm text-indigo-600 font-semibold">Professional Results</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-violet-50 dark:bg-violet-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-violet-500 rounded-full flex items-center justify-center text-white font-semibold">🔗</div>
+                      <span className="font-medium">Direct Links</span>
+                    </div>
+                    <div className="text-sm text-violet-600 font-semibold">One-Click Share</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ultimate Test Prep Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-indigo-500/5 via-purple-500/3 to-pink-500/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">🎓 Ultimate Test Preparation Suite</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Prepare for MDCAT/ECAT/NTS like never before! Complete coverage of official syllabi with smart question generation, timed mock exams, and detailed performance analytics.
+              <span className="font-semibold text-indigo-600">Boost your score with AI-powered preparation that really works!</span>
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <Trophy className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Exam Mastery System</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Comprehensive exam preparation that follows official curriculums and provides the competitive edge you need to excel in MDCAT, ECAT, NTS, and other major examinations.
+                <strong className="text-indigo-600">Achieve your dream scores with science-backed techniques!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Official MDCAT/ECAT/NTS syllabus coverage with updates",
+                  "Timed practice exams that mirror real test conditions",
+                  "Smart question generation from official exam patterns",
+                  "Detailed analytics comparing you against top performers",
+                  "Personalized study plans optimized for exam success"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600" asChild>
+                <Link href="/generate-quiz">
+                  Start Exam Preparation
+                  <Trophy className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-8 rounded-2xl border border-indigo-200 dark:border-indigo-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">📈 Exam Success Roadmap</h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">📚</div>
+                      <span className="font-medium">Comprehensive Coverage</span>
+                    </div>
+                    <div className="text-sm text-indigo-600 font-semibold">Complete Syllabus</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Exam Practice Mode</span>
+                    </div>
+                    <div className="text-sm text-purple-600 font-semibold">Timed Sessions</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">📊</div>
+                      <span className="font-medium">Progress Tracking</span>
+                    </div>
+                    <div className="text-sm text-blue-600 font-semibold">Detailed Insights</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Study Guides Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-cyan-500/5 via-teal-500/3 to-green-500/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📖 <span className="text-yellow-600">AI</span>-Powered Study Guides</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Instantly transform complex topics into crystal-clear understanding! Our AI generates comprehensive guides with perfect summaries, creative analogies, mind maps, and built-in smart assessments.
+              <span className="font-semibold text-cyan-600">Master ANY subject in record time with content that's actually engaging!</span>
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-full flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Intelligent Content Generation</h3>
+              </div>
+              <p className="text-lg text-muted-foreground">
+                Complex subjects made simple through AI-generated guides that use creative analogies, mind maps, and interactive assessments.
+                <strong className="text-cyan-600">Learn faster and retain more than ever before!</strong>
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Perfect summaries with key concepts highlighted",
+                  "Creative analogies connecting complex ideas to familiar concepts",
+                  "Interactive mind maps for visual learning",
+                  "Integrated quizzes within each study guide",
+                  "Auto-generated practice questions for reinforcement"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="mt-8 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600" asChild>
+                <Link href="/generate-quiz">
+                  Generate Study Guide
+                  <BookOpen className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/20 dark:to-teal-950/20 p-8 rounded-2xl border border-cyan-200 dark:border-cyan-800">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">📝 Study Guide Features</h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">📋</div>
+                      <span className="font-medium">Smart Summaries</span>
+                    </div>
+                    <div className="text-sm text-cyan-600 font-semibold">Key Concepts Only</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">🔗</div>
+                      <span className="font-medium">Visual Mind Maps</span>
+                    </div>
+                    <div className="text-sm text-teal-600 font-semibold">Interactive Design</div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">🎯</div>
+                      <span className="font-medium">Built-in Assessments</span>
+                    </div>
+                    <div className="text-sm text-blue-600 font-semibold">Progress Tracking</div>
+                  </div>
+                </div>
+
+                <div className="text-center bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/10 dark:to-teal-950/10 p-4 rounded-lg">
+                  <p className="text-muted-foreground text-sm">
+                    <strong>AI generates study materials</strong> 10x faster than manual creation
+                    <span className="text-cyan-600 font-semibold">Perfect for last-minute studying!</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            How It Works
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
+            Transform your study routine in 3 simple steps
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: Trophy, title: "MDCAT/ECAT/NTS Prep", desc: "Official syllabus coverage with timed mock exams" },
-              { icon: Share2, title: "Social Sharing", desc: "Share quizzes globally and build your community" },
-              { icon: BarChart3, title: "Progress Analytics", desc: "Track performance with detailed insights" },
-              { icon: BookOpen, title: "Study Guides", desc: "AI-generated guides with mind maps" },
-              { icon: Users, title: "Collaborative Learning", desc: "Study together in real-time" },
-              { icon: Target, title: "Achievement System", desc: "Unlock badges and celebrate milestones" }
-            ].map((feature, i) => (
-              <div key={i} className="flex gap-4 p-6 rounded-xl border bg-card hover:shadow-lg transition-all">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-1">{feature.title}</h4>
-                  <p className="text-sm text-muted-foreground">{feature.desc}</p>
-                </div>
+              {
+                step: "01",
+                title: "Create or Join",
+                description: "Upload your study materials or select from our curated quiz templates. Our AI instantly generates comprehensive personalized quizzes tailored to your subjects and learning goals.",
+                icon: FileText,
+                gradientFrom: "from-cyan-500/20 to-teal-500/20",
+                textColor: "text-cyan-600"
+              },
+              {
+                step: "02",
+                title: "Learn & Compete",
+                description: "Master subjects through individual practice or compete in thrilling Quiz Arena battles with friends worldwide. Get instant explanations and real-time scoring for maximum engagement.",
+                icon: BrainCircuit,
+                gradientFrom: "from-purple-500/20 to-indigo-500/20",
+                textColor: "text-purple-600"
+              },
+              {
+                step: "03",
+                title: "Track & Master",
+                description: "Monitor your progress with comprehensive analytics, review bookmark questions for reinforcement, and celebrate achievements with the Quiz Arena community leaderboard.",
+                icon: TrendingUp,
+                gradientFrom: "from-teal-500/20 to-cyan-500/20",
+                textColor: "text-teal-600"
+              }
+            ].map((item, index) => (
+              <div key={index}>
+                <Card className="h-full">
+                  <CardContent className="p-8">
+                    <div className="text-center space-y-6">
+                      <div className={`mx-auto w-16 h-16 bg-gradient-to-br ${item.gradientFrom} rounded-full flex items-center justify-center shadow-lg`}>
+                        <item.icon className={`h-8 w-8 ${item.textColor}`} />
+                      </div>
+                      <div>
+                        <div className={`text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-2`}>{item.step}</div>
+                        <h3 className={`text-xl font-semibold mb-3 ${item.textColor}`}>{item.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How It Works - Simplified */}
-      <section className="py-16 bg-secondary/30">
+      {/* What's Different About Us - Comparative Advantage */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-950/30 dark:to-slate-950/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Get Started in 3 Easy Steps
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-700 to-slate-600 bg-clip-text text-transparent">
+              Why Students Choose Us Over Traditional Tools
             </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              The modern learning revolution that outperforms traditional textbooks, flashcards, and educational apps
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="text-center p-6">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">1</div>
-              <h3 className="font-bold mb-2">Upload Content</h3>
-              <p className="text-sm text-muted-foreground">Choose a topic or upload study materials</p>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Traditional Methods - Left Side */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-300 flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white">❌</div>
+                Traditional Learning Methods
+              </h3>
+
+              <div className="space-y-4">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">📚 Textbooks & Lecture Notes</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Long, boring readings with no interactivity. Takes 3+ hours to create basic study materials.
+                    <span className="text-red-500 font-medium"> 20% information retention after a week.</span>
+                  </p>
+                </div>
+
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">🔄 Flashcards (Manual Creation)</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Students waste hours making cards by hand. Generic approach works for everyone the same way.
+                    <span className="text-red-500 font-medium"> No personalized learning paths.</span>
+                  </p>
+                </div>
+
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">📊 Other Quiz Apps</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Limited question banks, no social features, no real-time competition, monthly subscriptions.
+                    <span className="text-red-500 font-medium"> No quiz creation or customization.</span>
+                  </p>
+                </div>
+
+                <div className="border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">Result: Bored Students & Dropout</h4>
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    <strong>90% of students never complete their study materials</strong> due to boring, outdated methods. Traditional education fails modern learners.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">2</div>
-              <h3 className="font-bold mb-2">Generate Quiz</h3>
-              <p className="text-sm text-muted-foreground">AI creates personalized questions instantly</p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 font-bold">3</div>
-              <h3 className="font-bold mb-2">Learn & Compete</h3>
-              <p className="text-sm text-muted-foreground">Practice solo or battle friends in Quiz Arena</p>
+
+            {/* Our Solution - Right Side */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-cyan-700 dark:text-cyan-300 flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white">✅</div>
+                Quizzicallabs AI Learning System
+              </h3>
+
+              <div className="space-y-4">
+                <div className="border border-cyan-200 dark:border-cyan-700 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-cyan-800 dark:text-cyan-200 mb-2">🔥 Smart Document Quiz Generator</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Upload ANY document and get perfect quizzes instantly. AI analyzes content in seconds.
+                    <span className="text-cyan-600 font-medium"> 60% faster study preparation.</span>
+                  </p>
+                </div>
+
+                <div className="border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">🎮 Live Quiz Arena Battles</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Compete with friends in real-time multiplayer battles. Make learning addictive and fun.
+                    <span className="text-blue-600 font-medium"> First platform combining education with gaming.</span>
+                  </p>
+                </div>
+
+                <div className="border border-purple-200 dark:border-purple-700 bg-purple-50 dark:bg-purple-950/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-2">🌐 Viral Educational Sharing</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Share your AI-created content globally. Build learning communities worldwide.
+                    <span className="text-purple-600 font-medium"> Turn learning into a social phenomenon.</span>
+                  </p>
+                </div>
+
+                <div className="border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">Victory: Engaged Students & Success</h4>
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                    <strong>85% engagement rate with modern, interactive learning</strong>. Students actually look forward to studying with our AI-powered system.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+
+
         </div>
       </section>
 
-      {/* Pricing Section - Simplified */}
-      <section className="py-16 bg-background">
+      {/* Key Features Section - OPTIMIZED & LAZY LOADED */}
+      <section
+        id="features"
+        data-lazy-section
+        className="py-16 md:py-24 bg-background"
+        style={
+          visibleSections.features
+            ? { opacity: 1, transform: 'translateY(0)' }
+            : { opacity: 0, transform: 'translateY(20px)' }
+        }
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple Pricing</h2>
-            <p className="text-muted-foreground">Start free, upgrade when ready</p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent">
+              Learn Smarter with AI
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Discover the essential features that make studying more effective and engaging
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-xl font-bold mb-2">Free</h3>
-              <div className="text-3xl font-bold mb-4">$0<span className="text-sm text-muted-foreground">/month</span></div>
-              <ul className="space-y-2 mb-6 text-sm">
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Unlimited quizzes</li>
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Public Quiz Arena</li>
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Basic analytics</li>
-              </ul>
-              <Button className="w-full" variant="outline" asChild><Link href="/signup">Start Free</Link></Button>
+
+          {visibleSections.features ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {featuresList.map((feature, index) => {
+                const { icon: IconComponent } = feature;
+                return (
+                  <div key={feature.title} className="group">
+                    <Card className="h-full border border-border bg-card hover:shadow-xl transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-8">
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-center">
+                            <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                              <IconComponent className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+
+                          <div className="text-center space-y-3">
+                            <h3 className="text-xl font-bold text-card-foreground group-hover:text-primary transition-colors">
+                              {feature.title}
+                            </h3>
+                            <p className="text-muted-foreground leading-relaxed">
+                              {feature.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Subtle gradient overlay */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
             </div>
-            <div className="p-6 border-2 border-primary rounded-lg relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-3 py-1 rounded text-sm">Popular</div>
-              <h3 className="text-xl font-bold mb-2">Pro</h3>
-              <div className="text-3xl font-bold mb-4">$2<span className="text-sm text-muted-foreground">/month</span></div>
-              <ul className="space-y-2 mb-6 text-sm">
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Everything in Free</li>
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Advanced AI models</li>
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />Private rooms</li>
-              </ul>
-              <Button className="w-full bg-primary" asChild><Link href="/pricing">Upgrade</Link></Button>
+          ) : (
+            // Placeholder while loading
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <Card className="h-full border border-gray-200 dark:border-gray-800">
+                    <CardContent className="p-8">
+                      <div className="space-y-6">
+                        <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-2xl mx-auto"></div>
+                        <div className="space-y-3">
+                          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-3/4"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-5/6"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-4/5"></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Feature highlights */}
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center gap-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-600">⚡</div>
+                <div className="text-sm font-semibold">Instant Quiz Generation</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">🎯</div>
+                <div className="text-sm font-semibold">Adaptive Learning</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">🏆</div>
+                <div className="text-sm font-semibold">Gamified Experience</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">🧠</div>
+                <div className="text-sm font-semibold">AI-Powered Insights</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Learning Journey</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Start free and unlock the full power of AI-powered education
+            </p>
+          </div>
 
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div>
+              <Card className="relative h-full shadow-xl border-2 border-cyan-500/20 overflow-hidden group hover:shadow-2xl transition-all duration-500">
+                {/* Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-teal-500/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <CardHeader className="pb-8 relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">Free</CardTitle>
+                    <Badge className="bg-cyan-500/10 text-cyan-600 border-cyan-500/20">Starter Plan</Badge>
+                  </div>
+                  <CardDescription className="text-base">
+                    Perfect foundation for your learning journey
+                  </CardDescription>
+                  <div className="mt-4">
+                    <span className="text-5xl font-bold">$0</span>
+                    <span className="text-muted-foreground">/forever</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-muted-foreground">Unlimited Quizzes & Guides</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-muted-foreground">Standard AI Model</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-muted-foreground">Quiz Arena (Public Only)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-muted-foreground">Basic Social Sharing</span>
+                    </li>
+                  </ul>
+                  <Button className="w-full mt-8 bg-gradient-to-r from-primary to-accent" asChild>
+                    <Link href="/signup">Get Started Free</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-2 shadow-lg">
+                  🏆 MOST POPULAR
+                </Badge>
+              </div>
+              <Card className="h-full shadow-2xl border-2 border-purple-500/20">
+
+                <CardHeader className="pb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">Pro</CardTitle>
+                    <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20">Premium Plan</Badge>
+                  </div>
+                  <CardDescription className="text-base">
+                    Unleash the full potential of AI learning
+                  </CardDescription>
+                  <div className="mt-4">
+                    <span className="text-5xl font-bold">$2</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="font-medium">Private Quiz Arenas</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="font-medium">Advanced AI (Gemini 2.0 Pro)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="font-medium">Analytics Dashboard</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="font-medium">Priority Support</span>
+                    </li>
+                  </ul>
+
+                  <Button className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-500" asChild>
+                    <Link href="/pricing">Upgrade to Pro</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Ready to <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Transform</span> Your Learning?
+      <section className="py-16 md:py-24 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Ready to Transform Your Learning Journey?
             </h2>
-            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Join thousands of students who are studying smarter, not harder
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Join the evolution of education. Start creating AI-powered quizzes in seconds and compete in live battles with friends worldwide.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                onClick={(e) => handleNavigation('/signup', 'Sign Up')}
-                disabled={!!navigatingTo}
-                className="font-bold text-lg shadow-2xl bg-gradient-to-r from-primary to-accent"
-              >
-                {navigatingTo === '/signup' ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    Start Free Trial <Rocket className="ml-2 h-5 w-5" />
-                  </>
-                )}
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg">
+                <Link href="/signup" className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Start Learning Now - It's Free!
+                </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-bold text-lg"
-                asChild
-              >
-                <Link href="/quiz-arena">
-                  <Play className="mr-2 h-5 w-5" />
-                  Try Quiz Arena
+              <Button size="lg" variant="outline" className="border-2 hover:bg-accent/5">
+                <Link href="/quiz-arena" className="flex items-center gap-2">
+                  🔥 Play Live Quiz Arena
                 </Link>
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground mt-6">
-              No credit card required · Free Tier · Upgrade anytime
-            </p>
+
+            {/* Genuine Call-to-Action Elements */}
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground text-sm mb-2">
+                Join thousands of students studying smarter, not longer.
+              </p>
+              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span>🔒 Free to start</span>
+                <span>•</span>
+                <span>⚡ Instant quiz generation</span>
+                <span>•</span>
+                <span>🎮 Live multiplayer battles</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-background py-12">
-        <div className="container mx-auto px-4">
+      {/* Comprehensive Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-auto">
+        <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
+            {/* Brand Section */}
+            <div className="md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                  <BrainCircuit className="h-5 w-5 text-white" />
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <BrainCircuit className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-lg">
-                  Quizzicallabz<sup className="text-accent text-xs">AI</sup>
-                </span>
+                <span className="text-foreground font-bold text-xl">Quizzicallabz<sup className="text-accent">AI</sup></span>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Transforming education with AI-powered learning experiences
-              </p>
+              <p className="text-muted-foreground text-sm mb-4">Transforming education with AI-powered learning experiences.</p>
+              <div className="flex gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                  <span className="text-primary text-xs">f</span>
+                </div>
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                  <span className="text-primary text-xs">t</span>
+                </div>
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                  <span className="text-primary text-xs">in</span>
+                </div>
+              </div>
             </div>
 
+            {/* Product Section */}
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/generate-quiz" className="hover:text-primary transition-colors">Quiz Generator</Link></li>
-                <li><Link href="/quiz-arena" className="hover:text-primary transition-colors">Quiz Arena</Link></li>
-                <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+              <h4 className="text-foreground font-semibold mb-4 border-b border-border pb-2">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/generate-quiz" className="text-muted-foreground hover:text-primary transition-colors">Quiz Generator</Link></li>
+                <li><Link href="/quiz-arena" className="text-muted-foreground hover:text-primary transition-colors">Quiz Arena</Link></li>
+                <li><Link href="/study-guides" className="text-muted-foreground hover:text-primary transition-colors">Study Guides</Link></li>
+                <li><Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">Dashboard</Link></li>
+                <li><Link href="/pricing" className="text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
               </ul>
             </div>
 
+            {/* Resources Section */}
             <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/help" className="hover:text-primary transition-colors">Help Center</Link></li>
-                <li><Link href="/how-to-use" className="hover:text-primary transition-colors">Guides</Link></li>
-                <li><Link href="/about-us" className="hover:text-primary transition-colors">About Us</Link></li>
+              <h4 className="text-foreground font-semibold mb-4 border-b border-border pb-2">Resources</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/help" className="text-muted-foreground hover:text-primary transition-colors">Help Center</Link></li>
+                <li><Link href="/tutorials" className="text-muted-foreground hover:text-primary transition-colors">Tutorials</Link></li>
+                <li><Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">Blog</Link></li>
+                <li><Link href="/api-docs" className="text-muted-foreground hover:text-primary transition-colors">API Docs</Link></li>
+                <li><Link href="/community" className="text-muted-foreground hover:text-primary transition-colors">Community</Link></li>
               </ul>
             </div>
 
+            {/* Company Section */}
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="hover:text-primary transition-colors">Cookie Policy</Link></li>
+              <h4 className="text-foreground font-semibold mb-4 border-b border-border pb-2">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
+                <li><Link href="/careers" className="text-muted-foreground hover:text-primary transition-colors">Careers</Link></li>
+                <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
+                <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© 2025 Quizzicallabz<sup className="text-accent">AI</sup>. All rights reserved.</p>
-            
+          {/* Bottom Section */}
+          <div className="border-t border-border pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-muted-foreground text-sm">
+                © 2025 Quizzicallabz<sup className="text-accent">AI</sup>. All rights reserved. Transforming education, one quiz at a time.
+              </p>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-muted-foreground">Made with</span>
+                <span className="text-accent">♥</span>
+                <span className="text-muted-foreground">for learners worldwide</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

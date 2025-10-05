@@ -29,10 +29,10 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://www.google.com https://accounts.google.com https://va.vercel-scripts.com https://vercel.live https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
               "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://vercel.live",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://vercel.com https://apis.google.com https://www.gstatic.com https://accounts.google.com https://www.google.com https://www.gstatic.com/recaptcha/ https://www.google.com/recaptcha/ wss://*.pusher.com https://*.pusher.com wss://ws-*.pusher.com wss://ws-us3.pusher.com https://sockjs-us3.pusher.com https://api.getsafepay.com https://sandbox.api.getsafepay.com https://*.getsafepay.com",
+              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://vercel.com https://apis.google.com https://www.gstatic.com https://accounts.google.com https://www.google.com https://www.gstatic.com/recaptcha/ https://www.google.com/recaptcha/ wss://*.pusher.com https://*.pusher.com wss://ws-*.pusher.com wss://ws-us3.pusher.com https://sockjs-us3.pusher.com https://api.getsafepay.com https://sandbox.api.getsafepay.com https://*.getsafepay.com https://cdn.jsdelivr.net",
               "frame-src 'self' https://accounts.google.com https://www.google.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
               "worker-src 'self' blob:",
               "manifest-src 'self'",
