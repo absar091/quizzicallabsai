@@ -4,8 +4,8 @@ import { db } from './firebase-admin';
 export interface SubscriptionPlan {
   id: string;
   name: string;
-  price: number; // in PKR
-  currency: 'PKR';
+  price: number;
+  currency: 'PKR' | 'USD';
   interval: 'monthly' | 'yearly';
   features: string[];
   limits: {
