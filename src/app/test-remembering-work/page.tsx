@@ -142,6 +142,56 @@ export default function TestRememberingWorkPage() {
     }
   };
 
+  const testDatabasePermissions = async () => {
+    if (!user) {
+      alert('Please log in to test database permissions');
+      return;
+    }
+
+    setTesting(true);
+    setTestProgress('Testing database permissions...');
+
+    try {
+      // Get Firebase ID token
+      const { auth } = await import('@/lib/firebase');
+      const idToken = await auth.currentUser?.getIdToken();
+
+      if (!idToken) {
+        throw new Error('Could not get authentication token');
+      }
+
+      const response = await fetch('/api/test-database-permissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setTestProgress(`✅ Database tests completed! ${result.passedTests}/${result.totalTests} tests passed.`);
+        
+        // Update test results based on database tests
+        setTestResults(prev => ({
+          ...prev,
+          progressPersistence: result.testResults.quizResults,
+          cloudSync: result.allPassed
+        }));
+      } else {
+        setTestProgress(`❌ Database test failed: ${result.error}`);
+      }
+
+    } catch (error) {
+      setTestProgress(`❌ Database test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setTimeout(() => {
+        setTesting(false);
+      }, 3000);
+    }
+  };
+
   const runRememberingFix = async () => {
     if (!user) {
       alert('Please log in to run remembering fixes');
@@ -401,6 +451,19 @@ export default function TestRememberingWorkPage() {
                 <Database className="h-4 w-4" />
               )}
               Run Comprehensive Test
+            </Button>
+
+            <Button 
+              onClick={testDatabasePermissions}
+              disabled={testing || !user}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+            >
+              {testing ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Database className="h-4 w-4" />
+              )}
+              Test Database Permissions
             </Button>
 
             <Button 
