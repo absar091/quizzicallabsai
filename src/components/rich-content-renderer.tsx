@@ -41,11 +41,29 @@ const chartConfig = {
 const processTextContent = (text: string) => {
   if (!text) return '';
 
-  // First sanitize the input to prevent XSS
-  const sanitizedText = InputValidator.sanitizeHtml(text);
+  // Decode HTML entities that might be present in the text
+  const decodeHtmlEntities = (str: string) => {
+    const entityMap: { [key: string]: string } = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      '&#x27;': "'",
+      '&#x2F;': '/',
+      '&#39;': "'",
+      '&apos;': "'"
+    };
+    
+    return str.replace(/&[#\w]+;/g, (entity) => {
+      return entityMap[entity] || entity;
+    });
+  };
+
+  // Decode HTML entities first, then apply basic sanitization for display
+  const decodedText = decodeHtmlEntities(text);
 
   // Handle common AI formatting issues
-  return sanitizedText
+  return decodedText
     // Fix spacing around mathematical operators
     .replace(/([+\-×÷=≠≤≥≈])(?!\s)/g, '$1 ')
     .replace(/(?<!\s)([+\-×÷=≠≤≥≈])/g, ' $1')
