@@ -2,7 +2,6 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
-    ".validate": "newData.exists()",
     "shared_quizzes": {
       ".read": true,
       ".write": "auth != null",
@@ -273,18 +272,14 @@
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["lastModified", "lastStudyDate", "currentStreak", "longestStreak", "totalStudyDays"],
-        ".validate": "newData.hasChildren(['currentStreak', 'longestStreak', 'lastStudyDate', 'totalStudyDays', 'lastModified']) && newData.child('currentStreak').isNumber() && newData.child('longestStreak').isNumber() && newData.child('totalStudyDays').isNumber() && newData.child('lastModified').isNumber()"
+        ".indexOn": ["lastModified", "lastStudyDate", "currentStreak", "longestStreak", "totalStudyDays"]
       }
     },
     "bookmarks": {
       "$userId": {
         ".read": "auth != null && auth.uid == $userId",
         ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["bookmarkedAt", "subject", "difficulty", "quizTitle"],
-        "$bookmarkId": {
-          ".validate": "newData.hasChildren(['userId', 'quizId', 'quizTitle', 'subject', 'difficulty', 'questionCount', 'bookmarkedAt']) && newData.child('userId').val() == auth.uid && newData.child('bookmarkedAt').isNumber() && newData.child('questionCount').isNumber()"
-        }
+        ".indexOn": ["bookmarkedAt", "subject", "difficulty", "quizTitle"]
       }
     }
   }
