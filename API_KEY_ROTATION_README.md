@@ -15,11 +15,11 @@ This system automatically rotates through multiple Google AI API keys to prevent
 ## API Keys Configured
 ```javascript
 // 5 Google AI API Keys (loaded from environment variables)
-GEMINI_API_KEY_1=AIzaSyAzd8xI7Hz6k0CXRhjDMb5RmS-yn4FZ9GY  // Key 1 (original)
-GEMINI_API_KEY_2=AIzaSyDh9-miwHyN1ohdpcjCb8JGn-vBATYn-IQ  // Key 2
-GEMINI_API_KEY_3=AIzaSyCe_GeFE4w--h0lfIqmsFk8dFB0_fy0XXQ  // Key 3
-GEMINI_API_KEY_4=AIzaSyCvBGmTT1HITqTnggDAaYqYln3vmmrbonE  // Key 4
-GEMINI_API_KEY_5=AIzaSyALk7mhPrBLFwsoXxXpOb_DwP2uy84MSSM  // Key 5
+GEMINI_API_KEY_1=AIzaSyAzd8xI7Hz6djjdkdk4jw03sk0CXRhjDMb5RmS-yn4FZ9GY  // Key 1 (original)
+GEMINI_API_KEY_2=AIzaSyDhkedmdmd93939499-dmddmiwHyNddkdd1ohdpcjCb8JGn-vBATYn-IQ  // Key 2
+GEMINI_API_KEY_3=AIzaSyCe92jx xs_GeFE4w--h0lfsssksIqmsFk8dFlggB0_fy0XXQ  // Key 3
+GEMINI_API_KEY_4=AIzaSyCvmdkdijjixxdBGmTT1HITqTnggDAaYfffffdqYln3vmmrbonE  // Key 4
+GEMINI_API_KEY_5=AIzaSdkkmxdkdoyALk7mhPrBLFwsddkdddoe;lkddoXxXpOb_DwP2uy84MSSM  // Key 5
 ```
 
 ## How It Works
