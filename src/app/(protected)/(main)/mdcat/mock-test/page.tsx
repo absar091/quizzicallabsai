@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -67,7 +66,7 @@ export default function MdcatMockTestPage() {
       timeLimit: section.time,
       userAge: null,
       userClass: 'MDCAT Student',
-      specificInstructions: `Generate questions for the ${section.subject} section of a full MDCAT mock exam. Ensure questions are strictly based on the official MDCAT syllabus and cover a wide range of chapters within that subject.`
+      specificInstructions: `Generate questions for the ${section.subject} section of a full MDCAT mock exam. Ensure questions are strictly based on the official MDCAT syllabus and cover a wide ra[...]`
     };
 
     try {
@@ -238,9 +237,9 @@ export default function MdcatMockTestPage() {
         specificInstructions: ''
     };
     
-    // We need to pass the user's answers to the results page.
+    // Pass the user's answers along with a source flag so GenerateQuizPage only consumes when intended.
     if (typeof window !== 'undefined') {
-        (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+        (window as any).__MOCK_TEST_ANSWERS__ = { source: 'mdcat-full-mock', answers: allUserAnswers };
     }
     
     return (
