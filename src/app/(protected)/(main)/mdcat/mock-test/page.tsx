@@ -238,11 +238,20 @@ export default function MdcatMockTestPage() {
     };
     
     // Pass the user's answers along with a source flag so GenerateQuizPage only consumes when intended.
-    if (typeof window !== 'undefined') {
-    // GenerateQuizPage expects a plain array of answers. Set the global to that
-    // shape so the results renderer picks it up correctly.
-    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+  if (typeof window !== 'undefined') {
+    // Ensure answers length matches questions length. If mismatch occurs,
+    // pad with nulls so indexes align (prevents scoring errors like 0/40).
+    const questionsLen = allQuestions.length;
+    const answersLen = allUserAnswers.length;
+    let finalAnswers = allUserAnswers.slice(0, questionsLen);
+    if (answersLen < questionsLen) {
+      finalAnswers = finalAnswers.concat(new Array(questionsLen - answersLen).fill(null));
+      console.warn('MDCAST Mock Test: answers array was shorter than questions; padding with nulls', { questionsLen, answersLen });
+    } else if (answersLen > questionsLen) {
+      console.warn('MDCAST Mock Test: answers array longer than questions; trimming extra answers', { questionsLen, answersLen });
     }
+    (window as any).__MOCK_TEST_ANSWERS__ = finalAnswers;
+  }
     
     return (
          <GenerateQuizPage 

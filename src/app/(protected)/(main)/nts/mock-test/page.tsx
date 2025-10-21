@@ -266,9 +266,18 @@ export default function NtsMockTestPage() {
         specificInstructions: ''
     };
     
-    if (typeof window !== 'undefined') {
-        (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
+  if (typeof window !== 'undefined') {
+    const questionsLen = allQuestions.length;
+    const answersLen = allUserAnswers.length;
+    let finalAnswers = allUserAnswers.slice(0, questionsLen);
+    if (answersLen < questionsLen) {
+      finalAnswers = finalAnswers.concat(new Array(questionsLen - answersLen).fill(null));
+      console.warn('NTS Mock Test: answers array was shorter than questions; padding with nulls', { questionsLen, answersLen });
+    } else if (answersLen > questionsLen) {
+      console.warn('NTS Mock Test: answers array longer than questions; trimming extra answers', { questionsLen, answersLen });
     }
+    (window as any).__MOCK_TEST_ANSWERS__ = finalAnswers;
+  }
     
     return (
          <GenerateQuizPage 
