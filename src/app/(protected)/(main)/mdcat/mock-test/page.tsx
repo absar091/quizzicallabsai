@@ -239,17 +239,21 @@ export default function MdcatMockTestPage() {
     
     // Pass the user's answers along with a source flag so GenerateQuizPage only consumes when intended.
   if (typeof window !== 'undefined') {
-    // Ensure answers length matches questions length. If mismatch occurs,
-    // pad with nulls so indexes align (prevents scoring errors like 0/40).
+    // Debug: log sizes so we can diagnose scoring problems (0/40 symptom)
     const questionsLen = allQuestions.length;
     const answersLen = allUserAnswers.length;
+    console.debug('MDcat finishing test: questionsLen, answersLen', { questionsLen, answersLen });
+
     let finalAnswers = allUserAnswers.slice(0, questionsLen);
     if (answersLen < questionsLen) {
       finalAnswers = finalAnswers.concat(new Array(questionsLen - answersLen).fill(null));
-      console.warn('MDCAST Mock Test: answers array was shorter than questions; padding with nulls', { questionsLen, answersLen });
+      console.warn('MDCAT Mock Test: answers array was shorter than questions; padding with nulls', { questionsLen, answersLen });
     } else if (answersLen > questionsLen) {
-      console.warn('MDCAST Mock Test: answers array longer than questions; trimming extra answers', { questionsLen, answersLen });
+      console.warn('MDCAT Mock Test: answers array longer than questions; trimming extra answers', { questionsLen, answersLen });
     }
+
+    // Log a small preview of answers to help spot if answers are arrays or wrapped objects
+    console.debug('MDcat finalAnswers preview', { preview: finalAnswers.slice(0, 10) });
     (window as any).__MOCK_TEST_ANSWERS__ = finalAnswers;
   }
     

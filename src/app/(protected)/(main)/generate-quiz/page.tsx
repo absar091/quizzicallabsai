@@ -621,13 +621,30 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         }
 
         const mockTestAnswers = (window as any).__MOCK_TEST_ANSWERS__;
+    console.debug('GenerateQuizPage init: found __MOCK_TEST_ANSWERS__', { mockTestAnswers });
         if (initialQuiz && initialFormValues && mockTestAnswers) {
-            setQuiz(initialQuiz);
-            setFormValues(initialFormValues);
-            setUserAnswers(mockTestAnswers);
-            setShowResults(true);
-            delete (window as any).__MOCK_TEST_ANSWERS__;
-            return;
+      // Ensure shape is an array; if not attempt to extract possible wrapped property
+      let answersArray: any = mockTestAnswers;
+      if (!Array.isArray(answersArray) && typeof answersArray === 'object' && answersArray !== null) {
+        // Try common keys
+        if (Array.isArray(answersArray.answers)) {
+          answersArray = answersArray.answers;
+        } else if (Array.isArray(answersArray.allUserAnswers)) {
+          answersArray = answersArray.allUserAnswers;
+        } else {
+          console.warn('GenerateQuizPage: received non-array mock answers, attempting best-effort conversion', { mockTestAnswers });
+          // As a last resort, wrap single scalar into array
+          answersArray = [answersArray];
+        }
+      }
+
+      console.debug('GenerateQuizPage init: using answersArray length', { length: Array.isArray(answersArray) ? answersArray.length : 'not-array' });
+      setQuiz(initialQuiz);
+      setFormValues(initialFormValues);
+      setUserAnswers(Array.isArray(answersArray) ? answersArray : new Array(initialQuiz.length).fill(null));
+      setShowResults(true);
+      delete (window as any).__MOCK_TEST_ANSWERS__;
+      return;
         }
 
         if (initialQuiz && initialFormValues) {
