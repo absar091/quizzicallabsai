@@ -239,7 +239,9 @@ export default function MdcatMockTestPage() {
     
     // Pass the user's answers along with a source flag so GenerateQuizPage only consumes when intended.
     if (typeof window !== 'undefined') {
-        (window as any).__MOCK_TEST_ANSWERS__ = { source: 'mdcat-full-mock', answers: allUserAnswers };
+    // GenerateQuizPage expects a plain array of answers. Set the global to that
+    // shape so the results renderer picks it up correctly.
+    (window as any).__MOCK_TEST_ANSWERS__ = allUserAnswers;
     }
     
     return (

@@ -247,6 +247,29 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       timerRef.current = null; // Explicitly set to null to prevent further executions
     }
 
+    // If we're running inside the multi-section mock test flow, the parent page
+    // installs a global override so it can collect section answers and drive
+    // generation of the next section. Detect that and delegate submission to
+    // the parent instead of performing the normal cloud/local saves.
+    try {
+      const mockOverride = (typeof window !== 'undefined') ? (window as any).__MOCK_TEST_SUBMIT_OVERRIDE__ : null;
+      if (mockOverride && typeof mockOverride === 'function') {
+        console.log('🔁 Delegating submission to mock-test override');
+        // Show results locally for the section so user sees the result card
+        setShowResults(true);
+        // Call the parent callback with the section answers (array of string|null)
+        try {
+          mockOverride(userAnswers);
+        } catch (err) {
+          console.error('Error in mock test submit override:', err);
+        }
+        setIsSubmitting(false);
+        return; // Skip the rest of the normal submit flow
+      }
+    } catch (err) {
+      console.error('Error checking for mock override:', err);
+    }
+
     // Check authentication state before proceeding
     if (!user) {
       console.error('❌ User not authenticated during quiz submission');
