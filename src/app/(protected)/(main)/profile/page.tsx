@@ -40,6 +40,7 @@ const supportLinks = [
 const legalLinks = [
     { href: "/terms-of-use", label: "Terms of Use", icon: Shield },
     { href: "/privacy-policy", label: "Privacy Policy", icon: Shield },
+    { href: "mailto:hello@quizzicallabz.qzz.io?subject=Delete Account Request&body=I want to permanently delete my account.", label: "Delete Account", icon: Shield, external: true, destructive: true },
     { href: "/disclaimer", label: "Disclaimer", icon: FileText },
     { href: "/about-us", label: "About Us", icon: Users },
 ];
@@ -426,13 +427,16 @@ export default function ProfilePage() {
                 <Link 
                   href={link.href} 
                   key={link.href} 
-                  className="flex items-center justify-between p-4 text-muted-foreground hover:bg-secondary transition-colors"
+                  className={`flex items-center justify-between p-4 text-muted-foreground hover:bg-secondary transition-colors ${
+                    link.destructive ? 'text-destructive hover:text-destructive' : ''
+                  }`}
+                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 >
                   <div className="flex items-center gap-2">
                     <link.icon className="h-5 w-5"/>
                     <span>{link.label}</span>
                   </div>
-                  <ArrowRight className="h-4 w-4" />
+                  {link.external ? <ExternalLink className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                 </Link>
               ))}
             </CardContent>
