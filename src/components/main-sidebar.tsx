@@ -82,7 +82,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>
-              {!isCollapsed && <span>Quizzicallabs<sup className="text-xs text-primary">AI</sup></span>}
+              {!isCollapsed && <span className="text-foreground">Quizzicallabz<sup className="text-xs text-primary">AI</sup></span>}
           </Link>
        </div>
        
