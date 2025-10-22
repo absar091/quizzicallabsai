@@ -55,8 +55,8 @@
   }
 
   .dark {
-    --background: 0 0% 2%; /* Almost black */
-    --foreground: 0 0% 98%; /* White */
+    --background: 0 0% 0%; /* Pure black */
+    --foreground: 0 0% 100%; /* Pure white */
     
     --card: 0 0% 8%; /* Slightly lighter black */
     --card-foreground: 0 0% 98%;
@@ -93,7 +93,7 @@
     @apply border-border;
   }
   html, body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-white;
     font-family: var(--font-sans);
     overflow-x: hidden;
     overflow-y: auto;
