@@ -28,11 +28,12 @@ const PROFESSIONAL_STYLES = `
     background-color: #ffffff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     overflow: hidden;
+    width: 100%;
   }
   
   /* Clean Header - Minimal and Professional */
   .header {
-    padding: 32px 48px;
+    padding: 24px 32px;
     border-bottom: 1px solid #f1f5f9;
     background-color: #ffffff;
     text-align: center;
@@ -55,7 +56,7 @@ const PROFESSIONAL_STYLES = `
   
   /* Content Styles - Clean Typography */
   .content {
-    padding: 48px 48px 40px 48px;
+    padding: 32px 24px;
   }
   
   .title {
@@ -84,10 +85,10 @@ const PROFESSIONAL_STYLES = `
   
   /* Clean Info Sections - Minimal Design */
   .info-section {
-    margin: 40px 0;
+    margin: 24px 0;
     background-color: #f8fafc;
     border-radius: 8px;
-    padding: 32px;
+    padding: 20px;
   }
   
   .info-title {
@@ -271,45 +272,95 @@ const PROFESSIONAL_STYLES = `
       margin: 0;
       border-radius: 0;
       box-shadow: none;
+      width: 100% !important;
+      max-width: 100% !important;
     }
     
     .header {
-      padding: 24px 20px;
+      padding: 16px 12px;
     }
     
     .content {
-      padding: 32px 20px;
+      padding: 20px 12px;
     }
     
     .info-section {
-      padding: 24px 20px;
+      padding: 16px 12px;
+      margin: 20px 0;
     }
     
     .footer {
-      padding: 32px 20px;
+      padding: 20px 12px;
     }
     
     .title {
-      font-size: 24px;
+      font-size: 20px;
+      line-height: 1.3;
+      margin-bottom: 8px;
     }
     
     .subtitle {
-      font-size: 16px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    
+    .paragraph, .greeting {
+      font-size: 14px;
+      margin-bottom: 16px;
     }
     
     .button-primary,
     .button-secondary {
       display: block;
       width: 100%;
-      margin: 12px 0;
+      margin: 8px 0;
+      padding: 12px 16px;
+      font-size: 14px;
     }
     
     .metric {
-      padding: 32px 20px;
+      padding: 20px 12px;
+      margin: 20px 0;
     }
     
     .metric-value {
-      font-size: 40px;
+      font-size: 32px;
+    }
+    
+    .metric-label {
+      font-size: 12px;
+    }
+    
+    .info-table {
+      font-size: 13px;
+    }
+    
+    .info-label, .info-value {
+      padding: 12px 0;
+      font-size: 13px;
+    }
+    
+    .info-title {
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+    
+    .warning-box {
+      padding: 16px;
+      margin: 20px 0;
+    }
+    
+    .warning-text {
+      font-size: 13px;
+    }
+    
+    .footer-nav-link {
+      font-size: 12px;
+      margin: 0 8px;
+    }
+    
+    .footer-legal {
+      font-size: 11px;
     }
   }
 </style>
