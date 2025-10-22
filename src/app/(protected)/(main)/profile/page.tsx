@@ -40,7 +40,7 @@ const supportLinks = [
 const legalLinks = [
     { href: "/terms-of-use", label: "Terms of Use", icon: Shield },
     { href: "/privacy-policy", label: "Privacy Policy", icon: Shield },
-    { href: "mailto:hello@quizzicallabz.qzz.io?subject=Delete Account Request&body=I want to permanently delete my account.", label: "Delete Account", icon: Shield, external: true, destructive: true },
+    { href: "/delete-account", label: "Delete Account", icon: Shield, destructive: true },
     { href: "/disclaimer", label: "Disclaimer", icon: FileText },
     { href: "/about-us", label: "About Us", icon: Users },
 ];
