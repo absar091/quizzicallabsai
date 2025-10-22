@@ -11,24 +11,21 @@
     </filter>
   </defs>
   
-  <!-- Background circle -->
+  <!-- Blue filled circle background -->
   <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" filter="url(#shadow)"/>
   
-  <!-- Inner white circle -->
-  <circle cx="256" cy="256" r="180" fill="#FFFFFF" opacity="0.95"/>
+  <!-- White Q Letter with black outline -->
+  <text x="256" y="340" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="280" font-weight="600" text-anchor="middle" fill="#FFFFFF" stroke="#000000" stroke-width="4">Q</text>
   
-  <!-- Main Q Letter -->
-  <text x="256" y="320" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="200" font-weight="500" text-anchor="middle" fill="#1E40AF">Q</text>
+  <!-- White dots pattern -->
+  <circle cx="350" cy="180" r="12" fill="#FFFFFF" opacity="0.8"/>
+  <circle cx="390" cy="200" r="8" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="370" cy="240" r="6" fill="#FFFFFF" opacity="0.7"/>
   
-  <!-- Quiz dots pattern -->
-  <circle cx="320" cy="200" r="12" fill="#3B82F6"/>
-  <circle cx="360" cy="220" r="8" fill="#000000"/>
-  <circle cx="340" cy="260" r="6" fill="#1E40AF"/>
-  
-  <!-- Sparkle effects -->
+  <!-- White sparkle effects -->
   <g opacity="0.8">
-    <path d="M400 180 L408 188 L400 196 L392 188 Z" fill="#3B82F6"/>
-    <path d="M160 320 L166 326 L160 332 L154 326 Z" fill="#1E40AF"/>
-    <path d="M380 350 L385 355 L380 360 L375 355 Z" fill="#000000"/>
+    <path d="M420 160 L428 168 L420 176 L412 168 Z" fill="#FFFFFF"/>
+    <path d="M140 340 L146 346 L140 352 L134 346 Z" fill="#FFFFFF"/>
+    <path d="M400 370 L405 375 L400 380 L395 375 Z" fill="#FFFFFF"/>
   </g>
 </svg>
