@@ -196,7 +196,7 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left">
-                    <img src="https://quizzicallabz.qzz.io/email-logo.svg" alt="Quizzicallabzᴬᴵ" width="160" height="60" style="display:block;">
+                    <strong style="font-size:18px;color:#4f46e5;">Quizzicallabz<sup style="font-size:12px;">AI</sup></strong>
                   </td>
                   <td align="right" style="font-family:Arial,sans-serif;color:#6b7280;font-size:12px;">
                     AI-powered study partner
@@ -264,7 +264,7 @@ export async function sendPasswordResetEmail(to: string, userName: string, reset
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left">
-                    <img src="https://quizzicallabz.qzz.io/email-logo.svg" alt="Quizzicallabzᴬᴵ" width="160" height="60" style="display:block;">
+                    <strong style="font-size:18px;color:#4f46e5;">Quizzicallabz<sup style="font-size:12px;">AI</sup></strong>
                   </td>
                   <td align="right" style="font-family:Arial,sans-serif;color:#6b7280;font-size:12px;">
                     AI-powered study partner

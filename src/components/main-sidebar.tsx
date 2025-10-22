@@ -82,7 +82,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <BrainCircuit className="h-5 w-5" />
               </div>
-              {!isCollapsed && <span>Quizzicallabs</span>}
+              {!isCollapsed && <span>Quizzicallabs<sup className="text-xs text-primary">AI</sup></span>}
           </Link>
        </div>
        
@@ -94,7 +94,7 @@ export function MainSidebar({ onNavigate, isCollapsed = false }: MainSidebarProp
                {user.displayName?.charAt(0)?.toUpperCase() || 'U'}
              </div>
              <div className="flex-1 min-w-0">
-               <p className="text-sm font-medium truncate">{user.displayName}</p>
+               <p className="text-sm font-medium truncate text-foreground">{user.displayName}</p>
                <div className="flex items-center gap-1">
                  <Badge variant={plan === 'Pro' ? 'default' : 'secondary'} className="text-xs px-2 py-0">
                    {plan === 'Pro' && <Sparkles className="h-2 w-2 mr-1" />}
