@@ -111,8 +111,8 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
         {/* Mobile logo (only on top-level pages) */}
         <div className="flex-1 md:hidden">
           {!showAppBackButton && (
-            <Link href="/" className="font-semibold text-lg truncate block">
-              Quizzicallabzᴬᴵ
+            <Link href="/" className="font-semibold text-lg truncate block text-foreground">
+              Quizzicallabz<sup className="text-xs text-primary">AI</sup>
             </Link>
           )}
         </div>
