@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { BrainCircuit, Loader2, Zap, GamepadIcon, FileText, Trophy, Users, ArrowRight } from "lucide-react";
+import { BrainCircuit, Loader2, Zap, GamepadIcon, FileText, Trophy, Users, ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -34,17 +35,19 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="border-b border-white/10 bg-black/90 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
-                <BrainCircuit className="h-6 w-6 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
+                <BrainCircuit className="h-5 w-5 text-white" />
               </div>
-              <span className="text-white font-black text-2xl tracking-tight">
-                Quizzicallabz<sup className="text-blue-400 text-sm">AI</sup>
+              <span className="text-white font-black text-lg md:text-2xl tracking-tight">
+                Quizzicallabz<sup className="text-blue-400 text-xs">AI</sup>
               </span>
             </div>
-            <div className="flex items-center gap-6">
+            
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-6">
               <Button variant="ghost" className="text-white/80 hover:text-white font-semibold" asChild>
                 <Link href="/login">Login</Link>
               </Button>
@@ -52,7 +55,34 @@ export default function Home() {
                 <Link href="/signup">Sign Up</Link>
               </Button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="md:hidden text-white p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 border-t border-white/10 pt-4">
+              <div className="flex flex-col space-y-4">
+                <Button variant="ghost" className="text-white/80 hover:text-white font-semibold justify-start" asChild>
+                  <Link href="/pricing" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
+                </Button>
+                <Button variant="ghost" className="text-white/80 hover:text-white font-semibold justify-start" asChild>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                </Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 font-semibold rounded-xl" asChild>
+                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
