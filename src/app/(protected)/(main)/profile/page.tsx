@@ -312,6 +312,56 @@ export default function ProfilePage() {
           </Card>
         </div>
 
+        {/* Security Settings */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-muted-foreground px-4">SECURITY</h3>
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Password & Security
+              </CardTitle>
+              <CardDescription>
+                Keep your account secure by updating your password regularly
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  // Firebase password reset
+                  import('firebase/auth').then(({ sendPasswordResetEmail, getAuth }) => {
+                    const auth = getAuth();
+                    if (user?.email) {
+                      sendPasswordResetEmail(auth, user.email)
+                        .then(() => {
+                          toast({
+                            title: "Password reset email sent!",
+                            description: "Check your email for password reset instructions.",
+                          });
+                        })
+                        .catch((error) => {
+                          toast({
+                            title: "Error",
+                            description: "Failed to send password reset email.",
+                            variant: "destructive"
+                          });
+                        });
+                    }
+                  });
+                }}
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Change Password
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                We'll send a password reset link to your email address
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* App Settings */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground px-4">APP SETTINGS</h3>

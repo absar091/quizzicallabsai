@@ -241,7 +241,9 @@ const PROFESSIONAL_STYLES = `
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
-    margin: 0 16px;
+    margin: 0 12px;
+    display: inline-block;
+    padding: 4px 0;
   }
   
   .footer-nav-link:hover {
@@ -354,9 +356,16 @@ const PROFESSIONAL_STYLES = `
       font-size: 13px;
     }
     
+    .footer-nav {
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+    
     .footer-nav-link {
       font-size: 12px;
-      margin: 0 8px;
+      margin: 0 6px;
+      display: inline-block;
+      padding: 6px 0;
     }
     
     .footer-legal {
@@ -381,20 +390,17 @@ const PROFESSIONAL_HEADER = `
 // Professional Footer - Enterprise Style
 const PROFESSIONAL_FOOTER = `
 <div class="footer">
-  <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
-    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ Logo" class="footer-logo">
-  </a>
   <div class="footer-nav">
-    <a href="https://quizzicallabz.qzz.io/about" class="footer-nav-link">About</a>
+    <a href="https://quizzicallabz.qzz.io/about-us" class="footer-nav-link">About Us</a>
     <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-nav-link">Privacy</a>
     <a href="https://quizzicallabz.qzz.io/terms-of-service" class="footer-nav-link">Terms</a>
-    <a href="https://quizzicallabz.qzz.io/help" class="footer-nav-link">Support</a>
+    <a href="https://quizzicallabz.qzz.io/contact" class="footer-nav-link">Support</a>
   </div>
   <div class="footer-legal">
-    © 2025 Quizzicallabzᴬᴵ. All rights reserved.<br>
+    © 2025 <strong>Quizzicallabz<sup>AI</sup></strong>. All rights reserved.<br>
     Vehari, Punjab, Pakistan<br><br>
-    This message was sent to you because you have an account with Quizzicallabzᴬᴵ.<br>
-    <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage email preferences</a>
+    This message was sent because you have an account with us.<br>
+    <a href="https://quizzicallabz.qzz.io/profile">Manage email preferences</a>
   </div>
 </div>
 `;
@@ -435,16 +441,20 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             <h3 class="info-title">Result Details</h3>
             <table class="info-table">
               <tr class="info-row">
+                <td class="info-label">Quiz Title</td>
+                <td class="info-value">${quizData.quizTitle || 'Custom Quiz'}</td>
+              </tr>
+              <tr class="info-row">
                 <td class="info-label">Correct Answers</td>
-                <td class="info-value" style="color: #16a34a;">${quizData.correct}</td>
+                <td class="info-value" style="color: #16a34a;">${quizData.correct || '0'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Incorrect Answers</td>
-                <td class="info-value" style="color: #dc2626;">${quizData.incorrect}</td>
+                <td class="info-value" style="color: #dc2626;">${quizData.incorrect || '0'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Completion Date</td>
-                <td class="info-value">${quizData.date}</td>
+                <td class="info-value">${quizData.date || new Date().toLocaleDateString('en-US', { dateStyle: 'medium' })}</td>
               </tr>
             </table>
           </div>
@@ -509,15 +519,15 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             <table class="info-table">
               <tr class="info-row">
                 <td class="info-label">Email Address</td>
-                <td class="info-value">${emailDetails.userEmail}</td>
+                <td class="info-value">${emailDetails.userEmail || 'Not provided'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Subscription Plan</td>
-                <td class="info-value">${emailDetails.planName}</td>
+                <td class="info-value">${emailDetails.planName || 'Free'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Activation Date</td>
-                <td class="info-value">${emailDetails.signupDate}</td>
+                <td class="info-value">${emailDetails.signupDate || new Date().toLocaleDateString('en-US', { dateStyle: 'medium' })}</td>
               </tr>
             </table>
           </div>
@@ -582,11 +592,15 @@ export const studyReminderEmailTemplate = (userName: string, reminderData?: {
             <table class="info-table">
               <tr class="info-row">
                 <td class="info-label">Last Activity</td>
-                <td class="info-value">${reminderData?.lastActivity || 'A few days ago'}</td>
+                <td class="info-value">${reminderData?.lastActivity || new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { dateStyle: 'medium' })}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Current Streak</td>
                 <td class="info-value">${reminderData?.streakDays || 0} days</td>
+              </tr>
+              <tr class="info-row">
+                <td class="info-label">Study Goal</td>
+                <td class="info-value">Daily practice recommended</td>
               </tr>
               ${reminderData?.weakAreas && reminderData.weakAreas.length > 0 ? `
               <tr class="info-row">
@@ -776,7 +790,8 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
           </div>
           
           <div class="button-container">
-            <a href="https://quizzicallabz.qzz.io/profile" class="button-primary">Review Security</a>
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-primary">Change Password</a>
+            <a href="https://quizzicallabz.qzz.io/profile" class="button-secondary">Account Settings</a>
           </div>
         </div>
         
