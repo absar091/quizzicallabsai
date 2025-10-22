@@ -1,25 +1,28 @@
 export default function Disclaimer() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8 text-foreground">Disclaimer</h1>
+    <div className="min-h-screen bg-black text-white py-16 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black mb-4">Disclaimer</h1>
+          <p className="text-xl text-white/80">Important information about our platform</p>
+        </div>
 
-        <div className="prose prose-lg max-w-none text-foreground">
-        <p className="text-sm text-muted-foreground mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+        <div className="space-y-8">
+        <p className="text-sm text-white/60 mb-8 text-center">Last updated: {new Date().toLocaleDateString()}</p>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">1. Educational Purpose Only</h2>
-          <p className="mb-4">Quizzicallabzᴬᴵ ("we," "our," or "us") operates as an educational technology platform designed to supplement traditional learning methods. Our services are intended for educational and informational purposes only.</p>
-          <div className="bg-primary/10 border border-primary p-4 rounded border-l-4 mb-4">
-            <p className="font-semibold mb-2">Important:</p>
-            <ul className="list-disc pl-6 space-y-1">
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">1. Educational Purpose Only</h2>
+          <p className="mb-4 text-white/80">Quizzicallabzᴬᴵ ("we," "our," or "us") operates as an educational technology platform designed to supplement traditional learning methods. Our services are intended for educational and informational purposes only.</p>
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+            <p className="font-semibold mb-2 text-white">Important:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
               <li>Our platform is a study aid, not a replacement for professional education</li>
               <li>AI-generated content should be used as a supplement to verified academic materials</li>
               <li>Users are responsible for verifying information accuracy before academic use</li>
               <li>We recommend consulting qualified educators for critical learning decisions</li>
             </ul>
           </div>
-        </section>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">2. Beta Platform Status</h2>
@@ -38,15 +41,15 @@ export default function Disclaimer() {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">3. AI-Generated Content Limitations</h2>
-          <div className="bg-accent/10 border border-accent/50 p-4 rounded border-l-4 mb-4">
-            <p className="font-semibold mb-3">🤖 AI Content Disclaimer</p>
-            <p className="mb-3">All AI-generated content on our platform has inherent limitations:</p>
-            <ul className="list-disc pl-6 space-y-1">
-              <li><strong>Potential Inaccuracies:</strong> AI may generate incorrect or outdated information</li>
-              <li><strong>Contextual Limitations:</strong> AI may not fully understand nuanced academic contexts</li>
-              <li><strong>Bias and Fairness:</strong> AI models may reflect training data biases</li>
-              <li><strong>Creative Interpretations:</strong> AI may interpret prompts differently than intended</li>
-              <li><strong>Knowledge Cutoffs:</strong> AI knowledge may not include very recent developments</li>
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+            <p className="font-semibold mb-3 text-white">🤖 AI Content Disclaimer</p>
+            <p className="mb-3 text-white/80">All AI-generated content on our platform has inherent limitations:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
+              <li><strong className="text-white">Potential Inaccuracies:</strong> AI may generate incorrect or outdated information</li>
+              <li><strong className="text-white">Contextual Limitations:</strong> AI may not fully understand nuanced academic contexts</li>
+              <li><strong className="text-white">Bias and Fairness:</strong> AI models may reflect training data biases</li>
+              <li><strong className="text-white">Creative Interpretations:</strong> AI may interpret prompts differently than intended</li>
+              <li><strong className="text-white">Knowledge Cutoffs:</strong> AI knowledge may not include very recent developments</li>
             </ul>
           </div>
         </section>
@@ -106,10 +109,10 @@ export default function Disclaimer() {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">8. Limitation of Liability</h2>
-          <div className="bg-card border border-border p-4 rounded mb-4">
-            <p className="font-semibold mb-3">Legal Limitation Notice</p>
-            <p className="mb-3">To the maximum extent permitted by applicable law:</p>
-            <ul className="list-disc pl-6 space-y-1">
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl mb-4">
+            <p className="font-semibold mb-3 text-white">Legal Limitation Notice</p>
+            <p className="mb-3 text-white/80">To the maximum extent permitted by applicable law:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
               <li>We shall not be liable for any indirect, incidental, or consequential damages</li>
               <li>Our total liability shall not exceed the amount paid for our services</li>
               <li>We are not responsible for damages resulting from platform unavailability</li>
@@ -193,9 +196,9 @@ export default function Disclaimer() {
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">15. User Responsibilities</h2>
-          <div className="bg-accent/5 border border-accent/20 p-4 rounded border-l-4 mb-4">
-            <p className="font-semibold mb-3">✅ Best Practices for Users</p>
-            <ul className="list-disc pl-6 space-y-1">
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+            <p className="font-semibold mb-3 text-white">✅ Best Practices for Users</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
               <li>Verify AI-generated content before academic use</li>
               <li>Maintain regular backups of important study materials</li>
               <li>Use strong, unique passwords for account security</li>
@@ -209,17 +212,17 @@ export default function Disclaimer() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">16. Contact and Support</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-primary/10 border border-primary/20 p-4 rounded">
-              <h3 className="font-semibold mb-3">General Support</h3>
-              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-primary hover:underline">quizzicallabz.qzz.io</a></p>
-              <p><strong>Email:</strong> hello@quizzicallabz.qzz.io</p>
-              <p><strong>WhatsApp:</strong> +923261536764</p>
+            <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl">
+              <h3 className="font-semibold mb-3 text-white">General Support</h3>
+              <p className="text-white/80"><strong className="text-white">Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-400 hover:underline">quizzicallabz.qzz.io</a></p>
+              <p className="text-white/80"><strong className="text-white">Email:</strong> hello@quizzicallabz.qzz.io</p>
+              <p className="text-white/80"><strong className="text-white">WhatsApp:</strong> +923261536764</p>
             </div>
-            <div className="bg-destructive/10 border border-destructive/20 p-4 rounded">
-              <h3 className="font-semibold mb-3">Legal & Compliance</h3>
-              <p><strong>Legal Inquiries:</strong> legal@quizzicallabz.qzz.io</p>
-              <p><strong>Privacy Concerns:</strong> privacy@quizzicallabz.qzz.io</p>
-              <p><strong>Security Issues:</strong> security@quizzicallabz.qzz.io</p>
+            <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl">
+              <h3 className="font-semibold mb-3 text-white">Legal & Compliance</h3>
+              <p className="text-white/80"><strong className="text-white">Legal Inquiries:</strong> legal@quizzicallabz.qzz.io</p>
+              <p className="text-white/80"><strong className="text-white">Privacy Concerns:</strong> privacy@quizzicallabz.qzz.io</p>
+              <p className="text-white/80"><strong className="text-white">Security Issues:</strong> security@quizzicallabz.qzz.io</p>
             </div>
           </div>
         </section>

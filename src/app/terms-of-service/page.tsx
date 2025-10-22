@@ -1,11 +1,14 @@
 export default function TermsOfService() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8 text-foreground">Terms of Service</h1>
+    <div className="min-h-screen bg-black text-white py-16 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black mb-4">Terms of Service</h1>
+          <p className="text-xl text-white/80">Legal terms and conditions for using our platform</p>
+        </div>
 
-        <div className="prose prose-lg max-w-none text-foreground">
-          <p className="text-sm text-muted-foreground mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+        <div className="space-y-8">
+          <p className="text-sm text-white/60 mb-8 text-center">Last updated: {new Date().toLocaleDateString()}</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
@@ -40,9 +43,9 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">4. Prohibited Uses and Content</h2>
-            <div className="bg-destructive/10 p-4 rounded border-l-4 border-destructive mb-4">
-              <p className="font-bold text-destructive mb-3">🚫 IMMEDIATE ACCOUNT TERMINATION for:</p>
-              <ul className="list-disc pl-6 text-destructive/80 space-y-1">
+            <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+              <p className="font-bold text-white mb-3">🚫 IMMEDIATE ACCOUNT TERMINATION for:</p>
+              <ul className="list-disc pl-6 text-white/70 space-y-2">
                 <li>Creating or distributing harmful, illegal, or inappropriate content</li>
                 <li>Content involving minors in inappropriate contexts</li>
                 <li>Promoting violence, hate speech, or discrimination</li>
@@ -57,13 +60,13 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. Account Suspension and Termination</h2>
-            <div className="bg-accent/10 p-4 rounded border-l-4 border-accent mb-4">
-              <p className="font-bold mb-3">⚠️ Violation Consequences:</p>
-              <ul className="list-disc pl-6 space-y-1">
-                <li><strong>First Offense:</strong> Written warning and content removal</li>
-                <li><strong>Second Offense:</strong> Temporary suspension (7-30 days)</li>
-                <li><strong>Severe Violations:</strong> Immediate permanent account termination</li>
-                <li><strong>Email Blocking:</strong> Associated email addresses may be blocked</li>
+            <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+              <p className="font-bold mb-3 text-white">⚠️ Violation Consequences:</p>
+              <ul className="list-disc pl-6 space-y-2 text-white/70">
+                <li><strong className="text-white">First Offense:</strong> Written warning and content removal</li>
+                <li><strong className="text-white">Second Offense:</strong> Temporary suspension (7-30 days)</li>
+                <li><strong className="text-white">Severe Violations:</strong> Immediate permanent account termination</li>
+                <li><strong className="text-white">Email Blocking:</strong> Associated email addresses may be blocked</li>
               </ul>
             </div>
             <p className="mb-4"><strong>Appeal Process:</strong> Terminated users may appeal by contacting legal@quizzicallabz.qzz.io within 30 days of termination.</p>

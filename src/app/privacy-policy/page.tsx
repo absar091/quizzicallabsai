@@ -1,33 +1,36 @@
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8 text-foreground">Privacy Policy</h1>
+    <div className="min-h-screen bg-black text-white py-16 px-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black mb-4">Privacy Policy</h1>
+          <p className="text-xl text-white/80">How we protect and handle your data</p>
+        </div>
 
-        <div className="prose prose-lg max-w-none text-foreground">
-        <p className="text-sm text-muted-foreground mb-6">Last updated: {new Date().toLocaleDateString()}</p>
+        <div className="space-y-8">
+        <p className="text-sm text-white/60 mb-8 text-center">Last updated: {new Date().toLocaleDateString()}</p>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
-          <p>Quizzicallabzᴬᴵ ("we," "our," or "us") operates the website quizzicallabz.qzz.io and related services. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered educational platform.</p>
-          <p>We are committed to protecting your privacy and ensuring transparency in our data practices. This policy applies to all users of our services, including students, educators, and visitors to our website.</p>
-        </section>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">1. Introduction</h2>
+          <p className="text-white/80 mb-4">Quizzicallabzᴬᴵ ("we," "our," or "us") operates the website quizzicallabz.qzz.io and related services. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered educational platform.</p>
+          <p className="text-white/80">We are committed to protecting your privacy and ensuring transparency in our data practices. This policy applies to all users of our services, including students, educators, and visitors to our website.</p>
+        </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">2. Information We Collect</h2>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-6 text-white">2. Information We Collect</h2>
 
-          <h3 className="text-xl font-semibold mb-3">2.1 Personal Information</h3>
-          <p className="mb-4">When you create an account or use our services, we may collect:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
+          <h3 className="text-xl font-semibold mb-3 text-white">2.1 Personal Information</h3>
+          <p className="mb-4 text-white/80">When you create an account or use our services, we may collect:</p>
+          <ul className="list-disc pl-6 space-y-2 mb-6 text-white/70">
             <li>Email address and password (for account creation)</li>
             <li>Display name and profile information</li>
             <li>Educational institution (if provided)</li>
             <li>Communication preferences</li>
           </ul>
 
-          <h3 className="text-xl font-semibold mb-3">2.2 Educational Data</h3>
-          <p className="mb-4">To provide personalized learning experiences, we collect:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
+          <h3 className="text-xl font-semibold mb-3 text-white">2.2 Educational Data</h3>
+          <p className="mb-4 text-white/80">To provide personalized learning experiences, we collect:</p>
+          <ul className="list-disc pl-6 space-y-2 mb-6 text-white/70">
             <li>Quiz scores and performance metrics</li>
             <li>Study progress and completion data</li>
             <li>Learning preferences and subject interests</li>
@@ -35,16 +38,16 @@ export default function PrivacyPolicy() {
             <li>Usage patterns and feature interactions</li>
           </ul>
 
-          <h3 className="text-xl font-semibold mb-3">2.3 Technical Data</h3>
-          <p className="mb-4">We automatically collect certain technical information:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
+          <h3 className="text-xl font-semibold mb-3 text-white">2.3 Technical Data</h3>
+          <p className="mb-4 text-white/80">We automatically collect certain technical information:</p>
+          <ul className="list-disc pl-6 space-y-2 text-white/70">
             <li>IP address and device information</li>
             <li>Browser type and version</li>
             <li>Pages visited and time spent on our platform</li>
             <li>Error logs and crash reports</li>
             <li>Cookies and similar tracking technologies</li>
           </ul>
-        </section>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">3. How We Use Your Information</h2>
