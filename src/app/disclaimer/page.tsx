@@ -24,12 +24,12 @@ export default function Disclaimer() {
           </div>
         </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">2. Beta Platform Status</h2>
-          <div className="bg-accent/10 border border-accent p-4 rounded border-l-4 mb-4">
-            <p className="font-semibold mb-3">🚧 Beta Development Notice</p>
-            <p className="mb-3">Quizzicallabzᴬᴵ is currently in active development and beta testing phase. Users should be aware of the following:</p>
-            <ul className="list-disc pl-6 space-y-1">
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">2. Beta Platform Status</h2>
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+            <p className="font-semibold mb-3 text-white">🚧 Beta Development Notice</p>
+            <p className="mb-3 text-white/80">Quizzicallabzᴬᴵ is currently in active development and beta testing phase. Users should be aware of the following:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
               <li>Features may change, be added, or removed without prior notice</li>
               <li>Platform stability and uptime are not guaranteed during beta</li>
               <li>Some features may be experimental and subject to modification</li>
@@ -37,7 +37,7 @@ export default function Disclaimer() {
               <li>Data migration or loss may occur during updates</li>
             </ul>
           </div>
-        </section>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">3. AI-Generated Content Limitations</h2>
@@ -67,12 +67,12 @@ export default function Disclaimer() {
           <p>Our platform is designed to enhance learning efficiency, but results vary significantly between users.</p>
         </section>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">5. Academic Integrity and Ethics</h2>
-          <div className="bg-destructive/10 border border-destructive p-4 rounded border-l-4 mb-4">
-            <p className="font-semibold mb-3">⚠️ Academic Dishonesty Warning</p>
-            <p className="mb-3">Users must maintain academic integrity when using our platform:</p>
-            <ul className="list-disc pl-6 space-y-1">
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-4 text-white">5. Academic Integrity and Ethics</h2>
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl border-l-4 border-l-blue-500 mb-4">
+            <p className="font-semibold mb-3 text-white">⚠️ Academic Dishonesty Warning</p>
+            <p className="mb-3 text-white/80">Users must maintain academic integrity when using our platform:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
               <li>AI-generated content should be used as a study aid, not for cheating</li>
               <li>Do not submit AI-generated work as your own original work</li>
               <li>Always cite and reference sources appropriately</li>
@@ -80,7 +80,7 @@ export default function Disclaimer() {
               <li>Use platform features responsibly and ethically</li>
             </ul>
           </div>
-        </section>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">6. Service Availability and Reliability</h2>
@@ -232,10 +232,10 @@ export default function Disclaimer() {
           <p>This Disclaimer is governed by the laws of Pakistan and applicable international regulations. Any disputes will be resolved in accordance with our Terms of Service and local jurisdiction requirements.</p>
         </section>
 
-        <div className="bg-accent/5 border border-accent/20 p-4 rounded mt-8">
-          <p className="font-semibold mb-2">📚 Educational Philosophy</p>
-          <p className="mb-3">At Quizzicallabzᴬᴵ, we believe technology should enhance, not replace, human learning. Our AI tools are designed to:</p>
-          <ul className="list-disc pl-6 space-y-1 text-sm">
+        <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl mt-8">
+          <p className="font-semibold mb-2 text-white">📚 Educational Philosophy</p>
+          <p className="mb-3 text-white/80">At Quizzicallabzᴬᴵ, we believe technology should enhance, not replace, human learning. Our AI tools are designed to:</p>
+          <ul className="list-disc pl-6 space-y-2 text-white/70">
             <li>🤝 Supplement traditional teaching methods</li>
             <li>⚡ Accelerate learning through personalization</li>
             <li>🎯 Make education more accessible and engaging</li>
@@ -244,9 +244,9 @@ export default function Disclaimer() {
           </ul>
         </div>
 
-          <div className="bg-card border border-border p-4 rounded mt-6">
-            <p className="font-semibold mb-2">📞 Need Help Understanding This Disclaimer?</p>
-            <p>If you have questions about this disclaimer or need clarification on any points, please don't hesitate to contact our support team. We're here to help you use our platform effectively and responsibly.</p>
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl mt-6">
+            <p className="font-semibold mb-2 text-white">📞 Need Help Understanding This Disclaimer?</p>
+            <p className="text-white/80">If you have questions about this disclaimer or need clarification on any points, please don't hesitate to contact our support team. We're here to help you use our platform effectively and responsibly.</p>
           </div>
         </div>
       </div>
