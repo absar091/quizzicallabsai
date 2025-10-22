@@ -190,19 +190,17 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
         </style>
       </head>
       <body>
-        <div class="email-container">
+        <table class="email-container" width="100%" cellpadding="0" cellspacing="0" role="presentation">
           <!-- HEADER START -->
           <tr>
             <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <!-- Logo -->
                   <td align="left">
                     <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
                       <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
                     </a>
                   </td>
-                  <!-- App Name + Tagline -->
                   <td align="right" style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;">
                     <strong style="font-size:16px;color:#4f46e5;">Quizzicallabzᴬᴵ</strong><br>
                     <span style="color:#6b7280;">Your ultimate AI-powered study partner</span>
@@ -246,7 +244,7 @@ export async function sendEmailVerificationEmail(to: string, userName: string, v
             </td>
           </tr>
           <!-- FOOTER END -->
-        </div>
+        </table>
       </body>
       </html>
     `,
@@ -280,19 +278,17 @@ export async function sendPasswordResetEmail(to: string, userName: string, reset
         </style>
       </head>
       <body>
-        <div class="email-container">
+        <table class="email-container" width="100%" cellpadding="0" cellspacing="0" role="presentation">
           <!-- HEADER START -->
           <tr>
             <td style="padding:20px 30px;background:#ffffff;border-bottom:1px solid #e5e7eb;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <!-- Logo -->
                   <td align="left">
                     <a href="https://quizzicallabz.qzz.io" target="_blank" style="text-decoration:none;">
                       <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ" width="160" style="display:block;">
                     </a>
                   </td>
-                  <!-- App Name + Tagline -->
                   <td align="right" style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;">
                     <strong style="font-size:16px;color:#4f46e5;">Quizzicallabzᴬᴵ</strong><br>
                     <span style="color:#6b7280;">Your ultimate AI-powered study partner</span>
@@ -336,7 +332,7 @@ export async function sendPasswordResetEmail(to: string, userName: string, reset
             </td>
           </tr>
           <!-- FOOTER END -->
-        </div>
+        </table>
       </body>
       </html>
     `,
