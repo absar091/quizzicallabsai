@@ -87,32 +87,32 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-32 px-4 relative overflow-hidden">
+      <section className="py-16 md:py-32 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-black to-blue-950/30"></div>
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-800/10 rounded-full blur-3xl"></div>
         </div>
         <div className="container mx-auto text-center max-w-5xl relative z-10">
-          <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tight">
+          <h1 className="text-3xl md:text-7xl font-black mb-6 md:mb-8 tracking-tight">
             <span className="text-white">Study Smarter with </span>
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">AI</span>
           </h1>
-          <p className="text-2xl text-white/80 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+          <p className="text-lg md:text-2xl text-white/80 mb-8 md:mb-12 max-w-3xl mx-auto font-light leading-relaxed">
             Transform any document into personalized quizzes in seconds. 
             Compete with friends in live quiz battles.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-12 py-6 text-lg font-semibold rounded-2xl shadow-2xl hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300" asChild>
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-8 md:px-12 py-4 md:py-6 text-base md:text-lg font-semibold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300" asChild>
               <Link href="/signup">
-                <Zap className="mr-3 h-6 w-6" />
+                <Zap className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6" />
                 Start Free
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-12 py-6 text-lg font-semibold rounded-2xl backdrop-blur-sm transform hover:scale-105 transition-all duration-300" asChild>
+            <Button size="lg" variant="outline" className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-8 md:px-12 py-4 md:py-6 text-base md:text-lg font-semibold rounded-xl md:rounded-2xl backdrop-blur-sm transform hover:scale-105 transition-all duration-300" asChild>
               <Link href="/quiz-arena">
-                <GamepadIcon className="mr-3 h-6 w-6" />
+                <GamepadIcon className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6" />
                 Play Quiz Arena
               </Link>
             </Button>
@@ -128,38 +128,38 @@ export default function Home() {
             Everything You Need to Learn Better
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
-              <CardContent className="p-10 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
-                  <FileText className="h-10 w-10 text-white" />
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-2xl md:rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
+              <CardContent className="p-6 md:p-10 text-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
+                  <FileText className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-6 text-white">AI Quiz Generator</h3>
-                <p className="text-white/70 leading-relaxed text-lg">
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-6 text-white">AI Quiz Generator</h3>
+                <p className="text-white/70 leading-relaxed text-base md:text-lg">
                   Upload any document and get instant quizzes. PDF, DOCX, images - we handle it all.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
-              <CardContent className="p-10 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
-                  <GamepadIcon className="h-10 w-10 text-white" />
+            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-2xl md:rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
+              <CardContent className="p-6 md:p-10 text-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
+                  <GamepadIcon className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-6 text-white">Live Quiz Battles</h3>
-                <p className="text-white/70 leading-relaxed text-lg">
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-6 text-white">Live Quiz Battles</h3>
+                <p className="text-white/70 leading-relaxed text-base md:text-lg">
                   Compete with friends in real-time. Make studying fun with multiplayer competitions.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
-              <CardContent className="p-10 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-700 to-blue-900 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
-                  <Trophy className="h-10 w-10 text-white" />
+            <Card className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-blue-500/50 backdrop-blur-xl rounded-2xl md:rounded-3xl transform hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 group">
+              <CardContent className="p-6 md:p-10 text-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-700 to-blue-900 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8 shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
+                  <Trophy className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-6 text-white">Smart Learning</h3>
-                <p className="text-white/70 leading-relaxed text-lg">
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-6 text-white">Smart Learning</h3>
+                <p className="text-white/70 leading-relaxed text-base md:text-lg">
                   AI adapts to your pace. Track progress and get personalized study recommendations.
                 </p>
               </CardContent>
