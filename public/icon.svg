@@ -9,10 +9,18 @@
     <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
       <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.15"/>
     </filter>
+    
+    <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="-8"/>
+      <feGaussianBlur stdDeviation="12" result="offset-blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.3"/>
+      <feComposite in2="offset-blur" operator="in"/>
+    </filter>
   </defs>
   
-  <!-- Blue filled circle background -->
+  <!-- Blue filled circle background with shadows -->
   <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" filter="url(#innerShadow)" opacity="0.8"/>
   
   <!-- White Q Letter with black outline -->
   <text x="256" y="340" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="280" font-weight="600" text-anchor="middle" fill="#FFFFFF" stroke="#000000" stroke-width="4">Q</text>
