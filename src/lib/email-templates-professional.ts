@@ -421,7 +421,7 @@ const PROFESSIONAL_FOOTER = `
     © 2025 <strong>Quizzicallabz<sup>AI</sup></strong>. All rights reserved.<br>
     Vehari, Punjab, Pakistan<br><br>
     This message was sent because you have an account with us.<br>
-    <a href="https://quizzicallabz.qzz.io/profile">Manage email preferences</a>
+    <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage email preferences</a>
   </div>
 </div>
 `;
