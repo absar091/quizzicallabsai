@@ -19,8 +19,8 @@ export default function ShareAppPopup({ isOpen, onClose }: ShareAppPopupProps) {
     setMounted(true);
   }, []);
   
-  const shareUrl = 'https://quizzicallabs.ai';
-  const shareText = 'Check out Quizzicallabs AI - Your ultimate AI-powered study partner! Generate custom quizzes, practice questions, and study guides instantly. 🚀';
+  const shareUrl = 'https://quizzicallabz.qzz.io';
+  const shareText = 'Check out Quizzicallabzᴬᴵ - Your ultimate AI-powered study partner! Generate custom quizzes, practice questions, and study guides instantly. 🚀';
 
   const copyToClipboard = async () => {
     if (!mounted) return;
@@ -70,7 +70,7 @@ export default function ShareAppPopup({ isOpen, onClose }: ShareAppPopupProps) {
         
         <div className="text-center mb-6">
           <Share2 className="mx-auto mb-3 text-blue-600" size={32} />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Share Quizzicallabs AI</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Share Quizzicallabzᴬᴵ</h3>
           <p className="text-gray-600 text-sm">Help your friends discover the ultimate AI study partner!</p>
         </div>
 

@@ -454,7 +454,7 @@ export default function ProfilePage() {
                 onClick={() => setShowSharePopup(true)}
               >
                 <Share2 className="mr-2 h-4 w-4" />
-                Share Quizzicallabs AI
+                Share Quizzicallabzᴬᴵ
               </Button>
               <p className="text-xs text-muted-foreground text-center mt-2">
                 Help your friends discover the ultimate AI study partner!
