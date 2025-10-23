@@ -168,7 +168,12 @@ Please process this deletion request.
                 disabled={isDeleting || confirmText !== "DELETE MY ACCOUNT" || !agreedToTerms}
                 className="flex-1"
               >
-                {isDeleting ? "Processing..." : "Delete My Account Permanently"}
+                {isDeleting ? "Processing..." : (
+                  <>
+                    <span className="hidden sm:inline">Delete My Account Permanently</span>
+                    <span className="sm:hidden">Delete Account</span>
+                  </>
+                )}
               </Button>
               <Button variant="outline" asChild className="flex-1">
                 <Link href="/profile">Cancel</Link>
