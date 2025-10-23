@@ -1,12 +1,14 @@
 // Security utilities for input sanitization and validation
-import DOMPurify from 'isomorphic-dompurify';
 
 // Sanitize HTML content to prevent XSS
 export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li'],
-    ALLOWED_ATTR: []
-  });
+  // Simple HTML sanitization without external dependency
+  return html
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
 }
 
 // Sanitize log data to prevent log injection
