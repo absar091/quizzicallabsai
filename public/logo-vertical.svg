@@ -1,0 +1,21 @@
+<svg width="200" height="250" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="verticalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6A0DAD"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Logo circle -->
+  <circle cx="100" cy="60" r="45" fill="url(#verticalGradient)"/>
+  <text x="100" y="80" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="50" font-weight="600" text-anchor="middle" fill="#FFFFFF">Q</text>
+  
+  <!-- Brand name -->
+  <text x="100" y="150" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="28" font-weight="600" text-anchor="middle" fill="#1E40AF">Quizzicallabz</text>
+  <text x="100" y="175" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" fill="#6A0DAD">ᴬᴵ</text>
+  
+  <!-- Tagline -->
+  <text x="100" y="210" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#6B7280">Your Ultimate</text>
+  <text x="100" y="225" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#6B7280">AI-Powered Study Partner</text>
+</svg>

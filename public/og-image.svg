@@ -1,0 +1,54 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6A0DAD"/>
+    </linearGradient>
+    
+    <filter id="textShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="40" fill="#FFFFFF" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="60" fill="#FFFFFF" opacity="0.1"/>
+  <circle cx="1050" cy="150" r="30" fill="#FFFFFF" opacity="0.15"/>
+  
+  <!-- Main content container -->
+  <rect x="80" y="80" width="1040" height="470" rx="20" fill="#FFFFFF" opacity="0.95"/>
+  
+  <!-- Logo circle -->
+  <circle cx="200" cy="250" r="80" fill="url(#bgGradient)"/>
+  <text x="200" y="290" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="80" font-weight="600" text-anchor="middle" fill="#FFFFFF">Q</text>
+  
+  <!-- Brand name -->
+  <text x="320" y="220" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="64" font-weight="600" fill="#1E40AF" filter="url(#textShadow)">Quizzicallabz</text>
+  <text x="750" y="220" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="32" font-weight="600" fill="#6A0DAD">ᴬᴵ</text>
+  
+  <!-- Tagline -->
+  <text x="320" y="280" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="28" font-weight="400" fill="#374151">Your Ultimate AI-Powered Study Partner</text>
+  
+  <!-- Key features -->
+  <text x="320" y="340" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">✨ AI Quiz Generation</text>
+  <text x="320" y="375" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">🎮 Live Quiz Arena</text>
+  <text x="320" y="410" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">📊 Performance Analytics</text>
+  
+  <text x="600" y="340" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">📚 MDCAT/ECAT/NTS Prep</text>
+  <text x="600" y="375" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">🤝 Social Learning</text>
+  <text x="600" y="410" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="20" font-weight="500" fill="#6B7280">🧠 Personalized Learning</text>
+  
+  <!-- Website URL -->
+  <text x="320" y="480" font-family="'Google Sans', 'Roboto', Arial, sans-serif" font-size="24" font-weight="500" fill="#1E40AF">quizzicallabz.qzz.io</text>
+  
+  <!-- Sparkle effects -->
+  <g opacity="0.6">
+    <path d="M950 180 L958 188 L950 196 L942 188 Z" fill="#6A0DAD"/>
+    <path d="M980 350 L986 356 L980 362 L974 356 Z" fill="#3B82F6"/>
+    <path d="M1020 420 L1025 425 L1020 430 L1015 425 Z" fill="#1E40AF"/>
+  </g>
+</svg>
