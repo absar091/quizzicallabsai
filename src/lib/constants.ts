@@ -17,11 +17,20 @@ export const APP = {
 
 export const SOCIAL = {
   TWITTER_HANDLE: '@QuizzicallabzAI',
-  LINKEDIN: 'https://linkedin.com/company/quizzicallabs',
-  GITHUB: 'https://github.com/quizzicallabs/quizzicallabs-ai',
+  LINKEDIN: 'https://linkedin.com/company/quizzicallabz',
+  GITHUB: 'https://github.com/absar091/quizzicallabsai',
 } as const;
 
 export const CONTACT = {
-  EMAIL: 'hello@quizzicallabs.com',
-  SUPPORT_EMAIL: 'support@quizzicallabs.com',
+  EMAIL: 'hello@quizzicallabz.qzz.io',
+  SUPPORT_EMAIL: 'support@quizzicallabz.qzz.io',
+  LEGAL_EMAIL: 'legal@quizzicallabz.qzz.io',
+  SECURITY_EMAIL: 'security@quizzicallabz.qzz.io',
+  PRIVACY_EMAIL: 'privacy@quizzicallabz.qzz.io',
+} as const;
+
+export const CREATOR = {
+  NAME: 'Absar Ahmad Rao',
+  TITLE: 'Founder & Lead Developer',
+  GITHUB: 'https://github.com/absar091',
 } as const;
