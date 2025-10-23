@@ -44,3 +44,12 @@ export function sanitizeForLog(data: any): string {
   }
   return JSON.stringify(data).replace(/[\r\n\t]/g, ' ').substring(0, 200);
 }
+
+// Input validator class
+export class InputValidator {
+  static sanitizeString = sanitizeString;
+  static validateEmail = validateEmail;
+  static validateUrl = validateUrl;
+  static validateFilePath = validateFilePath;
+  static sanitizeForLog = sanitizeForLog;
+}

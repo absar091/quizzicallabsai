@@ -48,3 +48,9 @@ export function sanitizeString(input: string): string {
     return entities[match] || match;
   }).substring(0, 100);
 }
+
+// Sanitize URL slug
+export function sanitizeSlug(slug: string): string {
+  if (!slug) return '';
+  return slug.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase().substring(0, 50);
+}
