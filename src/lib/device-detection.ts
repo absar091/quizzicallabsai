@@ -41,16 +41,53 @@ export const detectDeviceInfo = async (userAgent: string, ip?: string): Promise<
   const timestamp = now.toISOString();
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  // Detect browser
+  // Try to get enhanced device info if running in browser
+  let enhancedInfo;
+  try {
+    if (typeof window !== 'undefined') {
+      const { getEnhancedDeviceInfo, getDeviceModel, getBrowserDetails } = await import('./enhanced-device-detection');
+      enhancedInfo = await getEnhancedDeviceInfo();
+      
+      // Use enhanced detection
+      const device = getDeviceModel(userAgent, enhancedInfo);
+      const browser = getBrowserDetails(userAgent, enhancedInfo);
+      const os = detectOS(userAgent);
+      
+      // Get location from IP
+      const locationData = await getLocationFromIP(ip || 'unknown');
+      
+      console.log('🔍 Enhanced device detection:', {
+        device,
+        browser,
+        os,
+        screenRes: `${enhancedInfo.screenWidth}x${enhancedInfo.screenHeight}`,
+        cores: enhancedInfo.hardwareConcurrency,
+        memory: enhancedInfo.deviceMemory,
+        connection: enhancedInfo.connectionType
+      });
+      
+      return {
+        device,
+        browser,
+        os,
+        ip: ip || 'unknown',
+        location: locationData.location,
+        userAgent,
+        timestamp,
+        timezone,
+        country: locationData.country,
+        city: locationData.city,
+        region: locationData.region
+      };
+    }
+  } catch (error) {
+    console.warn('Enhanced device detection failed, using fallback:', error);
+  }
+
+  // Fallback to basic detection
   const browser = detectBrowser(userAgent);
-
-  // Detect OS
   const os = detectOS(userAgent);
-
-  // Detect device type
   const device = detectDeviceType(userAgent);
-
-  // Get location from IP
   const locationData = await getLocationFromIP(ip || 'unknown');
 
   return {
@@ -69,14 +106,62 @@ export const detectDeviceInfo = async (userAgent: string, ip?: string): Promise<
 };
 
 function detectBrowser(userAgent: string): string {
-  // More detailed browser detection
-  if (userAgent.includes('Edg/')) return 'Microsoft Edge';
-  if (userAgent.includes('Chrome/') && !userAgent.includes('Edg/')) return 'Google Chrome';
-  if (userAgent.includes('Firefox/')) return 'Mozilla Firefox';
-  if (userAgent.includes('Safari/') && !userAgent.includes('Chrome/')) return 'Safari';
-  if (userAgent.includes('Opera/') || userAgent.includes('OPR/')) return 'Opera';
-  if (userAgent.includes('Brave/')) return 'Brave Browser';
-  if (userAgent.includes('Vivaldi/')) return 'Vivaldi';
+  // Enhanced browser detection with version numbers
+  
+  // Microsoft Edge
+  if (userAgent.includes('Edg/')) {
+    const versionMatch = userAgent.match(/Edg\/(\d+\.\d+)/);
+    return versionMatch ? `Microsoft Edge ${versionMatch[1]}` : 'Microsoft Edge';
+  }
+  
+  // Google Chrome (but not Edge)
+  if (userAgent.includes('Chrome/') && !userAgent.includes('Edg/')) {
+    const versionMatch = userAgent.match(/Chrome\/(\d+\.\d+)/);
+    return versionMatch ? `Google Chrome ${versionMatch[1]}` : 'Google Chrome';
+  }
+  
+  // Mozilla Firefox
+  if (userAgent.includes('Firefox/')) {
+    const versionMatch = userAgent.match(/Firefox\/(\d+\.\d+)/);
+    return versionMatch ? `Mozilla Firefox ${versionMatch[1]}` : 'Mozilla Firefox';
+  }
+  
+  // Safari (but not Chrome-based)
+  if (userAgent.includes('Safari/') && !userAgent.includes('Chrome/')) {
+    const versionMatch = userAgent.match(/Version\/(\d+\.\d+)/);
+    return versionMatch ? `Safari ${versionMatch[1]}` : 'Safari';
+  }
+  
+  // Opera
+  if (userAgent.includes('Opera/') || userAgent.includes('OPR/')) {
+    const versionMatch = userAgent.match(/(?:Opera|OPR)\/(\d+\.\d+)/);
+    return versionMatch ? `Opera ${versionMatch[1]}` : 'Opera';
+  }
+  
+  // Brave Browser
+  if (userAgent.includes('Brave/')) {
+    const versionMatch = userAgent.match(/Brave\/(\d+\.\d+)/);
+    return versionMatch ? `Brave Browser ${versionMatch[1]}` : 'Brave Browser';
+  }
+  
+  // Vivaldi
+  if (userAgent.includes('Vivaldi/')) {
+    const versionMatch = userAgent.match(/Vivaldi\/(\d+\.\d+)/);
+    return versionMatch ? `Vivaldi ${versionMatch[1]}` : 'Vivaldi';
+  }
+  
+  // Samsung Internet
+  if (userAgent.includes('SamsungBrowser/')) {
+    const versionMatch = userAgent.match(/SamsungBrowser\/(\d+\.\d+)/);
+    return versionMatch ? `Samsung Internet ${versionMatch[1]}` : 'Samsung Internet';
+  }
+  
+  // UC Browser
+  if (userAgent.includes('UCBrowser/')) {
+    const versionMatch = userAgent.match(/UCBrowser\/(\d+\.\d+)/);
+    return versionMatch ? `UC Browser ${versionMatch[1]}` : 'UC Browser';
+  }
+  
   return 'Unknown Browser';
 }
 
@@ -121,18 +206,82 @@ function detectOS(userAgent: string): string {
 }
 
 function detectDeviceType(userAgent: string): string {
-  // More detailed device detection
-  if (userAgent.includes('iPhone')) return 'iPhone';
-  if (userAgent.includes('iPad')) return 'iPad';
-  if (userAgent.includes('Android') && userAgent.includes('Mobile')) return 'Android Phone';
-  if (userAgent.includes('Android')) return 'Android Tablet';
-  if (userAgent.includes('Mobile')) return 'Mobile Device';
-  if (userAgent.includes('Tablet')) return 'Tablet';
+  // Enhanced device detection with model extraction
   
-  // Desktop detection
-  if (userAgent.includes('Windows')) return 'Windows Computer';
-  if (userAgent.includes('Mac')) return 'Mac Computer';
-  if (userAgent.includes('Linux')) return 'Linux Computer';
+  // iPhone models
+  if (userAgent.includes('iPhone')) {
+    const modelMatch = userAgent.match(/iPhone(\d+,\d+)/);
+    if (modelMatch) return `iPhone ${modelMatch[1]}`;
+    
+    // iOS version detection for iPhone
+    const iosMatch = userAgent.match(/OS (\d+_\d+)/);
+    if (iosMatch) {
+      const version = iosMatch[1].replace('_', '.');
+      return `iPhone (iOS ${version})`;
+    }
+    return 'iPhone';
+  }
+  
+  // iPad models
+  if (userAgent.includes('iPad')) {
+    const modelMatch = userAgent.match(/iPad(\d+,\d+)/);
+    if (modelMatch) return `iPad ${modelMatch[1]}`;
+    return 'iPad';
+  }
+  
+  // Android device detection with model
+  if (userAgent.includes('Android')) {
+    // Extract device model
+    const modelMatch = userAgent.match(/;\s*([^;)]+)\s*Build/);
+    const versionMatch = userAgent.match(/Android (\d+\.?\d*)/);
+    
+    let deviceName = 'Android Device';
+    if (modelMatch && modelMatch[1]) {
+      deviceName = modelMatch[1].trim();
+      // Clean up common patterns
+      deviceName = deviceName.replace(/^(SM-|GT-|LG-|HTC\s+|SAMSUNG\s+)/i, '');
+    }
+    
+    const version = versionMatch ? versionMatch[1] : '';
+    const deviceType = userAgent.includes('Mobile') ? 'Phone' : 'Tablet';
+    
+    return version ? `${deviceName} (Android ${version} ${deviceType})` : `${deviceName} (Android ${deviceType})`;
+  }
+  
+  // Windows devices with version
+  if (userAgent.includes('Windows')) {
+    if (userAgent.includes('Windows NT 10.0')) {
+      // Detect Windows 11 vs 10
+      const buildMatch = userAgent.match(/Windows NT 10\.0;.*?(?:WOW64|Win64|x64)/);
+      return buildMatch ? 'Windows 11/10 (64-bit)' : 'Windows 11/10';
+    }
+    if (userAgent.includes('Windows NT 6.3')) return 'Windows 8.1 Computer';
+    if (userAgent.includes('Windows NT 6.1')) return 'Windows 7 Computer';
+    return 'Windows Computer';
+  }
+  
+  // Mac devices with model detection
+  if (userAgent.includes('Mac')) {
+    const modelMatch = userAgent.match(/\(([^;]+);.*?Mac OS X/);
+    if (modelMatch) {
+      const model = modelMatch[1].trim();
+      if (model.includes('Intel')) return 'Intel Mac';
+      if (model.includes('PPC')) return 'PowerPC Mac';
+      return `${model} Mac`;
+    }
+    return 'Mac Computer';
+  }
+  
+  // Linux detection
+  if (userAgent.includes('Linux')) {
+    if (userAgent.includes('Ubuntu')) return 'Ubuntu Linux Computer';
+    if (userAgent.includes('x86_64')) return 'Linux Computer (64-bit)';
+    return 'Linux Computer';
+  }
+  
+  // Mobile detection fallback
+  if (userAgent.includes('Mobile')) return 'Mobile Device';
+  if (userAgent.includes('Tablet')) return 'Tablet Device';
   
   return 'Desktop Computer';
 }
