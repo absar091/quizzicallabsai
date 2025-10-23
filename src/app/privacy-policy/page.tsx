@@ -201,7 +201,7 @@ export default function PrivacyPolicy() {
           <div className="bg-card border border-border p-4 rounded">
             <p className="mb-2"><strong>Data Protection Officer:</strong> Absar Ahmad Rao</p>
             <p className="mb-2"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
-            <p><strong>Address:</strong> QuizzicallabzTM, Pakistan</p>
+            <p><strong>Address:</strong> Quizzicallabzᴬᴵ™, Pakistan</p>
           </div>
         </section>
 

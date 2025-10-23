@@ -12,7 +12,7 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
-            <p className="mb-4">By accessing and using Quizzicallabzᴬᴵ ("we," "our," or "us") at quizzicallabz.qzz.io, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service constitute a legally binding agreement between you and QuizzicalLabs™.</p>
+            <p className="mb-4">By accessing and using Quizzicallabzᴬᴵ ("we," "our," or "us") at quizzicallabz.qzz.io, you accept and agree to be bound by the terms and provision of this agreement. These Terms of Service constitute a legally binding agreement between you and Quizzicallabzᴬᴵ™.</p>
             <p>If you do not agree to abide by the above, please do not use this service.</p>
           </section>
 
@@ -74,7 +74,7 @@ export default function TermsOfService() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Intellectual Property Rights</h2>
-            <p className="mb-4">The service and its original content, features, and functionality are owned by QuizzicalLabs™ and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+            <p className="mb-4">The service and its original content, features, and functionality are owned by Quizzicallabzᴬᴵ™ and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
             <ul className="list-disc pl-6 space-y-1 mb-4">
               <li>You retain ownership of content you upload to the platform</li>
               <li>You grant us a limited license to use uploaded content for service provision</li>

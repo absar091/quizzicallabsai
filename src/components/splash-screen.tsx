@@ -78,7 +78,7 @@ export function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                    Quizzicallabs <sup className="logo-sup">AI</sup>
+                    Quizzicallabz<sup className="logo-sup">ᴬᴵ</sup>
                 </motion.h1>
 
                 {/* Loading text */}
