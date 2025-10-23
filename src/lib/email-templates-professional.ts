@@ -39,11 +39,8 @@ const PROFESSIONAL_STYLES = `
     text-align: center;
   }
   
-  .logo-img {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    margin-bottom: 12px;
+  .header-app-name {
+    margin-bottom: 8px;
   }
   
   .header-app-name a {
@@ -227,12 +224,11 @@ const PROFESSIONAL_STYLES = `
     background-color: #fafafa;
   }
   
-  .footer-logo {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 20px auto;
-    border-radius: 10px;
-    opacity: 0.8;
+  .footer-brand {
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2563eb;
   }
   
   .footer-nav {
@@ -282,7 +278,11 @@ const PROFESSIONAL_STYLES = `
     }
     
     .header {
-      padding: 16px 12px;
+      padding: 20px 12px;
+    }
+    
+    .header-app-name a {
+      font-size: 20px !important;
     }
     
     .content {
@@ -394,11 +394,13 @@ const PROFESSIONAL_STYLES = `
 // Clean Professional Header - Centered and Minimal
 const PROFESSIONAL_HEADER = `
 <div class="header">
-  <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">
-    <img src="https://iili.io/KlQOQSe.png" alt="Quizzicallabzᴬᴵ Logo" class="logo-img">
-  </a>
   <div class="header-app-name">
-    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer">Quizzicallabzᴬᴵ</a>
+    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-size: 24px; font-weight: 700; text-decoration: none;">
+      Quizzicallabz<sup style="font-size: 14px; color: #3b82f6;">AI</sup>
+    </a>
+  </div>
+  <div style="margin-top: 8px; color: #64748b; font-size: 14px;">
+    AI-powered study partner
   </div>
 </div>
 `;
@@ -406,6 +408,9 @@ const PROFESSIONAL_HEADER = `
 // Professional Footer - Enterprise Style
 const PROFESSIONAL_FOOTER = `
 <div class="footer">
+  <div class="footer-brand">
+    <strong>Quizzicallabz<sup style="font-size: 12px;">AI</sup></strong>
+  </div>
   <div class="footer-nav">
     <a href="https://quizzicallabz.qzz.io/about-us" class="footer-nav-link">About Us</a>
     <a href="https://quizzicallabz.qzz.io/privacy-policy" class="footer-nav-link">Privacy</a>
