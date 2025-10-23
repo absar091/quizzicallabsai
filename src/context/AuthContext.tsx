@@ -129,8 +129,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               }
 
               // Always store/update login credentials (for both trusted and untrusted devices)
-              await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
-              SecureLogger.info('Login credentials updated');
+              // Add small delay to ensure user is fully authenticated
+              setTimeout(async () => {
+                try {
+                  await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
+                  SecureLogger.info('Login credentials updated');
+                } catch (error: any) {
+                  SecureLogger.warn('Failed to store login credentials (non-critical)', { error: error.message });
+                }
+              }, 1000);
 
             } catch (error: any) {
               SecureLogger.warn('Login credentials error (non-critical)', { error: error.message });

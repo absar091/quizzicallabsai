@@ -175,7 +175,13 @@ export class LoginCredentialsManager {
     try {
       console.log(`💾 Saving ${credentials.length} login credentials for user ${userId} to Realtime Database`);
       
-      const { db, ref, set } = await import('./firebase');
+      const { auth, db, ref, set } = await import('./firebase');
+      
+      // Ensure user is authenticated before writing
+      if (!auth.currentUser || auth.currentUser.uid !== userId) {
+        console.warn('⚠️ User not authenticated or UID mismatch, skipping credential save');
+        return;
+      }
       
       await set(ref(db, `loginCredentials/${userId}`), {
         credentials,
@@ -183,8 +189,12 @@ export class LoginCredentialsManager {
       });
       
       console.log('✅ Login credentials saved successfully');
-    } catch (error) {
-      console.error('❌ Error saving login credentials:', error);
+    } catch (error: any) {
+      if (error.code === 'PERMISSION_DENIED') {
+        console.warn('⚠️ Permission denied for login credentials - user may not be fully authenticated yet');
+      } else {
+        console.error('❌ Error saving login credentials:', error);
+      }
     }
   }
 
@@ -192,7 +202,13 @@ export class LoginCredentialsManager {
     try {
       console.log(`📖 Loading login credentials for user ${userId} from Realtime Database`);
       
-      const { db, ref, get } = await import('./firebase');
+      const { auth, db, ref, get } = await import('./firebase');
+      
+      // Ensure user is authenticated before reading
+      if (!auth.currentUser || auth.currentUser.uid !== userId) {
+        console.warn('⚠️ User not authenticated or UID mismatch, returning empty credentials');
+        return [];
+      }
       
       const snapshot = await get(ref(db, `loginCredentials/${userId}`));
       
@@ -204,8 +220,12 @@ export class LoginCredentialsManager {
         console.log('ℹ️ No stored credentials found for user');
         return [];
       }
-    } catch (error) {
-      console.error('❌ Error loading login credentials:', error);
+    } catch (error: any) {
+      if (error.code === 'PERMISSION_DENIED') {
+        console.warn('⚠️ Permission denied for login credentials - user may not be fully authenticated yet');
+      } else {
+        console.error('❌ Error loading login credentials:', error);
+      }
       return [];
     }
   }
@@ -214,12 +234,22 @@ export class LoginCredentialsManager {
     try {
       console.log(`🗑️ Clearing login credentials for user ${userId} from Realtime Database`);
       
-      const { db, ref, remove } = await import('./firebase');
+      const { auth, db, ref, remove } = await import('./firebase');
+      
+      // Ensure user is authenticated before clearing
+      if (!auth.currentUser || auth.currentUser.uid !== userId) {
+        console.warn('⚠️ User not authenticated or UID mismatch, skipping credential clear');
+        return;
+      }
       
       await remove(ref(db, `loginCredentials/${userId}`));
       console.log('✅ Login credentials cleared successfully');
-    } catch (error) {
-      console.error('❌ Error clearing login credentials:', error);
+    } catch (error: any) {
+      if (error.code === 'PERMISSION_DENIED') {
+        console.warn('⚠️ Permission denied for login credentials - user may not be fully authenticated yet');
+      } else {
+        console.error('❌ Error clearing login credentials:', error);
+      }
     }
   }
 }
