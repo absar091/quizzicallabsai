@@ -93,7 +93,7 @@
     @apply border-border;
   }
   html, body {
-    @apply bg-black text-white;
+    @apply bg-background text-foreground;
     font-family: var(--font-sans);
     overflow-x: hidden;
     overflow-y: auto;
