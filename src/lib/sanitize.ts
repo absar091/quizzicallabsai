@@ -33,3 +33,18 @@ export function validateUrl(url: string): boolean {
     return false;
   }
 }
+
+// Sanitize string input to prevent injection
+export function sanitizeString(input: string): string {
+  if (!input) return '';
+  return input.replace(/[<>"'&]/g, (match) => {
+    const entities: { [key: string]: string } = {
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '&': '&amp;'
+    };
+    return entities[match] || match;
+  }).substring(0, 100);
+}
