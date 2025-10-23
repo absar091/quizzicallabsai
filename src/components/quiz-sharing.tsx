@@ -96,7 +96,7 @@ export function QuizSharingDialog({ quiz, formValues }: QuizSharingProps) {
   };
 
   const shareViaTwitter = () => {
-    const tweetText = `🎯 Take this quiz: "${shareData.title}" by ${user?.displayName || 'Anonymous'} #QuizzicallabsAI ${shareableLink}`;
+    const tweetText = `🎯 Take this quiz: "${shareData.title}" by ${user?.displayName || 'Anonymous'} #Quizzicallabzᴬᴵ ${shareableLink}`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
   };
 

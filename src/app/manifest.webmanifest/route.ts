@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   const manifest = {
-    name: 'Quizzicallabs AI - AI Study Partner',
-    short_name: 'Quizzicallabs',
+    name: 'Quizzicallabzᴬᴵ - AI Study Partner',
+    short_name: 'Quizzicallabzᴬᴵ',
     description: 'Generate custom quizzes, practice questions with AI explanations, and full study guides. Prepare for MDCAT, ECAT, and NTS with chapter-wise tests and full mock exams.',
     start_url: '/',
     scope: '/',
@@ -47,14 +47,14 @@ export async function GET() {
         sizes: '390x844',
         type: 'image/png',
         form_factor: 'narrow',
-        label: 'Mobile view of Quizzicallabs AI'
+        label: 'Mobile view of Quizzicallabzᴬᴵ'
       },
       {
         src: '/screenshot-desktop.png',
         sizes: '1280x720',
         type: 'image/png',
         form_factor: 'wide',
-        label: 'Desktop view of Quizzicallabs AI'
+        label: 'Desktop view of Quizzicallabzᴬᴵ'
       }
     ],
     shortcuts: [

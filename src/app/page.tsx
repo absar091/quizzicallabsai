@@ -42,7 +42,7 @@ export default function Home() {
                 <BrainCircuit className="h-5 w-5 text-white" />
               </div>
               <span className="text-foreground font-black text-lg md:text-2xl tracking-tight">
-                Quizzicallabz<sup className="text-primary text-xs">AI</sup>
+                Quizzicallabz<sup className="text-primary text-xs">ᴬᴵ</sup>
               </span>
             </div>
             
@@ -305,7 +305,7 @@ export default function Home() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-foreground font-bold">Quizzicallabz<sup className="text-accent">AI</sup></span>
+                <span className="text-foreground font-bold">Quizzicallabz<sup className="text-accent">ᴬᴵ</sup></span>
               </div>
               <p className="text-muted-foreground text-sm">
                 AI-powered learning that makes studying effective and fun.
@@ -341,7 +341,7 @@ export default function Home() {
 
           <div className="border-t border-border mt-8 pt-8 text-center">
             <p className="text-muted-foreground text-sm">
-              © 2025 Quizzicallabz<sup className="text-accent">AI</sup>. All rights reserved.
+              © 2025 Quizzicallabz<sup className="text-accent">ᴬᴵ</sup>. All rights reserved.
             </p>
           </div>
         </div>
