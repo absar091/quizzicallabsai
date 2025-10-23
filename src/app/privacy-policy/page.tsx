@@ -1,6 +1,6 @@
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-black text-white py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 text-white py-16 px-4">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-black mb-4">Privacy Policy</h1>
@@ -49,42 +49,42 @@ export default function PrivacyPolicy() {
           </ul>
         </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">3. How We Use Your Information</h2>
-          <p className="mb-4">We use collected information for the following purposes:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
-            <li><strong>Service Provision:</strong> To create personalized quizzes, track progress, and deliver AI-powered educational content</li>
-            <li><strong>Platform Improvement:</strong> To analyze usage patterns and enhance our services</li>
-            <li><strong>Communication:</strong> To send important updates, educational tips, and respond to inquiries</li>
-            <li><strong>Security:</strong> To detect and prevent fraud, abuse, and security threats</li>
-            <li><strong>Legal Compliance:</strong> To meet legal obligations and enforce our terms of service</li>
-            <li><strong>Research:</strong> To improve AI algorithms and educational outcomes (using anonymized data)</li>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-6 text-white">3. How We Use Your Information</h2>
+          <p className="mb-4 text-white/80">We use collected information for the following purposes:</p>
+          <ul className="list-disc pl-6 space-y-2 text-white/70">
+            <li><strong className="text-white">Service Provision:</strong> To create personalized quizzes, track progress, and deliver AI-powered educational content</li>
+            <li><strong className="text-white">Platform Improvement:</strong> To analyze usage patterns and enhance our services</li>
+            <li><strong className="text-white">Communication:</strong> To send important updates, educational tips, and respond to inquiries</li>
+            <li><strong className="text-white">Security:</strong> To detect and prevent fraud, abuse, and security threats</li>
+            <li><strong className="text-white">Legal Compliance:</strong> To meet legal obligations and enforce our terms of service</li>
+            <li><strong className="text-white">Research:</strong> To improve AI algorithms and educational outcomes (using anonymized data)</li>
           </ul>
-        </section>
+        </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">4. Information Sharing and Disclosure</h2>
-          <p className="mb-4">We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
-            <li><strong>Service Providers:</strong> With trusted third-party vendors who assist in platform operations (under strict confidentiality agreements)</li>
-            <li><strong>Legal Requirements:</strong> When required by law, court order, or government regulation</li>
-            <li><strong>Platform Security:</strong> To protect against fraud, abuse, or security threats</li>
-            <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
-            <li><strong>Consent:</strong> With your explicit consent for specific purposes</li>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-6 text-white">4. Information Sharing and Disclosure</h2>
+          <p className="mb-4 text-white/80">We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
+          <ul className="list-disc pl-6 space-y-2 text-white/70">
+            <li><strong className="text-white">Service Providers:</strong> With trusted third-party vendors who assist in platform operations (under strict confidentiality agreements)</li>
+            <li><strong className="text-white">Legal Requirements:</strong> When required by law, court order, or government regulation</li>
+            <li><strong className="text-white">Platform Security:</strong> To protect against fraud, abuse, or security threats</li>
+            <li><strong className="text-white">Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
+            <li><strong className="text-white">Consent:</strong> With your explicit consent for specific purposes</li>
           </ul>
-        </section>
+        </div>
 
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">5. Data Retention</h2>
-          <p className="mb-4">We retain your information for the following periods:</p>
-          <ul className="list-disc pl-6 space-y-1 mb-4">
-            <li><strong>Account Data:</strong> Retained while your account is active and for 3 years after account deletion</li>
-            <li><strong>Educational Data:</strong> Retained for the duration of your account plus 2 years for service improvement</li>
-            <li><strong>Technical Logs:</strong> Retained for 90 days for debugging and security purposes</li>
-            <li><strong>Communication:</strong> Retained for 3 years for customer service purposes</li>
+        <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-2xl p-8">
+          <h2 className="text-2xl font-bold mb-6 text-white">5. Data Retention</h2>
+          <p className="mb-4 text-white/80">We retain your information for the following periods:</p>
+          <ul className="list-disc pl-6 space-y-2 text-white/70">
+            <li><strong className="text-white">Account Data:</strong> Retained while your account is active and for 3 years after account deletion</li>
+            <li><strong className="text-white">Educational Data:</strong> Retained for the duration of your account plus 2 years for service improvement</li>
+            <li><strong className="text-white">Technical Logs:</strong> Retained for 90 days for debugging and security purposes</li>
+            <li><strong className="text-white">Communication:</strong> Retained for 3 years for customer service purposes</li>
           </ul>
-          <p>You may request data deletion at any time by contacting our privacy team.</p>
-        </section>
+          <p className="text-white/80 mt-4">You may request data deletion at any time by contacting our privacy team.</p>
+        </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">6. Cookies and Tracking Technologies</h2>
@@ -187,21 +187,21 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">12. How to Exercise Your Rights</h2>
           <p className="mb-4">To exercise any of these rights, please contact us:</p>
-          <div className="bg-primary/10 border border-primary/20 p-4 rounded mb-4">
-            <p className="mb-2"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
-            <p className="mb-2"><strong>Response Time:</strong> We will respond within 30 days</p>
-            <p className="mb-2"><strong>Verification:</strong> We may request additional information to verify your identity</p>
-            <p><strong>No Charge:</strong> Exercising these rights is free of charge</p>
+          <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 p-6 rounded-xl mb-4">
+            <p className="mb-2 text-white"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
+            <p className="mb-2 text-white"><strong>Response Time:</strong> We will respond within 30 days</p>
+            <p className="mb-2 text-white"><strong>Verification:</strong> We may request additional information to verify your identity</p>
+            <p className="text-white"><strong>No Charge:</strong> Exercising these rights is free of charge</p>
           </div>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">13. Data Protection Officer</h2>
           <p className="mb-4">We have appointed a Data Protection Officer (DPO) to oversee our privacy practices:</p>
-          <div className="bg-card border border-border p-4 rounded">
-            <p className="mb-2"><strong>Data Protection Officer:</strong> Absar Ahmad Rao</p>
-            <p className="mb-2"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
-            <p><strong>Address:</strong> Quizzicallabzᴬᴵ™, Pakistan</p>
+          <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl rounded-xl p-6">
+            <p className="mb-2 text-white"><strong>Data Protection Officer:</strong> Absar Ahmad Rao</p>
+            <p className="mb-2 text-white"><strong>Email:</strong> privacy@quizzicallabz.qzz.io</p>
+            <p className="text-white"><strong>Address:</strong> Quizzicallabzᴬᴵ™, Vehari, Punjab, Pakistan</p>
           </div>
         </section>
 
@@ -219,17 +219,17 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">15. Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-primary/10 border border-primary/20 p-4 rounded">
-              <h3 className="font-semibold mb-3">General Inquiries</h3>
-              <p><strong>Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-primary hover:underline">quizzicallabz.qzz.io</a></p>
-              <p><strong>Email:</strong> hello@quizzicallabz.qzz.io</p>
-              <p><strong>WhatsApp:</strong> +923261536764</p>
+            <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 p-6 rounded-xl">
+              <h3 className="font-semibold mb-3 text-white">General Inquiries</h3>
+              <p className="text-white/80 mb-2"><strong className="text-white">Website:</strong> <a href="https://quizzicallabz.qzz.io" className="text-blue-400 hover:underline">quizzicallabz.qzz.io</a></p>
+              <p className="text-white/80 mb-2"><strong className="text-white">Email:</strong> hello@quizzicallabz.qzz.io</p>
+              <p className="text-white/80"><strong className="text-white">WhatsApp:</strong> +923261536764</p>
             </div>
-            <div className="bg-accent/10 border border-accent/20 p-4 rounded">
-              <h3 className="font-semibold mb-3">Privacy-Specific</h3>
-              <p><strong>Privacy Officer:</strong> privacy@quizzicallabz.qzz.io</p>
-              <p><strong>Legal Department:</strong> legal@quizzicallabz.qzz.io</p>
-              <p><strong>Security Issues:</strong> security@quizzicallabz.qzz.io</p>
+            <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 border border-green-500/20 p-6 rounded-xl">
+              <h3 className="font-semibold mb-3 text-white">Privacy-Specific</h3>
+              <p className="text-white/80 mb-2"><strong className="text-white">Privacy Officer:</strong> privacy@quizzicallabz.qzz.io</p>
+              <p className="text-white/80 mb-2"><strong className="text-white">Legal Department:</strong> legal@quizzicallabz.qzz.io</p>
+              <p className="text-white/80"><strong className="text-white">Security Issues:</strong> security@quizzicallabz.qzz.io</p>
             </div>
           </div>
         </section>
@@ -239,9 +239,9 @@ export default function PrivacyPolicy() {
           <p>This Privacy Policy is governed by the laws of Pakistan and applicable international privacy regulations, including GDPR where applicable. Any disputes will be resolved in accordance with our Terms of Service.</p>
         </section>
 
-          <div className="bg-accent/10 border border-accent/20 p-4 rounded mt-8">
-            <p className="font-semibold mb-2">📋 Summary of Key Points:</p>
-            <ul className="list-disc pl-6 space-y-1 text-sm">
+          <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 p-6 rounded-xl mt-8">
+            <p className="font-semibold mb-4 text-white text-lg">📋 Summary of Key Points:</p>
+            <ul className="list-disc pl-6 space-y-2 text-white/80">
               <li>We collect minimal data necessary for AI-powered educational services</li>
               <li>Your data is used to personalize learning and improve our platform</li>
               <li>We implement strong security measures to protect your information</li>

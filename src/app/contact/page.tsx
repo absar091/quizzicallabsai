@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-black text-white py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 text-white py-16 px-4">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -86,8 +86,8 @@ export default function ContactPage() {
               <MapPin className="h-8 w-8 mx-auto mb-3 text-blue-500" />
               <h3 className="font-semibold mb-2 text-white">Location</h3>
               <p className="text-white/70 text-sm">
-                Pakistan<br />
-                Remote Support Available
+                Vehari, Punjab<br />
+                Pakistan
               </p>
             </CardContent>
           </Card>
