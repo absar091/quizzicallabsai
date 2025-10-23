@@ -1,122 +1,46 @@
-/**
- * Input validation utilities to prevent various injection attacks
- */
+// Input validation utilities to prevent injection attacks
+import { z } from 'zod';
 
-import { URL } from 'url';
-import path from 'path';
+// Sanitize string input
+export function sanitizeString(input: string, maxLength = 1000): string {
+  return input
+    .replace(/[<>\"'&]/g, '') // Remove HTML/script chars
+    .replace(/[\r\n\t]/g, ' ') // Replace line breaks with spaces
+    .trim()
+    .substring(0, maxLength);
+}
 
-export class InputValidator {
-  /**
-   * Validates and sanitizes email addresses
-   */
-  static validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) && email.length <= 254;
+// Validate email format
+export function validateEmail(email: string): boolean {
+  const emailSchema = z.string().email();
+  return emailSchema.safeParse(email).success;
+}
+
+// Validate URL format and prevent SSRF
+export function validateUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && 
+           !parsed.hostname.includes('localhost') &&
+           !parsed.hostname.includes('127.0.0.1') &&
+           !parsed.hostname.includes('0.0.0.0');
+  } catch {
+    return false;
   }
+}
 
-  /**
-   * Sanitizes HTML content to prevent XSS
-   */
-  static sanitizeHtml(input: string): string {
-    return input
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
-  }
+// Validate file path to prevent traversal
+export function validateFilePath(path: string): boolean {
+  return !path.includes('..') && 
+         !path.includes('~') && 
+         !/[<>:"|?*]/.test(path) &&
+         path.length < 255;
+}
 
-  /**
-   * Validates file paths to prevent path traversal attacks
-   */
-  static validateFilePath(filePath: string, allowedDirectory: string): boolean {
-    try {
-      const normalizedPath = path.normalize(filePath);
-      const normalizedAllowedDir = path.normalize(allowedDirectory);
-      
-      // Check for path traversal attempts
-      if (normalizedPath.includes('..')) {
-        return false;
-      }
-      
-      // Ensure path is within allowed directory
-      const resolvedPath = path.resolve(normalizedAllowedDir, normalizedPath);
-      return resolvedPath.startsWith(path.resolve(normalizedAllowedDir));
-    } catch {
-      return false;
-    }
+// Sanitize for logging
+export function sanitizeForLog(data: any): string {
+  if (typeof data === 'string') {
+    return data.replace(/[\r\n\t]/g, ' ').substring(0, 200);
   }
-
-  /**
-   * Validates URLs to prevent SSRF attacks
-   */
-  static validateUrl(url: string, allowedHosts?: string[]): boolean {
-    try {
-      const parsedUrl = new URL(url);
-      
-      // Only allow HTTPS
-      if (parsedUrl.protocol !== 'https:') {
-        return false;
-      }
-      
-      // Block private IP ranges
-      const hostname = parsedUrl.hostname;
-      const privateIpRanges = [
-        /^127\./,           // 127.0.0.0/8
-        /^10\./,            // 10.0.0.0/8
-        /^172\.(1[6-9]|2[0-9]|3[0-1])\./,  // 172.16.0.0/12
-        /^192\.168\./,      // 192.168.0.0/16
-        /^169\.254\./,      // 169.254.0.0/16 (link-local)
-        /^::1$/,            // IPv6 localhost
-        /^fc00:/,           // IPv6 unique local
-        /^fe80:/            // IPv6 link-local
-      ];
-      
-      if (privateIpRanges.some(range => range.test(hostname))) {
-        return false;
-      }
-      
-      // Check against allowed hosts if provided
-      if (allowedHosts && !allowedHosts.includes(hostname)) {
-        return false;
-      }
-      
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Validates display names to prevent injection
-   */
-  static validateDisplayName(name: string): boolean {
-    // Allow alphanumeric, spaces, and common punctuation
-    const nameRegex = /^[a-zA-Z0-9\s\-_.,']+$/;
-    return nameRegex.test(name) && name.length >= 1 && name.length <= 100;
-  }
-
-  /**
-   * Validates redirect URLs to prevent open redirect attacks
-   */
-  static validateRedirectUrl(url: string, allowedDomains: string[]): boolean {
-    try {
-      const parsedUrl = new URL(url);
-      return allowedDomains.includes(parsedUrl.hostname);
-    } catch {
-      // If it's a relative URL, it's safe
-      return url.startsWith('/') && !url.startsWith('//');
-    }
-  }
-
-  /**
-   * Removes dangerous characters from user input
-   */
-  static sanitizeInput(input: string): string {
-    return input
-      .replace(/[<>\"'&]/g, '') // Remove potentially dangerous characters
-      .trim()
-      .substring(0, 1000); // Limit length
-  }
+  return JSON.stringify(data).replace(/[\r\n\t]/g, ' ').substring(0, 200);
 }

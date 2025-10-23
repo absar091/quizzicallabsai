@@ -17,9 +17,9 @@ export default function NotificationHandler() {
       // Register service worker first
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
+          console.log('Service Worker registered successfully');
         }).catch((err) => {
-          console.warn('Service worker registration failed:', err);
+          console.warn('Service worker registration failed:', err?.message || 'Unknown error');
         });
 
       // Initialize FCM with proper error handling
@@ -63,7 +63,7 @@ export default function NotificationHandler() {
               },
               data: payload.data
             };
-            console.log('Message received:', sanitizedPayload);
+            console.log('Message received from FCM');
 
             // Handle different notification types
             const notificationType = payload.data?.type;

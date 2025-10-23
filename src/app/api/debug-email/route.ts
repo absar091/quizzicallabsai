@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
     
     switch (testType) {
       case 'welcome':
-        response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/notifications/welcome`, {
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://localhost:3000';
+        response = await fetch(`${baseUrl}/api/notifications/welcome`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
         break;
         
       case 'quiz-result':
-        response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/send-email`, {
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://localhost:3000';
+        response = await fetch(`${baseUrl}/api/send-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

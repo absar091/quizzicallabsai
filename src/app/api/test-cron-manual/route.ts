@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     const baseUrl = request.nextUrl.origin;
     const testUrl = `${baseUrl}/api/cron/send-reminders`;
     
-    console.log('🔗 Testing URL:', testUrl);
-    console.log('🔑 Using CRON_SECRET:', cronSecret.substring(0, 10) + '...');
+    console.log('🔗 Testing cron endpoint');
+    console.log('🔑 Using configured CRON_SECRET');
 
     const response = await fetch(testUrl, {
       method: 'GET',
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('📊 Response status:', response.status);
-    console.log('📊 Response data:', responseData);
+    console.log('📊 Response received');
 
     return NextResponse.json({
       success: response.ok,
@@ -60,10 +60,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const text = await request.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
     const { testType = 'reminders' } = body;
 
-    console.log(`🧪 Manual cron test: ${testType}`);
+    console.log('🧪 Manual cron test started');
 
     const cronSecret = process.env.CRON_SECRET;
     const baseUrl = request.nextUrl.origin;

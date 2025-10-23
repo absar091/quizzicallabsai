@@ -69,7 +69,7 @@ export function withLazyLoading<T extends ComponentType<any>>(
 
   return lazy(() =>
     importFunc().catch((error) => {
-      console.error('Failed to load component:', error);
+      console.error('Failed to load component:', error?.message || 'Unknown error');
       return {
         default: (() => {
           const FallbackComponent = fallback || (() => (
@@ -242,7 +242,7 @@ export const getBundleInfo = () => {
 export const trackBundleLoad = (componentName: string, loadTime: number) => {
   if (typeof window !== 'undefined') {
     // Send to analytics
-    console.log(`Component ${componentName} loaded in ${loadTime}ms`);
+    console.log(`Component loaded in ${loadTime}ms`);
 
     // Store in performance marks
     if ('performance' in window && performance.mark) {
@@ -311,7 +311,7 @@ export const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered:', registration);
+      console.log('Service Worker registered successfully');
 
       // Handle updates
       registration.addEventListener('updatefound', () => {
@@ -326,7 +326,7 @@ export const registerServiceWorker = async () => {
         }
       });
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      console.error('Service Worker registration failed:', error?.message || 'Unknown error');
     }
   }
 };
@@ -338,7 +338,7 @@ export const monitorBundleSize = () => {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.name.includes('.js') && entry.transferSize) {
-          console.log(`Bundle loaded: ${entry.name} - ${entry.transferSize} bytes`);
+          console.log(`Bundle loaded - ${entry.transferSize} bytes`);
         }
       }
     });

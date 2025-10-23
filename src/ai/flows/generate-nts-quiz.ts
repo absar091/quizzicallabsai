@@ -144,7 +144,7 @@ Generate the quiz now.
 
 const createPrompt = (aiInstance: any, isPro: boolean, useFallback: boolean = false) => aiInstance.definePrompt({
   name: 'generateNtsQuizPrompt',
-  model: `googleai/${getModel(isPro, useFallback)}`,
+  model: getModel(isPro, useFallback),
   input: {schema: GenerateNtsQuizInputSchema},
   output: {schema: GenerateNtsQuizOutputSchema},
   prompt: getPromptText(isPro),
@@ -177,7 +177,7 @@ const generateNtsQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
       } catch (error: any) {
         retryCount++;
         const errorMsg = error?.message || 'Unknown error';
-        console.error(`NTS quiz generation attempt ${retryCount} failed:`, errorMsg);
+        console.error(`NTS quiz generation attempt ${retryCount} failed: ${errorMsg.substring(0, 100)}`);
         
         if (retryCount > maxRetries) {
           if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {

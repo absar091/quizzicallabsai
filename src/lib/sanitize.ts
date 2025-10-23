@@ -1,50 +1,33 @@
-/**
- * Utility functions for sanitizing user input to prevent XSS attacks
- */
+// Security utilities for input sanitization and validation
+import DOMPurify from 'isomorphic-dompurify';
 
-/**
- * Sanitize a string by removing potentially dangerous characters
- */
-export function sanitizeString(input: string): string {
-  if (!input) return '';
-  
-  return input
-    .replace(/[<>'"&]/g, (match) => {
-      const entities: Record<string, string> = {
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#x27;',
-        '&': '&amp;'
-      };
-      return entities[match] || match;
-    })
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+=/gi, '')
-    .trim();
-}
-
-/**
- * Sanitize URL parameters and slugs
- */
-export function sanitizeSlug(slug: string): string {
-  if (!slug) return '';
-  
-  return slug
-    .replace(/[^a-zA-Z0-9-_]/g, '')
-    .toLowerCase()
-    .trim();
-}
-
-/**
- * Sanitize HTML content by removing script tags and dangerous attributes
- */
+// Sanitize HTML content to prevent XSS
 export function sanitizeHtml(html: string): string {
-  if (!html) return '';
-  
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-    .replace(/javascript:/gi, '');
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li'],
+    ALLOWED_ATTR: []
+  });
+}
+
+// Sanitize log data to prevent log injection
+export function sanitizeLog(data: any): string {
+  if (typeof data === 'string') {
+    return data.replace(/[\r\n\t]/g, ' ').substring(0, 200);
+  }
+  return JSON.stringify(data).replace(/[\r\n\t]/g, ' ').substring(0, 200);
+}
+
+// Validate file paths to prevent traversal
+export function validatePath(path: string): boolean {
+  return !path.includes('..') && !path.includes('~') && !/[<>:"|?*]/.test(path);
+}
+
+// Sanitize URLs to prevent SSRF
+export function validateUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && !parsed.hostname.includes('localhost');
+  } catch {
+    return false;
+  }
 }

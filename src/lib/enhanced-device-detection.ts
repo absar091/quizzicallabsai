@@ -183,7 +183,7 @@ export function getDeviceModel(userAgent: string, enhancedInfo?: EnhancedDeviceI
     }
     
     // Fallback to user agent parsing
-    const modelMatch = userAgent.match(/iPhone OS (\\d+_\\d+)/);
+    const modelMatch = userAgent.match(/iPhone OS (\d+_\d+)/);
     if (modelMatch) {
       const version = modelMatch[1].replace('_', '.');
       return `iPhone (iOS ${version})`;
@@ -193,12 +193,12 @@ export function getDeviceModel(userAgent: string, enhancedInfo?: EnhancedDeviceI
   
   // Android model detection
   if (userAgent.includes('Android')) {
-    const modelMatch = userAgent.match(/;\\s*([^;)]+)\\s*Build/);
+    const modelMatch = userAgent.match(/;\s*([^;)]+)\s*Build/);
     if (modelMatch && modelMatch[1]) {
       let model = modelMatch[1].trim();
       
       // Clean up manufacturer prefixes
-      model = model.replace(/^(SM-|GT-|LG-|HTC\\s+|SAMSUNG\\s+|HUAWEI\\s+|XIAOMI\\s+|OPPO\\s+|VIVO\\s+|ONEPLUS\\s+)/i, '');
+      model = model.replace(/^(SM-|GT-|LG-|HTC\s+|SAMSUNG\s+|HUAWEI\s+|XIAOMI\s+|OPPO\s+|VIVO\s+|ONEPLUS\s+)/i, '');
       
       // Add manufacturer info if available
       if (userAgent.includes('Samsung')) model = `Samsung ${model}`;
@@ -233,16 +233,16 @@ export function getBrowserDetails(userAgent: string, enhancedInfo?: EnhancedDevi
   
   // Enhanced browser detection
   if (userAgent.includes('Edg/')) {
-    const versionMatch = userAgent.match(/Edg\\/(\\d+\\.\\d+\\.\\d+)/);
+    const versionMatch = userAgent.match(/Edg\/(\d+\.\d+\.\d+)/);
     browser = versionMatch ? `Microsoft Edge ${versionMatch[1]}` : 'Microsoft Edge';
   } else if (userAgent.includes('Chrome/')) {
-    const versionMatch = userAgent.match(/Chrome\\/(\\d+\\.\\d+\\.\\d+)/);
+    const versionMatch = userAgent.match(/Chrome\/(\d+\.\d+\.\d+)/);
     browser = versionMatch ? `Google Chrome ${versionMatch[1]}` : 'Google Chrome';
   } else if (userAgent.includes('Firefox/')) {
-    const versionMatch = userAgent.match(/Firefox\\/(\\d+\\.\\d+)/);
+    const versionMatch = userAgent.match(/Firefox\/(\d+\.\d+)/);
     browser = versionMatch ? `Mozilla Firefox ${versionMatch[1]}` : 'Mozilla Firefox';
   } else if (userAgent.includes('Safari/') && !userAgent.includes('Chrome/')) {
-    const versionMatch = userAgent.match(/Version\\/(\\d+\\.\\d+)/);
+    const versionMatch = userAgent.match(/Version\/(\d+\.\d+)/);
     browser = versionMatch ? `Safari ${versionMatch[1]}` : 'Safari';
   }
   
