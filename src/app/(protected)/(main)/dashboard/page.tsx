@@ -17,7 +17,11 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, T
 import { Badge } from "@/components/ui/badge";
 import { motion, type Variants } from "framer-motion";
 import { usePlan } from "@/hooks/usePlan";
-import { sanitizeString } from "@/lib/sanitize";
+// Simple sanitization function to avoid import issues
+const sanitizeString = (input: string): string => {
+  if (!input) return '';
+  return input.replace(/[<>"'&]/g, '').substring(0, 100);
+};
 import { EmailTestButton } from "@/components/email-test-button";
 import { StudyStreakWidget } from "@/components/study-streak-widget";
 import { StudyStreakCard, StudyStreakBadge } from "@/components/study-streak";
