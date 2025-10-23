@@ -275,21 +275,21 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 bg-gray-900">
+      <section className="py-16 px-4 bg-muted">
         <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Learning?</h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Ready to Transform Your Learning?</h2>
+          <p className="text-xl text-muted-foreground mb-8">
             Join thousands of students who study smarter with AI-powered quizzes
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4" asChild>
+            <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-4" asChild>
               <Link href="/signup">
                 Start Learning Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-gray-600 text-white hover:bg-gray-800 px-8 py-4" asChild>
+            <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-muted px-8 py-4" asChild>
               <Link href="/quiz-arena">Try Quiz Arena</Link>
             </Button>
           </div>
@@ -297,51 +297,51 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-12 px-4">
+      <footer className="border-t border-border py-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <BrainCircuit className="h-5 w-5 text-white" />
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <BrainCircuit className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-white font-bold">Quizzicallabz<sup className="text-orange-500">AI</sup></span>
+                <span className="text-foreground font-bold">Quizzicallabz<sup className="text-accent">AI</sup></span>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 AI-powered learning that makes studying effective and fun.
               </p>
             </div>
 
             <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <h4 className="text-foreground font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/generate-quiz" className="text-gray-400 hover:text-white">Quiz Generator</Link></li>
-                <li><Link href="/quiz-arena" className="text-gray-400 hover:text-white">Quiz Arena</Link></li>
-                <li><Link href="/pricing" className="text-gray-400 hover:text-white">Pricing</Link></li>
+                <li><Link href="/generate-quiz" className="text-muted-foreground hover:text-foreground">Quiz Generator</Link></li>
+                <li><Link href="/quiz-arena" className="text-muted-foreground hover:text-foreground">Quiz Arena</Link></li>
+                <li><Link href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-white font-semibold mb-4">Support</h4>
+              <h4 className="text-foreground font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/help" className="text-gray-400 hover:text-white">Help Center</Link></li>
-                <li><Link href="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
+                <li><Link href="/help" className="text-muted-foreground hover:text-foreground">Help Center</Link></li>
+                <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <h4 className="text-foreground font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/privacy-policy" className="text-gray-400 hover:text-white">Privacy</Link></li>
-                <li><Link href="/terms-of-service" className="text-gray-400 hover:text-white">Terms</Link></li>
-                <li><Link href="/disclaimer" className="text-gray-400 hover:text-white">Disclaimer</Link></li>
+                <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-foreground">Privacy</Link></li>
+                <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-foreground">Terms</Link></li>
+                <li><Link href="/disclaimer" className="text-muted-foreground hover:text-foreground">Disclaimer</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-            <p className="text-gray-400 text-sm">
-              © 2025 Quizzicallabz<sup className="text-orange-500">AI</sup>. All rights reserved.
+          <div className="border-t border-border mt-8 pt-8 text-center">
+            <p className="text-muted-foreground text-sm">
+              © 2025 Quizzicallabz<sup className="text-accent">AI</sup>. All rights reserved.
             </p>
           </div>
         </div>
