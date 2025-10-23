@@ -39,13 +39,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" }
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-16.svg", sizes: "16x16", type: "image/svg+xml" },
+      { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/app-icon.svg", sizes: "512x512", type: "image/svg+xml" }
     ],
-    shortcut: "/icon.svg",
-    apple: [{ url: "/apple-icon.svg", sizes: "180x180", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+    apple: [{ url: "/icon-180.svg", sizes: "180x180", type: "image/svg+xml" }],
   },
 metadataBase: new URL('https://quizzicallabz.qzz.io'),
   verification: {

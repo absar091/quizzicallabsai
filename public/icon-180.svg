@@ -1,0 +1,11 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="icon180Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6A0DAD"/>
+    </linearGradient>
+  </defs>
+  <circle cx="90" cy="90" r="90" fill="url(#icon180Gradient)"/>
+  <text x="90" y="120" font-family="Arial, sans-serif" font-size="100" font-weight="600" text-anchor="middle" fill="#FFFFFF">Q</text>
+</svg>

@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="icon16Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="50%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6A0DAD"/>
+    </linearGradient>
+  </defs>
+  <circle cx="8" cy="8" r="8" fill="url(#icon16Gradient)"/>
+  <text x="8" y="11" font-family="Arial, sans-serif" font-size="9" font-weight="600" text-anchor="middle" fill="#FFFFFF">Q</text>
+</svg>
