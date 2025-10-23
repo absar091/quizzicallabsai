@@ -72,17 +72,17 @@ export default function ContactSupportPage() {
       <div className="grid md:grid-cols-3 gap-6">
         {contactMethods.map((method, index) => (
           <motion.div key={method.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.1 }}>
-            <Card className="h-full hover:shadow-lg transition-shadow">
+            <Card className="h-full hover:shadow-lg transition-shadow bg-card border-border">
               <CardHeader className="text-center">
                 <div className={`w-12 h-12 rounded-full ${method.color} flex items-center justify-center mx-auto mb-4`}>
                   <method.icon className="h-6 w-6" />
                 </div>
-                <CardTitle className="text-lg">{method.title}</CardTitle>
-                <CardDescription>{method.description}</CardDescription>
+                <CardTitle className="text-lg text-card-foreground">{method.title}</CardTitle>
+                <CardDescription className="text-muted-foreground">{method.description}</CardDescription>
               </CardHeader>
               <CardContent className="text-center space-y-4">
                 <div>
-                  <p className="font-medium">{method.contact}</p>
+                  <p className="font-medium text-card-foreground">{method.contact}</p>
                   <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
                     <Clock className="h-3 w-3" />
                     {method.responseTime}
