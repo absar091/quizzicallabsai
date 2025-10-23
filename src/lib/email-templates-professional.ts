@@ -123,12 +123,15 @@ const PROFESSIONAL_STYLES = `
     color: #64748b;
     font-weight: 500;
     width: 40%;
+    word-wrap: break-word;
   }
   
   .info-value {
     text-align: right;
     color: #0f172a;
     font-weight: 600;
+    word-wrap: break-word;
+    max-width: 60%;
   }
   
   /* Metric Display - Clean and Modern */
@@ -340,6 +343,19 @@ const PROFESSIONAL_STYLES = `
     .info-label, .info-value {
       padding: 12px 0;
       font-size: 13px;
+      display: block;
+      width: 100% !important;
+      text-align: left !important;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .info-value {
+      margin-bottom: 16px;
+      word-break: break-all;
     }
     
     .info-title {
@@ -442,19 +458,26 @@ export const quizResultEmailTemplate = (userName: string, quizData: {
             <table class="info-table">
               <tr class="info-row">
                 <td class="info-label">Quiz Title</td>
-                <td class="info-value">${quizData.quizTitle || 'Custom Quiz'}</td>
+                <td class="info-value">${quizData?.quizTitle || 'Custom Quiz'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Correct Answers</td>
-                <td class="info-value" style="color: #16a34a;">${quizData.correct || '0'}</td>
+                <td class="info-value" style="color: #16a34a;">${quizData?.correct || '0'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Incorrect Answers</td>
-                <td class="info-value" style="color: #dc2626;">${quizData.incorrect || '0'}</td>
+                <td class="info-value" style="color: #dc2626;">${quizData?.incorrect || '0'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Completion Date</td>
-                <td class="info-value">${quizData.date || new Date().toLocaleDateString('en-US', { dateStyle: 'medium' })}</td>
+                <td class="info-value">${(() => {
+                  try {
+                    const date = quizData?.date ? new Date(quizData.date) : new Date();
+                    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                  } catch {
+                    return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                  }
+                })()}</td>
               </tr>
             </table>
           </div>
@@ -519,15 +542,15 @@ export const welcomeEmailTemplate = (userName: string, emailDetails: {
             <table class="info-table">
               <tr class="info-row">
                 <td class="info-label">Email Address</td>
-                <td class="info-value">${emailDetails.userEmail || 'Not provided'}</td>
+                <td class="info-value">${emailDetails?.userEmail || 'Not provided'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Subscription Plan</td>
-                <td class="info-value">${emailDetails.planName || 'Free'}</td>
+                <td class="info-value">${emailDetails?.planName || 'Free Plan'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Activation Date</td>
-                <td class="info-value">${emailDetails.signupDate || new Date().toLocaleDateString('en-US', { dateStyle: 'medium' })}</td>
+                <td class="info-value">${emailDetails?.signupDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
               </tr>
             </table>
           </div>
