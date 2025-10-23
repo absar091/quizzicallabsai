@@ -26,7 +26,7 @@
 
 ---
 
-## 🔥 **What Makes Quizzicallabs Revolutionary**
+## 🔥 **What Makes Quizzicallabzᴬᴵ Revolutionary**
 
 ### ⚡ **Quiz Arena** - Live Multiplayer Gaming Revolution
 <p align="center">
@@ -134,7 +134,7 @@
 ## 👥 **Built for Every Learner**
 
 ### 📚 **Students**
-> **"Spent 4 hours making flash cards that I forgot next day. Quizzicallabs AI generates them instantly and they STICK!"** - Ahmed K., MDCAT Prep
+> **"Spent 4 hours making flash cards that I forgot next day. Quizzicallabzᴬᴵ generates them instantly and they STICK!"** - Ahmed K., MDCAT Prep
 
 **Pain Points Solved:**
 - ❌ Wasted hours creating study materials
@@ -262,7 +262,7 @@ npm run dev
 
 ### **Real Stories from Real Students**
 
-> **"After using Quizzicallabs AI, my MDCAT score improved 30%. The Quiz Arena made studying fun!"**
+> **"After using Quizzicallabzᴬᴵ, my MDCAT score improved 30%. The Quiz Arena made studying fun!"**
 > *— Fatima H., MDCAT Top Scorer 2024*
 
 > **"My physics class went from 20% engagement to 95%. Students actually excited about homework now."**
@@ -302,14 +302,14 @@ We welcome passionate educators, developers, and learning enthusiasts! 🚀
 ## 📞 **Support & Community**
 
 ### 🆘 **Support Channels**
-- 📧 **Email:** hello@quizzicallabs.com
+- 📧 **Email:** hello@quizzicallabz.qzz.io
 - 💬 **In-App Chat:** 24/7 AI support assistant
 - 📱 **WhatsApp Community:** Join study groups & discussions
 
 ### 🌏 **Find Us Online**
-- 📋 **GitHub:** [github.com/quizzicallabs/quizzicallabs-ai](https://github.com/quizzicallabs/quizzicallabs-ai)
+- 📋 **GitHub:** [github.com/absar091/quizzicallabsai](https://github.com/absar091/quizzicallabsai)
 - 🌐 **Website:** [quizzicallabz.qzz.io](https://quizzicallabz.qzz.io)
-- 🎯 **LinkedIn:** [Company Updates & Hiring](https://linkedin.com/company/quizzicallabs)
+- 🎯 **LinkedIn:** [Company Updates & Hiring](https://linkedin.com/company/quizzicallabz)
 
 ---
 
@@ -329,6 +329,6 @@ We welcome passionate educators, developers, and learning enthusiasts! 🚀
 
 *Built with ❤️ by educators, for the future of learning.*
 
-*© 2025 QuizzicallabzTM. Transforming education, one quiz at a time.*
+*© 2025 Quizzicallabzᴬᴵ™. Transforming education, one quiz at a time.*
 
 </div>

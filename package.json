@@ -1,5 +1,5 @@
 {
-  "name": "nextn",
+  "name": "quizzicallabz-ai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:cron": "node test-cron-job.js",
-    "test:cron:prod": "TEST_URL=https://your-app.vercel.app node test-cron-job.js"
+    "test:cron:prod": "TEST_URL=https://quizzicallabz.qzz.io node test-cron-job.js"
   },
   "dependencies": {
     "@genkit-ai/google-cloud": "^1.12.0",
