@@ -419,7 +419,7 @@ const PROFESSIONAL_FOOTER = `
     <a href="https://quizzicallabz.qzz.io/contact" class="footer-nav-link">Support</a>
   </div>
   <div class="footer-legal">
-    © 2025 <strong>Quizzicallabz<sup>AI</sup></strong>. All rights reserved.<br>
+    © 2025 <strong>Quizzicallabz<sup>AI</sup></strong>,Inc. All rights reserved.<br>
     Vehari, Punjab, Pakistan<br><br>
     This message was sent because you have an account with us.<br>
     <a href="https://quizzicallabz.qzz.io/unsubscribe">Manage email preferences</a>
