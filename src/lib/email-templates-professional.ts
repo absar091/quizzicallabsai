@@ -395,7 +395,7 @@ const PROFESSIONAL_STYLES = `
 const PROFESSIONAL_HEADER = `
 <div class="header">
   <div class="header-app-name">
-    <img src="https://quizzicallabz.qzz.io/custom-icon.svg" alt="Quizzicallabz AI" style="width: 48px; height: 48px; margin-bottom: 12px;" />
+    <img src="https://quizzicallabz.qzz.io/icon-512.png" alt="Quizzicallabz AI" style="width: 48px; height: 48px; margin-bottom: 12px;" />
     <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-size: 24px; font-weight: 700; text-decoration: none;">
       Quizzicallabz<sup style="font-size: 14px; color: #3b82f6;">AI</sup>
     </a>
