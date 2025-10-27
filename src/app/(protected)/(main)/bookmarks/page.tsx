@@ -103,7 +103,9 @@ export default function BookmarksPage() {
       
       switch (sortBy) {
         case 'date':
-          comparison = a.bookmarkedAt - b.bookmarkedAt;
+          const dateA = a.bookmarkedAt || 0;
+          const dateB = b.bookmarkedAt || 0;
+          comparison = dateA - dateB;
           break;
         case 'title':
           comparison = a.quizTitle.localeCompare(b.quizTitle);
@@ -248,7 +250,7 @@ export default function BookmarksPage() {
                         </p>
                       )}
                       <div className="text-xs text-muted-foreground">
-                        Bookmarked {new Date(bookmark.bookmarkedAt).toLocaleDateString()}
+                        Bookmarked {bookmark.bookmarkedAt ? new Date(bookmark.bookmarkedAt).toLocaleDateString() : 'Unknown date'}
                       </div>
                     </div>
                   </div>

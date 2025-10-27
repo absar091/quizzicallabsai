@@ -15,6 +15,7 @@ import { LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RichContentRenderer from "@/components/rich-content-renderer";
 import { PageHeader } from "@/components/page-header";
+import { BookmarkButton } from "@/components/bookmark-button";
 import Link from "next/link";
 
 export type QuizResult = {
@@ -35,12 +36,10 @@ export default function QuizResults({
   getExplanation,
   getSimpleExplanation,
   handleGenerateFlashcards,
-  toggleBookmark,
   resetQuiz,
   retryIncorrect,
   downloadQuestions,
   downloadResultCard,
-  bookmarkedQuestions = [],
   timeLeft = 0,
   isGeneratingFlashcards = false
 }: any) {
@@ -104,7 +103,6 @@ export default function QuizResults({
             <div className="space-y-4">
               {quiz.map((q: any, index: number) => {
                 const isCorrect = q.correctAnswer === userAnswers[index];
-                const isBookmarked = bookmarkedQuestions.some((bm: any) => bm.question === q.question);
 
                 return (
                   <Card key={index} className={cn(
@@ -116,10 +114,18 @@ export default function QuizResults({
                         <RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} />
                       </div>
                       {q.correctAnswer && (
-                        <Button variant="ghost" size="icon" onClick={() => toggleBookmark(q.question, q.correctAnswer)}>
-                          <Sparkles className={cn("h-5 w-5", isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground")} />
-                          <span className="sr-only">Bookmark</span>
-                        </Button>
+                        <BookmarkButton 
+                          quiz={{
+                            id: `${formValues?.topic || 'quiz'}-${index}`,
+                            title: q.question.substring(0, 50) + '...',
+                            subject: formValues?.topic || 'General',
+                            difficulty: formValues?.difficulty || 'medium',
+                            questionCount: 1,
+                            tags: [formValues?.topic || 'quiz']
+                          }}
+                          variant="ghost"
+                          size="icon"
+                        />
                       )}
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6 pt-2">

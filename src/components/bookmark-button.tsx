@@ -184,7 +184,7 @@ export function BookmarksList() {
                 </p>
               )}
               <div className="text-xs text-muted-foreground mt-2">
-                Bookmarked {new Date(bookmark.bookmarkedAt).toLocaleDateString()}
+                Bookmarked {bookmark.bookmarkedAt ? new Date(bookmark.bookmarkedAt).toLocaleDateString() : 'Unknown date'}
               </div>
             </div>
             <BookmarkButton 
