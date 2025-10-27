@@ -276,13 +276,23 @@ const PROFESSIONAL_STYLES = `
       width: 100% !important;
       max-width: 100% !important;
     }
-    
+
     .header {
       padding: 20px 12px;
     }
-    
+
+    .header-app-name img {
+      width: 48px !important;
+      height: 48px !important;
+      margin-bottom: 12px !important;
+    }
+
     .header-app-name a {
-      font-size: 20px !important;
+      font-size: 22px !important;
+    }
+
+    .header-app-name div {
+      font-size: 14px !important;
     }
     
     .content {
@@ -394,14 +404,14 @@ const PROFESSIONAL_STYLES = `
 // Clean Professional Header - Centered and Minimal
 const PROFESSIONAL_HEADER = `
 <div class="header">
-  <div class="header-app-name">
-    <img src="https://quizzicallabz.qzz.io/icon-512.png" alt="Quizzicallabz AI" style="width: 48px; height: 48px; margin-bottom: 12px;" />
-    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-size: 24px; font-weight: 700; text-decoration: none;">
-      Quizzicallabz<sup style="font-size: 14px; color: #3b82f6;">AI</sup>
+  <div class="header-app-name" style="text-align: center;">
+    <img src="https://quizzicallabz.qzz.io/icon-512.png" alt="Quizzicallabz AI" style="width: 64px; height: 64px; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto;" />
+    <a href="https://quizzicallabz.qzz.io" target="_blank" rel="noopener noreferrer" style="color: #2563eb; font-size: 28px; font-weight: 700; text-decoration: none; display: block; margin-bottom: 8px;">
+      Quizzicallabz<sup style="font-size: 16px; color: #3b82f6;">AI</sup>
     </a>
-  </div>
-  <div style="margin-top: 8px; color: #64748b; font-size: 14px;">
-    AI-powered study partner
+    <div style="color: #64748b; font-size: 16px; font-weight: 500;">
+      AI-powered study partner
+    </div>
   </div>
 </div>
 `;
