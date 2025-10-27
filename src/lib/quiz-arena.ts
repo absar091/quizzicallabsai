@@ -105,10 +105,16 @@ export class QuizArenaHost {
     if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
     if (room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_ALREADY_STARTED);
 
-    // Check minimum players
+    // Check minimum players and validate they're still connected
     const playersSnap = await getDocs(collection(firestore, `quiz-rooms/${roomId}/players`));
     if (playersSnap.size < QUIZ_ARENA_CONSTANTS.MIN_PLAYERS_TO_START) {
       throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.MIN_PLAYERS);
+    }
+
+    // Validate host is still in the room
+    const hostExists = playersSnap.docs.some(doc => doc.id === hostId);
+    if (!hostExists) {
+      throw new Error('Host is no longer in the room');
     }
 
     try {

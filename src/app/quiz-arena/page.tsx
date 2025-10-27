@@ -96,13 +96,12 @@ export default function QuizArenaPage() {
       // Check if there's a redirect parameter in URL
       const currentUrl = new URL(window.location.href);
       const redirectParam = currentUrl.searchParams.get('redirect');
-      if (redirectParam) {
-        router.push(`/signup?redirect=${encodeURIComponent(redirectParam)}`);
-      } else {
-        router.push(`/signup?redirect=${encodeURIComponent(window.location.pathname)}`);
-      }
+      const redirectUrl = redirectParam 
+        ? `/signup?redirect=${encodeURIComponent(redirectParam)}`
+        : `/signup?redirect=${encodeURIComponent(window.location.pathname)}`;
+      router.replace(redirectUrl); // Use replace to avoid history issues
     }
-  }, [user, loading, router]);
+  }, [user, loading]); // Remove router from dependencies
 
   // Show loading while checking authentication
   if (loading || !user) {
@@ -169,7 +168,7 @@ export default function QuizArenaPage() {
   ];
 
   const handleQuizTemplateSelect = async (templateId: string) => {
-    if (!user) return;
+    if (!user || isCreatingRoom) return; // Prevent multiple simultaneous calls
 
     const template = quizTemplates.find(t => t.id === templateId);
     if (!template) return;

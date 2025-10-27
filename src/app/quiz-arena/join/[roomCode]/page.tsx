@@ -139,6 +139,10 @@ export default function JoinRoomPage() {
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
       
+      if (!QuizArena) {
+        throw new Error('QuizArena module failed to load');
+      }
+      
       // Listen to room state changes
       const unsubscribeRoom = QuizArena.Player.listenToRoom(
         roomCode,
@@ -150,6 +154,9 @@ export default function JoinRoomPage() {
             if (data.started && hasJoined) {
               router.push(`/quiz-arena/play/${roomCode}`);
             }
+          } else {
+            // Handle room not found or deleted
+            setError('Room no longer exists');
           }
         }
       );
@@ -168,11 +175,16 @@ export default function JoinRoomPage() {
       );
 
       return () => {
-        unsubscribeRoom?.();
-        unsubscribePlayers?.();
+        try {
+          unsubscribeRoom?.();
+          unsubscribePlayers?.();
+        } catch (cleanupError) {
+          console.warn('Error during listener cleanup:', cleanupError);
+        }
       };
     } catch (error) {
       console.error('Error setting up listeners:', error);
+      setError('Failed to connect to room. Please try again.');
       return () => {};
     }
   };
@@ -209,9 +221,10 @@ export default function JoinRoomPage() {
   // Redirect unauthenticated users
   useEffect(() => {
     if (!loading && !user) {
-      router.push(`/signup?redirect=${encodeURIComponent(window.location.pathname)}`);
+      const redirectUrl = `/signup?redirect=${encodeURIComponent(window.location.pathname)}`;
+      router.replace(redirectUrl); // Use replace instead of push to avoid history issues
     }
-  }, [user, loading, router]);
+  }, [user, loading]); // Remove router from dependencies to prevent infinite loops
 
   if (loading || !user) {
     return (

@@ -34,6 +34,8 @@ export default function ParticipantArenaPage() {
   const [showResults, setShowResults] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [QuizArena, setQuizArena] = useState<any>(null);
+  const hasRedirectedRef = useRef(false);
+  const submissionRef = useRef(false);
 
   // Load QuizArena module once
   useEffect(() => {
@@ -43,12 +45,11 @@ export default function ParticipantArenaPage() {
     };
     loadQuizArena();
   }, []);
-  const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
     // Fix redirect loop: use ref to prevent multiple redirects
-    if (!roomCode || !user) {
-      if (!hasRedirectedRef.current) {
+    if (!roomCode || !user || !QuizArena) {
+      if (!hasRedirectedRef.current && roomCode) {
         hasRedirectedRef.current = true;
         router.push(`/quiz-arena/join/${roomCode}`);
       }
@@ -129,19 +130,20 @@ export default function ParticipantArenaPage() {
     };
 
     initializeParticipant();
-  }, [roomCode, user]); // Removed router from dependencies to prevent re-initialization
+  }, [roomCode, user, QuizArena]); // Added QuizArena to dependencies
 
   const handleSubmitAnswer = useCallback(async () => {
     // Immediate guard to prevent race conditions
     if (hasSubmitted || selectedAnswer === null || !currentQuestion || submitting) return;
 
+    // Use ref to prevent multiple simultaneous submissions
+    if (submissionRef.current) return;
+    submissionRef.current = true;
+
     // Set all blocking states immediately before any async operations
     setSubmitting(true);
     setHasSubmitted(true);
     setIsAnswered(true);
-
-    // Additional safety check after state updates
-    if (submitting) return;
 
     try {
       // Server-side answer submission with authentication
@@ -198,6 +200,7 @@ export default function ParticipantArenaPage() {
       });
     } finally {
       setSubmitting(false);
+      submissionRef.current = false;
     }
   }, [hasSubmitted, selectedAnswer, currentQuestion, submitting, roomData, roomCode, user, toast]);
 
@@ -209,7 +212,7 @@ export default function ParticipantArenaPage() {
   }, [timeRemaining, hasSubmitted, currentQuestion, timerActive, handleSubmitAnswer]);
 
   const leaveRoom = async () => {
-    if (leaving) return;
+    if (leaving || !QuizArena || !user?.uid) return;
 
     setLeaving(true);
     try {

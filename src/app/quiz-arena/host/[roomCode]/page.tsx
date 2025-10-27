@@ -42,6 +42,7 @@ interface RoomData {
 
 export default function RoomHostPage() {
   const params = useParams();
+  const router = useRouter();
   const roomCode = params.roomCode as string;
   const { user } = useAuth();
   const { toast } = useToast();
