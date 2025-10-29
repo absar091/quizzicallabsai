@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { Edit2, ArrowLeft } from 'lucide-react';
@@ -133,13 +134,22 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="new-email" className="sr-only">
+              New email address
+            </Label>
             <Input
+              id="new-email"
               type="email"
               placeholder="Enter new email address"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               className="text-center"
+              aria-describedby="email-help"
+              autoComplete="email"
             />
+            <p id="email-help" className="sr-only">
+              Enter a valid email address to receive your verification code
+            </p>
           </div>
           
           <div className="flex gap-2">
@@ -150,14 +160,16 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
                 setNewEmail(currentEmail);
               }}
               className="flex-1"
+              aria-label="Go back to verification"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
               Back
             </Button>
             <Button 
               onClick={changeEmail}
               disabled={!newEmail || newEmail === currentEmail}
               className="flex-1"
+              aria-label="Update email address and send new verification code"
             >
               Update Email
             </Button>
@@ -177,23 +189,42 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
+          <Label htmlFor="verification-code" className="sr-only">
+            Verification code
+          </Label>
           <Input
+            id="verification-code"
             type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Enter 6-digit code"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
             className="text-center text-lg tracking-widest"
             maxLength={6}
+            aria-describedby="code-help code-status"
+            autoComplete="one-time-code"
+            autoFocus
           />
+          <p id="code-help" className="sr-only">
+            Enter the 6-digit verification code sent to your email
+          </p>
+          <div id="code-status" className="sr-only" aria-live="polite">
+            {code.length === 6 ? 'Code complete, ready to verify' : `${code.length} of 6 digits entered`}
+          </div>
         </div>
         
         <Button 
           onClick={verifyCode} 
           disabled={isVerifying || code.length !== 6}
           className="w-full"
+          aria-describedby="verify-status"
         >
           {isVerifying ? 'Verifying...' : 'Verify Email'}
         </Button>
+        <div id="verify-status" className="sr-only" aria-live="polite">
+          {isVerifying ? 'Verifying your code, please wait' : ''}
+        </div>
         
         <div className="flex justify-between items-center">
           <Button 
@@ -201,16 +232,22 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
             onClick={() => sendVerificationCode()}
             disabled={isSending}
             className="text-sm"
+            aria-describedby="resend-status"
+            aria-label="Resend verification code to current email"
           >
             {isSending ? 'Sending...' : 'Resend Code'}
           </Button>
+          <div id="resend-status" className="sr-only" aria-live="polite">
+            {isSending ? 'Sending new verification code' : ''}
+          </div>
           
           <Button 
             variant="ghost" 
             onClick={() => setIsChangingEmail(true)}
             className="text-sm"
+            aria-label="Change email address"
           >
-            <Edit2 className="w-4 h-4 mr-1" />
+            <Edit2 className="w-4 h-4 mr-1" aria-hidden="true" />
             Change Email
           </Button>
         </div>
