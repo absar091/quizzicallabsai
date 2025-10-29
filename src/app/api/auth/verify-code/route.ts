@@ -1,86 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyCodeFromDB } from '@/lib/email-verification';
-import { sanitizeEmail, sanitizeCode } from '@/lib/input-sanitizer';
-import { securityHeaders, rateLimitCheck } from '@/middleware/security';
-import { auth } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
-  // Rate limiting check
-  if (!rateLimitCheck(request)) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-  }
-  
   try {
-    const { email: rawEmail, code: rawCode, originalEmail } = await request.json();
-    
-    const email = sanitizeEmail(rawEmail);
-    const code = sanitizeCode(rawCode);
+    const body = await request.json();
+    const { email, code, originalEmail } = body;
 
-    if (!email || !code || code.length !== 6) {
+    console.log('Verify request received:', { email, code: code?.length, originalEmail });
+
+    if (!email || !code) {
+      console.log('Missing email or code');
       return NextResponse.json({ 
-        error: 'Valid email and 6-digit code are required' 
+        error: 'Email and code are required' 
+      }, { status: 400 });
+    }
+
+    if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+      console.log('Invalid code format:', code);
+      return NextResponse.json({ 
+        error: 'Code must be 6 digits' 
       }, { status: 400 });
     }
 
     // Verify code from database
-    console.log('Attempting to verify code for:', email, 'with code:', code);
     const isValid = await verifyCodeFromDB(email, code);
-    console.log('Verification result:', isValid);
 
     if (isValid) {
-      // Also update Firebase Auth user as verified
+      // Try to update Firebase Auth user as verified
       try {
-        let user;
-        try {
-          user = await auth.getUserByEmail(email);
-        } catch (emailError: any) {
-          if (originalEmail && originalEmail !== email) {
-            user = await auth.getUserByEmail(originalEmail);
-            await auth.updateUser(user.uid, {
-              email: email,
-              emailVerified: true
-            });
-          } else {
-            throw emailError;
-          }
-        }
-        
-        if (user && !user.emailVerified) {
-          await auth.updateUser(user.uid, {
-            emailVerified: true
-          });
+        const { auth } = await import('@/lib/firebase-admin');
+        const user = await auth.getUserByEmail(originalEmail || email);
+        if (!user.emailVerified) {
+          await auth.updateUser(user.uid, { emailVerified: true });
         }
       } catch (authError: any) {
-        const { secureLog } = await import('@/lib/secure-logger');
-        secureLog('warning', 'Failed to update Firebase Auth verification', { 
-          email, 
-          error: authError.message 
-        });
+        console.log('Firebase Auth update failed:', authError.message);
       }
       
-      const response = NextResponse.json({ 
+      return NextResponse.json({ 
         success: true, 
-        message: 'Email verified successfully',
-        verified: true
+        message: 'Email verified successfully'
       });
-      
-      return securityHeaders(response);
     } else {
-      console.log('Verification failed for email:', email, 'code:', code);
-      const response = NextResponse.json({ 
+      return NextResponse.json({ 
         error: 'Invalid or expired verification code' 
       }, { status: 400 });
-      
-      return securityHeaders(response);
     }
 
   } catch (error: any) {
-    const { secureLog } = await import('@/lib/secure-logger');
-    secureLog('error', 'Verify code error', { error: error.message });
-    const response = NextResponse.json({ 
+    console.error('Verify code error:', error.message);
+    return NextResponse.json({ 
       error: 'Failed to verify code' 
     }, { status: 500 });
-    
-    return securityHeaders(response);
   }
 }
