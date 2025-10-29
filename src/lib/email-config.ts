@@ -4,10 +4,14 @@ import nodemailer from 'nodemailer';
 export const verificationTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.NODE_ENV === 'production',
+  secure: false, // Use STARTTLS for port 587
+  requireTLS: true,
   auth: {
     user: process.env.SMTP_USER, // ahmadraoabsar@gmail.com
     pass: process.env.SMTP_PASS, // uzpk gcix ebfh sfrg
+  },
+  tls: {
+    rejectUnauthorized: false
   },
   pool: true,
   maxConnections: 5,
@@ -18,10 +22,14 @@ export const verificationTransporter = nodemailer.createTransport({
 export const marketingTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.NODE_ENV === 'production',
+  secure: false, // Use STARTTLS for port 587
+  requireTLS: true,
   auth: {
     user: process.env.WELCOME_SMTP_USER, // quizzicallabs.ai@gmail.com
     pass: process.env.WELCOME_SMTP_PASS, // ynhf aesm bnzu rjme
+  },
+  tls: {
+    rejectUnauthorized: false
   },
   pool: true,
   maxConnections: 5,
