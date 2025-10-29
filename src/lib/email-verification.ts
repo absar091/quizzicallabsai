@@ -37,6 +37,14 @@ export function verifyToken(token: string): VerificationTokenPayload | null {
 // Store verification code in Firebase
 export async function storeVerificationCode(email: string, code: string): Promise<void> {
   const expires = Date.now() + 15 * 60 * 1000; // 15 minutes
+  const now = Date.now();
+  
+  console.log('Storing verification code:', {
+    email,
+    code,
+    expires: new Date(expires).toISOString(),
+    now: new Date(now).toISOString()
+  });
   
   await firestore.collection('users').doc(email).set({
     email,
@@ -44,7 +52,7 @@ export async function storeVerificationCode(email: string, code: string): Promis
     emailVerificationToken: code,
     emailVerificationExpires: expires,
     isEmailVerified: false,
-    updatedAt: Date.now()
+    updatedAt: now
   }, { merge: true });
 }
 
@@ -52,19 +60,42 @@ export async function storeVerificationCode(email: string, code: string): Promis
 export async function verifyCodeFromDB(email: string, code: string): Promise<boolean> {
   const userDoc = await firestore.collection('users').doc(email).get();
   
-  if (!userDoc.exists) return false;
+  if (!userDoc.exists) {
+    console.log('User document not found for email:', email);
+    return false;
+  }
   
   const userData = userDoc.data();
   const now = Date.now();
   
+  console.log('Verification attempt:', {
+    email,
+    providedCode: code,
+    storedCode: userData?.emailVerificationToken,
+    expires: userData?.emailVerificationExpires,
+    now,
+    isExpired: userData?.emailVerificationExpires <= now
+  });
+  
+  // Check if code matches and hasn't expired
   if (userData?.emailVerificationToken === code && userData?.emailVerificationExpires > now) {
+    // Clear the verification token after successful verification
     await firestore.collection('users').doc(email).update({
       isEmailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
       updatedAt: now
     });
+    console.log('Code verified successfully for:', email);
     return true;
+  }
+  
+  // Log why verification failed
+  if (userData?.emailVerificationToken !== code) {
+    console.log('Code mismatch for:', email);
+  }
+  if (userData?.emailVerificationExpires <= now) {
+    console.log('Code expired for:', email);
   }
   
   return false;

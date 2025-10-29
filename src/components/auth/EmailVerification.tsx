@@ -93,22 +93,16 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
       const response = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: currentEmail, code })
+        body: JSON.stringify({ 
+          email: currentEmail, 
+          code,
+          originalEmail: email // Pass original email for user identification
+        })
       });
 
       const data = await response.json();
       
       if (data.success) {
-        // Update Firebase Auth user as verified
-        await fetch('/api/auth/mark-verified', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            email: currentEmail,
-            originalEmail: email // Pass original email for user identification
-          })
-        });
-        
         toast({
           title: 'Email Verified!',
           description: 'Welcome to Quizzicallabzᴬᴵ!'

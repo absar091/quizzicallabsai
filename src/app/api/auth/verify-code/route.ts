@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyCodeFromDB } from '@/lib/email-verification';
 import { sanitizeEmail, sanitizeCode } from '@/lib/input-sanitizer';
 import { securityHeaders, rateLimitCheck } from '@/middleware/security';
+import { auth } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   // Rate limiting check
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
   }
   
   try {
-    const { email: rawEmail, code: rawCode } = await request.json();
+    const { email: rawEmail, code: rawCode, originalEmail } = await request.json();
     
     const email = sanitizeEmail(rawEmail);
     const code = sanitizeCode(rawCode);
@@ -21,14 +22,40 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Skip reCAPTCHA for localhost
-    const isLocalhost = request.headers.get('host')?.includes('localhost') || 
-                       request.headers.get('host')?.includes('127.0.0.1');
-
     // Verify code from database
     const isValid = await verifyCodeFromDB(email, code);
 
     if (isValid) {
+      // Also update Firebase Auth user as verified
+      try {
+        let user;
+        try {
+          user = await auth.getUserByEmail(email);
+        } catch (emailError: any) {
+          if (originalEmail && originalEmail !== email) {
+            user = await auth.getUserByEmail(originalEmail);
+            await auth.updateUser(user.uid, {
+              email: email,
+              emailVerified: true
+            });
+          } else {
+            throw emailError;
+          }
+        }
+        
+        if (user && !user.emailVerified) {
+          await auth.updateUser(user.uid, {
+            emailVerified: true
+          });
+        }
+      } catch (authError: any) {
+        const { secureLog } = await import('@/lib/secure-logger');
+        secureLog('warning', 'Failed to update Firebase Auth verification', { 
+          email, 
+          error: authError.message 
+        });
+      }
+      
       const response = NextResponse.json({ 
         success: true, 
         message: 'Email verified successfully',
