@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
@@ -68,18 +68,34 @@ export default function LoginPage() {
   });
 
   const handleResendVerification = async () => {
-    if (auth.currentUser) {
+    if (auth.currentUser?.email) {
         setIsResending(true);
         try {
-            await sendEmailVerification(auth.currentUser);
-            toast({
-                title: "Verification Email Sent!",
-                description: "Please check your email and click the verification link, then try logging in again.",
+            const response = await fetch('/api/auth/send-verification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                email: auth.currentUser.email, 
+                name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0] 
+              })
             });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              toast({
+                  title: "Verification Code Sent!",
+                  description: "Please check your email for the 6-digit verification code.",
+              });
+              // Redirect to verification page
+              router.push(`/verify-email?email=${encodeURIComponent(auth.currentUser.email)}`);
+            } else {
+              throw new Error(data.error);
+            }
         } catch (error: any) {
              toast({
-                title: "Error Sending Email",
-                description: "Could not send verification email. Please try again in a few moments.",
+                title: "Error Sending Code",
+                description: "Could not send verification code. Please try again in a few moments.",
                 variant: "destructive",
             });
         } finally {

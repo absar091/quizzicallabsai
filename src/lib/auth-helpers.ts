@@ -1,5 +1,5 @@
 import { auth } from './firebase';
-import { sendPasswordResetEmail, sendEmailVerification, User } from 'firebase/auth';
+import { sendPasswordResetEmail, User } from 'firebase/auth';
 
 // Send password reset email
 export const sendPasswordReset = async (email: string): Promise<{ success: boolean; message: string }> => {
@@ -17,18 +17,36 @@ export const sendPasswordReset = async (email: string): Promise<{ success: boole
   }
 };
 
-// Send email verification
+// Send email verification code
 export const sendVerificationEmail = async (user: User): Promise<{ success: boolean; message: string }> => {
   try {
-    await sendEmailVerification(user);
-    return {
-      success: true,
-      message: 'Verification email sent successfully!'
-    };
+    if (!user.email) {
+      throw new Error('User email is required');
+    }
+    
+    const response = await fetch('/api/auth/send-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        email: user.email, 
+        name: user.displayName || user.email.split('@')[0] 
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      return {
+        success: true,
+        message: 'Verification code sent successfully!'
+      };
+    } else {
+      throw new Error(data.error);
+    }
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || 'Failed to send verification email'
+      message: error.message || 'Failed to send verification code'
     };
   }
 };

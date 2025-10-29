@@ -12,7 +12,7 @@ import { MainSidebar } from "@/components/main-sidebar";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import ShareAppFAB from "@/components/share-app-fab";
-import { EmailVerificationGuard } from "@/components/email-verification-guard";
+import { EmailVerificationGuard } from "@/components/auth/EmailVerificationGuard";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
