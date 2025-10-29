@@ -91,13 +91,13 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
 
     setIsVerifying(true);
     try {
-      const response = await fetch('/api/auth/verify-code', {
+      const response = await fetch('/api/auth/test-verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email: currentEmail, 
           code,
-          originalEmail: email // Pass original email for user identification
+          originalEmail: email
         })
       });
 
