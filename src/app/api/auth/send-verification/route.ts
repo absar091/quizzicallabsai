@@ -63,7 +63,11 @@ export async function POST(request: NextRequest) {
       to: email,
       subject: 'Verify Your Email - Quizzicallabzᴬᴵ',
       html: emailHtml,
-      text: `Your verification code is: ${code}. This code expires in 15 minutes.`
+      text: `Hi ${name || 'User'},\n\nYour verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create an account, please ignore this email.\n\nThanks,\nThe Quizzicallabzᴬᴵ Team`,
+      headers: {
+        'Content-Type': 'text/html; charset=UTF-8',
+        'MIME-Version': '1.0'
+      }
     });
 
     const response = NextResponse.json({ 
