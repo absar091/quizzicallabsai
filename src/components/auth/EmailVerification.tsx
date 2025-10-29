@@ -91,7 +91,7 @@ export function EmailVerification({ email, onVerified }: EmailVerificationProps)
 
     setIsVerifying(true);
     try {
-      const response = await fetch('/api/auth/test-verify', {
+      const response = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
