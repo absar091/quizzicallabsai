@@ -6,13 +6,14 @@ export function securityHeaders(response: NextResponse) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   
-  // Content Security Policy
+  // Content Security Policy - Allow reCAPTCHA and other services
   response.headers.set('Content-Security-Policy', 
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com; " +
-    "style-src 'self' 'unsafe-inline'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net; " +
+    "style-src 'self' 'unsafe-inline' https://www.google.com; " +
     "img-src 'self' data: https:; " +
-    "connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com;"
+    "frame-src https://www.google.com https://www.recaptcha.net; " +
+    "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://www.google.com https://www.recaptcha.net wss://*.pusher.com;"
   );
   
   return response;
