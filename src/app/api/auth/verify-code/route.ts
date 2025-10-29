@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify code from database
+    console.log('Attempting to verify code for:', email, 'with code:', code);
     const isValid = await verifyCodeFromDB(email, code);
+    console.log('Verification result:', isValid);
 
     if (isValid) {
       // Also update Firebase Auth user as verified
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
       
       return securityHeaders(response);
     } else {
+      console.log('Verification failed for email:', email, 'code:', code);
       const response = NextResponse.json({ 
         error: 'Invalid or expired verification code' 
       }, { status: 400 });

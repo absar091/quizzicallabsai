@@ -72,13 +72,20 @@ export async function verifyCodeFromDB(email: string, code: string): Promise<boo
     email,
     providedCode: code,
     storedCode: userData?.emailVerificationToken,
-    expires: userData?.emailVerificationExpires,
-    now,
-    isExpired: userData?.emailVerificationExpires <= now
+    expires: new Date(userData?.emailVerificationExpires || 0).toISOString(),
+    now: new Date(now).toISOString(),
+    isExpired: (userData?.emailVerificationExpires || 0) <= now,
+    timeDiff: now - (userData?.emailVerificationExpires || 0)
   });
   
+  // Ensure we have the required fields
+  if (!userData?.emailVerificationToken || !userData?.emailVerificationExpires) {
+    console.log('Missing verification data for:', email);
+    return false;
+  }
+  
   // Check if code matches and hasn't expired
-  if (userData?.emailVerificationToken === code && userData?.emailVerificationExpires > now) {
+  if (userData.emailVerificationToken === code && userData.emailVerificationExpires > now) {
     // Clear the verification token after successful verification
     await firestore.collection('users').doc(email).update({
       isEmailVerified: true,
@@ -91,11 +98,11 @@ export async function verifyCodeFromDB(email: string, code: string): Promise<boo
   }
   
   // Log why verification failed
-  if (userData?.emailVerificationToken !== code) {
-    console.log('Code mismatch for:', email);
+  if (userData.emailVerificationToken !== code) {
+    console.log('Code mismatch - Expected:', userData.emailVerificationToken, 'Got:', code);
   }
-  if (userData?.emailVerificationExpires <= now) {
-    console.log('Code expired for:', email);
+  if (userData.emailVerificationExpires <= now) {
+    console.log('Code expired - Expires:', new Date(userData.emailVerificationExpires).toISOString(), 'Now:', new Date(now).toISOString());
   }
   
   return false;
