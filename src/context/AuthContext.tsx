@@ -314,7 +314,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Store user data in Realtime Database for Google users
+      if (user) {
+        const userRef = ref(db, `users/${user.uid}`);
+        const snapshot = await get(userRef);
+        
+        // If new Google user, create profile with default values
+        if (!snapshot.exists()) {
+          await set(userRef, {
+            uid: user.uid,
+            fullName: user.displayName || user.email?.split('@')[0] || 'User',
+            email: user.email,
+            className: 'Not set',
+            age: null,
+            fatherName: 'N/A',
+            plan: 'Free',
+            emailVerified: true, // Google users are pre-verified
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
+      
+      // Google users skip verification - redirect directly to dashboard
+      router.push('/dashboard');
     } catch (error: any) {
       throw error;
     }
