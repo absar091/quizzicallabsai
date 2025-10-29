@@ -1,39 +1,71 @@
-'use client';
+import { useState, useEffect } from 'react';
 
-import { useEffect, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-
-export function useEmailVerification() {
-  const [user] = useAuthState(auth);
-  const [isVerified, setIsVerified] = useState(false);
-  const [loading, setLoading] = useState(true);
+export function useEmailVerification(email: string) {
+  const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsVerified(user.emailVerified);
-      } else {
-        setIsVerified(false);
-      }
-      setLoading(false);
-    });
+    if (!email) {
+      setIsLoading(false);
+      return;
+    }
 
-    return () => unsubscribe();
-  }, []);
+    checkVerificationStatus();
+  }, [email]);
 
-  const refreshVerificationStatus = async () => {
-    if (user) {
-      await user.reload();
-      setIsVerified(user.emailVerified);
+  const checkVerificationStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/check-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+      setIsVerified(data.verified || false);
+    } catch (error) {
+      console.error('Failed to check verification status:', error);
+      setIsVerified(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const sendVerificationCode = async (name?: string) => {
+    const response = await fetch('/api/auth/send-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name })
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error);
+    }
+    return data;
+  };
+
+  const verifyCode = async (code: string) => {
+    const response = await fetch('/api/auth/verify-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      setIsVerified(true);
+    } else {
+      throw new Error(data.error);
+    }
+    return data;
+  };
+
   return {
-    user,
     isVerified,
-    loading,
-    refreshVerificationStatus
+    isLoading,
+    sendVerificationCode,
+    verifyCode,
+    refreshStatus: checkVerificationStatus
   };
 }

@@ -1,84 +1,39 @@
-/**
- * Secure logging utility to prevent log injection attacks (CWE-117)
- */
+// Secure logging utility to prevent log injection
+export function sanitizeLogData(data: any): string {
+  if (typeof data === 'string') {
+    return data.replace(/[\r\n\t]/g, ' ').replace(/[<>\"'&]/g, '').substring(0, 500);
+  }
+  if (typeof data === 'object') {
+    return JSON.stringify(data).replace(/[\r\n\t]/g, ' ').substring(0, 500);
+  }
+  return String(data).replace(/[\r\n\t]/g, ' ').substring(0, 500);
+}
 
+export function secureLog(level: 'info' | 'warn' | 'error', message: string, data?: any) {
+  const sanitizedMessage = sanitizeLogData(message);
+  const sanitizedData = data ? sanitizeLogData(data) : '';
+  
+  console[level](`[${new Date().toISOString()}] ${sanitizedMessage}`, sanitizedData);
+}
+
+// SecureLogger class for compatibility
 export class SecureLogger {
-
-  /**
-   * Legacy secureLog function for backward compatibility
-   */
-  static secureLog = SecureLogger.info;
-  /**
-   * Sanitizes input to prevent log injection attacks
-   */
-  private static sanitizeInput(input: any): string {
-    if (typeof input !== 'string') {
-      input = String(input);
-    }
-    
-    // Remove or encode dangerous characters that could break log integrity
-    return input
-      .replace(/\r\n/g, '\\r\\n')  // Replace CRLF
-      .replace(/\r/g, '\\r')       // Replace CR
-      .replace(/\n/g, '\\n')       // Replace LF
-      .replace(/\t/g, '\\t')       // Replace tabs
-      .replace(/\x00/g, '\\0')     // Replace null bytes
-      .replace(/[\x01-\x1F\x7F]/g, ''); // Remove other control characters
+  static log(level: 'info' | 'warn' | 'error', message: string, data?: any) {
+    secureLog(level, message, data);
   }
-
-  /**
-   * Secure info logging
-   */
-  static info(message: string, ...args: any[]): void {
-    const sanitizedMessage = this.sanitizeInput(message);
-    const sanitizedArgs = args.map(arg => this.sanitizeInput(arg));
-    console.info(`[INFO] ${sanitizedMessage}`, ...sanitizedArgs);
+  
+  static info(message: string, data?: any) {
+    secureLog('info', message, data);
   }
-
-  /**
-   * Secure error logging
-   */
-  static error(message: string, error?: any): void {
-    const sanitizedMessage = this.sanitizeInput(message);
-    if (error) {
-      let errorString: string;
-      if (typeof error === 'object') {
-        // Handle objects by stringifying them properly
-        try {
-          errorString = JSON.stringify(error, null, 2);
-        } catch (e) {
-          errorString = error.toString();
-        }
-      } else {
-        errorString = String(error);
-      }
-      const sanitizedError = this.sanitizeInput(errorString);
-      console.error(`[ERROR] ${sanitizedMessage}`, sanitizedError);
-    } else {
-      console.error(`[ERROR] ${sanitizedMessage}`);
-    }
+  
+  static warn(message: string, data?: any) {
+    secureLog('warn', message, data);
   }
-
-  /**
-   * Secure warning logging
-   */
-  static warn(message: string, ...args: any[]): void {
-    const sanitizedMessage = this.sanitizeInput(message);
-    const sanitizedArgs = args.map(arg => this.sanitizeInput(arg));
-    console.warn(`[WARN] ${sanitizedMessage}`, ...sanitizedArgs);
-  }
-
-  /**
-   * Secure debug logging (only in development)
-   */
-  static debug(message: string, ...args: any[]): void {
-    if (process.env.NODE_ENV === 'development') {
-      const sanitizedMessage = this.sanitizeInput(message);
-      const sanitizedArgs = args.map(arg => this.sanitizeInput(arg));
-      console.debug(`[DEBUG] ${sanitizedMessage}`, ...sanitizedArgs);
-    }
+  
+  static error(message: string, data?: any) {
+    secureLog('error', message, data);
   }
 }
 
-// Export legacy function for backward compatibility
-export const secureLog = SecureLogger.info;
+// Default export for compatibility
+export default SecureLogger;

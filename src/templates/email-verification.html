@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification - Quizzicallabzᴬᴵ</title>
+    <style>
+      /* basic in-email styles kept inline where possible for compatibility */
+      body { margin:0; padding:0; background-color:#f4f4f7; font-family:'Helvetica Neue', Arial, sans-serif; }
+      .container { width:100%; padding:40px 0; background-color:#f4f4f7; }
+      .card { width:600px; max-width:94%; margin:0 auto; background:#ffffff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.05); overflow:hidden; }
+      .header { background:linear-gradient(135deg,#5a34d1,#7c4dff); padding:25px; text-align:center; }
+      .logo { display:block; margin:0 auto 8px; }
+      .brand { color:#ffffff; font-size:22px; margin:0; letter-spacing:0.5px; }
+      .content { padding:35px 40px; color:#333333; font-size:15px; line-height:1.7; }
+      .title { font-size:18px; color:#111111; margin-top:0; margin-bottom:20px; }
+      .code-box { background:#f7f6ff; border:2px solid #c7b7ff; padding:14px 22px; border-radius:10px; display:inline-block; font-family:SFMono-Regular,Menlo,monospace; font-size:28px; letter-spacing:12px; font-weight:700; }
+      .btn { display:inline-block; text-decoration:none; padding:12px 26px; border-radius:8px; font-weight:600; font-size:16px; }
+      .footer { padding:25px 30px; font-size:12px; color:#777777; line-height:1.6; text-align:center; }
+      hr { border:none; border-top:1px solid #eeeeee; margin:0; }
+      @media screen and (max-width:420px){ .content{ padding:22px 14px; } .code-box{ font-size:26px; padding:20px 24px; letter-spacing:8px; word-spacing:8px; } }
+    @media (prefers-color-scheme: dark){ body{background-color:#121212 !important; color:#eee !important;} .container{background-color:#121212 !important;} .card{background:#1e1e1e !important; color:#eee !important;} .header{background:linear-gradient(135deg,#4730a8,#5e3dd6) !important;} .content{color:#ddd !important;} .title{color:#fff !important;} .code-box{background:#2a2450 !important; border-color:#6b5aff !important; color:#ffffff !important;} .footer{color:#aaa !important;} .content a, .footer a{color:#9a8bff !important;} } .container{background-color:#121212 !important;} .card{background:#1e1e1e !important; color:#eee !important;} .header{background:linear-gradient(135deg,#4730a8,#5e3dd6) !important;} .content{color:#ddd !important;} .title{color:#fff !important;} .code-box{background:#2a2450 !important; border-color:#6b5aff !important; color:#fff !important;} .footer{color:#aaa !important;} }
+</style>
+  </head>
+  <body>
+    <table role="presentation" class="container" width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="center">
+          <table role="presentation" class="card" cellspacing="0" cellpadding="0">
+            <!-- Header -->
+            <tr>
+              <td class="header" align="center">
+                <img src="https://quizzicallabz.qzz.io/icon-512.png" alt="QuizzicallabzAI Logo" width="60" height="60" class="logo" />
+                <h1 class="brand">Quizzicallabzᴬᴵ</h1>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td class="content">
+                <h2 class="title">Verify your email address</h2>
+                <p style="margin:0 0 15px 0;">Hi <strong>%DISPLAY_NAME%</strong>,</p>
+                <p style="margin:0 0 20px 0;">Thank you for signing up. Use the code below to verify your email address (<strong>%EMAIL%</strong>).</p>
+
+                <div style="text-align:center; margin:28px 0;">
+  <div class="code-box">%CODE%</div>
+  
+</div>
+<p style="font-size:12px; color:#6b4bff; margin-top:10px;">Select and copy the code</p>
+                </div>
+
+                <p style="margin:0 0 12px 0;">Enter this code in the Quizzicallabzᴬᴵ verification screen. For security, this code will expire in <strong>%EXPIRY_MINUTES% minutes</strong>.</p>
+
+<p style="margin:14px 0 12px 0; direction:rtl; text-align:right; font-family:'Noto Sans Arabic', Arial, sans-serif; font-size:14px; line-height:1.6; color:#444;">
+براہِ مہربانی یہ کوڈ Quizzicallabzᴬᴵ ایپ میں درج کریں۔ آپ کی سکیورٹی کے لیے یہ کوڈ <strong>%EXPIRY_MINUTES% منٹ</strong> میں ختم ہو جائے گا۔
+</p>
+
+                
+
+                <p style="margin:0 0 10px 0;">If you didn't create an account, please ignore this email or <a href="mailto:%SUPPORT_EMAIL%" style="color:#6b4bff; text-decoration:none;">contact support</a>.</p>
+                <p style="margin:0;">Thanks,<br/>The Quizzicallabzᴬᴵ Team</p>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="padding:0 40px;">
+                <hr />
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td class="footer">
+                <p style="margin:0 0 12px 0; font-size:13px;">Stay connected with us</p>
+                <p style="margin:0 0 16px 0;">
+  <a href="https://quizzicallabz.qzz.io" style="margin:0 6px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/internetexplorer.svg" width="20" height="20" alt="Website"/></a>
+  <a href="https://instagram.com/quizzicallabz" style="margin:0 6px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" width="20" height="20" alt="Instagram"/></a>
+  <a href="https://tiktok.com/@quizzicallabz" style="margin:0 6px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" width="20" height="20" alt="TikTok"/></a>
+</p>
+                <p style="margin:0 0 8px 0;">© 2025 <strong>Quizzicallabzᴬᴵ, Inc</strong>. All rights reserved.</p>
+                <p style="margin:0;">Need help? <a href="mailto:%SUPPORT_EMAIL%" style="color:#6b4bff; text-decoration:none;">Contact Support</a></p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

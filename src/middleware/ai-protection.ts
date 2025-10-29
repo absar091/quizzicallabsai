@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { AIAbusePreventionSystem } from '@/lib/ai-abuse-prevention';
-import { SecureLogger } from '@/lib/secure-logger';
+import { secureLog } from '@/lib/secure-logger';
 
 export async function withAIProtection(
   request: NextRequest,
@@ -30,7 +30,7 @@ export async function withAIProtection(
     const checkResult = await abuseSystem.checkRequest(userId, operation, requestData, isPro);
     
     if (!checkResult.allowed) {
-      SecureLogger.warn(`AI request blocked for user ${userId.substring(0, 8)}...: ${checkResult.reason}`);
+      secureLog('warn', `AI request blocked for user ${userId.substring(0, 8)}...: ${checkResult.reason}`);
       
       return NextResponse.json(
         { 
@@ -62,7 +62,7 @@ export async function withAIProtection(
     return response;
     
   } catch (error) {
-    SecureLogger.error('AI protection middleware error', error);
+    secureLog('error', 'AI protection middleware error', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

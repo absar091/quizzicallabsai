@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase-admin';
 import { sendEmail } from '@/lib/email';
 import { subscriptionConfirmationEmailTemplate } from '@/lib/email-templates';
-import { SecureLogger } from '@/lib/secure-logger';
+import { secureLog } from '@/lib/secure-logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const userId = decodedToken.uid;
 
-    SecureLogger.info('Sending subscription confirmation email', {
+    secureLog('info', 'Sending subscription confirmation email', {
       userId,
       userEmail,
       planName,
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         text: emailTemplate.text
       });
 
-      SecureLogger.info('Subscription confirmation email sent successfully', {
+      secureLog('info', 'Subscription confirmation email sent successfully', {
         userId,
         userEmail,
         planName,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (emailError: any) {
-      SecureLogger.error('Failed to send subscription confirmation email', {
+      secureLog('error', 'Failed to send subscription confirmation email', {
         userId,
         userEmail,
         error: emailError.message
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
-    SecureLogger.error('Subscription confirmation email error', {
+    secureLog('error', 'Subscription confirmation email error', {
       error: error.message,
       stack: error.stack?.substring(0, 500)
     });

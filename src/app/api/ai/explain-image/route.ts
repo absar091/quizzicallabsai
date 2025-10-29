@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase-admin';
 import { explainImage } from '@/ai/flows/explain-image';
 import { checkContentSafety } from '@/lib/content-safety';
-import { SecureLogger } from '@/lib/secure-logger';
+import { secureLog } from '@/lib/secure-logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Content safety check for query
     const safetyCheck = await checkContentSafety(query, 'image explanation query');
     if (!safetyCheck.isSafe) {
-      SecureLogger.warn('Unsafe content detected in image explanation query', {
+      secureLog('warn', 'Unsafe content detected in image explanation query', {
         userId: decodedToken.uid,
         reason: safetyCheck.reason
       });
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const userId = decodedToken.uid;
     const userEmail = decodedToken.email;
 
-    SecureLogger.info('Image explanation request', {
+    secureLog('info', 'Image explanation request', {
       userId,
       queryLength: query.length,
       imageSize: imageDataUri.length
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         throw new Error('AI failed to generate explanation');
       }
 
-      SecureLogger.info('Image explanation generated successfully', {
+      secureLog('info', 'Image explanation generated successfully', {
         userId,
         explanationLength: result.explanation.length
       });
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (aiError: any) {
-      SecureLogger.error('AI image explanation error', {
+      secureLog('error', 'AI image explanation error', {
         userId,
         error: aiError.message,
         queryLength: query.length
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
-    SecureLogger.error('Image explanation API error', {
+    secureLog('error', 'Image explanation API error', {
       error: error.message,
       stack: error.stack?.substring(0, 500)
     });

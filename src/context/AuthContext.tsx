@@ -18,7 +18,7 @@ import { ref, get, set } from "firebase/database";
 import { syncUserData } from "@/lib/cloud-sync";
 import { loginCredentialsManager } from "@/lib/login-credentials";
 import { detectDeviceInfo } from "@/lib/device-detection";
-import { SecureLogger } from "@/lib/secure-logger";
+import { secureLog } from "@/lib/secure-logger";
 
 export type UserPlan = "Free" | "Pro";
 
@@ -54,15 +54,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    SecureLogger.info('AUTH CONTEXT EFFECT RUNNING');
+    secureLog('info', 'AUTH CONTEXT EFFECT RUNNING');
     
     // AbortController for cleanup
     const abortController = new AbortController();
     const signal = abortController.signal;
     
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      SecureLogger.info('AUTH STATE CHANGED', { hasUser: !!firebaseUser });
-      SecureLogger.info('User email domain', { domain: firebaseUser?.email?.split('@')[1] });
+      secureLog('info', 'AUTH STATE CHANGED', { hasUser: !!firebaseUser });
+      secureLog('info', 'User email domain', { domain: firebaseUser?.email?.split('@')[1] });
       
       if (firebaseUser) {
         try {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             plan: userData?.plan || 'Free', // Load plan from Firebase
           };
 
-          SecureLogger.info('Setting user with plan', { plan: appUser.plan });
+          secureLog('info', 'Setting user with plan', { plan: appUser.plan });
 
           // SMART LOGIN NOTIFICATION - Only send when credentials don't match trusted devices
           if (firebaseUser.email && firebaseUser.emailVerified) {
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const shouldNotify = await loginCredentialsManager.shouldSendNotification(firebaseUser.uid, deviceInfo);
 
               if (shouldNotify) {
-                SecureLogger.warn('Sending login notification for untrusted device');
+                secureLog('warn', 'Sending login notification for untrusted device');
 
                 const idToken = await firebaseUser.getIdToken();
 
@@ -117,15 +117,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
 
                 const notificationResult = await response.json();
-                SecureLogger.info('Login notification sent', { success: notificationResult.success });
+                secureLog('info', 'Login notification sent', { success: notificationResult.success });
 
                 if (response.ok && notificationResult.success) {
-                  SecureLogger.info('Login notification sent successfully');
+                  secureLog('info', 'Login notification sent successfully');
                 } else {
-                  SecureLogger.warn('Login notification failed', { error: notificationResult.error });
+                  secureLog('warn', 'Login notification failed', { error: notificationResult.error });
                 }
               } else {
-                SecureLogger.info('Trusted device detected - no notification needed');
+                secureLog('info', 'Trusted device detected - no notification needed');
               }
 
               // Always store/update login credentials (for both trusted and untrusted devices)
@@ -133,14 +133,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setTimeout(async () => {
                 try {
                   await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
-                  SecureLogger.info('Login credentials updated');
+                  secureLog('info', 'Login credentials updated');
                 } catch (error: any) {
-                  SecureLogger.warn('Failed to store login credentials (non-critical)', { error: error.message });
+                  secureLog('warn', 'Failed to store login credentials (non-critical)', { error: error.message });
                 }
               }, 1000);
 
             } catch (error: any) {
-              SecureLogger.warn('Login credentials error (non-critical)', { error: error.message });
+              secureLog('warn', 'Login credentials error (non-critical)', { error: error.message });
               // Don't fail the login if credential storage fails
             }
           }
@@ -149,8 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           // Trigger welcome notifications for new users (only if email is verified)
           if (isNewUser && firebaseUser.emailVerified) {
-            SecureLogger.info('New verified user detected - triggering welcome notifications');
-            SecureLogger.info('New user details', {
+            secureLog('info', 'New verified user detected - triggering welcome notifications');
+            secureLog('info', 'New user details', {
               hasEmail: !!firebaseUser.email,
               hasDisplayName: !!firebaseUser.displayName,
               emailVerified: firebaseUser.emailVerified
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             try {
               const idToken = await firebaseUser.getIdToken();
-              SecureLogger.info('Sending welcome email to new user');
+              secureLog('info', 'Sending welcome email to new user');
               
               const response = await fetch('/api/notifications/welcome', {
                 method: 'POST',
@@ -173,36 +173,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 signal
               });
 
-              SecureLogger.info('Welcome email response', { status: response.status });
+              secureLog('info', 'Welcome email response', { status: response.status });
               const responseData = await response.json();
-              SecureLogger.info('Welcome email result', { success: responseData.success });
+              secureLog('info', 'Welcome email result', { success: responseData.success });
 
               if (response.ok && responseData.success) {
-                SecureLogger.info('Welcome email sent successfully');
+                secureLog('info', 'Welcome email sent successfully');
               } else {
-                SecureLogger.error('Failed to send welcome email', {
+                secureLog('error', 'Failed to send welcome email', {
                   status: response.status,
                   error: responseData?.error || 'Unknown error',
                   response: responseData
                 });
               }
             } catch (error: any) {
-              SecureLogger.error('Welcome email network error', {
+              secureLog('error', 'Welcome email network error', {
                 message: error.message,
                 name: error.name,
                 stack: error.stack?.substring(0, 200) // Truncate stack trace
               });
             }
           } else if (isNewUser && !firebaseUser.emailVerified) {
-            SecureLogger.info('New unverified user - welcome email pending verification');
+            secureLog('info', 'New unverified user - welcome email pending verification');
           }
 
           // Initialize cloud sync for cross-device data synchronization
           try {
             await syncUserData(firebaseUser.uid);
-            SecureLogger.info('Cloud sync initialized for user');
+            secureLog('info', 'Cloud sync initialized for user');
           } catch (error) {
-            SecureLogger.error('Failed to initialize cloud sync', error);
+            secureLog('error', 'Failed to initialize cloud sync', error);
           }
 
           // Redirect from auth pages - check for redirect parameter
@@ -211,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const redirect = currentUrl.searchParams.get('redirect');
 
             if (redirect) {
-              SecureLogger.info('Redirecting from auth page', { hasRedirect: !!redirect });
+              secureLog('info', 'Redirecting from auth page', { hasRedirect: !!redirect });
               setTimeout(() => {
                 // Decode and validate redirect URL to prevent open redirect
                 let decodedRedirect;
@@ -221,23 +221,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   if (decodedRedirect.startsWith('/') && !decodedRedirect.startsWith('//')) {
                     router.push(decodedRedirect);
                   } else {
-                    SecureLogger.warn('Invalid redirect URL detected');
+                    secureLog('warn', 'Invalid redirect URL detected');
                     router.push('/dashboard');
                   }
                 } catch (error) {
-                  SecureLogger.warn('Error decoding redirect', error);
+                  secureLog('warn', 'Error decoding redirect', error);
                   router.push('/dashboard');
                 }
               }, 100);
             } else {
-              SecureLogger.info('Redirecting from auth page to dashboard');
+              secureLog('info', 'Redirecting from auth page to dashboard');
               setTimeout(() => {
                 router.push('/dashboard');
               }, 100);
             }
           }
         } catch (error) {
-          SecureLogger.error('Error loading user data from Firebase', error);
+          secureLog('error', 'Error loading user data from Firebase', error);
           // Fallback to basic user data if Firebase fails
           const appUser: User = {
             uid: firebaseUser.uid,
@@ -252,12 +252,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(appUser);
         }
       } else {
-        SecureLogger.info('No Firebase user - setting null');
+        secureLog('info', 'No Firebase user - setting null');
         setUser(null);
       }
       
       // CRITICAL: Always set loading to false after auth state is determined
-      SecureLogger.info('Setting loading to false');
+      secureLog('info', 'Setting loading to false');
       setLoading(false);
     });
 
@@ -297,9 +297,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Update local state
       setUser(null);
       
-      SecureLogger.info('User account deleted successfully');
+      secureLog('info', 'User account deleted successfully');
     } catch (error: any) {
-      SecureLogger.error('Failed to delete user account', { error: error.message });
+      secureLog('error', 'Failed to delete user account', { error: error.message });
       
       // Handle specific Firebase errors
       if (error.code === 'auth/requires-recent-login') {
@@ -336,9 +336,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Update local state immediately for instant UI feedback
           setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
           
-          SecureLogger.info('User plan updated', { plan });
+          secureLog('info', 'User plan updated', { plan });
         } catch (error) {
-          SecureLogger.error('Error updating user plan', error);
+          secureLog('error', 'Error updating user plan', error);
           throw new Error('Failed to update plan. Please try again.');
         }
     } else {

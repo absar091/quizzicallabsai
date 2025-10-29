@@ -1,97 +1,137 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { sendEmailVerification } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertTriangle, Mail } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
 
-export default function EmailVerification() {
-  const [user] = useAuthState(auth);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+interface EmailVerificationProps {
+  email: string;
+  onVerified: () => void;
+}
 
-  const handleSendVerification = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    setMessage('');
-    setError('');
-    setSuccess(false);
+export function EmailVerification({ email, onVerified }: EmailVerificationProps) {
+  const [code, setCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
+  const sendVerificationCode = async () => {
+    setIsSending(true);
     try {
-      await sendEmailVerification(user);
-      setMessage('Verification email sent! Check your inbox and spam folder.');
-      setSuccess(true);
-    } catch (error: any) {
-      let errorMessage = 'Failed to send verification email. Please try again.';
+      const response = await fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name: email.split('@')[0] })
+      });
+
+      const data = await response.json();
       
-      if (error.code === 'auth/too-many-requests') {
-        errorMessage = 'Too many requests. Please wait a moment before requesting another email.';
-      } else if (error.code === 'auth/user-token-expired') {
-        errorMessage = 'Session expired. Please sign in again.';
-      } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = 'Network error. Please check your connection and try again.';
+      if (data.success) {
+        toast({
+          title: 'Verification code sent',
+          description: 'Check your email for the 6-digit code'
+        });
+      } else {
+        throw new Error(data.error);
       }
-      
-      setError(errorMessage);
-      setSuccess(false);
+    } catch (error: any) {
+      toast({
+        title: 'Failed to send code',
+        description: error.message,
+        variant: 'destructive'
+      });
     } finally {
-      setLoading(false);
+      setIsSending(false);
     }
   };
 
-  if (!user) return null;
+  const verifyCode = async () => {
+    if (code.length !== 6) {
+      toast({
+        title: 'Invalid code',
+        description: 'Please enter a 6-digit code',
+        variant: 'destructive'
+      });
+      return;
+    }
 
-  if (user.emailVerified) {
-    return (
-      <Alert>
-        <CheckCircle className="h-4 w-4" />
-        <AlertDescription>
-          ✅ Your email is verified!
-        </AlertDescription>
-      </Alert>
-    );
-  }
+    setIsVerifying(true);
+    try {
+      const response = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update Firebase Auth user as verified
+        await fetch('/api/auth/mark-verified', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        toast({
+          title: 'Email Verified!',
+          description: 'Welcome to Quizzicallabzᴬᴵ!'
+        });
+        onVerified();
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Verification failed',
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   return (
-    <Alert variant="destructive">
-      <Mail className="h-4 w-4" />
-      <AlertDescription>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium">Email not verified</p>
-            <p className="text-sm">Please verify your email to access all features</p>
-          </div>
-          <Button
-            onClick={handleSendVerification}
-            disabled={loading}
-            variant="outline"
-            size="sm"
-            className="ml-4"
-          >
-            {loading ? 'Sending...' : 'Send Verification'}
-          </Button>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle>Verify Your Email</CardTitle>
+        <CardDescription>
+          We sent a 6-digit code to {email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Input
+            type="text"
+            placeholder="Enter 6-digit code"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            className="text-center text-lg tracking-widest"
+            maxLength={6}
+          />
         </div>
         
-        {success && message && (
-          <Alert className="mt-3">
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{message}</AlertDescription>
-          </Alert>
-        )}
+        <Button 
+          onClick={verifyCode} 
+          disabled={isVerifying || code.length !== 6}
+          className="w-full"
+        >
+          {isVerifying ? 'Verifying...' : 'Verify Email'}
+        </Button>
         
-        {error && (
-          <Alert variant="destructive" className="mt-3">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-      </AlertDescription>
-    </Alert>
+        <div className="text-center">
+          <Button 
+            variant="ghost" 
+            onClick={sendVerificationCode}
+            disabled={isSending}
+            className="text-sm"
+          >
+            {isSending ? 'Sending...' : 'Resend Code'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

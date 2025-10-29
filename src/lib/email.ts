@@ -5,68 +5,24 @@ import {
   loginNotificationEmailTemplate 
 } from './email-templates-professional';
 import { checkEmailPreferences, logEmailAttempt, type EmailType } from './email-preferences';
+import { getTransporter as getEmailTransporter, getFromAddress, type EmailService } from './email-config';
 
 interface EmailOptions {
   to: string;
   subject: string;
   html: string;
   text?: string;
+  service?: EmailService;
 }
 
-// Create a reusable transporter for better performance
-let transporter: any = null;
-
-async function getTransporter() {
-  if (!transporter) {
-    // Validate environment variables
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      throw new Error('Missing email configuration. Please check SMTP environment variables.');
-    }
-
-    console.log('📧 Creating optimized email transporter...');
-    
-    // Dynamic import to ensure proper loading
-    const nodemailer = await import('nodemailer');
-    console.log('📧 Nodemailer loaded:', typeof nodemailer.default, typeof nodemailer.default?.createTransport);
-    
-    // Use default export if available, otherwise use named export
-    const mailer = nodemailer.default || nodemailer;
-    
-    if (typeof mailer.createTransport !== 'function') {
-      console.error('❌ createTransport is not a function:', mailer);
-      throw new Error('Nodemailer import error: createTransport is not available');
-    }
-    
-    transporter = mailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false, // TLS
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      // Optimize for speed
-      pool: true,
-      maxConnections: 10,
-      maxMessages: 1000,
-      connectionTimeout: 3000,
-      greetingTimeout: 2000,
-      socketTimeout: 5000,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-  }
-  return transporter;
-}
-
-export async function sendEmail({ to, subject, html, text }: EmailOptions) {
+export async function sendEmail({ to, subject, html, text, service = 'marketing' }: EmailOptions) {
   try {
-    const emailTransporter = await getTransporter();
-    console.log('📧 Sending email to:', to.substring(0, 20) + '...');
+    const emailTransporter = getEmailTransporter(service);
+    const fromAddress = getFromAddress(service);
+    console.log('📧 Sending email to:', to.substring(0, 20) + '...', 'via', service);
 
     const result = await emailTransporter.sendMail({
-      from: `"QuizzicallabzAI" <${process.env.EMAIL_FROM || process.env.SMTP_USER}>`,
+      from: fromAddress,
       to,
       subject,
       html,
@@ -88,7 +44,7 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
 
 // Enhanced email sending with preference checking
 export async function sendEmailWithPreferences(
-  { to, subject, html, text }: EmailOptions, 
+  { to, subject, html, text, service = 'marketing' }: EmailOptions, 
   emailType: EmailType
 ) {
   try {
@@ -105,7 +61,7 @@ export async function sendEmailWithPreferences(
     }
 
     // Send the email
-    const result = await sendEmail({ to, subject, html, text });
+    const result = await sendEmail({ to, subject, html, text, service });
     await logEmailAttempt(to, emailType, true);
     
     return result;

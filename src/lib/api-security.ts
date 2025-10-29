@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import RateLimiter from './rate-limiter';
 import { InputValidator } from './input-validator';
-import { SecureLogger } from './secure-logger';
+import { secureLog } from './secure-logger';
 
 export interface SecurityConfig {
   rateLimit?: {
@@ -40,7 +40,7 @@ export class ApiSecurity {
 
       // Log request if enabled
       if (logRequests) {
-        SecureLogger.info(`API Request: ${request.method} ${request.url}`, {
+        secureLog('info', `API Request: ${request.method} ${request.url}`, {
           clientId: clientId.substring(0, 8) + '...',
           userAgent: request.headers.get('user-agent')?.substring(0, 100)
         });
@@ -48,7 +48,7 @@ export class ApiSecurity {
 
       // Rate limiting
       if (!this.rateLimiter.isAllowed(clientId, rateLimit.maxRequests, rateLimit.windowMs)) {
-        SecureLogger.warn(`Rate limit exceeded for client: ${clientId.substring(0, 8)}...`);
+        secureLog('warn', `Rate limit exceeded for client: ${clientId.substring(0, 8)}...`);
         return NextResponse.json(
           { error: 'Rate limit exceeded' },
           { 
@@ -64,7 +64,7 @@ export class ApiSecurity {
       if (validateInput && request.method !== 'GET') {
         const validationResult = await this.validateRequestInput(request);
         if (!validationResult.valid) {
-          SecureLogger.warn(`Invalid input detected: ${validationResult.error}`);
+          secureLog('warn', `Invalid input detected: ${validationResult.error}`);
           return NextResponse.json(
             { error: 'Invalid input' },
             { status: 400 }
@@ -76,7 +76,7 @@ export class ApiSecurity {
       if (requireAuth) {
         const authResult = await this.validateAuthentication(request);
         if (!authResult.valid) {
-          SecureLogger.warn(`Authentication failed: ${authResult.error}`);
+          secureLog('warn', `Authentication failed: ${authResult.error}`);
           return NextResponse.json(
             { error: 'Unauthorized' },
             { status: 401 }
@@ -86,7 +86,7 @@ export class ApiSecurity {
 
       return null; // Continue to endpoint
     } catch (error) {
-      SecureLogger.error('Security middleware error', error);
+      secureLog('error', 'Security middleware error', error);
       return NextResponse.json(
         { error: 'Internal server error' },
         { status: 500 }

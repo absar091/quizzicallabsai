@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { EmailVerificationGuard } from '@/components/auth/EmailVerificationGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Flame, Target, BookOpenText, PlusSquare, Brain, BarChart, Trophy, Bookmark, Sparkles, ArrowRight, BookMarked, Clock, TrendingUp, Award } from "lucide-react";
@@ -367,6 +368,7 @@ export default function HomePage() {
   const calculatedStreak = calculateStreak(recentActivity);
 
   return (
+    <EmailVerificationGuard>
     <div className="space-y-8">
       {/* Floating sync indicator */}
       <FloatingSyncIndicator />
@@ -553,5 +555,6 @@ export default function HomePage() {
         </motion.div>
       </motion.div>
     </div>
+    </EmailVerificationGuard>
   );
 }

@@ -137,6 +137,12 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // 📧 Email verification users (server-side access only)
+    match /users/{email} {
+      // ✅ Server-side access for email verification (Firebase Admin SDK bypasses rules)
+      allow read, write: if false; // Only Admin SDK can access
+    }
+
     // 💬 Quiz results (existing from quiz feature)
     match /quiz-results/{document} {
       // Your existing quiz results rules

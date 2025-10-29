@@ -3,7 +3,7 @@
  */
 
 import { AIRateLimiter } from './ai-rate-limiter';
-import { SecureLogger } from './secure-logger';
+import { secureLog } from './secure-logger';
 import { ContentSafetyFilter } from './content-safety-filter';
 
 interface AbusePattern {
@@ -45,7 +45,7 @@ export class AIAbusePreventionSystem {
     // 1. Rate limiting check
     const rateLimitResult = this.rateLimiter.canMakeRequest(userId, operation, isPro);
     if (!rateLimitResult.allowed) {
-      SecureLogger.warn(`Rate limit exceeded for user ${userId.substring(0, 8)}... operation: ${operation}`);
+      secureLog('warn', `Rate limit exceeded for user ${userId.substring(0, 8)}... operation: ${operation}`);
       return rateLimitResult;
     }
 
@@ -92,7 +92,7 @@ export class AIAbusePreventionSystem {
       const banSystem = AccountBanSystem.getInstance();
       banSystem.banAccount(userId, 'unknown@email.com', `Severe abuse pattern: ${pattern.pattern}`, true);
       
-      SecureLogger.warn(`User ${userId.substring(0, 8)}... permanently banned for abuse pattern: ${pattern.pattern}`);
+      secureLog('warn', `User ${userId.substring(0, 8)}... permanently banned for abuse pattern: ${pattern.pattern}`);
       return { 
         allowed: false, 
         reason: 'Account permanently banned for policy violations. Contact support@quizzicallabs.com if this is an error.' 
@@ -123,7 +123,7 @@ export class AIAbusePreventionSystem {
     );
     
     if (!safetyCheck.isSafe) {
-      SecureLogger.warn(`Harmful content detected in AI request`);
+      secureLog('warn', `Harmful content detected in AI request`);
       return {
         allowed: false,
         reason: safetyCheck.reason + '. ' + (safetyCheck.suggestion || '')
@@ -141,7 +141,7 @@ export class AIAbusePreventionSystem {
 
     for (const pattern of suspiciousPatterns) {
       if (pattern.test(content)) {
-        SecureLogger.warn(`Suspicious content detected in AI request: ${pattern.source}`);
+        secureLog('warn', `Suspicious content detected in AI request: ${pattern.source}`);
         return { 
           allowed: false, 
           reason: 'Request contains suspicious content and has been blocked.' 
@@ -204,7 +204,7 @@ export class AIAbusePreventionSystem {
       });
     }
     
-    SecureLogger.warn(`Abuse pattern recorded for user ${userId.substring(0, 8)}...: ${patternType}`);
+    secureLog('warn', `Abuse pattern recorded for user ${userId.substring(0, 8)}...: ${patternType}`);
   }
 
   /**

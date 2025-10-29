@@ -2,7 +2,7 @@
  * Account Ban System for Policy Violations
  */
 
-import { SecureLogger } from './secure-logger';
+import { secureLog } from './secure-logger';
 
 interface BanRecord {
   userId: string;
@@ -43,7 +43,7 @@ export class AccountBanSystem {
     this.bannedAccounts.set(userId, banRecord);
     this.bannedEmails.add(email.toLowerCase());
 
-    SecureLogger.warn(`Account banned: ${userId.substring(0, 8)}... Email: ${email} Reason: ${reason}`);
+    secureLog('warn', `Account banned: ${userId.substring(0, 8)}... Email: ${email} Reason: ${reason}`);
   }
 
   /**
@@ -83,7 +83,7 @@ export class AccountBanSystem {
     if (banRecord) {
       this.bannedAccounts.delete(userId);
       this.bannedEmails.delete(banRecord.email.toLowerCase());
-      SecureLogger.info(`Account unbanned: ${userId.substring(0, 8)}...`);
+      secureLog('info', `Account unbanned: ${userId.substring(0, 8)}...`);
       return true;
     }
     return false;

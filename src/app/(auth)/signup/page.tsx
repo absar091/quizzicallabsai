@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { ref, set } from "firebase/database";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -86,16 +86,23 @@ export default function SignupPage() {
         plan: 'Free' // Default plan
       });
 
-      // Send email verification with continue URL
-      const continueUrl = `${window.location.origin}/login?verified=true`;
-      await sendEmailVerification(userCredential.user, {
-        url: continueUrl,
-        handleCodeInApp: false // Let Firebase handle the action page
+      // Send custom verification email instead of Firebase
+      const response = await fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: values.email, 
+          name: values.fullName 
+        })
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send verification email');
+      }
 
       toast({
         title: "Account Created! Please Verify Your Email",
-        description: "A verification email has been sent with a continue link. Please check your main inbox and also your spam/junk folder.",
+        description: "A 6-digit verification code has been sent to your email. Please check your inbox.",
         duration: 9000,
       });
       
@@ -104,7 +111,7 @@ export default function SignupPage() {
         recaptchaRef.current.reset();
       }
       
-      router.push("/login");
+      router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
         let errorMessage = "An unknown error occurred.";
         if (error.code === 'auth/email-already-in-use') {
@@ -293,10 +300,25 @@ export default function SignupPage() {
              <FormField
                 control={form.control}
                 name="recaptcha"
-                render={({ field }) => (
+                render={({ field }) => {
+                  const isLocalhost = typeof window !== 'undefined' && 
+                    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+                  
+                  // Auto-fill recaptcha for localhost (use useEffect to avoid render issues)
+                  React.useEffect(() => {
+                    if (isLocalhost && !field.value) {
+                      field.onChange('localhost-bypass');
+                    }
+                  }, [isLocalhost, field.value, field.onChange]);
+                  
+                  return (
                     <FormItem className="flex flex-col items-center">
                     <FormControl>
-                        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
+                        {isLocalhost ? (
+                          <div className="text-green-600 text-sm p-4 border border-green-200 rounded bg-green-50">
+                            ✅ reCAPTCHA bypassed for localhost testing
+                          </div>
+                        ) : process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
                           <ReCAPTCHA
                               ref={recaptchaRef}
                               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
@@ -315,7 +337,8 @@ export default function SignupPage() {
                     </FormControl>
                     <FormMessage />
                     </FormItem>
-                )}
+                  );
+                }}
              />
             <FormField
                 control={form.control}

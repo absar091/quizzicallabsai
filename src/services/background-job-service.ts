@@ -2,7 +2,7 @@ import { ref, set, get, onValue, off, push, update, remove } from "firebase/data
 import { db } from "@/lib/firebase";
 import { BackgroundJob, notificationService } from "./notification-service";
 import { toast } from "@/hooks/use-toast";
-import { SecureLogger } from "@/lib/secure-logger";
+import { secureLog } from "@/lib/secure-logger";
 
 interface JobSubscriber {
   jobId: string;
@@ -44,10 +44,10 @@ class BackgroundJobService {
       const jobRef = ref(db, `backgroundJobs/${userId}/${jobId}`);
       await set(jobRef, job);
 
-      SecureLogger.info(`Background job created: ${jobId} (${type})`);
+      secureLog('info', `Background job created: ${jobId} (${type})`);
       return jobId;
     } catch (error) {
-      SecureLogger.error('Error creating background job:', error);
+      secureLog('error', 'Error creating background job:', error);
       throw new Error('Failed to create background job');
     }
   }
@@ -60,7 +60,7 @@ class BackgroundJobService {
       // Check if user is authenticated before attempting update
       const { auth } = await import('@/lib/firebase');
       if (!auth.currentUser || auth.currentUser.uid !== userId) {
-        SecureLogger.warn('User not authenticated or mismatched, skipping job start');
+        secureLog('warn', 'User not authenticated or mismatched, skipping job start');
         return;
       }
 
@@ -73,9 +73,9 @@ class BackgroundJobService {
       // Start progress simulation
       this.simulateProgress(jobId, userId, 95);
 
-      SecureLogger.info(`Started processing job: ${jobId}`);
+      secureLog('info', `Started processing job: ${jobId}`);
     } catch (error) {
-      SecureLogger.error('Error starting job:', error);
+      secureLog('error', 'Error starting job:', error);
       throw error;
     }
   }
@@ -111,13 +111,13 @@ class BackgroundJobService {
         notificationService.showQuizReadyNotification(job);
       }
 
-      SecureLogger.info(`Job completed: ${jobId}`);
+      secureLog('info', `Job completed: ${jobId}`);
       toast({
         title: "🎉 Your content is ready!",
         description: "Click here to view your generated quiz.",
       });
     } catch (error) {
-      SecureLogger.error('Error completing job:', error);
+      secureLog('error', 'Error completing job:', error);
       throw error;
     }
   }
@@ -141,14 +141,14 @@ class BackgroundJobService {
         this.jobTimers.delete(jobId);
       }
 
-      SecureLogger.error(`Job failed: ${jobId}`, error);
+      secureLog('error', `Job failed: ${jobId}`, error);
       toast({
         title: "⚠️ Generation failed",
         description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } catch (err) {
-      SecureLogger.error('Error failing job:', err);
+      secureLog('error', 'Error failing job:', err);
     }
   }
 
@@ -161,7 +161,7 @@ class BackgroundJobService {
       const snapshot = await get(jobRef);
       return snapshot.exists() ? snapshot.val() : null;
     } catch (error) {
-      SecureLogger.error('Error getting job:', error);
+      secureLog('error', 'Error getting job:', error);
       return null;
     }
   }
@@ -183,7 +183,7 @@ class BackgroundJobService {
 
       return jobs.sort((a, b) => b.createdAt - a.createdAt);
     } catch (error) {
-      SecureLogger.error('Error getting user jobs:', error);
+      secureLog('error', 'Error getting user jobs:', error);
       return [];
     }
   }
@@ -208,12 +208,12 @@ class BackgroundJobService {
       callback,
       unsubscribe: () => {
         off(jobRef, 'value', listener);
-        SecureLogger.debug(`Unsubscribed from job: ${jobId}`);
+        secureLog('info', `Unsubscribed from job: ${jobId}`);
       }
     };
 
     this.subscribers.set(jobId, subscriber);
-    SecureLogger.debug(`Subscribed to job: ${jobId}`);
+    secureLog('info', `Subscribed to job: ${jobId}`);
 
     return subscriber.unsubscribe;
   }
@@ -233,10 +233,10 @@ class BackgroundJobService {
           await remove(jobRef);
         }
 
-        SecureLogger.info(`Cleaned up ${jobsToDelete.length} old jobs for user`);
+        secureLog('info', `Cleaned up ${jobsToDelete.length} old jobs for user`);
       }
     } catch (error) {
-      SecureLogger.error('Error cleaning up old jobs:', error);
+      secureLog('error', 'Error cleaning up old jobs:', error);
     }
   }
 
@@ -297,9 +297,9 @@ class BackgroundJobService {
         this.subscribers.delete(jobId);
       }
 
-      SecureLogger.info(`Deleted job: ${jobId}`);
+      secureLog('info', `Deleted job: ${jobId}`);
     } catch (error) {
-      SecureLogger.error('Error deleting job:', error);
+      secureLog('error', 'Error deleting job:', error);
     }
   }
 }

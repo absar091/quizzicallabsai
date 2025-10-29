@@ -2,7 +2,7 @@
 import { useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { InputValidator } from '@/lib/input-validator';
-import { SecureLogger } from '@/lib/secure-logger';
+import { secureLog } from '@/lib/secure-logger';
 
 interface QuizProgress {
   quizId: string;
@@ -21,7 +21,7 @@ export function useProgressPersistence(quizId: string) {
     // Validate and sanitize quizId to prevent path traversal
     const sanitizedQuizId = InputValidator.sanitizeInput(quizId);
     if (!sanitizedQuizId || sanitizedQuizId !== quizId) {
-      SecureLogger.warn('Invalid quiz ID detected in saveProgress');
+      secureLog('warn', 'Invalid quiz ID detected in saveProgress');
       return;
     }
 
@@ -39,7 +39,7 @@ export function useProgressPersistence(quizId: string) {
       import('@/lib/firebase').then(({ database, ref, set }) => {
         const progressRef = ref(database, `users/${user.uid}/quiz_progress/${sanitizedQuizId}`);
         set(progressRef, progressData).catch((error) => {
-          SecureLogger.error('Failed to save progress to Firebase', error);
+          secureLog('error', 'Failed to save progress to Firebase', error);
         });
       });
     }
@@ -51,7 +51,7 @@ export function useProgressPersistence(quizId: string) {
     // Validate and sanitize quizId to prevent path traversal
     const sanitizedQuizId = InputValidator.sanitizeInput(quizId);
     if (!sanitizedQuizId || sanitizedQuizId !== quizId) {
-      SecureLogger.warn('Invalid quiz ID detected in loadProgress');
+      secureLog('warn', 'Invalid quiz ID detected in loadProgress');
       return null;
     }
 
@@ -69,7 +69,7 @@ export function useProgressPersistence(quizId: string) {
       
       return snapshot.exists() ? snapshot.val() : null;
     } catch (error) {
-      SecureLogger.error('Failed to load progress', error);
+      secureLog('error', 'Failed to load progress', error);
       return null;
     }
   }, [user, quizId]);
@@ -80,7 +80,7 @@ export function useProgressPersistence(quizId: string) {
     // Validate and sanitize quizId to prevent path traversal
     const sanitizedQuizId = InputValidator.sanitizeInput(quizId);
     if (!sanitizedQuizId || sanitizedQuizId !== quizId) {
-      SecureLogger.warn('Invalid quiz ID detected in clearProgress');
+      secureLog('warn', 'Invalid quiz ID detected in clearProgress');
       return;
     }
 
@@ -90,7 +90,7 @@ export function useProgressPersistence(quizId: string) {
       import('@/lib/firebase').then(({ database, ref, remove }) => {
         const progressRef = ref(database, `users/${user.uid}/quiz_progress/${sanitizedQuizId}`);
         remove(progressRef).catch((error) => {
-          SecureLogger.error('Failed to clear progress from Firebase', error);
+          secureLog('error', 'Failed to clear progress from Firebase', error);
         });
       });
     }
