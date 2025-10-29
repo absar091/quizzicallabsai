@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     await storeVerificationCode(email, code);
 
     // Load and customize email template
-    const templatePath = path.join(process.cwd(), 'src', 'templates', 'email-verification.html');
+    const templatePath = path.join(process.cwd(), 'src', 'templates', 'email-verification-inline.html');
     let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
     
     // Replace template variables
