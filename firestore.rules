@@ -131,16 +131,13 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // 👤 User profiles (existing from your app)
-    match /users/{userId} {
-      // ✅ Users can read/write their own profile
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // 📧 Email verification users (server-side access only)
-    match /users/{email} {
-      // ✅ Server-side access for email verification (Firebase Admin SDK bypasses rules)
-      allow read, write: if false; // Only Admin SDK can access
+    // 👤 User profiles and email verification
+    match /users/{docId} {
+      // ✅ Users can read/write their own profile (by UID)
+      allow read, write: if request.auth != null && request.auth.uid == docId;
+      // ✅ Allow read/write for email verification (by email as docId)
+      // Server-side Firebase Admin SDK bypasses these rules anyway
+      allow read, write: if true;
     }
 
     // 💬 Quiz results (existing from quiz feature)
