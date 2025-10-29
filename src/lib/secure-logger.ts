@@ -12,8 +12,19 @@ export function sanitizeLogData(data: any): string {
 export function secureLog(level: 'info' | 'warn' | 'error', message: string, data?: any) {
   const sanitizedMessage = sanitizeLogData(message);
   const sanitizedData = data ? sanitizeLogData(data) : '';
+  const timestamp = new Date().toISOString();
   
-  console[level](`[${new Date().toISOString()}] ${sanitizedMessage}`, sanitizedData);
+  switch (level) {
+    case 'info':
+      console.info(`[${timestamp}] ${sanitizedMessage}`, sanitizedData);
+      break;
+    case 'warn':
+      console.warn(`[${timestamp}] ${sanitizedMessage}`, sanitizedData);
+      break;
+    case 'error':
+      console.error(`[${timestamp}] ${sanitizedMessage}`, sanitizedData);
+      break;
+  }
 }
 
 // SecureLogger class for compatibility
