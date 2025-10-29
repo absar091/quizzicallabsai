@@ -58,17 +58,17 @@ export async function POST(request: NextRequest) {
     const transporter = getTransporter('verification');
     const fromAddress = getFromAddress('verification');
     
-    await transporter.sendMail({
+    const mailOptions = {
       from: fromAddress,
       to: email,
       subject: 'Verify Your Email - Quizzicallabzᴬᴵ',
       html: emailHtml,
-      text: `Hi ${name || 'User'},\n\nYour verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create an account, please ignore this email.\n\nThanks,\nThe Quizzicallabzᴬᴵ Team`,
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8',
-        'MIME-Version': '1.0'
-      }
-    });
+      text: `Hi ${name || 'User'},\n\nYour verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create an account, please ignore this email.\n\nThanks,\nThe Quizzicallabz Team`,
+      attachDataUrls: true,
+      encoding: 'utf8'
+    };
+
+    await transporter.sendMail(mailOptions);
 
     const response = NextResponse.json({ 
       success: true, 

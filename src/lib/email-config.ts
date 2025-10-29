@@ -2,38 +2,20 @@ import nodemailer from 'nodemailer';
 
 // SMTP Configuration for Verification Emails (ahmadraoabsar@gmail.com)
 export const verificationTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false, // Use STARTTLS for port 587
-  requireTLS: true,
+  service: 'gmail',
   auth: {
-    user: process.env.SMTP_USER, // ahmadraoabsar@gmail.com
-    pass: process.env.SMTP_PASS, // uzpk gcix ebfh sfrg
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 100,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  }
 });
 
 // SMTP Configuration for Welcome/Marketing Emails (quizzicallabs.ai@gmail.com)
 export const marketingTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false, // Use STARTTLS for port 587
-  requireTLS: true,
+  service: 'gmail',
   auth: {
-    user: process.env.WELCOME_SMTP_USER, // quizzicallabs.ai@gmail.com
-    pass: process.env.WELCOME_SMTP_PASS, // ynhf aesm bnzu rjme
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 100,
+    user: process.env.WELCOME_SMTP_USER,
+    pass: process.env.WELCOME_SMTP_PASS,
+  }
 });
 
 // Email service types
