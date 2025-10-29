@@ -28,6 +28,14 @@ export function EmailVerificationGuard({ children }: EmailVerificationGuardProps
   const checkVerificationStatus = async () => {
     if (!user?.email) return;
 
+    // Skip verification for Google sign-in users (they're already verified by Google)
+    const isGoogleUser = user.providerData?.some(provider => provider.providerId === 'google.com');
+    if (isGoogleUser) {
+      setIsVerified(true);
+      setIsCheckingVerification(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/auth/check-verification', {
         method: 'POST',
