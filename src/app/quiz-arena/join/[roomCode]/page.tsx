@@ -149,10 +149,10 @@ export default function JoinRoomPage() {
         (data: RoomData | null) => {
           if (data) {
             setRoomData(data);
-            
-            // If quiz started, redirect to player view
+
+            // If quiz started, redirect to participant view
             if (data.started && hasJoined) {
-              router.push(`/quiz-arena/play/${roomCode}`);
+              router.push(`/quiz-arena/participant/${roomCode}`);
             }
           } else {
             // Handle room not found or deleted

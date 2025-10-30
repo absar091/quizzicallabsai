@@ -23,7 +23,8 @@ export default function QuizArenaPlayPage({ params }: PageProps) {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login?redirect=' + encodeURIComponent(`/quiz-arena/play/${params.roomCode}`));
+      // Redirect unauthenticated users to join page (which handles signup)
+      router.push(`/quiz-arena/join/${params.roomCode}`);
     }
   }, [user, loading, router, params.roomCode]);
 
@@ -32,8 +33,8 @@ export default function QuizArenaPlayPage({ params }: PageProps) {
     setError(null);
 
     try {
-      // Redirect to participant page
-      router.push(`/quiz-arena/participant/${params.roomCode}?joined=true`);
+      // Redirect to join page where user can properly join the room
+      router.push(`/quiz-arena/join/${params.roomCode}`);
     } catch (error) {
       setError('Failed to join room. Please try again.');
       setJoining(false);
