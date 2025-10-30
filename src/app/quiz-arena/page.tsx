@@ -245,12 +245,31 @@ export default function QuizArenaPage() {
         const roomCode = await QuizArena.Discovery.generateRoomCode();
         console.log('🔖 Room code:', roomCode);
 
-        const quizArenaData = quizContent.map((q: any, index: number) => ({
-          question: q.question || `Question ${index + 1}`,
-          options: Array.isArray(q.answers) ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'],
-          correctIndex: Array.isArray(q.answers) ? Math.max(0, q.answers.indexOf(q.correctAnswer || q.answers[0])) : 0,
-          type: "multiple-choice"
-        }));
+        const quizArenaData = quizContent.map((q: any, index: number) => {
+          const options = Array.isArray(q.answers) ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'];
+
+          // Find correct answer index with case-insensitive matching and trimming
+          let correctIndex = 0;
+          if (q.correctAnswer && Array.isArray(q.answers)) {
+            const normalizedCorrect = q.correctAnswer.toString().trim().toLowerCase();
+            const foundIndex = options.findIndex(
+              (option: string) => option.toString().trim().toLowerCase() === normalizedCorrect
+            );
+            correctIndex = foundIndex >= 0 ? foundIndex : 0;
+
+            // Log warning if correct answer not found
+            if (foundIndex < 0) {
+              console.warn(`⚠️ Question ${index + 1}: Correct answer "${q.correctAnswer}" not found in options. Defaulting to option A.`);
+            }
+          }
+
+          return {
+            question: q.question || `Question ${index + 1}`,
+            options,
+            correctIndex,
+            type: "multiple-choice"
+          };
+        });
 
         toast?.({
           title: '🏗️ Creating Battle Arena...',
@@ -419,12 +438,31 @@ export default function QuizArenaPage() {
       const roomCode = await QuizArena.Discovery.generateRoomCode();
       console.log('🔖 Room code:', roomCode);
 
-      const quizArenaData = quizContent.map((q: any, index: number) => ({
-        question: q.question || `Question ${index + 1}`,
-        options: Array.isArray(q.answers) ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'],
-        correctIndex: Array.isArray(q.answers) ? Math.max(0, q.answers.indexOf(q.correctAnswer || q.answers[0])) : 0,
-        type: "multiple-choice"
-      }));
+      const quizArenaData = quizContent.map((q: any, index: number) => {
+        const options = Array.isArray(q.answers) ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'];
+
+        // Find correct answer index with case-insensitive matching and trimming
+        let correctIndex = 0;
+        if (q.correctAnswer && Array.isArray(q.answers)) {
+          const normalizedCorrect = q.correctAnswer.toString().trim().toLowerCase();
+          const foundIndex = options.findIndex(
+            (option: string) => option.toString().trim().toLowerCase() === normalizedCorrect
+          );
+          correctIndex = foundIndex >= 0 ? foundIndex : 0;
+
+          // Log warning if correct answer not found
+          if (foundIndex < 0) {
+            console.warn(`⚠️ Question ${index + 1}: Correct answer "${q.correctAnswer}" not found in options. Defaulting to option A.`);
+          }
+        }
+
+        return {
+          question: q.question || `Question ${index + 1}`,
+          options,
+          correctIndex,
+          type: "multiple-choice"
+        };
+      });
 
       toast?.({
         title: '🏗️ Creating Battle Arena...',
