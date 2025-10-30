@@ -138,7 +138,7 @@ export default function HostQuestionsPage() {
         hostId: firebaseRoomData.hostId,
         started: firebaseRoomData.started || false,
         finished: firebaseRoomData.finished || false,
-        currentQuestion: firebaseRoomData.currentQuestion || -1,
+        currentQuestion: firebaseRoomData.currentQuestion !== undefined ? firebaseRoomData.currentQuestion : -1,
         quiz: firebaseRoomData.quiz || [],
         playerCount: roomPlayers.length,
         players: roomPlayers,
@@ -176,7 +176,8 @@ export default function HostQuestionsPage() {
               ...data,
               questionStartTime: data.questionStartTime || prev?.questionStartTime
             }));
-            setCurrentQuestionIndex(data.currentQuestion || -1);
+            // Fix: Use nullish coalescing or explicit check to handle 0
+            setCurrentQuestionIndex(data.currentQuestion !== undefined ? data.currentQuestion : -1);
           }
         }
       );

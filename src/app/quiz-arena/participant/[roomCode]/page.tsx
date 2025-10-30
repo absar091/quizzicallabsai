@@ -87,7 +87,7 @@ export default function ParticipantArenaPage() {
 
             // Fix: Add null checks for quiz array
             if (data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
-              const questionIndex = data.currentQuestion || 0;
+              const questionIndex = data.currentQuestion !== undefined ? data.currentQuestion : 0;
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
                 setCurrentQuestion(data.quiz[questionIndex]);
                 setHasSubmitted(false);
@@ -365,7 +365,7 @@ export default function ParticipantArenaPage() {
                 {/* Progress */}
                 {roomData.started && (
                   <div className="text-sm text-muted-foreground">
-                    Question {Math.min((roomData.currentQuestion || 0) + 1, roomData.quiz?.length || 0)} of {roomData.quiz?.length || 0}
+                    Question {Math.min(((roomData.currentQuestion !== undefined ? roomData.currentQuestion : 0) + 1), roomData.quiz?.length || 0)} of {roomData.quiz?.length || 0}
                   </div>
                 )}
               </CardHeader>
