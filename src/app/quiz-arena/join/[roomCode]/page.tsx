@@ -108,7 +108,7 @@ export default function JoinRoomPage() {
       // Load players
       const playersRef = collection(firestore, 'quiz-rooms', roomCode, 'players');
       const playersSnapshot = await getDocs(playersRef);
-      
+
       const playersList: Player[] = [];
       playersSnapshot.forEach((doc) => {
         const playerData = doc.data();
@@ -123,8 +123,15 @@ export default function JoinRoomPage() {
       setPlayers(playersList);
 
       // Check if current user has already joined
-      if (user && playersList.some(p => p.userId === user.uid)) {
+      const userHasJoined = user && playersList.some(p => p.userId === user.uid);
+      if (userHasJoined) {
         setHasJoined(true);
+
+        // If quiz already started and user has joined, redirect immediately
+        if (roomData.started) {
+          router.push(`/quiz-arena/participant/${roomCode}`);
+          return;
+        }
       }
 
     } catch (error) {
