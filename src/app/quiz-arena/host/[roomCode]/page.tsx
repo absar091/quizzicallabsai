@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Users, Clock, Trophy, Play, Pause, Settings, CheckCircle, X, Share2, Copy, MessageCircle, Send } from 'lucide-react';
+import { Users, Trophy, Play, X, Copy, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { useQuizTimer } from '@/hooks/useQuizTimer';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
@@ -50,17 +48,10 @@ export default function RoomHostPage() {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
-  
+
   // Define isHost early to prevent undefined references
   const isHost = user && roomData?.hostId === user.uid;
-  
-  // Use questionStartTime from roomData, with fallback
-  const { timeLeft, isActive: timerActive } = useQuizTimer(
-    (roomData as any)?.questionStartTime || null, 
-    30
-  );
 
   useEffect(() => {
     if (!roomCode || !user) return;
@@ -86,16 +77,6 @@ export default function RoomHostPage() {
     };
   }, [roomCode, user]);
 
-  // Auto advance when timer expires
-  useEffect(() => {
-    if (timeLeft === 0 && !timerActive && isHost && currentQuestionIndex >= 0) {
-      if (currentQuestionIndex < (roomData?.quiz.length || 0) - 1) {
-        setTimeout(() => handleNextQuestion(), 2000);
-      } else {
-        setTimeout(() => handleFinishQuiz(), 2000);
-      }
-    }
-  }, [timeLeft, timerActive, isHost, currentQuestionIndex, roomData?.quiz.length]);
 
   const loadRoomData = async () => {
     try {
@@ -158,7 +139,6 @@ export default function RoomHostPage() {
       // Room data loaded successfully
 
       setRoomData(roomData);
-      setCurrentQuestionIndex(roomData.currentQuestion);
       setQuizStarted(roomData.started);
 
     } catch (error) {
@@ -179,18 +159,23 @@ export default function RoomHostPage() {
     const setupListeners = async () => {
       try {
         const { QuizArena } = await import('@/lib/quiz-arena');
-        
+
         // Real-time room state listener
         const unsubscribeRoom = QuizArena.Host.listenToRoom(
         roomCode,
         (data: any) => {
           if (data) {
-            setRoomData(prev => ({ 
-              ...prev, 
-              ...data,
-              questionStartTime: data.questionStartTime || prev?.questionStartTime
+            // If quiz just started and we're on the waiting room page, redirect to questions page
+            if (data.started && !quizStarted && data.currentQuestion >= 0) {
+              console.log('Quiz started detected, redirecting to questions page...');
+              router.push(`/quiz-arena/host/${roomCode}/questions`);
+              return;
+            }
+
+            setRoomData(prev => ({
+              ...prev,
+              ...data
             }));
-            setCurrentQuestionIndex(data.currentQuestion || -1);
             setQuizStarted(data.started || false);
           }
         }
@@ -218,7 +203,7 @@ export default function RoomHostPage() {
         return () => {}; // Return empty cleanup function on error
       }
     };
-    
+
     return setupListeners();
   };
 
@@ -283,66 +268,6 @@ export default function RoomHostPage() {
     }
   };
 
-  const handleNextQuestion = async () => {
-    if (!roomData || !user || currentQuestionIndex >= roomData.quiz.length - 1) return;
-
-    try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
-      
-      // Move to next question in Firebase
-      await QuizArena.Host.nextQuestion(roomCode, user.uid);
-
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-
-      toast?.({
-        title: 'Next Question',
-        description: `Question ${nextIndex + 1} of ${roomData.quiz.length}`,
-      });
-
-    } catch (error) {
-      console.error('Error advancing question:', error);
-      toast?.({
-        title: 'Error',
-        description: 'Failed to advance to next question',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const handleFinishQuiz = async () => {
-    if (!user) return;
-    
-    try {
-      const { QuizArena } = await import('@/lib/quiz-arena');
-      
-      // Finish quiz in Firebase
-      await QuizArena.Host.finishQuiz(roomCode, user.uid);
-
-      setQuizStarted(false);
-      setCurrentQuestionIndex(-1);
-
-      toast?.({
-        title: 'Quiz Finished! 🏆',
-        description: 'Time to see the results!',
-      });
-
-    } catch (error) {
-      console.error('Error finishing quiz:', error);
-      toast?.({
-        title: 'Error',
-        description: 'Failed to finish quiz',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const handlePauseQuiz = async () => {
-    toast?.({
-      title: 'Pause/Unpause Feature',
-      description: 'This feature will be implemented with the buzzer system.',
-    });
-  };
 
   const copyRoomCode = () => {
     if (navigator?.clipboard) {
@@ -397,7 +322,12 @@ export default function RoomHostPage() {
     );
   }
 
-  const currentQuestion = roomData?.quiz[currentQuestionIndex];
+  // If quiz has started, redirect to questions page
+  useEffect(() => {
+    if (quizStarted && roomData?.currentQuestion >= 0) {
+      router.push(`/quiz-arena/host/${roomCode}/questions`);
+    }
+  }, [quizStarted, roomData?.currentQuestion, roomCode, router]);
 
   return (
     <div className="min-h-screen p-4">
@@ -414,8 +344,8 @@ export default function RoomHostPage() {
           <div className="flex gap-2">
             {/* Connection Status Indicator */}
             {!connectionStatus.isOnline && (
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 size="sm"
                 onClick={forceReconnect}
                 className="animate-pulse"
@@ -428,7 +358,7 @@ export default function RoomHostPage() {
                 🔄 Reconnecting... ({connectionStatus.reconnectAttempts})
               </Button>
             )}
-            
+
             <Button variant="outline" onClick={copyRoomCode}>
               <Copy className="mr-2 h-4 w-4" />
               {roomCode}
@@ -476,139 +406,37 @@ export default function RoomHostPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Quiz Area */}
           <div className="lg:col-span-2 space-y-6">
-            {!quizStarted && (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Trophy className="w-16 h-16 text-primary mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Ready to Start?</h2>
-                  <p className="text-muted-foreground mb-6">
-                    All players should join before you start the quiz
-                  </p>
-                  {isHost && (
-                    <Button size="lg" onClick={handleStartQuiz} className="bg-accent">
-                      <Play className="mr-2 h-5 w-5" />
-                      Start Quiz
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Trophy className="w-16 h-16 text-primary mx-auto mb-4" />
+                <h2 className="text-2xl font-bold mb-2">Ready to Start?</h2>
+                <p className="text-muted-foreground mb-6">
+                  All players should join before you start the quiz
+                </p>
+                {isHost && (
+                  <Button size="lg" onClick={handleStartQuiz} className="bg-accent">
+                    <Play className="mr-2 h-5 w-5" />
+                    Start Quiz
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
 
-            {quizStarted && currentQuestion && (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">
-                        Question {currentQuestionIndex + 1}
-                      </Badge>
-                      <Badge variant={timeLeft <= 10 ? "destructive" : "outline"}>
-                        <Clock className="mr-1 h-3 w-3" />
-                        {timeLeft}s
-                      </Badge>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {currentQuestionIndex + 1} of {roomData.quiz.length}
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {currentQuestion.options.map((option, index) => {
-                    const isCorrect = index === currentQuestion.correctIndex;
-
-                    return (
-                      <div
-                        key={index}
-                        className={cn(
-                          "p-4 border rounded-lg transition-colors relative",
-                          isCorrect
-                            ? "bg-green-500/10 border-green-500/50"
-                            : "bg-muted/50 border-muted"
-                        )}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
-                              isCorrect
-                                ? "bg-green-500 text-white"
-                                : "bg-muted text-muted-foreground"
-                            )}>
-                              {String.fromCharCode(65 + index)}
-                            </div>
-                            <span className={cn(
-                              "text-lg font-medium",
-                              isCorrect && "text-green-700 font-semibold"
-                            )}>
-                              {option}
-                            </span>
-                          </div>
-                          {isCorrect && (
-                            <Badge variant="outline" className="bg-green-500/20 text-green-700 border-green-500/50">
-                              <CheckCircle className="mr-1 h-3 w-3" />
-                              Correct Answer
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </CardContent>
-                <CardContent className="pt-0">
-                  {isHost && (
-                    <div className="flex gap-2">
-                      {currentQuestionIndex < roomData.quiz.length - 1 ? (
-                        <Button onClick={handleNextQuestion} className="flex-1">
-                          Next Question
-                        </Button>
-                      ) : (
-                        <Button onClick={handleFinishQuiz} className="flex-1 bg-green-600 hover:bg-green-700">
-                          Finish Quiz
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Host Controls - Show BEFORE and DURING quiz */}
+            {/* Host Controls - Waiting Room Only */}
             {isHost && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Host Controls</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {!quizStarted ? (
-                    <div className="text-center">
-                      <p className="text-muted-foreground mb-4">
-                        {roomData?.playerCount > 2
-                          ? `${roomData.playerCount - 1} friends ready. Start the battle!`
-                          : "Waiting for more players to join..."
-                        }
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          toast?.({
-                            title: 'Timer Control',
-                            description: 'Timer is controlled automatically by the quiz system',
-                          });
-                        }}
-                      >
-                        <Pause className="mr-2 h-4 w-4" />
-                        Timer Control
-                      </Button>
-                      <Button variant="outline">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Button>
-                    </div>
-                  )}
+                  <div className="text-center">
+                    <p className="text-muted-foreground mb-4">
+                      {roomData?.playerCount >= 2
+                        ? `${roomData.playerCount - 1} friend${roomData.playerCount > 2 ? 's' : ''} ready. Start the battle!`
+                        : "Waiting for at least 1 more player to join..."
+                      }
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -644,34 +472,6 @@ export default function RoomHostPage() {
               </CardContent>
             </Card>
 
-            {/* Leaderboard */}
-            {quizStarted && (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5" />
-                    <CardTitle className="text-lg">Leaderboard</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[...roomData.players]
-                      .sort((a, b) => b.score - a.score)
-                      .map((player, index) => (
-                        <div key={player.userId} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Badge variant={index === 0 ? "default" : "secondary"}>
-                              #{index + 1}
-                            </Badge>
-                            <span className="font-medium">{player.name}</span>
-                          </div>
-                          <span className="font-bold">{player.score}</span>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Room Info */}
             <Card>
@@ -681,8 +481,8 @@ export default function RoomHostPage() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant={quizStarted ? "default" : "secondary"}>
-                    {quizStarted ? "Active" : "Waiting"}
+                  <Badge variant="secondary">
+                    Waiting Room
                   </Badge>
                 </div>
                 <div className="flex justify-between">
@@ -690,8 +490,8 @@ export default function RoomHostPage() {
                   <span>{roomData.quiz.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Current</span>
-                  <span>{currentQuestionIndex + 1}</span>
+                  <span className="text-muted-foreground">Players Joined</span>
+                  <span>{roomData.playerCount}</span>
                 </div>
               </CardContent>
             </Card>
