@@ -53,6 +53,13 @@ export default function RoomHostPage() {
   // Define isHost early to prevent undefined references
   const isHost = user && roomData?.hostId === user.uid;
 
+  // If quiz has started, redirect to questions page
+  useEffect(() => {
+    if (quizStarted && roomData?.currentQuestion >= 0) {
+      router.push(`/quiz-arena/host/${roomCode}/questions`);
+    }
+  }, [quizStarted, roomData?.currentQuestion, roomCode, router]);
+
   useEffect(() => {
     if (!roomCode || !user) return;
 
@@ -321,13 +328,6 @@ export default function RoomHostPage() {
       </div>
     );
   }
-
-  // If quiz has started, redirect to questions page
-  useEffect(() => {
-    if (quizStarted && roomData?.currentQuestion >= 0) {
-      router.push(`/quiz-arena/host/${roomCode}/questions`);
-    }
-  }, [quizStarted, roomData?.currentQuestion, roomCode, router]);
 
   return (
     <div className="min-h-screen p-4">
