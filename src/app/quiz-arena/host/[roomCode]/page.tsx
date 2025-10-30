@@ -136,7 +136,7 @@ export default function RoomHostPage() {
         hostId: firebaseRoomData.hostId,
         started: firebaseRoomData.started || false,
         finished: firebaseRoomData.finished || false,
-        currentQuestion: firebaseRoomData.currentQuestion || -1,
+        currentQuestion: firebaseRoomData.currentQuestion !== undefined ? firebaseRoomData.currentQuestion : -1,
         quiz: firebaseRoomData.quiz || [],
         playerCount: roomPlayers.length,
         players: roomPlayers,
