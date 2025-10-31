@@ -349,16 +349,86 @@ export class QuizArenaPlayer {
   }
 
   /**
-   * Listen to room state (for player dashboard)
+   * Listen to room state (for player dashboard) with validation
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
     const listener = new ReliableListener(
       doc(firestore, 'quiz-rooms', roomId),
-      callback,
+      (data) => {
+        if (data) {
+          // Validate question state consistency
+          const validatedData = this.validateQuestionState(data);
+          callback(validatedData);
+        } else {
+          callback(null);
+        }
+      },
       () => callback(null)
     );
     listener.start();
     return () => listener.stop();
+  }
+
+  /**
+   * Validate and fix question state inconsistencies
+   */
+  static validateQuestionState(roomData: QuizArenaRoom): QuizArenaRoom {
+    const validated = { ...roomData };
+
+    // Ensure currentQuestion is within valid range
+    if (validated.quiz && Array.isArray(validated.quiz)) {
+      const maxQuestion = validated.quiz.length - 1;
+      
+      if (validated.currentQuestion > maxQuestion) {
+        console.warn(`Question index ${validated.currentQuestion} exceeds quiz length ${validated.quiz.length}`);
+        validated.currentQuestion = maxQuestion;
+      }
+      
+      if (validated.currentQuestion < -1) {
+        console.warn(`Invalid question index ${validated.currentQuestion}, resetting to -1`);
+        validated.currentQuestion = -1;
+      }
+    }
+
+    // Ensure quiz state consistency
+    if (validated.started && validated.currentQuestion < 0) {
+      console.warn('Quiz marked as started but currentQuestion is < 0, fixing...');
+      validated.currentQuestion = 0;
+    }
+
+    if (validated.finished && validated.currentQuestion < 0) {
+      console.warn('Quiz marked as finished but currentQuestion is < 0, fixing...');
+      if (validated.quiz && validated.quiz.length > 0) {
+        validated.currentQuestion = validated.quiz.length - 1;
+      }
+    }
+
+    return validated;
+  }
+
+  /**
+   * Sync question state across all clients (called by host)
+   */
+  static async syncQuestionState(roomId: string, hostId: string): Promise<void> {
+    try {
+      const roomRef = doc(firestore, 'quiz-rooms', roomId);
+      const roomSnap = await getDoc(roomRef);
+
+      if (!roomSnap.exists()) throw new Error('Room not found');
+      
+      const roomData = roomSnap.data() as QuizArenaRoom;
+      
+      if (roomData.hostId !== hostId) throw new Error('Only host can sync question state');
+
+      // Force update with server timestamp to ensure all clients sync
+      await updateDoc(roomRef, {
+        questionSyncTimestamp: Timestamp.now(),
+        lastSyncBy: hostId
+      });
+    } catch (error) {
+      console.error('Error syncing question state:', error);
+      throw error;
+    }
   }
 
   /**
