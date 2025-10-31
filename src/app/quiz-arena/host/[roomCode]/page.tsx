@@ -172,12 +172,7 @@ export default function RoomHostPage() {
     return setupListeners();
   };
 
-  // If quiz has started, redirect to questions page
-  useEffect(() => {
-    if (quizStarted && roomData?.currentQuestion >= 0) {
-      router.push(`/quiz-arena/host/${roomCode}/questions`);
-    }
-  }, [quizStarted, roomData?.currentQuestion, roomCode, router]);
+  // Note: Removed redirect to questions page - host manages quiz from this page
 
   useEffect(() => {
     if (!roomCode || !user) return;
