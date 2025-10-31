@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid question index' }, { status: 400 });
     }
 
-    if (typeof answerIndex !== 'number' || answerIndex < 0 || answerIndex > 3) {
+    if (typeof answerIndex !== 'number' || answerIndex < 0) {
       return NextResponse.json({ error: 'Invalid answer index' }, { status: 400 });
     }
 
@@ -120,6 +120,11 @@ export async function POST(request: NextRequest) {
     const question = roomData.quiz[questionIndex];
     if (!question || !question.options || !Array.isArray(question.options)) {
       return NextResponse.json({ error: 'Invalid question data' }, { status: 500 });
+    }
+
+    // FIXED: Validate answer index against actual options length
+    if (answerIndex >= question.options.length) {
+      return NextResponse.json({ error: 'Answer index out of range for this question' }, { status: 400 });
     }
 
     const isCorrect = answerIndex === question.correctIndex;
