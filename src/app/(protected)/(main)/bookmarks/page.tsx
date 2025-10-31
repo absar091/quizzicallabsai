@@ -291,69 +291,151 @@ export default function BookmarksPage() {
         </CardContent>
       </Card>
 
-      {/* Results */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {filteredBookmarks.length === bookmarks.length 
-              ? `All Bookmarks (${bookmarks.length})`
-              : `Filtered Results (${filteredBookmarks.length} of ${bookmarks.length})`
-            }
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredBookmarks.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <BookMarked className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-medium mb-2">
-                {searchQuery || selectedSubject !== 'all' 
-                  ? 'No matching bookmarks' 
-                  : 'No bookmarks yet'
+      {/* Results with Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="questions" className="flex items-center gap-2">
+            <Star className="h-4 w-4" />
+            Questions ({questionBookmarks.length})
+          </TabsTrigger>
+          <TabsTrigger value="quizzes" className="flex items-center gap-2">
+            <BookMarked className="h-4 w-4" />
+            Quizzes ({quizBookmarks.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="questions">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {filteredQuestionBookmarks.length === questionBookmarks.length 
+                  ? `Question Bookmarks (${questionBookmarks.length})`
+                  : `Filtered Questions (${filteredQuestionBookmarks.length} of ${questionBookmarks.length})`
                 }
-              </h3>
-              <p>
-                {searchQuery || selectedSubject !== 'all'
-                  ? 'Try adjusting your search or filter criteria'
-                  : 'Start bookmarking quizzes to access them quickly later'
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredBookmarks.map((bookmark) => (
-                <div key={bookmark.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-lg mb-1">{bookmark.quizTitle}</h3>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                        <Badge variant="secondary">{bookmark.subject}</Badge>
-                        <span>{bookmark.difficulty}</span>
-                        <span>{bookmark.questionCount} questions</span>
-                      </div>
-                      {bookmark.notes && (
-                        <p className="text-sm text-muted-foreground italic mb-2">
-                          "{bookmark.notes}"
-                        </p>
-                      )}
-                      <div className="text-xs text-muted-foreground">
-                        Bookmarked {
-                          bookmark.bookmarkedAt && typeof bookmark.bookmarkedAt === 'number'
-                            ? new Date(bookmark.bookmarkedAt).toLocaleDateString(undefined, {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })
-                            : 'Recently'
-                        }
+              </CardTitle>
+              <CardDescription>
+                Individual questions you've bookmarked while taking quizzes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {filteredQuestionBookmarks.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">
+                    {searchQuery || selectedSubject !== 'all' 
+                      ? 'No matching questions' 
+                      : 'No question bookmarks yet'
+                    }
+                  </h3>
+                  <p>
+                    {searchQuery || selectedSubject !== 'all'
+                      ? 'Try adjusting your search or filter criteria'
+                      : 'Start bookmarking questions during quizzes to review them later'
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredQuestionBookmarks.map((bookmark, index) => (
+                    <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-lg mb-2">{bookmark.question}</h3>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                            <Badge variant="secondary">{bookmark.topic}</Badge>
+                            <span>•</span>
+                            <span className="text-green-600 font-medium">Answer: {bookmark.correctAnswer}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Bookmarked {
+                              bookmark.bookmarkedAt && typeof bookmark.bookmarkedAt === 'number'
+                                ? new Date(bookmark.bookmarkedAt).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })
+                                : 'Recently'
+                            }
+                          </div>
+                        </div>
+                        <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="quizzes">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {filteredQuizBookmarks.length === quizBookmarks.length 
+                  ? `Quiz Bookmarks (${quizBookmarks.length})`
+                  : `Filtered Quizzes (${filteredQuizBookmarks.length} of ${quizBookmarks.length})`
+                }
+              </CardTitle>
+              <CardDescription>
+                Complete quizzes you've bookmarked for later access
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {filteredQuizBookmarks.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <BookMarked className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">
+                    {searchQuery || selectedSubject !== 'all' 
+                      ? 'No matching quizzes' 
+                      : 'No quiz bookmarks yet'
+                    }
+                  </h3>
+                  <p>
+                    {searchQuery || selectedSubject !== 'all'
+                      ? 'Try adjusting your search or filter criteria'
+                      : 'Start bookmarking complete quizzes to access them quickly later'
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredQuizBookmarks.map((bookmark) => (
+                    <div key={bookmark.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-lg mb-1">{bookmark.quizTitle}</h3>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                            <Badge variant="secondary">{bookmark.subject}</Badge>
+                            <span>{bookmark.difficulty}</span>
+                            <span>{bookmark.questionCount} questions</span>
+                          </div>
+                          {bookmark.notes && (
+                            <p className="text-sm text-muted-foreground italic mb-2">
+                              "{bookmark.notes}"
+                            </p>
+                          )}
+                          <div className="text-xs text-muted-foreground">
+                            Bookmarked {
+                              bookmark.bookmarkedAt && typeof bookmark.bookmarkedAt === 'number'
+                                ? new Date(bookmark.bookmarkedAt).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })
+                                : 'Recently'
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
