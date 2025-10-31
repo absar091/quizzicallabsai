@@ -574,7 +574,7 @@ export default function RoomHostPage() {
                       <div>
                         <div className="font-medium">{player.name}</div>
                         <div className="text-sm text-muted-foreground">
-                          Joined at {new Date(player.joinedAt).toLocaleTimeString()}
+                          Joined at {player.joinedAt?.toDate ? player.joinedAt.toDate().toLocaleTimeString() : new Date(player.joinedAt).toLocaleTimeString()}
                         </div>
                       </div>
                       <div className="text-right">
