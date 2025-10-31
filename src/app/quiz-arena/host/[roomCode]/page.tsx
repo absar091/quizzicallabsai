@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { initializePerformanceOptimizations, createFastLoadingState } from '@/lib/performance-optimizations';
+import { secureLogger } from '@/lib/security-logger';
 
 interface QuizQuestion {
   question: string;
