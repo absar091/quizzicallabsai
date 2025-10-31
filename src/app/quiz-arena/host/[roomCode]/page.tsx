@@ -188,7 +188,7 @@ export default function RoomHostPage() {
         }, 10000); // Reduced from 5s to 10s
 
       } catch (error) {
-        console.error('Failed to initialize host:', error);
+        secureLogger.error('Failed to initialize host', error, { category: 'HOST' });
         if (isMounted) {
           toast?.({
             title: 'Initialization Failed',
@@ -211,7 +211,7 @@ export default function RoomHostPage() {
         try {
           cleanup();
         } catch (error) {
-          console.warn('Error during cleanup:', error);
+          secureLogger.warn('Error during cleanup', error, { category: 'HOST' });
         }
       }
       
