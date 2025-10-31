@@ -376,11 +376,11 @@ export default function RoomHostPage() {
       return;
     }
 
-    // Require at least 2 players (host + 1 other)
-    if (roomData.playerCount < 2) {
+    // Require at least 1 player for testing (normally 2)
+    if (roomData.playerCount < 1) {
       toast?.({
         title: 'Cannot Start Quiz Yet',
-        description: 'You need at least 2 players (host + 1 participant) to start the quiz.',
+        description: 'You need at least 1 player to start the quiz.',
         variant: 'destructive'
       });
       return;
