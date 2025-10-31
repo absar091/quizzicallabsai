@@ -44,18 +44,33 @@ async function testFirebaseConnection(): Promise<boolean> {
   }
 }
 
-// Enhanced connection monitoring
-export const getConnectionStatus = () => {
-  const browserOnline = navigator?.onLine ?? true;
-  const timeSinceLastSuccess = Date.now() - connectionState.lastSuccessfulConnection;
-  const connectionStale = timeSinceLastSuccess > 30000; // 30 seconds
+// OPTIMIZED: Enhanced connection monitoring with caching
+let cachedStatus: any = null;
+let lastStatusCheck = 0;
+const statusCacheTime = 5000; // Cache status for 5 seconds
 
-  return {
+export const getConnectionStatus = () => {
+  const now = Date.now();
+  
+  // Return cached status if recent
+  if (cachedStatus && (now - lastStatusCheck) < statusCacheTime) {
+    return cachedStatus;
+  }
+  
+  const browserOnline = navigator?.onLine ?? true;
+  const timeSinceLastSuccess = now - connectionState.lastSuccessfulConnection;
+  const connectionStale = timeSinceLastSuccess > 60000; // OPTIMIZED: Increased to 60 seconds
+
+  cachedStatus = {
     isOnline: browserOnline && connectionState.firebaseConnected && !connectionStale,
     reconnectAttempts: connectionState.reconnectAttempts,
     firebaseConnected: connectionState.firebaseConnected,
-    browserOnline
+    browserOnline,
+    lastCheck: now
   };
+  
+  lastStatusCheck = now;
+  return cachedStatus;
 };
 
 // Enhanced reconnection with Firebase-specific handling

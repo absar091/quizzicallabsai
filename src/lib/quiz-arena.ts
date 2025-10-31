@@ -12,8 +12,7 @@ import {
   query,
   where,
   Timestamp,
-  deleteDoc,
-  runTransaction
+  deleteDoc
 } from 'firebase/firestore';
 import { ReliableListener } from './firebase-listeners';
 import { QUIZ_ARENA_CONSTANTS } from './quiz-arena-constants';
@@ -291,7 +290,7 @@ export class QuizArenaHost {
   }
 
   /**
-   * Handle host abandonment - promote a participant to host
+   * Handle host abandonment - promote a participant to host - FIXED WITH CONNECTION VERIFICATION
    */
   static async handleHostAbandonment(roomId: string): Promise<string | null> {
     try {
@@ -305,7 +304,7 @@ export class QuizArenaHost {
       const players = playersSnapshot.docs.map(doc => ({
         userId: doc.id,
         ...doc.data()
-      })) as (ArenaPlayer & { userId: string })[];
+      })) as (ArenaPlayer & { userId: string, lastAnswerAt?: Timestamp })[];
 
       const roomRef = doc(firestore, 'quiz-rooms', roomId);
       const roomSnap = await getDoc(roomRef);
@@ -314,20 +313,49 @@ export class QuizArenaHost {
       
       const roomData = roomSnap.data() as QuizArenaRoom;
       
-      // Find new host (earliest joiner who isn't the current host)
-      const newHost = players
+      // FIXED: Find new host with connection verification
+      const candidateHosts = players
         .filter(p => p.userId !== roomData.hostId)
-        .sort((a, b) => a.joinedAt.toMillis() - b.joinedAt.toMillis())[0];
+        .sort((a, b) => {
+          // Prioritize recently active players
+          const aLastActivity = a.lastAnswerAt?.toMillis() || a.joinedAt.toMillis();
+          const bLastActivity = b.lastAnswerAt?.toMillis() || b.joinedAt.toMillis();
+          return bLastActivity - aLastActivity; // Most recent first
+        });
+
+      // FIXED: Verify candidate host is still connected
+      let newHost = null;
+      const connectionTimeout = 300000; // 5 minutes
+      const now = Date.now();
+
+      for (const candidate of candidateHosts) {
+        const lastActivity = candidate.lastAnswerAt?.toMillis() || candidate.joinedAt.toMillis();
+        const timeSinceActivity = now - lastActivity;
+        
+        // Check if player was active recently (within 5 minutes)
+        if (timeSinceActivity < connectionTimeout) {
+          newHost = candidate;
+          break;
+        }
+      }
+
+      // If no recently active player found, fall back to earliest joiner
+      if (!newHost && candidateHosts.length > 0) {
+        newHost = candidateHosts.sort((a, b) => a.joinedAt.toMillis() - b.joinedAt.toMillis())[0];
+      }
 
       if (!newHost) return null;
 
-      // Update room with new host
+      // FIXED: Update room with enhanced host migration data
       await updateDoc(roomRef, {
         hostId: newHost.userId,
         hostTransferredAt: Timestamp.now(),
-        previousHostId: roomData.hostId
+        previousHostId: roomData.hostId,
+        hostMigrationReason: 'abandonment',
+        newHostLastActivity: newHost.lastAnswerAt || newHost.joinedAt
       });
 
+      console.log(`🔄 Host migrated from ${roomData.hostId} to ${newHost.userId} due to abandonment`);
       return newHost.userId;
     } catch (error) {
       console.error('Error handling host abandonment:', error);

@@ -20,10 +20,13 @@ service cloud.firestore {
           'currentQuestion', 
           'startedAt', 
           'finishedAt',
-          'questionStartTime',  // Added for timer sync
-          'hostLastSeen',       // Added for host presence
-          'hostTransferredAt',  // Added for host migration
-          'previousHostId'      // Added for host migration
+          'questionStartTime',     // Added for timer sync
+          'hostLastSeen',          // Added for host presence
+          'hostTransferredAt',     // Added for host migration
+          'previousHostId',        // Added for host migration
+          'hostMigrationReason',   // Added for enhanced host migration
+          'newHostLastActivity',   // Added for connection verification
+          'lastUpdated'            // Added for real-time sync
         ]);
       
       // ❌ Room cannot be deleted by anyone
