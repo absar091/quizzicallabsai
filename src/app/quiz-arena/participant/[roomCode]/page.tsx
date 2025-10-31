@@ -133,14 +133,41 @@ export default function ParticipantArenaPage() {
   }, [roomCode, user, QuizArena]); // Added QuizArena to dependencies
 
   const handleSubmitAnswer = useCallback(async () => {
-    // Immediate guard to prevent race conditions
-    if (hasSubmitted || selectedAnswer === null || !currentQuestion || submitting) return;
+    // Create a unique submission ID for this attempt
+    const submissionId = `${Date.now()}-${Math.random()}`;
+    
+    // Atomic check and set using a more robust approach
+    if (hasSubmitted || selectedAnswer === null || !currentQuestion || submitting) {
+      console.log('Submission blocked by state check');
+      return;
+    }
 
-    // Use ref to prevent multiple simultaneous submissions
-    if (submissionRef.current) return;
+    // Double-check with ref to prevent race conditions
+    if (submissionRef.current) {
+      console.log('Submission blocked by ref check');
+      return;
+    }
+
+    // Set submission lock immediately
     submissionRef.current = true;
+    
+    // Create a local copy of critical data to prevent changes during submission
+    const submissionData = {
+      roomCode: roomCode.toUpperCase(),
+      questionIndex: roomData?.currentQuestion,
+      answerIndex: selectedAnswer,
+      submittedAt: Date.now(),
+      submissionId
+    };
 
-    // Set all blocking states immediately before any async operations
+    // Validate submission data
+    if (submissionData.questionIndex === undefined || submissionData.answerIndex === null) {
+      submissionRef.current = false;
+      console.error('Invalid submission data');
+      return;
+    }
+
+    // Set UI states
     setSubmitting(true);
     setHasSubmitted(true);
     setIsAnswered(true);
@@ -152,24 +179,34 @@ export default function ParticipantArenaPage() {
       }
 
       const idToken = await auth.currentUser.getIdToken();
+      
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch('/api/quiz-arena/submit-answer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${idToken}`
         },
-        body: JSON.stringify({
-          roomCode: roomCode.toUpperCase(),
-          questionIndex: roomData.currentQuestion,
-          answerIndex: selectedAnswer,
-          submittedAt: Date.now()
-        })
+        body: JSON.stringify(submissionData),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Submission failed');
+        // Handle specific error cases
+        if (response.status === 409) {
+          // Answer already submitted - this is actually success
+          console.log('Answer already submitted (409), treating as success');
+          setShowResults(true);
+          return;
+        }
+        throw new Error(result.error || `Submission failed (${response.status})`);
       }
 
       // Show results immediately
@@ -177,9 +214,10 @@ export default function ParticipantArenaPage() {
 
       // Log success for debugging
       console.log('Answer submitted successfully:', {
+        submissionId,
         correct: result.correct,
         points: result.points,
-        questionIndex: roomData.currentQuestion
+        questionIndex: submissionData.questionIndex
       });
 
       toast?.({
@@ -190,12 +228,24 @@ export default function ParticipantArenaPage() {
 
     } catch (error: any) {
       console.error('Error submitting answer:', error);
-      setHasSubmitted(false);
-      setIsAnswered(false);
+      
+      // Only reset states if this was a real error, not a duplicate submission
+      if (!error.message?.includes('already submitted')) {
+        setHasSubmitted(false);
+        setIsAnswered(false);
+      }
+
+      // Handle different error types
+      let errorMessage = 'Your answer may not have been recorded. Please try again.';
+      if (error.name === 'AbortError') {
+        errorMessage = 'Submission timed out. Please check your connection.';
+      } else if (error.message?.includes('network')) {
+        errorMessage = 'Network error. Your answer may have been submitted.';
+      }
 
       toast?.({
         title: 'Submission Failed',
-        description: error.message || 'Your answer may not have been recorded. Please try again.',
+        description: error.message || errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -204,12 +254,28 @@ export default function ParticipantArenaPage() {
     }
   }, [hasSubmitted, selectedAnswer, currentQuestion, submitting, roomData, roomCode, user, toast]);
 
-  // Auto-submit when timer expires
+  // Auto-submit when timer expires with better logic
   useEffect(() => {
-    if (timeRemaining === 0 && !hasSubmitted && currentQuestion && timerActive) {
+    // Only auto-submit if:
+    // 1. Timer has expired (timeRemaining === 0)
+    // 2. User hasn't submitted yet (!hasSubmitted)
+    // 3. There's a current question
+    // 4. Timer was active (to prevent auto-submit on page load)
+    // 5. User has selected an answer (selectedAnswer !== null)
+    // 6. Not currently submitting
+    if (
+      timeRemaining === 0 && 
+      !hasSubmitted && 
+      !submitting &&
+      currentQuestion && 
+      timerActive && 
+      selectedAnswer !== null &&
+      !submissionRef.current
+    ) {
+      console.log('Auto-submitting answer due to timer expiry');
       handleSubmitAnswer();
     }
-  }, [timeRemaining, hasSubmitted, currentQuestion, timerActive, handleSubmitAnswer]);
+  }, [timeRemaining, hasSubmitted, submitting, currentQuestion, timerActive, selectedAnswer, handleSubmitAnswer]);
 
   const leaveRoom = async () => {
     if (leaving || !QuizArena || !user?.uid) return;

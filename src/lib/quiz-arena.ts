@@ -183,16 +183,106 @@ export class QuizArenaHost {
   }
 
   /**
-   * Listen to room state (for host dashboard)
+   * Listen to room state (for host dashboard) with host presence tracking
    */
   static listenToRoom(roomId: string, callback: (data: QuizArenaRoom | null) => void): () => void {
     const listener = new ReliableListener(
       doc(firestore, 'quiz-rooms', roomId),
-      callback,
+      (data) => {
+        if (data) {
+          // Update host last seen timestamp
+          this.updateHostPresence(roomId).catch(console.error);
+        }
+        callback(data);
+      },
       () => callback(null)
     );
     listener.start();
     return () => listener.stop();
+  }
+
+  /**
+   * Update host presence timestamp
+   */
+  static async updateHostPresence(roomId: string): Promise<void> {
+    try {
+      const roomRef = doc(firestore, 'quiz-rooms', roomId);
+      await updateDoc(roomRef, {
+        hostLastSeen: Timestamp.now()
+      });
+    } catch (error) {
+      // Silently fail - this is just for presence tracking
+      console.warn('Failed to update host presence:', error);
+    }
+  }
+
+  /**
+   * Check if host is still present (called by participants)
+   */
+  static async checkHostPresence(roomId: string): Promise<boolean> {
+    try {
+      const roomRef = doc(firestore, 'quiz-rooms', roomId);
+      const roomSnap = await getDoc(roomRef);
+      
+      if (!roomSnap.exists()) return false;
+      
+      const roomData = roomSnap.data() as QuizArenaRoom & { hostLastSeen?: Timestamp };
+      
+      if (!roomData.hostLastSeen) return true; // Assume present if no timestamp
+      
+      const timeSinceLastSeen = Date.now() - roomData.hostLastSeen.toMillis();
+      const hostTimeout = 60000; // 1 minute timeout
+      
+      return timeSinceLastSeen < hostTimeout;
+    } catch (error) {
+      console.error('Error checking host presence:', error);
+      return true; // Assume present on error
+    }
+  }
+
+  /**
+   * Handle host abandonment - promote a participant to host
+   */
+  static async handleHostAbandonment(roomId: string): Promise<string | null> {
+    try {
+      const playersSnapshot = await getDocs(
+        collection(firestore, `quiz-rooms/${roomId}/players`)
+      );
+
+      if (playersSnapshot.empty) return null;
+
+      // Find the player who joined earliest (excluding current host)
+      const players = playersSnapshot.docs.map(doc => ({
+        userId: doc.id,
+        ...doc.data()
+      })) as (ArenaPlayer & { userId: string })[];
+
+      const roomRef = doc(firestore, 'quiz-rooms', roomId);
+      const roomSnap = await getDoc(roomRef);
+      
+      if (!roomSnap.exists()) return null;
+      
+      const roomData = roomSnap.data() as QuizArenaRoom;
+      
+      // Find new host (earliest joiner who isn't the current host)
+      const newHost = players
+        .filter(p => p.userId !== roomData.hostId)
+        .sort((a, b) => a.joinedAt.toMillis() - b.joinedAt.toMillis())[0];
+
+      if (!newHost) return null;
+
+      // Update room with new host
+      await updateDoc(roomRef, {
+        hostId: newHost.userId,
+        hostTransferredAt: Timestamp.now(),
+        previousHostId: roomData.hostId
+      });
+
+      return newHost.userId;
+    } catch (error) {
+      console.error('Error handling host abandonment:', error);
+      return null;
+    }
   }
 }
 
@@ -311,31 +401,88 @@ export class QuizArenaDiscovery {
   }
 
   /**
-   * Generate unique room code with collision detection
+   * Generate unique room code with enhanced collision detection
    */
   static async generateRoomCode(): Promise<string> {
-    const maxAttempts = 10;
+    const maxAttempts = 20; // Increased attempts
+    const usedCodes = new Set<string>();
+    
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       let code: string;
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-        code = crypto.randomUUID().substring(0, 6).toUpperCase();
+      
+      // Use a more robust code generation strategy
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        // Use crypto.getRandomValues for better randomness
+        const array = new Uint8Array(3);
+        crypto.getRandomValues(array);
+        code = Array.from(array, byte => 
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[byte % 36]
+        ).join('') + 
+        Array.from(crypto.getRandomValues(new Uint8Array(3)), byte => 
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[byte % 36]
+        ).join('');
+      } else if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        // Fallback to randomUUID
+        code = crypto.randomUUID().replace(/[^A-Z0-9]/g, '').substring(0, 6);
+        if (code.length < 6) {
+          code = code.padEnd(6, Math.random().toString(36).substring(2, 8).toUpperCase());
+        }
       } else {
+        // Final fallback
         code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        // Ensure it's exactly 6 characters
+        while (code.length < 6) {
+          code += Math.random().toString(36).substring(2, 3).toUpperCase();
+        }
+        code = code.substring(0, 6);
       }
 
-      // Check if room code already exists
-      const roomRef = doc(firestore, 'quiz-rooms', code);
-      const roomSnap = await getDoc(roomRef);
-
-      if (!roomSnap.exists()) {
-        return code; // Unique code found
+      // Ensure code is exactly 6 characters and alphanumeric
+      code = code.replace(/[^A-Z0-9]/g, '').substring(0, 6);
+      if (code.length < 6) {
+        continue; // Try again if code is too short
       }
-      // If exists, loop will retry
+
+      // Skip if we've already tried this code
+      if (usedCodes.has(code)) {
+        continue;
+      }
+      usedCodes.add(code);
+
+      try {
+        // Check if room code already exists
+        const roomRef = doc(firestore, 'quiz-rooms', code);
+        const roomSnap = await getDoc(roomRef);
+
+        if (!roomSnap.exists()) {
+          // Double-check by trying to create a placeholder
+          try {
+            await setDoc(roomRef, { 
+              _placeholder: true, 
+              _createdAt: Timestamp.now() 
+            }, { merge: false });
+            
+            // If successful, delete placeholder and return code
+            await updateDoc(roomRef, { _placeholder: null });
+            return code;
+          } catch (createError) {
+            // If creation failed, code might be taken, try next
+            console.warn('Code creation failed, trying next:', code);
+            continue;
+          }
+        }
+      } catch (error) {
+        console.warn('Error checking room code:', code, error);
+        continue;
+      }
     }
 
-    // Fallback: add timestamp to ensure uniqueness
-    const timestamp = Date.now().toString(36).substring(-3).toUpperCase();
-    return `${Math.random().toString(36).substring(2, 5).toUpperCase()}${timestamp}`;
+    // Enhanced fallback with timestamp and random suffix
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const randomSuffix = Math.random().toString(36).substring(2, 4).toUpperCase();
+    const fallbackCode = `${timestamp.substring(-2)}${randomSuffix}${Math.random().toString(36).substring(2, 4).toUpperCase()}`;
+    
+    return fallbackCode.substring(0, 6).padEnd(6, '0');
   }
 
   /**
