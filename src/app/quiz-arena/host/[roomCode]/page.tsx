@@ -101,7 +101,7 @@ export default function RoomHostPage() {
       setRoomData(roomData);
       setQuizStarted(roomData.started);
     } catch (error) {
-      console.error('Error loading room data:', error);
+      secureLogger.error('Error loading room data', error, { category: 'HOST' });
       toast?.({
         title: 'Error Loading Room',
         description: 'Could not load room data. Please check the room code.',
