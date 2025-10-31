@@ -145,7 +145,7 @@ export default function RoomHostPage() {
         unsubscribePlayers?.();
       };
     } catch (error) {
-      console.error('Error setting up listeners:', error);
+      secureLogger.error('Error setting up listeners', error, { category: 'HOST' });
       return () => {};
     }
   };
