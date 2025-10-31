@@ -53,6 +53,78 @@ export default function RoomHostPage() {
   // Define isHost early to prevent undefined references
   const isHost = user && roomData?.hostId === user.uid;
 
+  const loadRoomData = async () => {
+    try {
+      // Try to get room data from Firestore
+      const { firestore } = await import('@/lib/firebase');
+      const { doc, getDoc, collection, getDocs } = await import('firebase/firestore');
+
+      // Get room data from Firestore
+      const roomRef = doc(firestore, 'quiz-rooms', roomCode);
+      const roomSnapshot = await getDoc(roomRef);
+
+      if (!roomSnapshot.exists()) {
+        throw new Error('Room not found');
+      }
+
+      const firebaseRoomData = roomSnapshot.data();
+
+      // Get players data
+      const roomPlayers = [];
+      try {
+        const playersRef = collection(firestore, 'quiz-rooms', roomCode, 'players');
+        const playersSnapshot = await getDocs(playersRef);
+
+        playersSnapshot.forEach((doc) => {
+          const playerData = doc.data();
+          roomPlayers.push({
+            userId: doc.id,
+            name: playerData.name || 'Unknown Player',
+            score: playerData.score || 0,
+            joinedAt: playerData.joinedAt || new Date().toISOString()
+          });
+        });
+      } catch (error) {
+        console.warn('Could not load players data:', error);
+        // Add host as default player
+        if (user) {
+          roomPlayers.push({
+            userId: user.uid,
+            name: user.displayName || 'Host',
+            score: 0,
+            joinedAt: new Date().toISOString()
+          });
+        }
+      }
+
+      // Convert room data to component format
+      const roomData: RoomData = {
+        roomId: roomCode,
+        hostId: firebaseRoomData.hostId,
+        started: firebaseRoomData.started || false,
+        finished: firebaseRoomData.finished || false,
+        currentQuestion: firebaseRoomData.currentQuestion !== undefined ? firebaseRoomData.currentQuestion : -1,
+        quiz: firebaseRoomData.quiz || [],
+        playerCount: roomPlayers.length,
+        players: roomPlayers,
+        questionStartTime: firebaseRoomData.questionStartTime || null
+      };
+
+      setRoomData(roomData);
+      setQuizStarted(roomData.started);
+
+    } catch (error) {
+      console.error('Error loading room data:', error);
+      toast?.({
+        title: 'Error Loading Room',
+        description: 'Could not load room data. Please check the room code.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // If quiz has started, redirect to questions page
   useEffect(() => {
     if (quizStarted && roomData?.currentQuestion >= 0) {
