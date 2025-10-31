@@ -62,14 +62,27 @@ export async function POST(request: NextRequest) {
         return `${actualCity}, ${actualRegion}, ${actualCountry}`;
       };
 
+      // FIXED: Use actual detected device information
       const loginData = {
         timestamp: new Date(deviceInfo.timestamp).toISOString(),
+        browser: deviceInfo.browser || 'Unknown Browser',
+        device: deviceInfo.device || 'Unknown Device',
+        location: formatLocation(deviceInfo.city, deviceInfo.region, deviceInfo.country),
+        ipAddress: deviceInfo.ip || 'Unknown IP',
+        userAgent: userAgent || 'Unknown User Agent'
+      };
+
+      // FIXED: Log actual device info for debugging
+      console.log('🔍 Actual Device Info Detected:', {
         browser: deviceInfo.browser,
         device: deviceInfo.device,
-        location: formatLocation(deviceInfo.city, deviceInfo.region, deviceInfo.country),
-        ipAddress: deviceInfo.ip,
-        userAgent: userAgent || 'Unknown'
-      };
+        os: deviceInfo.os,
+        city: deviceInfo.city,
+        region: deviceInfo.region,
+        country: deviceInfo.country,
+        ip: deviceInfo.ip,
+        location: deviceInfo.location
+      });
 
       // Send login notification email using preferences system
       const { sendEmailWithPreferences } = await import('@/lib/email');
