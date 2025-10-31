@@ -133,7 +133,7 @@ class SecureLogger {
   quizArena(message: string, data?: any) {
     if (this.isProduction) {
       // In production, only log basic status without data
-      this.info(message, undefined, { category: 'QUIZ' });
+      this.info(message, undefined, { level: 'info', category: 'QUIZ' });
     } else {
       // In development, sanitize quiz data
       const sanitizedData = data ? {
@@ -145,7 +145,7 @@ class SecureLogger {
         questionCount: data.quiz ? data.quiz.length : 0
       } : undefined;
       
-      this.info(message, sanitizedData, { category: 'QUIZ' });
+      this.info(message, sanitizedData, { level: 'info', category: 'QUIZ' });
     }
   }
 
