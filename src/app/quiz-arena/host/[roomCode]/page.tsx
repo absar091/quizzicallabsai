@@ -63,24 +63,61 @@ export default function RoomHostPage() {
   useEffect(() => {
     if (!roomCode || !user) return;
 
-    loadRoomData();
-
-    // Set up real-time listener
+    let isMounted = true;
     let cleanup: (() => void) | undefined;
-    setupRoomListener().then(cleanupFn => {
-      cleanup = cleanupFn;
-    }).catch(error => {
-      console.error('Failed to setup room listeners:', error);
-    });
+    let connectionInterval: NodeJS.Timeout | undefined;
 
-    // Monitor connection status
-    const connectionInterval = setInterval(() => {
-      setConnectionStatus(getConnectionStatus());
-    }, 5000);
+    const initializeHost = async () => {
+      try {
+        await loadRoomData();
+        
+        if (!isMounted) return;
+
+        // Set up real-time listener
+        const cleanupFn = await setupRoomListener();
+        if (isMounted) {
+          cleanup = cleanupFn;
+        } else {
+          // Component unmounted during setup, cleanup immediately
+          cleanupFn?.();
+          return;
+        }
+
+        // Monitor connection status
+        connectionInterval = setInterval(() => {
+          if (isMounted) {
+            setConnectionStatus(getConnectionStatus());
+          }
+        }, 5000);
+
+      } catch (error) {
+        console.error('Failed to initialize host:', error);
+        if (isMounted) {
+          toast?.({
+            title: 'Initialization Failed',
+            description: 'Failed to set up room. Please refresh the page.',
+            variant: 'destructive'
+          });
+        }
+      }
+    };
+
+    initializeHost();
 
     return () => {
-      if (cleanup) cleanup();
-      clearInterval(connectionInterval);
+      isMounted = false;
+      
+      if (cleanup) {
+        try {
+          cleanup();
+        } catch (error) {
+          console.warn('Error during cleanup:', error);
+        }
+      }
+      
+      if (connectionInterval) {
+        clearInterval(connectionInterval);
+      }
     };
   }, [roomCode, user]);
 

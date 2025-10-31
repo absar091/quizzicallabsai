@@ -15,7 +15,9 @@ import { useConnectionRecovery } from '@/hooks/useConnectionRecovery';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 
-export default function ParticipantArenaPage() {
+import ErrorBoundary from '@/components/ErrorBoundary';
+
+function ParticipantArenaPageContent() {
   const { roomCode } = useParams() as { roomCode: string };
   const router = useRouter();
   const { user } = useAuth();
@@ -34,8 +36,10 @@ export default function ParticipantArenaPage() {
   const [showResults, setShowResults] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [QuizArena, setQuizArena] = useState<any>(null);
+  const [hostPresent, setHostPresent] = useState(true);
   const hasRedirectedRef = useRef(false);
   const submissionRef = useRef(false);
+  const hostCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load QuizArena module once
   useEffect(() => {
@@ -108,11 +112,48 @@ export default function ParticipantArenaPage() {
           }
         );
 
+        // Monitor host presence
+        const checkHostPresence = async () => {
+          if (!QuizArena || !roomCode) return;
+          
+          try {
+            const isPresent = await QuizArena.Host.checkHostPresence(roomCode.toUpperCase());
+            setHostPresent(isPresent);
+            
+            if (!isPresent && roomData?.started && !roomData?.finished) {
+              toast?.({
+                title: 'Host Disconnected',
+                description: 'The host appears to have left. Looking for a new host...',
+                variant: 'destructive'
+              });
+              
+              // Try to handle host abandonment
+              const newHostId = await QuizArena.Host.handleHostAbandonment(roomCode.toUpperCase());
+              if (newHostId) {
+                toast?.({
+                  title: 'New Host Found',
+                  description: 'A participant has been promoted to host. Quiz continues!',
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Error checking host presence:', error);
+          }
+        };
+
+        // Check host presence every 30 seconds
+        hostCheckIntervalRef.current = setInterval(checkHostPresence, 30000);
+        
         setLoading(false);
 
         return () => {
           unsubscribeRoom();
           unsubscribePlayers();
+          
+          if (hostCheckIntervalRef.current) {
+            clearInterval(hostCheckIntervalRef.current);
+            hostCheckIntervalRef.current = null;
+          }
         };
 
       } catch (error) {
@@ -356,6 +397,27 @@ export default function ParticipantArenaPage() {
                 PARTICIPANT
               </Badge>
               <span className="font-semibold text-white">Room {roomCode.toUpperCase()}</span>
+              
+              {/* Connection Status Indicators */}
+              {!isOnline && (
+                <Badge variant="destructive" className="animate-pulse">
+                  <WifiOff className="h-3 w-3 mr-1" />
+                  OFFLINE
+                </Badge>
+              )}
+              
+              {reconnecting && (
+                <Badge variant="outline" className="animate-pulse">
+                  🔄 RECONNECTING
+                </Badge>
+              )}
+              
+              {!hostPresent && roomData?.started && (
+                <Badge variant="destructive">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  HOST AWAY
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -690,5 +752,13 @@ export default function ParticipantArenaPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ParticipantArenaPage() {
+  return (
+    <ErrorBoundary>
+      <ParticipantArenaPageContent />
+    </ErrorBoundary>
   );
 }
