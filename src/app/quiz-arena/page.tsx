@@ -196,12 +196,12 @@ export default function QuizArenaPage() {
       const startTime = Date.now();
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // Increased to 60 seconds
 
       try {
         toast?.({
           title: '🤖 Generating AI Questions...',
-          description: `Creating ${template.questions} questions for ${template.topic}`,
+          description: `Creating ${template.questions} questions for ${template.topic}. This may take up to 60 seconds...`,
         });
 
         const response = await fetch('/api/ai/custom-quiz', {
@@ -334,12 +334,12 @@ export default function QuizArenaPage() {
 
       if (template) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // Increased to 60 seconds
 
         try {
           toast?.({
             title: '🤖 Generating AI Questions...',
-            description: `Creating ${template.questions} questions for ${template.topic}`,
+            description: `Creating ${template.questions} questions for ${template.topic}. This may take up to 60 seconds...`,
           });
 
           const response = await fetch('/api/ai/custom-quiz', {
@@ -380,12 +380,12 @@ export default function QuizArenaPage() {
       } else {
         // Handle custom quiz creation when no template is found
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // Increased to 60 seconds
 
         try {
           toast?.({
             title: '🤖 Generating Custom Quiz...',
-            description: `Creating ${quizSetup.numberOfQuestions} questions for ${quizSetup.topic}`,
+            description: `Creating ${quizSetup.numberOfQuestions} questions for ${quizSetup.topic}. This may take up to 60 seconds...`,
           });
 
           const response = await fetch('/api/ai/custom-quiz', {

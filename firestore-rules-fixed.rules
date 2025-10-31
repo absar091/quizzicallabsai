@@ -1,0 +1,134 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 🎮 Quiz Rooms
+    match /quiz-rooms/{roomId} {
+      // ✅ Anyone can read rooms (for discovery / joining)
+      allow read: if true;
+      
+      // ✅ Only host can create the room
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.hostId;
+      
+      // ✅ Host can update game state (expanded allowed fields)
+      allow update: if request.auth != null &&
+        request.auth.uid == resource.data.hostId &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'started', 
+          'finished', 
+          'currentQuestion', 
+          'startedAt', 
+          'finishedAt',
+          'questionStartTime',  // Added for timer sync
+          'hostLastSeen',       // Added for host presence
+          'hostTransferredAt',  // Added for host migration
+          'previousHostId'      // Added for host migration
+        ]);
+      
+      // ❌ Room cannot be deleted by anyone
+      allow delete: if false;
+      
+      // 👥 Players Subcollection
+      match /players/{userId} {
+        // ✅ Anyone can read leaderboard
+        allow read: if true;
+        
+        // ✅ Authenticated users can join
+        allow create: if request.auth != null;
+        
+        // ✅ Player may update only their own score / name + additional fields
+        allow update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'score', 
+            'name',
+            'lastAnswerAt',    // Added for activity tracking
+            'totalAnswers'     // Added for statistics
+          ]);
+        
+        // ❌ No deletions
+        allow delete: if false;
+      }
+      
+      // 📝 Answers Subcollection
+      match /answers/{answerId} {
+        allow read: if true;
+        
+        // ✅ Only user can submit their answer (relaxed hash requirement)
+        allow create: if request.auth != null &&
+          request.auth.uid == request.resource.data.userId &&
+          request.resource.data.keys().hasAll([
+            'userId', 
+            'questionIndex', 
+            'answerIndex', 
+            'submittedAt'
+          ]);
+        
+        // ❌ Answers cannot be changed
+        allow update, delete: if false;
+      }
+      
+      // 🛡️ Validated Answers (server-generated)
+      match /validated-answers/{answerId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+    
+    // 👤 User Profiles
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 🔒 System collections
+    match /system/{doc} {
+      allow read, write: if false;
+    }
+    
+    // 🔥 FCM Tokens
+    match /fcmTokens/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 📱 Device Tracking
+    match /deviceTracking/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 🔐 Login Notifications
+    match /loginNotifications/{notificationId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+    
+    // 🔑 Login Credentials
+    match /loginCredentials/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 🛡️ Security Logs
+    match /securityLogs/{logId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false;
+    }
+    
+    // 📊 Quiz Results
+    match /quiz-results/{resultId} {
+      allow read, write: if request.auth != null &&
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // 🌍 Public Shared Quizzes
+    match /shared-quizzes/{doc} {
+      allow read: if true;
+    }
+    
+    // 🚫 Default Deny Everything Else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

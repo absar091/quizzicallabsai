@@ -145,10 +145,17 @@ export class QuizArenaHost {
       console.log('✅ Quiz started successfully in Firebase');
     } catch (error: any) {
       console.error('❌ Error starting quiz:', error);
+      
+      // Handle specific Firebase permission errors
+      if (error.code === 'permission-denied') {
+        throw new Error('Permission denied. Please check Firebase security rules.');
+      }
+      
       // Re-throw with original message if it's a known error
       if (error.message && Object.values(QUIZ_ARENA_CONSTANTS.ERRORS).includes(error.message)) {
         throw error;
       }
+      
       throw new Error('Failed to start quiz');
     }
   }
@@ -233,9 +240,11 @@ export class QuizArenaHost {
       await updateDoc(roomRef, {
         hostLastSeen: Timestamp.now()
       });
-    } catch (error) {
-      // Silently fail - this is just for presence tracking
-      console.warn('Failed to update host presence:', error);
+    } catch (error: any) {
+      // Silently fail for permission errors - this is just for presence tracking
+      if (error.code !== 'permission-denied') {
+        console.warn('Failed to update host presence:', error);
+      }
     }
   }
 
@@ -548,21 +557,8 @@ export class QuizArenaDiscovery {
         const roomSnap = await getDoc(roomRef);
 
         if (!roomSnap.exists()) {
-          // Double-check by trying to create a placeholder
-          try {
-            await setDoc(roomRef, { 
-              _placeholder: true, 
-              _createdAt: Timestamp.now() 
-            }, { merge: false });
-            
-            // If successful, delete placeholder and return code
-            await updateDoc(roomRef, { _placeholder: null });
-            return code;
-          } catch (createError) {
-            // If creation failed, code might be taken, try next
-            console.warn('Code creation failed, trying next:', code);
-            continue;
-          }
+          // Just return the code if it doesn't exist - no need for placeholder
+          return code;
         }
       } catch (error) {
         console.warn('Error checking room code:', code, error);

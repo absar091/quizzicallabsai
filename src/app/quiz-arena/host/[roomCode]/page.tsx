@@ -258,6 +258,12 @@ export default function RoomHostPage() {
               description: 'The quiz is already in progress.',
               variant: 'destructive'
             });
+          } else if (startError.message?.includes('Permission denied')) {
+            toast?.({
+              title: 'Permission Error',
+              description: 'Firebase security rules need to be updated. Please check the console for instructions.',
+              variant: 'destructive'
+            });
           } else {
             toast?.({
               title: 'Error Starting Quiz',
