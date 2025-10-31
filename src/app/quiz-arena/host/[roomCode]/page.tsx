@@ -215,6 +215,41 @@ export default function RoomHostPage() {
     };
   }, [roomCode, user]);
 
+  // Auto-submit when timer expires
+  useEffect(() => {
+    if (timeRemaining === 0 && !hasSubmitted && selectedAnswer !== null && timerActive) {
+      console.log('Auto-submitting host answer due to timer expiry');
+      handleHostSubmitAnswer();
+    }
+  }, [timeRemaining, hasSubmitted, selectedAnswer, timerActive]);
+
+  // Auto-advance to next question after showing results
+  useEffect(() => {
+    if (showResults && roomData && user) {
+      const timer = setTimeout(async () => {
+        try {
+          const { QuizArena } = await import('@/lib/quiz-arena');
+          
+          if (roomData.currentQuestion < roomData.quiz.length - 1) {
+            // Move to next question
+            await QuizArena.Host.nextQuestion(roomCode, user.uid);
+          } else {
+            // Finish quiz
+            await QuizArena.Host.finishQuiz(roomCode, user.uid);
+            toast?.({
+              title: 'Quiz Completed! 🏆',
+              description: 'Check the final leaderboard below.',
+            });
+          }
+        } catch (error) {
+          console.error('Error advancing question:', error);
+        }
+      }, 3000); // Show results for 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showResults, roomData, user, roomCode]);
+
   const handleStartQuiz = async () => {
     if (!roomData || !user) return;
 
