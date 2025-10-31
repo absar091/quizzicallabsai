@@ -223,7 +223,7 @@ export default function RoomHostPage() {
     }
   }, [timeRemaining, hasSubmitted, selectedAnswer, timerActive]);
 
-  // Auto-advance to next question after showing results
+  // Auto-advance to next question after showing results (REAL-TIME GAME MODE)
   useEffect(() => {
     if (showResults && roomData && user) {
       const timer = setTimeout(async () => {
@@ -231,20 +231,33 @@ export default function RoomHostPage() {
           const { QuizArena } = await import('@/lib/quiz-arena');
           
           if (roomData.currentQuestion < roomData.quiz.length - 1) {
-            // Move to next question
+            // Move to next question - ALL PARTICIPANTS GET UPDATE INSTANTLY
+            console.log(`🎮 HOST: Auto-advancing to question ${roomData.currentQuestion + 2}`);
             await QuizArena.Host.nextQuestion(roomCode, user.uid);
+            
+            toast?.({
+              title: `Question ${roomData.currentQuestion + 2}`,
+              description: 'Next question loaded for all players!',
+            });
           } else {
-            // Finish quiz
+            // Finish quiz - REAL-TIME LEADERBOARD
+            console.log('🏆 HOST: Finishing quiz - showing final leaderboard');
             await QuizArena.Host.finishQuiz(roomCode, user.uid);
+            
             toast?.({
               title: 'Quiz Completed! 🏆',
-              description: 'Check the final leaderboard below.',
+              description: 'Final leaderboard is now live for all players!',
             });
           }
         } catch (error) {
           console.error('Error advancing question:', error);
+          toast?.({
+            title: 'Error',
+            description: 'Failed to advance question. Please try manually.',
+            variant: 'destructive'
+          });
         }
-      }, 3000); // Show results for 3 seconds
+      }, 4000); // Show results for 4 seconds (like online games)
 
       return () => clearTimeout(timer);
     }

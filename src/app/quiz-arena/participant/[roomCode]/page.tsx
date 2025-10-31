@@ -90,11 +90,16 @@ function ParticipantArenaPageContent() {
             const isNowStarted = data?.started;
             
             if (!wasStarted && isNowStarted) {
-              console.log('🎯 Quiz started! Transitioning to quiz mode...');
+              console.log('🎮 GAME STARTED! Real-time quiz mode activated!');
               toast?.({
-                title: '🎯 Quiz Started!',
-                description: 'Get ready to compete! First question loading...',
+                title: '🎮 GAME STARTED!',
+                description: 'Live multiplayer quiz is now active! Compete in real-time!',
               });
+              
+              // Add game start sound effect (optional)
+              if (typeof window !== 'undefined' && window.navigator?.vibrate) {
+                window.navigator.vibrate([200, 100, 200]); // Vibration for mobile
+              }
             }
 
             setRoomData(data);
@@ -108,30 +113,60 @@ function ParticipantArenaPageContent() {
               return;
             }
 
-            // Handle quiz questions when quiz is started
+            // Handle quiz questions when quiz is started - REAL-TIME GAME MODE
             if (data.started && data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
               const questionIndex = data.currentQuestion !== undefined ? data.currentQuestion : 0;
-              console.log('Setting question index:', questionIndex, 'of', data.quiz.length);
+              console.log('🎮 GAME UPDATE: Question', questionIndex + 1, 'of', data.quiz.length);
               
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
                 const newQuestion = data.quiz[questionIndex];
-                console.log('Setting current question:', newQuestion);
+                console.log('🎯 Loading question:', newQuestion.question);
                 
+                // Reset all states for new question (like online games)
                 setCurrentQuestion(newQuestion);
                 setHasSubmitted(false);
                 setSelectedAnswer(null);
                 setShowResults(false);
                 setIsAnswered(false);
+                
+                // Show question transition notification (like online games)
+                if (questionIndex > 0) {
+                  toast?.({
+                    title: `Question ${questionIndex + 1}`,
+                    description: 'New question loaded! Answer quickly!',
+                  });
+                }
               }
+            } else if (data.started && (!data.quiz || data.quiz.length === 0)) {
+              console.error('🚨 Quiz started but no questions found in database!');
+              toast?.({
+                title: 'Error: No Questions',
+                description: 'Quiz started but questions are missing from database.',
+                variant: 'destructive'
+              });
             }
           }
         );
 
-        // Listen to leaderboard changes
+        // Listen to leaderboard changes - REAL-TIME GAMING
         const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
           roomCode.toUpperCase(),
           (playerList) => {
-            console.log('Leaderboard updated:', playerList);
+            console.log('🏆 LIVE LEADERBOARD UPDATE:', playerList.length, 'players');
+            
+            // Check for score changes (like online games)
+            const previousPlayers = players;
+            const currentUser = playerList.find(p => p.userId === user?.uid);
+            const previousUser = previousPlayers.find(p => p.userId === user?.uid);
+            
+            if (currentUser && previousUser && currentUser.score > previousUser.score) {
+              const pointsGained = currentUser.score - previousUser.score;
+              toast?.({
+                title: `+${pointsGained} Points! 🎉`,
+                description: `Your score: ${currentUser.score}`,
+              });
+            }
+            
             setPlayers(playerList);
           }
         );
@@ -464,8 +499,8 @@ function ParticipantArenaPageContent() {
                     <Crown className="h-5 w-5 text-yellow-500" />
                     <span className="font-semibold">{hostData?.name || 'Host'}</span>
                     {roomData.started && (
-                      <Badge className="bg-green-500/10 text-green-400">
-                        QUIZ IN PROGRESS
+                      <Badge className="bg-green-500/10 text-green-400 animate-pulse">
+                        🎮 LIVE GAME
                       </Badge>
                     )}
                   </div>
@@ -720,6 +755,20 @@ function ParticipantArenaPageContent() {
                         🔄 Refresh Status
                       </Button>
                     </div>
+
+                    {/* Real-time Game Debug Panel */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <div className="mt-4 p-3 bg-gray-900 border border-green-500 rounded text-xs text-left text-green-400">
+                        <strong>🎮 REAL-TIME GAME STATUS:</strong><br/>
+                        Database Connected: {isOnline ? '🟢 ONLINE' : '🔴 OFFLINE'}<br/>
+                        Quiz Started: {roomData?.started ? '🟢 LIVE' : '🟡 WAITING'}<br/>
+                        Current Question: {roomData?.currentQuestion !== undefined ? `${roomData.currentQuestion + 1}/${roomData?.quiz?.length || 0}` : 'None'}<br/>
+                        Questions in DB: {roomData?.quiz?.length || 0}<br/>
+                        Question Loaded: {currentQuestion ? '🟢 YES' : '🔴 NO'}<br/>
+                        Players Online: {players.length}<br/>
+                        Your Score: {players.find(p => p.userId === user?.uid)?.score || 0}
+                      </div>
+                    )}
                     
                     {/* Debug info - remove in production */}
                     {process.env.NODE_ENV === 'development' && (

@@ -161,30 +161,57 @@ export class QuizArenaHost {
   }
 
   /**
-   * Move to next question - only host can do this
+   * Move to next question - only host can do this (REAL-TIME GAME MODE)
    */
   static async nextQuestion(roomId: string, hostId: string): Promise<void> {
     const roomRef = doc(firestore, 'quiz-rooms', roomId);
-    const roomSnap = await getDoc(roomRef);
-
-    if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
-    const room = roomSnap.data() as QuizArenaRoom;
-
-    if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
-    if (!room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_NOT_STARTED);
-    if (room.finished) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_FINISHED);
-    if (room.currentQuestion >= room.quiz.length - 1) {
-      // Finish the quiz
-      await this.finishQuiz(roomId, hostId);
-      return;
-    }
-
+    
     try {
-      await updateDoc(roomRef, {
-        currentQuestion: room.currentQuestion + 1,
-        questionStartTime: Timestamp.now() // Reset timer for all clients
+      // Use transaction for atomic question progression
+      await runTransaction(firestore, async (transaction) => {
+        const roomSnap = await transaction.get(roomRef);
+
+        if (!roomSnap.exists()) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
+        }
+
+        const room = roomSnap.data() as QuizArenaRoom;
+
+        if (room.hostId !== hostId) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
+        }
+
+        if (!room.started) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_NOT_STARTED);
+        }
+
+        if (room.finished) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_FINISHED);
+        }
+
+        if (room.currentQuestion >= room.quiz.length - 1) {
+          // Finish the quiz
+          transaction.update(roomRef, {
+            finished: true,
+            finishedAt: Timestamp.now(),
+            currentQuestion: room.quiz.length - 1 // Keep at last question
+          });
+          console.log('🏆 Quiz finished! Final question reached.');
+          return;
+        }
+
+        // Move to next question with real-time sync
+        const nextQuestionIndex = room.currentQuestion + 1;
+        const updateData = {
+          currentQuestion: nextQuestionIndex,
+          questionStartTime: Timestamp.now(), // Reset timer for all clients
+          lastUpdated: Timestamp.now() // For real-time sync
+        };
+
+        console.log(`🎮 GAME: Moving to question ${nextQuestionIndex + 1}/${room.quiz.length}`);
+        transaction.update(roomRef, updateData);
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to advance question:', error);
       throw new Error('Failed to advance to next question');
     }
