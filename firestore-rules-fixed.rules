@@ -7,9 +7,14 @@ service cloud.firestore {
       // ✅ Anyone can read rooms (for discovery / joining)
       allow read: if true;
       
-      // ✅ Only host can create the room
+      // ✅ Only host can create the room OR time-sync documents
       allow create: if request.auth != null &&
-        request.auth.uid == request.resource.data.hostId;
+        (request.auth.uid == request.resource.data.hostId ||
+         request.resource.data.type == 'time-sync');
+      
+      // ✅ Allow deletion of time-sync documents
+      allow delete: if request.auth != null &&
+        resource.data.type == 'time-sync';
       
       // ✅ Host can update game state (expanded allowed fields)
       allow update: if request.auth != null &&

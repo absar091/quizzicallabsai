@@ -172,10 +172,21 @@ export async function POST(request: NextRequest) {
               totalAnswers: (playerDoc.data()?.totalAnswers || 0) + 1
             });
           } else {
-            // Player doesn't exist, create them
+            // FIXED: Player doesn't exist - this shouldn't happen, but handle gracefully
+            console.warn(`Player ${userId} not found in room ${roomCode}, creating with default data`);
+            
+            // Try to get user name from auth token
+            let playerName = 'Unknown Player';
+            try {
+              const userRecord = await auth.getUser(userId);
+              playerName = userRecord.displayName || userRecord.email?.split('@')[0] || 'Unknown Player';
+            } catch (authError) {
+              console.warn('Could not get user name from auth:', authError);
+            }
+            
             transaction.set(playerRef, {
               userId,
-              name: 'Unknown Player',
+              name: playerName,
               score: points,
               joinedAt: new Date(),
               lastAnswerAt: new Date(),

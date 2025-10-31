@@ -122,29 +122,47 @@ function ParticipantArenaPageContent() {
               return;
             }
 
-            // Handle quiz questions when quiz is started - REAL-TIME GAME MODE
+            // FIXED: Handle quiz questions when quiz is started - REAL-TIME GAME MODE
             if (data.started && data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
               const questionIndex = data.currentQuestion !== undefined ? data.currentQuestion : 0;
               console.log('🎮 GAME UPDATE: Question', questionIndex + 1, 'of', data.quiz.length);
               
+              // FIXED: Validate question index before accessing
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
                 const newQuestion = data.quiz[questionIndex];
-                console.log('🎯 Loading question:', newQuestion.question);
                 
-                // Reset all states for new question (like online games)
-                setCurrentQuestion(newQuestion);
-                setHasSubmitted(false);
-                setSelectedAnswer(null);
-                setShowResults(false);
-                setIsAnswered(false);
-                
-                // Show question transition notification (like online games)
-                if (questionIndex > 0) {
+                // FIXED: Validate question structure
+                if (newQuestion && newQuestion.question && Array.isArray(newQuestion.options)) {
+                  console.log('🎯 Loading question:', newQuestion.question);
+                  
+                  // FIXED: Reset states in correct order to prevent race conditions
+                  setHasSubmitted(false);
+                  setSelectedAnswer(null);
+                  setShowResults(false);
+                  setIsAnswered(false);
+                  
+                  // Set question last to ensure other states are ready
+                  setCurrentQuestion(newQuestion);
+                  
+                  // Show question transition notification (like online games)
+                  if (questionIndex > 0) {
+                    toast?.({
+                      title: `Question ${questionIndex + 1}`,
+                      description: 'New question loaded! Answer quickly!',
+                    });
+                  }
+                } else {
+                  console.error('🚨 Invalid question structure:', newQuestion);
                   toast?.({
-                    title: `Question ${questionIndex + 1}`,
-                    description: 'New question loaded! Answer quickly!',
+                    title: 'Error: Invalid Question',
+                    description: 'Question data is corrupted. Please refresh.',
+                    variant: 'destructive'
                   });
                 }
+              } else if (questionIndex >= data.quiz.length) {
+                console.log('🏆 Quiz completed - all questions answered');
+                // Quiz is finished
+                setCurrentQuestion(null);
               }
             } else if (data.started && (!data.quiz || data.quiz.length === 0)) {
               console.error('🚨 Quiz started but no questions found in database!');
@@ -153,6 +171,10 @@ function ParticipantArenaPageContent() {
                 description: 'Quiz started but questions are missing from database.',
                 variant: 'destructive'
               });
+              setCurrentQuestion(null);
+            } else if (data.started && data.currentQuestion === -1) {
+              console.log('🎮 Quiz started but waiting for first question...');
+              setCurrentQuestion(null);
             }
           }
         );
@@ -163,20 +185,26 @@ function ParticipantArenaPageContent() {
           (playerList) => {
             console.log('🏆 LIVE LEADERBOARD UPDATE:', playerList.length, 'players');
             
-            // Check for score changes (like online games)
-            const previousPlayers = players;
-            const currentUser = playerList.find(p => p.userId === user?.uid);
-            const previousUser = previousPlayers.find(p => p.userId === user?.uid);
-            
-            if (currentUser && previousUser && currentUser.score > previousUser.score) {
-              const pointsGained = currentUser.score - previousUser.score;
-              toast?.({
-                title: `+${pointsGained} Points! 🎉`,
-                description: `Your score: ${currentUser.score}`,
-              });
-            }
-            
-            setPlayers(playerList);
+            // FIXED: Check for score changes with proper state management
+            setPlayers(prevPlayers => {
+              const currentUser = playerList.find(p => p.userId === user?.uid);
+              const previousUser = prevPlayers.find(p => p.userId === user?.uid);
+              
+              // FIXED: Only show notification if we have valid previous data
+              if (currentUser && previousUser && currentUser.score > previousUser.score) {
+                const pointsGained = currentUser.score - previousUser.score;
+                
+                // Use setTimeout to ensure toast shows after state update
+                setTimeout(() => {
+                  toast?.({
+                    title: `+${pointsGained} Points! 🎉`,
+                    description: `Your score: ${currentUser.score}`,
+                  });
+                }, 100);
+              }
+              
+              return playerList;
+            });
           }
         );
 

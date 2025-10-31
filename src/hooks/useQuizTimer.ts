@@ -22,15 +22,20 @@ class ServerTimeSync {
     
     this.syncInProgress = true;
     try {
-      // Simple server time sync using Firebase Timestamp
+      // FIXED: Use a temporary document in quiz-rooms collection instead of system
       const { firestore } = await import('@/lib/firebase');
       const { doc, setDoc, getDoc, serverTimestamp } = await import('firebase/firestore');
       
-      const syncRef = doc(firestore, 'system', 'time-sync');
+      // Use a temporary sync document that gets cleaned up
+      const syncRef = doc(firestore, 'quiz-rooms', `time-sync-${Date.now()}`);
       const clientTime = Date.now();
       
-      // Write server timestamp
-      await setDoc(syncRef, { timestamp: serverTimestamp() });
+      // Write server timestamp to allowed collection
+      await setDoc(syncRef, { 
+        timestamp: serverTimestamp(),
+        type: 'time-sync',
+        clientTime: clientTime
+      });
       
       // Read it back immediately
       const syncDoc = await getDoc(syncRef);
@@ -40,6 +45,13 @@ class ServerTimeSync {
           const roundTripTime = Date.now() - clientTime;
           this.offset = serverTime - clientTime + (roundTripTime / 2);
           this.lastSync = Date.now();
+          
+          // Clean up the temporary document
+          try {
+            await syncRef.delete();
+          } catch (deleteError) {
+            // Ignore delete errors
+          }
         }
       }
     } catch (error) {

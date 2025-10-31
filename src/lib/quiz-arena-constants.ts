@@ -31,7 +31,7 @@ export const QUIZ_ARENA_CONSTANTS = {
     CREATION_FAILED: 'Failed to create quiz arena. Please try again.',
     JOIN_FAILED: 'Failed to join quiz room',
     LEAVE_FAILED: 'Failed to leave room',
-    MIN_PLAYERS: 'Need at least 2 players to start',
+    MIN_PLAYERS: 'Need at least 1 player to start',
     QUIZ_ALREADY_STARTED: 'Quiz already started',
     QUIZ_NOT_STARTED: 'Quiz not started yet',
     QUIZ_FINISHED: 'Quiz already finished',

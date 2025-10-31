@@ -229,9 +229,10 @@ export default function RoomHostPage() {
     }
   }, [timeRemaining, hasSubmitted, selectedAnswer, timerActive]);
 
-  // Auto-advance to next question after showing results (REAL-TIME GAME MODE)
+  // FIXED: Auto-advance to next question with better timing (REAL-TIME GAME MODE)
   useEffect(() => {
-    if (showResults && roomData && user) {
+    if (showResults && roomData && user && isHost) {
+      // FIXED: Wait longer to ensure all players see results
       const timer = setTimeout(async () => {
         try {
           const { QuizArena } = await import('@/lib/quiz-arena');
@@ -263,11 +264,11 @@ export default function RoomHostPage() {
             variant: 'destructive'
           });
         }
-      }, 4000); // Show results for 4 seconds (like online games)
+      }, 6000); // FIXED: Increased to 6 seconds to give players more time
 
       return () => clearTimeout(timer);
     }
-  }, [showResults, roomData, user, roomCode]);
+  }, [showResults, roomData, user, roomCode, isHost]);
 
   const handleStartQuiz = async () => {
     if (!roomData || !user) return;
@@ -488,7 +489,7 @@ export default function RoomHostPage() {
             ) : (
               <Card>
                 <CardContent className="p-8">
-                  {roomData?.quiz && roomData.currentQuestion >= 0 && roomData.currentQuestion < roomData.quiz.length ? (
+                  {roomData?.quiz && roomData.started && roomData.currentQuestion !== undefined && roomData.currentQuestion >= 0 && roomData.currentQuestion < roomData.quiz.length ? (
                     <div className="space-y-6">
                       {/* Question Header with Timer */}
                       <div className="text-center mb-6">
