@@ -78,6 +78,25 @@ function ParticipantArenaPageContent() {
         const unsubscribeRoom = QuizArena.Player.listenToRoom(
           roomCode.toUpperCase(),
           async (data) => {
+            console.log('Participant - Room data updated:', {
+              started: data?.started,
+              currentQuestion: data?.currentQuestion,
+              quizLength: data?.quiz?.length,
+              finished: data?.finished
+            });
+            
+            // Check if quiz just started
+            const wasStarted = roomData?.started;
+            const isNowStarted = data?.started;
+            
+            if (!wasStarted && isNowStarted) {
+              console.log('🎯 Quiz started! Transitioning to quiz mode...');
+              toast?.({
+                title: '🎯 Quiz Started!',
+                description: 'Get ready to compete! First question loading...',
+              });
+            }
+
             setRoomData(data);
 
             if (data.finished) {
@@ -89,11 +108,16 @@ function ParticipantArenaPageContent() {
               return;
             }
 
-            // Fix: Add null checks for quiz array
-            if (data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
+            // Handle quiz questions when quiz is started
+            if (data.started && data.quiz && Array.isArray(data.quiz) && data.quiz.length > 0) {
               const questionIndex = data.currentQuestion !== undefined ? data.currentQuestion : 0;
+              console.log('Setting question index:', questionIndex, 'of', data.quiz.length);
+              
               if (questionIndex >= 0 && questionIndex < data.quiz.length) {
-                setCurrentQuestion(data.quiz[questionIndex]);
+                const newQuestion = data.quiz[questionIndex];
+                console.log('Setting current question:', newQuestion);
+                
+                setCurrentQuestion(newQuestion);
                 setHasSubmitted(false);
                 setSelectedAnswer(null);
                 setShowResults(false);
@@ -683,6 +707,36 @@ function ParticipantArenaPageContent() {
                     <Badge className="bg-blue-500/10 text-blue-400">
                       Host will begin soon
                     </Badge>
+                    
+                    <div className="mt-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          console.log('Manual refresh requested');
+                          window.location.reload();
+                        }}
+                      >
+                        🔄 Refresh Status
+                      </Button>
+                    </div>
+                    
+                    {/* Debug info - remove in production */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-left">
+                        <strong>Debug Info:</strong><br/>
+                        Room Started: {roomData?.started ? 'Yes' : 'No'}<br/>
+                        Current Question: {roomData?.currentQuestion ?? 'None'}<br/>
+                        Quiz Length: {roomData?.quiz?.length || 0}<br/>
+                        Has Current Question: {currentQuestion ? 'Yes' : 'No'}<br/>
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="mt-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                        >
+                          Force Refresh
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

@@ -15,12 +15,29 @@ let reconnectTimeout: NodeJS.Timeout | null = null;
 async function testFirebaseConnection(): Promise<boolean> {
   try {
     // Try to perform a lightweight Firebase operation
+    // Use a simple operation that doesn't require specific permissions
     const { doc, getDoc } = await import('firebase/firestore');
-    const testDoc = doc(firestore, '_connection_test', 'test');
-    await getDoc(testDoc);
+    
+    // Try to access a document that might exist (like user profile or settings)
+    // If it fails, it's likely a connection issue, not a permission issue
+    const testDoc = doc(firestore, 'users', 'connection_test');
+    
+    // Set a longer timeout for the connection test
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Connection timeout')), 10000)
+    );
+    
+    await Promise.race([getDoc(testDoc), timeoutPromise]);
     return true;
-  } catch (error) {
-    console.warn('Firebase connection test failed:', error);
+  } catch (error: any) {
+    // Only log actual connection errors, not permission errors
+    if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
+      // Permission errors mean Firebase is connected, just not authorized
+      return true;
+    }
+    
+    // Log other errors as connection issues
+    console.warn('Firebase connection test failed:', error.message || error);
     return false;
   }
 }
@@ -40,14 +57,24 @@ export const getConnectionStatus = () => {
 };
 
 // Enhanced reconnection with Firebase-specific handling
-export const forceReconnect = async () => {
+export const forceReconnect = async (): Promise<boolean> => {
   connectionState.reconnectAttempts++;
   
   try {
-    // First, try to re-enable Firebase network
-    await disableNetwork(firestore);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await enableNetwork(firestore);
+    // Only attempt network operations if we're in a browser environment
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    // First, try to re-enable Firebase network with error handling
+    try {
+      await disableNetwork(firestore);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await enableNetwork(firestore);
+    } catch (networkError) {
+      console.warn('Network enable/disable failed:', networkError);
+      // Continue with connection test even if network operations fail
+    }
     
     // Test the connection
     const isConnected = await testFirebaseConnection();
@@ -60,17 +87,20 @@ export const forceReconnect = async () => {
     } else {
       throw new Error('Firebase connection test failed');
     }
-  } catch (error) {
-    console.error('Reconnection failed:', error);
+  } catch (error: any) {
+    console.warn('Reconnection attempt failed:', error.message || error);
     connectionState.firebaseConnected = false;
     
-    // Exponential backoff for retries
-    const backoffDelay = Math.min(1000 * Math.pow(2, connectionState.reconnectAttempts), 30000);
-    
-    if (reconnectTimeout) clearTimeout(reconnectTimeout);
-    reconnectTimeout = setTimeout(() => {
-      forceReconnect();
-    }, backoffDelay);
+    // Don't retry too aggressively to avoid overwhelming the system
+    if (connectionState.reconnectAttempts < 5) {
+      // Exponential backoff for retries
+      const backoffDelay = Math.min(1000 * Math.pow(2, connectionState.reconnectAttempts), 30000);
+      
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      reconnectTimeout = setTimeout(() => {
+        forceReconnect().catch(console.warn);
+      }, backoffDelay);
+    }
     
     return false;
   }
@@ -78,21 +108,29 @@ export const forceReconnect = async () => {
 
 // Monitor connection status
 if (typeof window !== 'undefined') {
-  // Test Firebase connection periodically
-  setInterval(async () => {
-    const isConnected = await testFirebaseConnection();
-    if (isConnected) {
-      connectionState.lastSuccessfulConnection = Date.now();
-      connectionState.firebaseConnected = true;
-    } else {
+  // Test Firebase connection periodically with error handling
+  const connectionCheckInterval = setInterval(async () => {
+    try {
+      const isConnected = await testFirebaseConnection();
+      if (isConnected) {
+        connectionState.lastSuccessfulConnection = Date.now();
+        connectionState.firebaseConnected = true;
+      } else {
+        connectionState.firebaseConnected = false;
+      }
+    } catch (error) {
+      // Silently handle periodic check errors
       connectionState.firebaseConnected = false;
     }
-  }, 10000); // Test every 10 seconds
+  }, 15000); // Test every 15 seconds (less aggressive)
 
   // Listen to browser online/offline events
   window.addEventListener('online', () => {
     connectionState.isOnline = true;
-    forceReconnect();
+    // Don't immediately force reconnect, let the periodic check handle it
+    setTimeout(() => {
+      forceReconnect().catch(console.warn);
+    }, 2000);
   });
 
   window.addEventListener('offline', () => {
@@ -100,8 +138,20 @@ if (typeof window !== 'undefined') {
     connectionState.firebaseConnected = false;
   });
 
+  // Clean up interval on page unload
+  window.addEventListener('beforeunload', () => {
+    if (connectionCheckInterval) {
+      clearInterval(connectionCheckInterval);
+    }
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+    }
+  });
+
   // Suppress Firebase WebChannel errors (they're harmless)
   const originalWarn = console.warn;
+  const originalError = console.error;
+  
   console.warn = (...args) => {
     const message = args.join(' ');
     
@@ -110,5 +160,17 @@ if (typeof window !== 'undefined') {
     }
     
     originalWarn.apply(console, args);
+  };
+
+  console.error = (...args) => {
+    const message = args.join(' ');
+    
+    // Suppress common Firebase connection errors that are handled gracefully
+    if (message.includes('Firebase connection test failed') || 
+        message.includes('Reconnection failed')) {
+      return; // Don't log these as errors, they're handled
+    }
+    
+    originalError.apply(console, args);
   };
 }

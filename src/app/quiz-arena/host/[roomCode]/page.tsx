@@ -209,13 +209,6 @@ export default function RoomHostPage() {
         roomCode,
         (data: any) => {
           if (data) {
-            // If quiz just started and we're on the waiting room page, redirect to questions page
-            if (data.started && !quizStarted && data.currentQuestion >= 0) {
-              console.log('Quiz started detected, redirecting to questions page...');
-              router.push(`/quiz-arena/host/${roomCode}/questions`);
-              return;
-            }
-
             setRoomData(prev => ({
               ...prev,
               ...data
@@ -254,6 +247,16 @@ export default function RoomHostPage() {
   const handleStartQuiz = async () => {
     if (!roomData || !user) return;
 
+    // Check if quiz is already started
+    if (roomData.started || quizStarted) {
+      toast?.({
+        title: 'Quiz Already Started',
+        description: 'The quiz is already in progress.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     // Require at least 2 players (host + 1 other)
     if (roomData.playerCount < 2) {
       toast?.({
@@ -266,6 +269,9 @@ export default function RoomHostPage() {
 
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
+      
+      // Set local state immediately to prevent double-clicks
+      setQuizStarted(true);
       
       toast?.({
         title: 'Starting Quiz...',
@@ -288,25 +294,44 @@ export default function RoomHostPage() {
 
       // Small delay to let participants prepare
       setTimeout(async () => {
-        // Start quiz in Firebase
-        await QuizArena.Host.startQuiz(roomCode, user.uid);
+        try {
+          // Start quiz in Firebase
+          await QuizArena.Host.startQuiz(roomCode, user.uid);
 
-        toast?.({
-          title: 'Quiz Started! 🎯',
-          description: 'Redirecting to questions...',
-        });
+          toast?.({
+            title: 'Quiz Started! 🎯',
+            description: 'Managing live quiz...',
+          });
 
-        // Redirect to questions page
-        setTimeout(() => {
-          router.push(`/quiz-arena/host/${roomCode}/questions`);
-        }, 1000);
+          // Stay on the same page but show quiz management interface
+          // No redirect needed - we'll show the quiz controls here
+          
+        } catch (startError: any) {
+          console.error('Error starting quiz:', startError);
+          setQuizStarted(false); // Reset state on error
+          
+          if (startError.message?.includes('already started')) {
+            toast?.({
+              title: 'Quiz Already Started',
+              description: 'The quiz is already in progress.',
+              variant: 'destructive'
+            });
+          } else {
+            toast?.({
+              title: 'Error Starting Quiz',
+              description: startError.message || 'Please try again.',
+              variant: 'destructive'
+            });
+          }
+        }
       }, 3000);
 
-    } catch (error) {
-      console.error('Error starting quiz:', error);
+    } catch (error: any) {
+      console.error('Error in handleStartQuiz:', error);
+      setQuizStarted(false); // Reset state on error
       toast?.({
         title: 'Error Starting Quiz',
-        description: 'Please try again.',
+        description: error.message || 'Please try again.',
         variant: 'destructive'
       });
     }
@@ -443,37 +468,90 @@ export default function RoomHostPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Quiz Area */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Trophy className="w-16 h-16 text-primary mx-auto mb-4" />
-                <h2 className="text-2xl font-bold mb-2">Ready to Start?</h2>
-                <p className="text-muted-foreground mb-6">
-                  All players should join before you start the quiz
-                </p>
-                {isHost && (
-                  <Button size="lg" onClick={handleStartQuiz} className="bg-accent">
-                    <Play className="mr-2 h-5 w-5" />
-                    Start Quiz
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+            {!quizStarted ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Trophy className="w-16 h-16 text-primary mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold mb-2">Ready to Start?</h2>
+                  <p className="text-muted-foreground mb-6">
+                    All players should join before you start the quiz
+                  </p>
+                  {isHost && (
+                    <Button 
+                      size="lg" 
+                      onClick={handleStartQuiz} 
+                      className="bg-accent"
+                      disabled={roomData?.playerCount < 2 || quizStarted}
+                    >
+                      <Play className="mr-2 h-5 w-5" />
+                      {quizStarted ? 'Quiz Starting...' : 'Start Quiz'}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Play className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-green-600">Quiz is Live!</h2>
+                  <p className="text-muted-foreground mb-6">
+                    Players are now answering questions. Monitor their progress below.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <div className="font-semibold">Current Question</div>
+                      <div className="text-2xl font-bold text-primary">
+                        {(roomData?.currentQuestion ?? 0) + 1} / {roomData?.quiz?.length || 0}
+                      </div>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <div className="font-semibold">Active Players</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {roomData?.playerCount || 0}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Host Controls - Waiting Room Only */}
+            {/* Host Controls */}
             {isHost && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Host Controls</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-center">
-                    <p className="text-muted-foreground mb-4">
-                      {roomData?.playerCount >= 2
-                        ? `${roomData.playerCount - 1} friend${roomData.playerCount > 2 ? 's' : ''} ready. Start the battle!`
-                        : "Waiting for at least 1 more player to join..."
-                      }
-                    </p>
-                  </div>
+                  {!quizStarted ? (
+                    <div className="text-center">
+                      <p className="text-muted-foreground mb-4">
+                        {roomData?.playerCount >= 2
+                          ? `${roomData.playerCount - 1} friend${roomData.playerCount > 2 ? 's' : ''} ready. Start the battle!`
+                          : "Waiting for at least 1 more player to join..."
+                        }
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <p className="text-green-600 font-semibold mb-2">
+                          🎯 Quiz is running smoothly!
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          Players are competing in real-time. The quiz will progress automatically.
+                        </p>
+                      </div>
+                      
+                      {roomData?.finished && (
+                        <div className="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                          <h3 className="text-green-800 font-semibold">🏆 Quiz Completed!</h3>
+                          <p className="text-green-600 text-sm">Check the final leaderboard below.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

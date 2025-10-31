@@ -13,7 +13,8 @@ import {
   where,
   onSnapshot,
   Timestamp,
-  deleteDoc
+  deleteDoc,
+  runTransaction
 } from 'firebase/firestore';
 import { ReliableListener } from './firebase-listeners';
 import { QUIZ_ARENA_CONSTANTS } from './quiz-arena-constants';
@@ -97,35 +98,57 @@ export class QuizArenaHost {
    */
   static async startQuiz(roomId: string, hostId: string): Promise<void> {
     const roomRef = doc(firestore, 'quiz-rooms', roomId);
-    const roomSnap = await getDoc(roomRef);
-
-    if (!roomSnap.exists()) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
-    const room = roomSnap.data() as QuizArenaRoom;
-
-    if (room.hostId !== hostId) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
-    if (room.started) throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_ALREADY_STARTED);
-
-    // Check minimum players and validate they're still connected
-    const playersSnap = await getDocs(collection(firestore, `quiz-rooms/${roomId}/players`));
-    if (playersSnap.size < QUIZ_ARENA_CONSTANTS.MIN_PLAYERS_TO_START) {
-      throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.MIN_PLAYERS);
-    }
-
-    // Validate host is still in the room
-    const hostExists = playersSnap.docs.some(doc => doc.id === hostId);
-    if (!hostExists) {
-      throw new Error('Host is no longer in the room');
-    }
-
+    
     try {
-      // Start quiz and set first question with server timestamp
-      await updateDoc(roomRef, {
-        started: true,
-        currentQuestion: 0,
-        startedAt: Timestamp.now(),
-        questionStartTime: Timestamp.now() // For timer sync
+      // Use transaction to prevent race conditions
+      await runTransaction(firestore, async (transaction) => {
+        const roomSnap = await transaction.get(roomRef);
+
+        if (!roomSnap.exists()) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.ROOM_NOT_FOUND);
+        }
+
+        const room = roomSnap.data() as QuizArenaRoom;
+
+        if (room.hostId !== hostId) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.HOST_ONLY);
+        }
+
+        if (room.started) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.QUIZ_ALREADY_STARTED);
+        }
+
+        // Check minimum players
+        const playersSnap = await getDocs(collection(firestore, `quiz-rooms/${roomId}/players`));
+        if (playersSnap.size < QUIZ_ARENA_CONSTANTS.MIN_PLAYERS_TO_START) {
+          throw new Error(QUIZ_ARENA_CONSTANTS.ERRORS.MIN_PLAYERS);
+        }
+
+        // Validate host is still in the room
+        const hostExists = playersSnap.docs.some(doc => doc.id === hostId);
+        if (!hostExists) {
+          throw new Error('Host is no longer in the room');
+        }
+
+        // Start quiz atomically
+        const updateData = {
+          started: true,
+          currentQuestion: 0,
+          startedAt: Timestamp.now(),
+          questionStartTime: Timestamp.now() // For timer sync
+        };
+        
+        console.log('🎯 Starting quiz with data:', updateData);
+        transaction.update(roomRef, updateData);
       });
-    } catch (error) {
+      
+      console.log('✅ Quiz started successfully in Firebase');
+    } catch (error: any) {
+      console.error('❌ Error starting quiz:', error);
+      // Re-throw with original message if it's a known error
+      if (error.message && Object.values(QUIZ_ARENA_CONSTANTS.ERRORS).includes(error.message)) {
+        throw error;
+      }
       throw new Error('Failed to start quiz');
     }
   }

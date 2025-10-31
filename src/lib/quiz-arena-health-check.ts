@@ -61,10 +61,16 @@ export class QuizArenaHealthCheck {
         result.issues.push(`Room generation error: ${error}`);
       }
 
-      // Test Firebase connectivity
+      // Test Firebase connectivity (safer approach)
       try {
-        const isValid = await QuizArena.Discovery.validateRoom('NONEXISTENT');
-        result.checks.firebase = true; // If no error thrown, Firebase is accessible
+        // Just check if Firebase is initialized and accessible
+        const { getConnectionStatus } = await import('./firebase-connection');
+        const connectionStatus = getConnectionStatus();
+        result.checks.firebase = connectionStatus.firebaseConnected;
+        
+        if (!result.checks.firebase) {
+          result.issues.push('Firebase connection not established');
+        }
       } catch (error) {
         result.checks.firebase = false;
         result.issues.push(`Firebase connectivity issue: ${error}`);
