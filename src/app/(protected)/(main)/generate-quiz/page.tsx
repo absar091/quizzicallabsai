@@ -121,6 +121,7 @@ interface BookmarkedQuestion {
   question: string;
   correctAnswer: string;
   topic: string;
+  bookmarkedAt?: number;
 }
 
 const addPdfHeaderAndFooter = (doc: any, title: string, difficulty: string, isPro: boolean) => {
@@ -1173,7 +1174,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
       if (isCurrentlyBookmarked) {
         // Remove from Firebase and local state
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        const bookmarkRef = ref(db, `question-bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, null);
         await deleteBookmark(user.uid, question);
         setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
@@ -1187,11 +1188,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           userId: user.uid,
           question,
           correctAnswer,
-          topic: formValues.topic
+          topic: formValues.topic,
+          bookmarkedAt: Date.now() // Add timestamp
         };
         
-        // Save to Firebase and local state
-        const bookmarkRef = ref(db, `bookmarks/${user.uid}/${bookmarkId}`);
+        // FIXED: Save to separate question-bookmarks path to avoid conflicts
+        const bookmarkRef = ref(db, `question-bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, newBookmark);
         await saveBookmark(newBookmark);
         setBookmarkedQuestions(prev => [...prev, newBookmark]);

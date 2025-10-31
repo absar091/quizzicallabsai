@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuizBookmarks } from '@/lib/quiz-bookmarks';
 import { BookmarksList } from '@/components/bookmark-button';
@@ -9,19 +9,69 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookMarked, Search, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { BookMarked, Search, Filter, SortAsc, SortDesc, HelpCircle, Star } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { DashboardSkeleton } from '@/components/loading-skeletons';
 import { useGlobalKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { KeyboardShortcutsHelp } from '@/components/keyboard-shortcuts-help';
+import { ref, get } from 'firebase/database';
+import { db } from '@/lib/firebase';
+
+interface QuestionBookmark {
+  userId: string;
+  question: string;
+  correctAnswer: string;
+  topic: string;
+  bookmarkedAt?: number;
+}
 
 export default function BookmarksPage() {
   const { user } = useAuth();
-  const { bookmarks, loading, error } = useQuizBookmarks(user?.uid || null);
+  const { bookmarks: quizBookmarks, loading: quizLoading, error: quizError } = useQuizBookmarks(user?.uid || null);
+  const [questionBookmarks, setQuestionBookmarks] = useState<QuestionBookmark[]>([]);
+  const [questionLoading, setQuestionLoading] = useState(true);
+  const [questionError, setQuestionError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'title' | 'subject'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [activeTab, setActiveTab] = useState('questions');
+
+  // Load question bookmarks
+  useEffect(() => {
+    async function loadQuestionBookmarks() {
+      if (!user?.uid) {
+        setQuestionLoading(false);
+        return;
+      }
+
+      try {
+        setQuestionLoading(true);
+        const bookmarksRef = ref(db, `question-bookmarks/${user.uid}`);
+        const snapshot = await get(bookmarksRef);
+        
+        if (snapshot.exists()) {
+          const bookmarksData = snapshot.val();
+          const bookmarksList = Object.entries(bookmarksData).map(([id, data]: [string, any]) => ({
+            id,
+            ...data
+          })) as QuestionBookmark[];
+          setQuestionBookmarks(bookmarksList);
+        } else {
+          setQuestionBookmarks([]);
+        }
+        setQuestionError(null);
+      } catch (error: any) {
+        console.error('Error loading question bookmarks:', error);
+        setQuestionError(error.message);
+        setQuestionBookmarks([]);
+      } finally {
+        setQuestionLoading(false);
+      }
+    }
+
+    loadQuestionBookmarks();
+  }, [user?.uid]);
 
   // Keyboard shortcuts
   const shortcuts = useGlobalKeyboardShortcuts({
@@ -55,19 +105,19 @@ export default function BookmarksPage() {
     );
   }
 
-  if (loading) {
+  if (quizLoading || questionLoading) {
     return (
       <div className="space-y-6">
         <PageHeader 
           title="Bookmarks" 
-          description="Loading your bookmarked quizzes..."
+          description="Loading your bookmarks..."
         />
         <DashboardSkeleton />
       </div>
     );
   }
 
-  if (error) {
+  if (quizError && questionError) {
     return (
       <div className="space-y-6">
         <PageHeader 
@@ -76,18 +126,22 @@ export default function BookmarksPage() {
         />
         <Card>
           <CardContent className="text-center py-12 text-red-600">
-            Error loading bookmarks: {error}
+            Error loading bookmarks: {quizError || questionError}
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Get unique subjects
-  const subjects = Array.from(new Set(bookmarks.map(b => b.subject)));
+  // Get unique subjects from both quiz and question bookmarks
+  const quizSubjects = Array.from(new Set(quizBookmarks.map(b => b.subject)));
+  const questionSubjects = Array.from(new Set(questionBookmarks.map(b => b.topic)));
+  const allSubjects = Array.from(new Set([...quizSubjects, ...questionSubjects]));
 
-  // Filter and sort bookmarks
-  const filteredBookmarks = bookmarks
+  const totalBookmarks = quizBookmarks.length + questionBookmarks.length;
+
+  // Filter and sort quiz bookmarks
+  const filteredQuizBookmarks = quizBookmarks
     .filter(bookmark => {
       const matchesSearch = searchQuery === '' || 
         bookmark.quizTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -118,11 +172,43 @@ export default function BookmarksPage() {
       return sortOrder === 'asc' ? comparison : -comparison;
     });
 
+  // Filter and sort question bookmarks
+  const filteredQuestionBookmarks = questionBookmarks
+    .filter(bookmark => {
+      const matchesSearch = searchQuery === '' || 
+        bookmark.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.correctAnswer.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesSubject = selectedSubject === 'all' || bookmark.topic === selectedSubject;
+      
+      return matchesSearch && matchesSubject;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'date':
+          const dateA = a.bookmarkedAt || 0;
+          const dateB = b.bookmarkedAt || 0;
+          comparison = dateA - dateB;
+          break;
+        case 'title':
+          comparison = a.question.localeCompare(b.question);
+          break;
+        case 'subject':
+          comparison = a.topic.localeCompare(b.topic);
+          break;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
   return (
     <div className="space-y-6">
       <PageHeader 
         title="Bookmarks" 
-        description={`${bookmarks.length} saved quizzes`}
+        description={`${totalBookmarks} saved items (${questionBookmarks.length} questions, ${quizBookmarks.length} quizzes)`}
         action={
           <KeyboardShortcutsHelp shortcuts={shortcuts} />
         }

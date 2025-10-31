@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { firestore } from './firebase-admin';
+import { withQuotaTracking, shouldUseCache } from './quota-monitor';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
@@ -144,8 +145,38 @@ export async function verifyCodeFromDB(email: string, code: string): Promise<boo
   }
 }
 
-// Check if email is verified
+// FIXED: Check if email is verified with advanced caching and quota handling
+const verificationCache = new Map<string, { verified: boolean, timestamp: number }>();
+
 export async function isEmailVerified(email: string): Promise<boolean> {
-  const userDoc = await firestore.collection('users').doc(email).get();
-  return userDoc.exists ? userDoc.data()?.isEmailVerified || false : false;
+  // Check cache first with adaptive caching based on quota usage
+  const cached = verificationCache.get(email);
+  if (cached && shouldUseCache(cached.timestamp, 5)) {
+    console.log('Using cached verification status for:', email);
+    return cached.verified;
+  }
+
+  try {
+    // Use quota tracking wrapper
+    const verified = await withQuotaTracking(async () => {
+      const userDoc = await firestore.collection('users').doc(email).get();
+      return userDoc.exists ? userDoc.data()?.isEmailVerified || false : false;
+    }, 'read');
+    
+    // Cache the result
+    verificationCache.set(email, { verified, timestamp: Date.now() });
+    
+    return verified;
+  } catch (error: any) {
+    console.error('Error checking email verification:', error);
+    
+    // Return cached data if available, otherwise assume not verified
+    if (cached) {
+      console.log('Using stale cached data due to error:', error.message);
+      return cached.verified;
+    }
+    
+    // For quota errors, assume not verified to be safe
+    return false;
+  }
 }

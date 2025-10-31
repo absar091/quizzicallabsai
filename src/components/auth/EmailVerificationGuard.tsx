@@ -11,6 +11,10 @@ interface EmailVerificationGuardProps {
   children: React.ReactNode;
 }
 
+// FIXED: Client-side caching to prevent excessive API calls
+const verificationCache = new Map<string, { verified: boolean, timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
 export function EmailVerificationGuard({ children }: EmailVerificationGuardProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -28,11 +32,40 @@ export function EmailVerificationGuard({ children }: EmailVerificationGuardProps
   const checkVerificationStatus = async () => {
     if (!user?.email) return;
 
-    // Skip verification for Google sign-in users (they're already verified by Google)
-    const isGoogleUser = user.providerData?.some(provider => provider.providerId === 'google.com');
-    if (isGoogleUser) {
+    // FIXED: Skip verification for users who are already verified
+    // This includes Google sign-in users and manually verified users
+    if (user.emailVerified) {
       setIsVerified(true);
       setIsCheckingVerification(false);
+      return;
+    }
+
+    // Additional check: Skip for common OAuth providers (Gmail, etc.)
+    const isLikelyOAuthUser = user.email?.endsWith('@gmail.com') || 
+                             user.email?.endsWith('@googlemail.com') ||
+                             user.displayName !== user.email?.split('@')[0]; // OAuth usually sets displayName
+    
+    if (isLikelyOAuthUser && user.emailVerified) {
+      setIsVerified(true);
+      setIsCheckingVerification(false);
+      return;
+    }
+
+    // FIXED: Check client-side cache first
+    const cached = verificationCache.get(user.email);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+      console.log('Using cached verification status for:', user.email);
+      setIsVerified(cached.verified);
+      setIsCheckingVerification(false);
+      return;
+    }
+
+    // FIXED: Also check Firebase Auth emailVerified first
+    if (user.emailVerified) {
+      setIsVerified(true);
+      setIsCheckingVerification(false);
+      // Cache the result
+      verificationCache.set(user.email, { verified: true, timestamp: Date.now() });
       return;
     }
 
@@ -43,11 +76,34 @@ export function EmailVerificationGuard({ children }: EmailVerificationGuardProps
         body: JSON.stringify({ email: user.email })
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
-      setIsVerified(data.verified || user.emailVerified);
-    } catch (error) {
+      const verified = data.verified || user.emailVerified;
+      
+      // Cache the result
+      verificationCache.set(user.email, { verified, timestamp: Date.now() });
+      
+      setIsVerified(verified);
+    } catch (error: any) {
       console.error('Failed to check verification:', error);
-      setIsVerified(user.emailVerified || false);
+      
+      // FIXED: Handle quota exceeded gracefully
+      if (error.message?.includes('500') || error.message?.includes('quota')) {
+        toast({
+          title: 'Service Temporarily Unavailable',
+          description: 'Please try again in a few minutes.',
+          variant: 'destructive'
+        });
+        
+        // Use cached data if available, otherwise use Firebase Auth status
+        const fallbackVerified = cached?.verified || user.emailVerified || false;
+        setIsVerified(fallbackVerified);
+      } else {
+        setIsVerified(user.emailVerified || false);
+      }
     } finally {
       setIsCheckingVerification(false);
     }
