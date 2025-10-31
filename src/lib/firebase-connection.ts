@@ -11,33 +11,35 @@ let connectionState = {
 
 let reconnectTimeout: NodeJS.Timeout | null = null;
 
-// Test Firebase connectivity
+// Test Firebase connectivity - OPTIMIZED FOR SPEED
 async function testFirebaseConnection(): Promise<boolean> {
   try {
-    // Try to perform a lightweight Firebase operation
-    // Use a simple operation that doesn't require specific permissions
+    // Use a much faster, lightweight test - just check if Firebase is initialized
+    if (!firestore) {
+      return false;
+    }
+    
+    // Quick connection test with shorter timeout (2 seconds instead of 10)
     const { doc, getDoc } = await import('firebase/firestore');
+    const testDoc = doc(firestore, 'quiz-rooms', 'connection_test');
     
-    // Try to access a document that might exist (like user profile or settings)
-    // If it fails, it's likely a connection issue, not a permission issue
-    const testDoc = doc(firestore, 'users', 'connection_test');
-    
-    // Set a longer timeout for the connection test
+    // MUCH shorter timeout for faster loading
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Connection timeout')), 10000)
+      setTimeout(() => reject(new Error('Connection timeout')), 2000)
     );
     
     await Promise.race([getDoc(testDoc), timeoutPromise]);
     return true;
   } catch (error: any) {
-    // Only log actual connection errors, not permission errors
+    // Permission errors mean Firebase is connected
     if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
-      // Permission errors mean Firebase is connected, just not authorized
       return true;
     }
     
-    // Log other errors as connection issues
-    console.warn('Firebase connection test failed:', error.message || error);
+    // For faster loading, don't log every connection test failure
+    if (error.message !== 'Connection timeout') {
+      console.warn('Firebase connection test failed:', error.message || error);
+    }
     return false;
   }
 }

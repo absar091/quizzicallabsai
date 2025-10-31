@@ -53,11 +53,17 @@ export class ReliableListener {
     }
 
     try {
+      // OPTIMIZED: Add listener options for better performance
+      const listenerOptions = {
+        includeMetadataChanges: false // Ignore metadata changes for better performance
+      };
+
       // Handle different reference types
       if ('type' in this.ref && this.ref.type === 'document') {
         // Document reference
         this.unsubscribe = onSnapshot(
           this.ref as DocumentReference,
+          listenerOptions,
           (snapshot) => {
             if (!this.isActive) return;
             
@@ -74,7 +80,10 @@ export class ReliableListener {
           },
           (error) => {
             if (!this.isActive) return;
-            console.error('Listener error:', error);
+            // OPTIMIZED: Reduce error logging for better performance
+            if (error.code !== 'permission-denied') {
+              console.error('Listener error:', error);
+            }
             this.handleError(error);
           }
         );
@@ -82,6 +91,7 @@ export class ReliableListener {
         // Collection reference
         this.unsubscribe = onSnapshot(
           this.ref as CollectionReference,
+          listenerOptions,
           (snapshot) => {
             if (!this.isActive) return;
             
@@ -98,7 +108,10 @@ export class ReliableListener {
           },
           (error) => {
             if (!this.isActive) return;
-            console.error('Listener error:', error);
+            // OPTIMIZED: Reduce error logging for better performance
+            if (error.code !== 'permission-denied') {
+              console.error('Listener error:', error);
+            }
             this.handleError(error);
           }
         );

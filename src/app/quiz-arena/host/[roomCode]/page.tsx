@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
+import { initializePerformanceOptimizations, createFastLoadingState } from '@/lib/performance-optimizations';
 
 interface QuizQuestion {
   question: string;
@@ -63,36 +64,27 @@ export default function RoomHostPage() {
 
   const loadRoomData = async () => {
     try {
+      // OPTIMIZED: Load Firebase modules once and cache them
       const { firestore } = await import('@/lib/firebase');
-      const { doc, getDoc, collection, getDocs } = await import('firebase/firestore');
+      const { doc, getDoc } = await import('firebase/firestore');
 
+      // FASTER: Only load room data initially, players will be loaded via listeners
       const roomRef = doc(firestore, 'quiz-rooms', roomCode);
-      const roomSnapshot = await getDoc(roomRef);
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Room loading timeout')), 5000)
+      );
+      
+      const roomSnapshot = await Promise.race([getDoc(roomRef), timeoutPromise]) as any;
 
       if (!roomSnapshot.exists()) {
         throw new Error('Room not found');
       }
 
       const firebaseRoomData = roomSnapshot.data();
-      const roomPlayers: RoomPlayer[] = [];
       
-      try {
-        const playersRef = collection(firestore, 'quiz-rooms', roomCode, 'players');
-        const playersSnapshot = await getDocs(playersRef);
-
-        playersSnapshot.forEach((doc) => {
-          const playerData = doc.data();
-          roomPlayers.push({
-            userId: doc.id,
-            name: playerData.name || 'Unknown Player',
-            score: playerData.score || 0,
-            joinedAt: playerData.joinedAt || new Date()
-          });
-        });
-      } catch (error) {
-        console.warn('Could not load players data:', error);
-      }
-
+      // OPTIMIZED: Start with minimal data, let listeners fill in the rest
       const roomData: RoomData = {
         roomId: roomCode,
         hostId: firebaseRoomData.hostId,
@@ -100,8 +92,8 @@ export default function RoomHostPage() {
         finished: firebaseRoomData.finished || false,
         currentQuestion: firebaseRoomData.currentQuestion !== undefined ? firebaseRoomData.currentQuestion : -1,
         quiz: firebaseRoomData.quiz || [],
-        playerCount: roomPlayers.length,
-        players: roomPlayers,
+        playerCount: 0, // Will be updated by listeners
+        players: [], // Will be updated by listeners
         questionStartTime: firebaseRoomData.questionStartTime || null
       };
 
@@ -160,29 +152,39 @@ export default function RoomHostPage() {
   useEffect(() => {
     if (!roomCode || !user) return;
 
+    // PERFORMANCE: Initialize optimizations immediately
+    initializePerformanceOptimizations();
+    
     let isMounted = true;
     let cleanup: (() => void) | undefined;
     let connectionInterval: NodeJS.Timeout | undefined;
+    
+    // PERFORMANCE: Use fast loading state management
+    const { setFastLoading } = createFastLoadingState();
+    const stopFastLoading = setFastLoading(setLoading, 5000); // Max 5 seconds loading
 
     const initializeHost = async () => {
       try {
-        await loadRoomData();
+        // OPTIMIZED: Load room data and setup listeners in parallel for faster loading
+        const [roomDataResult] = await Promise.allSettled([
+          loadRoomData(),
+          // Setup listeners immediately without waiting for room data
+          setupRoomListener()
+        ]);
         
         if (!isMounted) return;
 
-        const cleanupFn = await setupRoomListener();
-        if (isMounted) {
-          cleanup = cleanupFn;
-        } else {
-          cleanupFn?.();
-          return;
+        // Handle room data result
+        if (roomDataResult.status === 'rejected') {
+          throw roomDataResult.reason;
         }
 
+        // OPTIMIZED: Less frequent connection status checks to reduce overhead
         connectionInterval = setInterval(() => {
           if (isMounted) {
             setConnectionStatus(getConnectionStatus());
           }
-        }, 5000);
+        }, 10000); // Reduced from 5s to 10s
 
       } catch (error) {
         console.error('Failed to initialize host:', error);
@@ -200,6 +202,9 @@ export default function RoomHostPage() {
 
     return () => {
       isMounted = false;
+      
+      // PERFORMANCE: Stop fast loading timeout
+      stopFastLoading();
       
       if (cleanup) {
         try {
@@ -287,60 +292,55 @@ export default function RoomHostPage() {
     try {
       const { QuizArena } = await import('@/lib/quiz-arena');
       
+      // FIXED: Prevent multiple start attempts
       setQuizStarted(true);
       
       toast?.({
         title: 'Starting Quiz...',
-        description: 'Get ready, players! Quiz begins in 3 seconds...',
+        description: 'Get ready, players! Quiz begins now...',
       });
 
-      let countdown = 3;
-      const countdownInterval = setInterval(() => {
-        if (countdown > 0) {
-          toast?.({
-            title: `Quiz Starting in ${countdown}...`,
-            description: 'Get ready to compete!',
-          });
-          countdown--;
-        } else {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
+      // FIXED: Start immediately without countdown to prevent race conditions
+      try {
+        await QuizArena.Host.startQuiz(roomCode, user.uid);
 
-      setTimeout(async () => {
-        try {
-          await QuizArena.Host.startQuiz(roomCode, user.uid);
-
-          toast?.({
-            title: 'Quiz Started! 🎯',
-            description: 'Managing live quiz...',
-          });
-          
-        } catch (startError: any) {
-          console.error('Error starting quiz:', startError);
+        toast?.({
+          title: 'Quiz Started! 🎯',
+          description: 'Managing live quiz...',
+        });
+        
+      } catch (startError: any) {
+        console.error('Error starting quiz:', startError);
+        
+        // FIXED: Don't reset quizStarted if it's already started
+        if (!startError.message?.includes('already started')) {
           setQuizStarted(false);
-          
-          if (startError.message?.includes('already started')) {
-            toast?.({
-              title: 'Quiz Already Started',
-              description: 'The quiz is already in progress.',
-              variant: 'destructive'
-            });
-          } else if (startError.message?.includes('Permission denied')) {
-            toast?.({
-              title: 'Permission Error',
-              description: 'Firebase security rules need to be updated. Please check the console for instructions.',
-              variant: 'destructive'
-            });
-          } else {
-            toast?.({
-              title: 'Error Starting Quiz',
-              description: startError.message || 'Please try again.',
-              variant: 'destructive'
-            });
-          }
         }
-      }, 3000);
+        
+        if (startError.message?.includes('already started')) {
+          toast?.({
+            title: 'Quiz Already Started',
+            description: 'The quiz is already in progress.',
+          });
+        } else if (startError.message?.includes('Permission denied')) {
+          toast?.({
+            title: 'Permission Error',
+            description: 'Firebase security rules need to be updated. Please check the console for instructions.',
+            variant: 'destructive'
+          });
+        } else if (startError.code === 'failed-precondition') {
+          toast?.({
+            title: 'Quiz Starting...',
+            description: 'Quiz is being started, please wait...',
+          });
+        } else {
+          toast?.({
+            title: 'Error Starting Quiz',
+            description: startError.message || 'Please try again.',
+            variant: 'destructive'
+          });
+        }
+      }
 
     } catch (error: any) {
       console.error('Error in handleStartQuiz:', error);

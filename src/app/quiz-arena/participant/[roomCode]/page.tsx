@@ -14,6 +14,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { useConnectionRecovery } from '@/hooks/useConnectionRecovery';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
+import { initializePerformanceOptimizations, createFastLoadingState } from '@/lib/performance-optimizations';
 
 import ErrorBoundary from '@/components/ErrorBoundary';
 
@@ -51,6 +52,9 @@ function ParticipantArenaPageContent() {
   }, []);
 
   useEffect(() => {
+    // PERFORMANCE: Initialize optimizations immediately
+    initializePerformanceOptimizations();
+    
     // Fix redirect loop: use ref to prevent multiple redirects
     if (!roomCode || !user || !QuizArena) {
       if (!hasRedirectedRef.current && roomCode) {
@@ -59,25 +63,30 @@ function ParticipantArenaPageContent() {
       }
       return;
     }
+    
+    // PERFORMANCE: Use fast loading state management
+    const { setFastLoading } = createFastLoadingState();
+    const stopFastLoading = setFastLoading(setLoading, 5000); // Max 5 seconds loading
 
     const initializeParticipant = async () => {
       try {
-        // Validate room and user access
-        const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
-        if (!isValid) {
-          toast?.({
-            title: 'Room Not Found',
-            description: 'The room has expired or been deleted.',
-            variant: 'destructive'
-          });
-          router.push('/dashboard');
-          return;
-        }
-
-        // Listen to room state changes
+        // OPTIMIZED: Skip room validation for faster loading - listeners will handle invalid rooms
+        // const isValid = await QuizArena.Discovery.validateRoom(roomCode.toUpperCase());
+        
+        // FASTER: Start listeners immediately without validation
         const unsubscribeRoom = QuizArena.Player.listenToRoom(
           roomCode.toUpperCase(),
           async (data) => {
+            // Handle invalid room in the listener callback
+            if (!data) {
+              toast?.({
+                title: 'Room Not Found',
+                description: 'The room has expired or been deleted.',
+                variant: 'destructive'
+              });
+              router.push('/dashboard');
+              return;
+            }
             console.log('Participant - Room data updated:', {
               started: data?.started,
               currentQuestion: data?.currentQuestion,
@@ -200,12 +209,15 @@ function ParticipantArenaPageContent() {
           }
         };
 
-        // Check host presence every 30 seconds
-        hostCheckIntervalRef.current = setInterval(checkHostPresence, 30000);
+        // OPTIMIZED: Check host presence less frequently to reduce overhead
+        hostCheckIntervalRef.current = setInterval(checkHostPresence, 60000); // Reduced from 30s to 60s
         
         setLoading(false);
 
         return () => {
+          // PERFORMANCE: Stop fast loading timeout
+          stopFastLoading();
+          
           unsubscribeRoom();
           unsubscribePlayers();
           
