@@ -15,8 +15,9 @@ let reconnectTimeout: NodeJS.Timeout | null = null;
 async function testFirebaseConnection(): Promise<boolean> {
   try {
     // Try to perform a lightweight Firebase operation
-    const testDoc = firestore.collection('_connection_test').doc('test');
-    await testDoc.get();
+    const { doc, getDoc } = await import('firebase/firestore');
+    const testDoc = doc(firestore, '_connection_test', 'test');
+    await getDoc(testDoc);
     return true;
   } catch (error) {
     console.warn('Firebase connection test failed:', error);

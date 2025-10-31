@@ -53,36 +53,56 @@ export class ReliableListener {
     }
 
     try {
-      this.unsubscribe = onSnapshot(
-        this.ref,
-        (snapshot) => {
-          if (!this.isActive) return; // Ignore if stopped
-          
-          this.retryCount = 0; // Reset on success
-          this.lastSuccessfulUpdate = Date.now();
-          
-          try {
-            if ('exists' in snapshot) {
-              // Document snapshot
+      // Handle different reference types
+      if ('type' in this.ref && this.ref.type === 'document') {
+        // Document reference
+        this.unsubscribe = onSnapshot(
+          this.ref as DocumentReference,
+          (snapshot) => {
+            if (!this.isActive) return;
+            
+            this.retryCount = 0;
+            this.lastSuccessfulUpdate = Date.now();
+            
+            try {
               const data = snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
               this.callback(data);
-            } else {
-              // Collection snapshot
+            } catch (callbackError) {
+              console.error('Callback error:', callbackError);
+              this.errorCallback?.(callbackError as Error);
+            }
+          },
+          (error) => {
+            if (!this.isActive) return;
+            console.error('Listener error:', error);
+            this.handleError(error);
+          }
+        );
+      } else {
+        // Collection reference
+        this.unsubscribe = onSnapshot(
+          this.ref as CollectionReference,
+          (snapshot) => {
+            if (!this.isActive) return;
+            
+            this.retryCount = 0;
+            this.lastSuccessfulUpdate = Date.now();
+            
+            try {
               const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
               this.callback(data);
+            } catch (callbackError) {
+              console.error('Callback error:', callbackError);
+              this.errorCallback?.(callbackError as Error);
             }
-          } catch (callbackError) {
-            console.error('Callback error:', callbackError);
-            this.errorCallback?.(callbackError as Error);
+          },
+          (error) => {
+            if (!this.isActive) return;
+            console.error('Listener error:', error);
+            this.handleError(error);
           }
-        },
-        (error) => {
-          if (!this.isActive) return; // Ignore if stopped
-          
-          console.error('Listener error:', error);
-          this.handleError(error);
-        }
-      );
+        );
+      }
     } catch (error) {
       console.error('Failed to setup listener:', error);
       this.handleError(error as Error);
