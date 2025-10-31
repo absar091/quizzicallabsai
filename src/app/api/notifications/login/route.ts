@@ -52,18 +52,14 @@ export async function POST(request: NextRequest) {
     if (shouldNotify) {
       console.log('🔐 SENDING LOGIN NOTIFICATION - UNTRUSTED DEVICE DETECTED');
 
-      // Prepare login data for email with better formatting
+      // FIXED: Prepare login data for email with actual detected values
       const formatLocation = (city: string, region: string, country: string) => {
-        // Handle cases where location data might be incomplete
-        if (city === 'Unknown' && region === 'Unknown' && country === 'Unknown') {
-          return 'Vehari, Punjab, Pakistan'; // Default fallback
-        }
+        // Use actual detected values, only fallback if truly unknown
+        const actualCity = city && city !== 'Unknown' ? city : 'Unknown City';
+        const actualRegion = region && region !== 'Unknown' ? region : 'Unknown Region';
+        const actualCountry = country && country !== 'Unknown' ? country : 'Unknown Country';
         
-        if (city === 'Unknown') city = 'Unknown City';
-        if (region === 'Unknown') region = 'Unknown Region';
-        if (country === 'Unknown') country = 'Pakistan'; // Default country
-        
-        return `${city}, ${region}, ${country}`;
+        return `${actualCity}, ${actualRegion}, ${actualCountry}`;
       };
 
       const loginData = {
