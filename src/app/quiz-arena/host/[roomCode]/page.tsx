@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { getConnectionStatus, forceReconnect } from '@/lib/firebase-connection';
+import { useQuizTimer } from '@/hooks/useQuizTimer';
 
 interface QuizQuestion {
   question: string;
@@ -49,6 +50,14 @@ export default function RoomHostPage() {
   const [loading, setLoading] = useState(true);
   const [quizStarted, setQuizStarted] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({ isOnline: true, reconnectAttempts: 0 });
+  
+  // Host quiz participation state
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  
+  // Timer for current question
+  const { timeLeft: timeRemaining, isActive: timerActive } = useQuizTimer(roomData?.questionStartTime, 30);
 
   const isHost = user && roomData?.hostId === user.uid;
 
@@ -118,6 +127,17 @@ export default function RoomHostPage() {
 
       const unsubscribeRoom = QuizArena.Host.listenToRoom(roomCode, (data: any) => {
         if (data) {
+          // Check if question changed to reset host's answer state
+          const prevQuestion = roomData?.currentQuestion;
+          const newQuestion = data.currentQuestion;
+          
+          if (prevQuestion !== newQuestion && newQuestion >= 0) {
+            // Reset host's answer state for new question
+            setSelectedAnswer(null);
+            setHasSubmitted(false);
+            setShowResults(false);
+          }
+          
           setRoomData(prev => ({ ...prev, ...data }));
           setQuizStarted(data.started || false);
         }
@@ -285,6 +305,54 @@ export default function RoomHostPage() {
     }
   };
 
+  const handleHostSubmitAnswer = async () => {
+    if (!user || selectedAnswer === null || !roomData) return;
+
+    setHasSubmitted(true);
+
+    try {
+      // Submit host's answer using the same API as participants
+      const { auth } = await import('@/lib/firebase');
+      if (!auth.currentUser) return;
+
+      const idToken = await auth.currentUser.getIdToken();
+      const response = await fetch('/api/quiz-arena/submit-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          roomCode: roomCode.toUpperCase(),
+          questionIndex: roomData.currentQuestion,
+          answerIndex: selectedAnswer,
+          submittedAt: Date.now()
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setShowResults(true);
+        toast?.({
+          title: result.correct ? 'Correct! 🎉' : 'Incorrect',
+          description: result.correct ? `+${result.points} points!` : `Correct answer: ${result.correctAnswer}`,
+          variant: result.correct ? 'default' : 'destructive'
+        });
+      } else {
+        throw new Error(result.error || 'Submission failed');
+      }
+    } catch (error: any) {
+      console.error('Host answer submission error:', error);
+      setHasSubmitted(false);
+      toast?.({
+        title: 'Submission Failed',
+        description: error.message || 'Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const copyRoomCode = () => {
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(roomCode);
@@ -370,28 +438,172 @@ export default function RoomHostPage() {
               </Card>
             ) : (
               <Card>
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Play className="w-8 h-8 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2 text-green-600">Quiz is Live!</h2>
-                  <p className="text-muted-foreground mb-6">
-                    Players are now answering questions. Monitor their progress below.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <div className="font-semibold">Current Question</div>
-                      <div className="text-2xl font-bold text-primary">
-                        {(roomData?.currentQuestion ?? 0) + 1} / {roomData?.quiz?.length || 0}
+                <CardContent className="p-8">
+                  {roomData?.quiz && roomData.currentQuestion >= 0 && roomData.currentQuestion < roomData.quiz.length ? (
+                    <div className="space-y-6">
+                      {/* Question Header with Timer */}
+                      <div className="text-center mb-6">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Trophy className="w-5 h-5 text-yellow-500" />
+                          <span className="text-sm font-semibold text-yellow-600">HOST COMPETING</span>
+                        </div>
+                        <div className="text-sm text-muted-foreground mb-3">
+                          Question {roomData.currentQuestion + 1} of {roomData.quiz.length}
+                        </div>
+                        
+                        {/* Timer Display */}
+                        {timerActive && (
+                          <div className="flex items-center justify-center gap-2 mb-4">
+                            <div className={`text-2xl font-mono font-bold px-4 py-2 rounded-lg ${
+                              timeRemaining <= 5 ? 'bg-red-500 text-white animate-bounce' :
+                              timeRemaining <= 10 ? 'text-red-600 bg-red-100' :
+                              timeRemaining <= 20 ? 'text-orange-500 bg-orange-100' : 'text-green-600 bg-green-100'
+                            }`}>
+                              {timeRemaining}s
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Current Question */}
+                      <div>
+                        <h2 className="text-2xl font-bold mb-6 text-center">
+                          {roomData.quiz[roomData.currentQuestion].question}
+                        </h2>
+                      </div>
+
+                      {/* Answer Options */}
+                      <div className="space-y-3">
+                        {roomData.quiz[roomData.currentQuestion].options?.map((option: string, index: number) => {
+                          const isSelected = selectedAnswer === index;
+                          const isCorrect = index === roomData.quiz[roomData.currentQuestion].correctIndex;
+                          const isWrongSelection = showResults && isSelected && !isCorrect;
+
+                          return (
+                            <div
+                              key={index}
+                              className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-md relative overflow-hidden ${
+                                !showResults ? 'hover:scale-[1.02] active:scale-[0.98]' : ''
+                              } ${
+                                isSelected && !showResults
+                                  ? 'border-primary bg-primary/15 shadow-lg scale-[1.02] ring-2 ring-primary/30'
+                                  : showResults && isCorrect
+                                  ? 'border-green-500 bg-green-500/15 shadow-lg animate-pulse'
+                                  : showResults && isWrongSelection
+                                  ? 'border-red-500 bg-red-500/15'
+                                  : !showResults
+                                  ? 'border-muted hover:border-primary/60 hover:bg-primary/5'
+                                  : 'border-muted/50 bg-muted/30'
+                              }`}
+                              onClick={() => {
+                                if (!hasSubmitted && !showResults) {
+                                  setSelectedAnswer(index);
+                                }
+                              }}
+                            >
+                              {/* Selection pulse effect */}
+                              {isSelected && !showResults && (
+                                <div className="absolute inset-0 bg-primary/10 animate-pulse rounded-xl" />
+                              )}
+                              
+                              {/* Correct answer glow */}
+                              {showResults && isCorrect && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 animate-pulse rounded-xl" />
+                              )}
+
+                              <div className="flex items-center gap-4 relative z-10">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                                  isSelected && !showResults
+                                    ? 'bg-primary text-primary-foreground shadow-lg scale-110'
+                                    : showResults && isCorrect
+                                    ? 'bg-green-500 text-white shadow-lg animate-bounce'
+                                    : showResults && isWrongSelection
+                                    ? 'bg-red-500 text-white shadow-lg'
+                                    : 'bg-muted/50 border-2 border-muted-foreground/20 text-muted-foreground hover:bg-primary/20 hover:border-primary/40'
+                                }`}>
+                                  {String.fromCharCode(65 + index)}
+                                </div>
+
+                                <span className={`flex-1 transition-all duration-300 ${
+                                  isSelected && !showResults
+                                    ? 'font-semibold text-primary'
+                                    : showResults && isCorrect
+                                    ? 'font-bold text-green-700'
+                                    : showResults && isWrongSelection
+                                    ? 'font-medium text-red-600'
+                                    : 'text-foreground hover:text-primary'
+                                }`}>
+                                  {option}
+                                </span>
+
+                                {/* Result Indicators */}
+                                {showResults && isCorrect && (
+                                  <div className="flex items-center gap-2 ml-auto">
+                                    <div className="text-right">
+                                      <div className="text-sm font-bold text-green-600">CORRECT!</div>
+                                      <div className="text-xs text-green-500">+10 points</div>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {isSelected && !showResults && (
+                                  <div className="flex items-center gap-2 ml-auto">
+                                    <span className="text-sm font-semibold text-primary">SELECTED</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Submit Button for Host */}
+                      {!hasSubmitted && selectedAnswer !== null && !showResults && (
+                        <div className="text-center">
+                          <Button
+                            onClick={handleHostSubmitAnswer}
+                            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                            size="lg"
+                          >
+                            SUBMIT ANSWER (HOST)
+                          </Button>
+                        </div>
+                      )}
+
+                      {hasSubmitted && !showResults && (
+                        <div className="text-center p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                          <span className="text-yellow-600 font-semibold">Answer submitted - Managing quiz...</span>
+                        </div>
+                      )}
+
+                      {/* Host Controls */}
+                      <div className="mt-8 p-4 bg-muted/30 rounded-lg">
+                        <div className="text-center">
+                          <div className="text-sm font-semibold text-muted-foreground mb-2">HOST CONTROLS</div>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="bg-green-500/10 rounded-lg p-3">
+                              <div className="font-semibold text-green-600">Quiz Live</div>
+                              <div className="text-green-500">Question {roomData.currentQuestion + 1}/{roomData.quiz.length}</div>
+                            </div>
+                            <div className="bg-blue-500/10 rounded-lg p-3">
+                              <div className="font-semibold text-blue-600">Players</div>
+                              <div className="text-blue-500">{roomData.playerCount} competing</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <div className="font-semibold">Active Players</div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {roomData?.playerCount || 0}
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Play className="w-8 h-8 text-white" />
                       </div>
+                      <h2 className="text-2xl font-bold mb-2 text-green-600">Quiz is Live!</h2>
+                      <p className="text-muted-foreground mb-6">
+                        Loading questions... Get ready to compete with your participants!
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             )}
