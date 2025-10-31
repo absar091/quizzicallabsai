@@ -224,7 +224,7 @@ export default function RoomHostPage() {
   // Auto-submit when timer expires
   useEffect(() => {
     if (timeRemaining === 0 && !hasSubmitted && selectedAnswer !== null && timerActive) {
-      console.log('Auto-submitting host answer due to timer expiry');
+      secureLogger.info('Auto-submitting host answer due to timer expiry', undefined, { category: 'HOST' });
       handleHostSubmitAnswer();
     }
   }, [timeRemaining, hasSubmitted, selectedAnswer, timerActive]);
