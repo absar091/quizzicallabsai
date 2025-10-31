@@ -125,6 +125,53 @@ export default function RoomHostPage() {
     }
   };
 
+  const setupRoomListener = () => {
+    if (!roomCode || !user) return Promise.resolve(() => {});
+
+    const setupListeners = async () => {
+      try {
+        const { QuizArena } = await import('@/lib/quiz-arena');
+
+        // Real-time room state listener
+        const unsubscribeRoom = QuizArena.Host.listenToRoom(
+          roomCode,
+          (data: any) => {
+            if (data) {
+              setRoomData(prev => ({
+                ...prev,
+                ...data
+              }));
+              setQuizStarted(data.started || false);
+            }
+          }
+        );
+
+        // Real-time players listener
+        const unsubscribePlayers = QuizArena.Player.listenToLeaderboard(
+          roomCode,
+          (players: any[]) => {
+            console.log('Host - Leaderboard updated:', players);
+            setRoomData(prev => prev ? ({
+              ...prev,
+              players,
+              playerCount: players.length
+            }) : null);
+          }
+        );
+
+        return () => {
+          unsubscribeRoom?.();
+          unsubscribePlayers?.();
+        };
+      } catch (error) {
+        console.error('Error setting up listeners:', error);
+        return () => {}; // Return empty cleanup function on error
+      }
+    };
+
+    return setupListeners();
+  };
+
   // If quiz has started, redirect to questions page
   useEffect(() => {
     if (quizStarted && roomData?.currentQuestion >= 0) {
