@@ -251,18 +251,23 @@ export default function BookmarksPage() {
               className="cursor-pointer"
               onClick={() => setSelectedSubject('all')}
             >
-              All ({bookmarks.length})
+              All ({totalBookmarks})
             </Badge>
-            {subjects.map(subject => (
-              <Badge
-                key={subject}
-                variant={selectedSubject === subject ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => setSelectedSubject(subject)}
-              >
-                {subject} ({bookmarks.filter(b => b.subject === subject).length})
-              </Badge>
-            ))}
+            {allSubjects.map(subject => {
+              const quizCount = quizBookmarks.filter(b => b.subject === subject).length;
+              const questionCount = questionBookmarks.filter(b => b.topic === subject).length;
+              const total = quizCount + questionCount;
+              return (
+                <Badge
+                  key={subject}
+                  variant={selectedSubject === subject ? 'default' : 'outline'}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedSubject(subject)}
+                >
+                  {subject} ({total})
+                </Badge>
+              );
+            })}
           </div>
 
           <div className="flex gap-2">
