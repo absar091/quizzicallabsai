@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase-admin';
-import { createSubscriptionPayment, createOneTimePayment } from '@/lib/safepay';
+import { createSubscriptionPayment, createOneTimePayment } from '@/lib/payoneer';
 import { subscriptionService } from '@/lib/subscription';
 
 export async function POST(request: NextRequest) {
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       amount: planId === 'pro' ? 2 : 5,
       currency: 'USD',
       status: 'pending',
-      paymentMethod: 'safepay',
+      paymentMethod: 'payoneer',
       orderId: paymentResponse.orderId!,
       description: `Quizzicallabzᴬᴵ ${planId} Subscription`
     });
@@ -93,8 +93,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      paymentUrl: paymentResponse.paymentUrl,
+      paymentUrl: paymentResponse.checkoutUrl,
       orderId: paymentResponse.orderId,
+      sessionId: paymentResponse.sessionId,
       paymentId
     });
 

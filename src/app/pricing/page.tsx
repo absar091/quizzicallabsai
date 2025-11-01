@@ -116,7 +116,7 @@ export default function PricingPage() {
       const data = await response.json();
 
       if (data.success && data.paymentUrl) {
-        // Redirect to SafePay payment page
+        // Redirect to Payoneer checkout page
         window.location.href = data.paymentUrl;
       } else {
         throw new Error(data.error || 'Failed to create payment');
@@ -303,7 +303,7 @@ export default function PricingPage() {
               <div>
                 <h4 className="font-medium mb-2">How does the payment work?</h4>
                 <p className="text-sm text-muted-foreground">
-                  We use SafePay, a secure payment gateway in Pakistan. You can pay with your debit/credit card or mobile wallet.
+                  We use Payoneer, a secure international payment gateway. You can pay with credit/debit cards, PayPal, bank transfer, or digital wallets from anywhere in the world.
                 </p>
               </div>
               
@@ -340,7 +340,7 @@ export default function PricingPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full text-green-700 text-sm">
             <Shield className="h-4 w-4" />
-            Secure payments powered by SafePay
+            Secure payments powered by Payoneer
           </div>
         </motion.div>
       </div>
