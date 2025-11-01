@@ -287,10 +287,6 @@ describe('🎮 Quiz Arena - Core Functionality', () => {
       expect(typeof unsubscribe).toBe('function');
       expect(jest.mocked(require('@/lib/firebase').firestore.onSnapshot)).toHaveBeenCalled();
     });
-  });
-});of unsubscribe).toBe('function');
-      expect(jest.mocked(require('@/lib/firebase').firestore.onSnapshot)).toHaveBeenCalled();
-    });
 
     test('should handle connection drops gracefully', () => {
       const callback = jest.fn();
