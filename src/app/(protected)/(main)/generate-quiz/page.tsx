@@ -1206,19 +1206,53 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       return;
     }
 
+    // FIXED: Check if user is Pro for whole quiz bookmarking
+    if (user.plan !== 'Pro') {
+      toast({
+        title: "Pro Feature Required 🌟",
+        description: "Whole quiz bookmarking is available for Pro users. Individual question bookmarking is free!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       // Import the quiz bookmark manager
       const { QuizBookmarkManager } = await import('@/lib/quiz-bookmarks');
       const bookmarkManager = new QuizBookmarkManager(user.uid);
 
-      // Create quiz object for bookmarking
+      // FIXED: Check for duplicates before adding
+      const quizTitle = `${formValues.topic} Quiz - ${quiz.length} Questions`;
+      const existingBookmarks = await bookmarkManager.getBookmarks();
+      const isDuplicate = existingBookmarks.some(bookmark => 
+        bookmark.quizTitle === quizTitle && 
+        bookmark.subject === formValues.topic &&
+        bookmark.questionCount === quiz.length
+      );
+
+      if (isDuplicate) {
+        toast({
+          title: "Already Bookmarked! 📚",
+          description: "This quiz is already in your bookmarks.",
+        });
+        return;
+      }
+
+      // Create quiz object for bookmarking with actual quiz content
       const quizToBookmark = {
-        id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
-        title: `${formValues.topic} Quiz - ${quiz.length} Questions`,
+        id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        title: quizTitle,
         subject: formValues.topic,
         difficulty: formValues.difficulty,
         questionCount: quiz.length,
-        tags: [formValues.topic, formValues.difficulty]
+        tags: [formValues.topic, formValues.difficulty],
+        // FIXED: Include actual quiz questions for later viewing
+        quizContent: quiz.map(q => ({
+          question: q.question,
+          options: q.answers || [],
+          correctAnswer: q.correctAnswer,
+          type: q.type || 'multiple-choice'
+        }))
       };
 
       await bookmarkManager.addBookmark(quizToBookmark, `Generated on ${new Date().toLocaleDateString()}`);

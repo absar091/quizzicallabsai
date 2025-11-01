@@ -12,6 +12,12 @@ export interface QuizBookmark {
   bookmarkedAt: number;
   tags?: string[];
   notes?: string;
+  quizContent?: Array<{
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    type: string;
+  }>;
 }
 
 export class QuizBookmarkManager {
@@ -28,6 +34,12 @@ export class QuizBookmarkManager {
     difficulty: string;
     questionCount: number;
     tags?: string[];
+    quizContent?: Array<{
+      question: string;
+      options: string[];
+      correctAnswer: string;
+      type: string;
+    }>;
   }, notes?: string): Promise<string> {
     try {
       // Create a safe key by encoding the quiz ID
@@ -43,7 +55,8 @@ export class QuizBookmarkManager {
         questionCount: quiz.questionCount,
         bookmarkedAt: Date.now(),
         tags: quiz.tags || [],
-        notes: notes || ''
+        notes: notes || '',
+        quizContent: quiz.quizContent || [] // Store actual quiz questions
       };
 
       await set(bookmarkRef, bookmark);
