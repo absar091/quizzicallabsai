@@ -7,11 +7,26 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json();
     console.log('📝 Document quiz input:', { 
-      hasDocument: !!body.documentText, 
-      documentLength: body.documentText?.length,
+      hasDocument: !!body.documentDataUri, 
+      documentLength: body.documentDataUri?.length,
       numberOfQuestions: body.numberOfQuestions,
       isPro: body.isPro 
     });
+
+    // Validate required fields
+    if (!body.documentDataUri) {
+      return NextResponse.json(
+        { error: 'No document provided. Please upload a document to generate a quiz.' },
+        { status: 400 }
+      );
+    }
+
+    if (!body.numberOfQuestions || body.numberOfQuestions < 1 || body.numberOfQuestions > 55) {
+      return NextResponse.json(
+        { error: 'Number of questions must be between 1 and 55.' },
+        { status: 400 }
+      );
+    }
 
     // Add timeout wrapper
     const timeoutPromise = new Promise((_, reject) => {

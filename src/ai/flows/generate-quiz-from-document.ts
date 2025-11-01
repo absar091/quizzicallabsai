@@ -50,15 +50,18 @@ export async function generateQuizFromDocument(
   }
   
  // Explicit input validation
+ if (!input.documentDataUri) {
+   throw new Error("No document provided. Please upload a document to generate a quiz.");
+ }
  if (input.documentDataUri.length > 10000000) {
- throw new Error("The document is too large. Please upload a smaller document (max 10MB).");
-  }
+   throw new Error("The document is too large. Please upload a smaller document (max 10MB).");
+ }
  if (input.numberOfQuestions < 1 || input.numberOfQuestions > 55) {
- throw new Error("Number of questions must be between 1 and 55.");
-  }
+   throw new Error("Number of questions must be between 1 and 55.");
+ }
  if (!["easy", "medium", "hard", "master"].includes(input.difficulty)) {
- throw new Error(`Invalid difficulty level: ${input.difficulty}. Must be easy, medium, hard, or master.`);
-  }
+   throw new Error(`Invalid difficulty level: ${input.difficulty}. Must be easy, medium, hard, or master.`);
+ }
 
  const flow = generateQuizFromDocumentFlow(aiInstance);
  return await flow(input);

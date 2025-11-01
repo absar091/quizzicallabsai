@@ -109,7 +109,7 @@ export default function GenerateFromFilePage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...values,
-            documentContent: dataUri,
+            documentDataUri: dataUri, // FIXED: Use correct field name
             isPro: user?.plan === 'Pro',
             userAge: user?.age,
             userClass: user?.className
