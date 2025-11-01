@@ -3,21 +3,34 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import Head from "next/head";
 import { BrainCircuit, Loader2, Zap, GamepadIcon, FileText, Trophy, Users, ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import dynamic from "next/dynamic";
+
+// Dynamic import for dashboard content
+const DashboardPage = dynamic(() => import('./(protected)/(main)/dashboard/page'), {
+  loading: () => (
+    <div className="flex h-screen w-full items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  ),
+  ssr: false
+});
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
-  }, [user, loading, router]);
+  // FIXED: Remove redirect - show dashboard content on homepage for authenticated users
+  // useEffect(() => {
+  //   if (!loading && user) {
+  //     router.replace('/dashboard');
+  //   }
+  // }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -27,12 +40,42 @@ export default function Home() {
     );
   }
 
+  // FIXED: Show dashboard content for authenticated users
   if (user) {
-    return null;
+    return <DashboardPage />;
   }
 
+  // Structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "QuizzicalLabzᴬᴵ",
+    "description": "AI-powered learning platform for quiz generation and exam preparation",
+    "url": "https://quizzicallabz.qzz.io",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free tier with premium options available"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "QuizzicalLabzᴬᴵ",
+      "url": "https://quizzicallabz.qzz.io"
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
+      <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="border-b border-border bg-background/90 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -347,5 +390,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

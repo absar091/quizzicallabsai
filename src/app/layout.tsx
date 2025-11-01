@@ -14,7 +14,8 @@ const poppins = Poppins({
   weight: ["400", "500", "600"],
   variable: '--font-sans',
   display: 'swap',
-  preload: true
+  preload: true,
+  fallback: ['system-ui', 'arial']
 });
 
 const APP_NAME = "Quizzicallabzᴬᴵ";

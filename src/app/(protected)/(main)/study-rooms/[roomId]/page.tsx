@@ -227,7 +227,7 @@ export default function StudyRoomSessionPage() {
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <Avatar>
-                      <AvatarImage src={participant.photoURL} />
+                      <AvatarImage src={participant.photoURL} alt={`${participant.displayName}'s avatar`} />
                       <AvatarFallback>
                         {participant.displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
