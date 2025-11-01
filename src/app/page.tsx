@@ -4,45 +4,38 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Head from "next/head";
-import { BrainCircuit, Loader2, Zap, GamepadIcon, FileText, Trophy, Users, ArrowRight, Menu, X } from "lucide-react";
+import { BrainCircuit, Loader2, Zap, GamepadIcon, FileText, Trophy, ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import dynamic from "next/dynamic";
-
-// Dynamic import for dashboard content
-const DashboardPage = dynamic(() => import('./(protected)/(main)/dashboard/page'), {
-  loading: () => (
-    <div className="flex h-screen w-full items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>
-  ),
-  ssr: false
-});
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // FIXED: Remove redirect - show dashboard content on homepage for authenticated users
-  // useEffect(() => {
-  //   if (!loading && user) {
-  //     router.replace('/dashboard');
-  //   }
-  // }, [user, loading, router]);
+  // Redirect authenticated users to dashboard with proper navigation
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-black">
-        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // FIXED: Show dashboard content for authenticated users
+  // Show loading while redirecting authenticated users
   if (user) {
-    return <DashboardPage />;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   // Structured data for SEO
