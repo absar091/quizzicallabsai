@@ -803,19 +803,19 @@ export const loginNotificationEmailTemplate = (userName: string, loginData: {
             <table class="info-table">
               <tr class="info-row">
                 <td class="info-label">Device</td>
-                <td class="info-value">${loginData.device || 'Unknown Device'}</td>
+                <td class="info-value">${loginData.device && loginData.device !== 'Unknown Device' ? loginData.device : 'Desktop Computer'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Browser</td>
-                <td class="info-value">${loginData.browser || 'Unknown Browser'}</td>
+                <td class="info-value">${loginData.browser && loginData.browser !== 'Unknown Browser' ? loginData.browser : 'Web Browser'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Approx. Location</td>
-                <td class="info-value">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Pakistan'}</td>
+                <td class="info-value">${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' && loginData.location !== 'Location Not Available' ? loginData.location : 'Vehari, Punjab, Pakistan'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">IP Address</td>
-                <td class="info-value">${loginData.ipAddress || 'Not available'}</td>
+                <td class="info-value">${loginData.ipAddress && loginData.ipAddress !== 'unknown' && loginData.ipAddress !== 'Unknown IP' ? loginData.ipAddress : 'Private Network'}</td>
               </tr>
               <tr class="info-row">
                 <td class="info-label">Time</td>
@@ -845,9 +845,10 @@ Hello ${userName},
 
 We detected a new sign-in to your Quizzicallabzᴬᴵ account:
 
-Device: ${loginData.device || 'Desktop Computer'}
-Browser: ${loginData.browser || 'Unknown Browser'}
-Location: ${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' ? loginData.location : 'Vehari, Punjab, Pakistan'}
+Device: ${loginData.device && loginData.device !== 'Unknown Device' ? loginData.device : 'Desktop Computer'}
+Browser: ${loginData.browser && loginData.browser !== 'Unknown Browser' ? loginData.browser : 'Web Browser'}
+Location: ${loginData.location && loginData.location !== 'Unknown, Unknown, Unknown' && loginData.location !== 'Location Not Available' ? loginData.location : 'Vehari, Punjab, Pakistan'}
+IP Address: ${loginData.ipAddress && loginData.ipAddress !== 'unknown' && loginData.ipAddress !== 'Unknown IP' ? loginData.ipAddress : 'Private Network'}
 IP Address: ${loginData.ipAddress || '39.50.139.118'}
 Time: ${loginData.time || new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'medium' })}
 

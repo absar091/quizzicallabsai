@@ -98,18 +98,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             sessionStorage.setItem(`lastLoginCheck_${firebaseUser.uid}`, currentTime.toString());
             
             try {
-              // Detect device information with proper location
+              // FIXED: Let the API handle device detection with proper server-side IP
               const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : 'Server-side Request';
-              const deviceInfo = await detectDeviceInfo(userAgent);
+              
+              // Get basic device info for client-side checking
+              const clientDeviceInfo = await detectDeviceInfo(userAgent);
 
               // Check if we should send notification (only for untrusted devices)
-              const shouldNotify = await loginCredentialsManager.shouldSendNotification(firebaseUser.uid, deviceInfo);
+              const shouldNotify = await loginCredentialsManager.shouldSendNotification(firebaseUser.uid, clientDeviceInfo);
 
               if (shouldNotify) {
                 secureLog('warn', 'Sending login notification for untrusted device');
 
                 const idToken = await firebaseUser.getIdToken();
 
+                // FIXED: Send userAgent to API, let API handle device detection with real IP
                 const response = await fetch('/api/notifications/login', {
                   method: 'POST',
                   headers: {
@@ -119,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     idToken,
                     userEmail: firebaseUser.email,
                     userName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
-                    deviceInfo,
+                    userAgent, // Send userAgent instead of deviceInfo
                   }),
                   signal
                 });
@@ -129,22 +132,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 if (response.ok && notificationResult.success) {
                   secureLog('info', 'Login notification sent successfully');
+                  
+                  // FIXED: Use server-side detected device info for credential storage
+                  if (notificationResult.deviceInfo) {
+                    setTimeout(async () => {
+                      try {
+                        await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, notificationResult.deviceInfo);
+                        secureLog('info', 'Login credentials updated with server-side device info');
+                      } catch (error: any) {
+                        secureLog('warn', 'Failed to store login credentials (non-critical)', { error: error.message });
+                      }
+                    }, 1000);
+                  }
                 } else {
                   secureLog('warn', 'Login notification failed', { error: notificationResult.error });
                 }
               } else {
                 secureLog('info', 'Trusted device detected - no notification needed');
+                
+                // For trusted devices, still update credentials with client-side info
+                setTimeout(async () => {
+                  try {
+                    await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, clientDeviceInfo);
+                    secureLog('info', 'Login credentials updated for trusted device');
+                  } catch (error: any) {
+                    secureLog('warn', 'Failed to store login credentials (non-critical)', { error: error.message });
+                  }
+                }, 1000);
               }
-
-              // Store/update login credentials for this session
-              setTimeout(async () => {
-                try {
-                  await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
-                  secureLog('info', 'Login credentials updated');
-                } catch (error: any) {
-                  secureLog('warn', 'Failed to store login credentials (non-critical)', { error: error.message });
-                }
-              }, 1000);
 
             } catch (error: any) {
               secureLog('warn', 'Login credentials error (non-critical)', { error: error.message });

@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get device information with real IP
+    // FIXED: Get device information with real server-side IP
+    console.log('🔍 Server-side device detection with IP:', ipAddress);
     const deviceInfo = await detectDeviceInfo(userAgent || 'Server-side Request', ipAddress);
 
     // Check if we should send notification (only for untrusted devices)
@@ -81,7 +82,17 @@ export async function POST(request: NextRequest) {
         region: deviceInfo.region,
         country: deviceInfo.country,
         ip: deviceInfo.ip,
-        location: deviceInfo.location
+        location: deviceInfo.location,
+        userAgent: userAgent
+      });
+
+      // FIXED: Log what will be sent in email
+      console.log('📧 Email Data Being Sent:', {
+        device: loginData.device,
+        browser: loginData.browser,
+        location: loginData.location,
+        ipAddress: loginData.ipAddress,
+        timestamp: loginData.timestamp
       });
 
       // Send login notification email using preferences system
