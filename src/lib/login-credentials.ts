@@ -5,6 +5,9 @@ import { UserLoginCredentials, DeviceInfo, createLoginCredentials, updateLoginCr
 export class LoginCredentialsManager {
   private static instance: LoginCredentialsManager;
   private credentials: Map<string, UserLoginCredentials[]> = new Map();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  private cache = new Map<string, { credentials: UserLoginCredentials[], timestamp: number }>();
+  private loadingPromises = new Map<string, Promise<UserLoginCredentials[]>>(); // Prevent concurrent loads
 
   static getInstance(): LoginCredentialsManager {
     if (!LoginCredentialsManager.instance) {
@@ -48,17 +51,45 @@ export class LoginCredentialsManager {
   }
 
   /**
-   * Get user login credentials
+   * Get user login credentials with caching
    */
   async getLoginCredentials(userId: string): Promise<UserLoginCredentials[]> {
-    if (this.credentials.has(userId)) {
-      return this.credentials.get(userId)!;
+    // Check cache first
+    const cached = this.cache.get(userId);
+    const now = Date.now();
+    
+    if (cached && (now - cached.timestamp) < this.CACHE_DURATION) {
+      console.log('📋 Using cached login credentials');
+      return cached.credentials;
     }
 
-    // In a real app, you would load from database here
-    const storedCredentials = await this.loadFromDatabase(userId);
-    this.credentials.set(userId, storedCredentials);
-    return storedCredentials;
+    // Check if already loading to prevent concurrent requests
+    if (this.loadingPromises.has(userId)) {
+      console.log('⏳ Waiting for existing credentials load');
+      return await this.loadingPromises.get(userId)!;
+    }
+
+    // Load from database
+    const loadPromise = this.loadFromDatabase(userId);
+    this.loadingPromises.set(userId, loadPromise);
+
+    try {
+      const storedCredentials = await loadPromise;
+      
+      // Update cache
+      this.cache.set(userId, {
+        credentials: storedCredentials,
+        timestamp: now
+      });
+      
+      // Update in-memory store
+      this.credentials.set(userId, storedCredentials);
+      
+      return storedCredentials;
+    } finally {
+      // Clean up loading promise
+      this.loadingPromises.delete(userId);
+    }
   }
 
   /**

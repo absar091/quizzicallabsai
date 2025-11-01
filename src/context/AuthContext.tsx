@@ -87,10 +87,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           secureLog('info', 'Setting user with plan', { plan: appUser.plan });
 
-          // SMART LOGIN NOTIFICATION - Only send when credentials don't match trusted devices
-          if (firebaseUser.email && firebaseUser.emailVerified) {
+          // FIXED: Only run device detection on actual login, not on every page navigation
+          // Check if this is a fresh login (not just auth state restoration)
+          const lastLoginCheck = sessionStorage.getItem(`lastLoginCheck_${firebaseUser.uid}`);
+          const currentTime = Date.now();
+          const isRecentLogin = !lastLoginCheck || (currentTime - parseInt(lastLoginCheck)) > 300000; // 5 minutes
+
+          if (firebaseUser.email && firebaseUser.emailVerified && isRecentLogin) {
+            // Mark that we've checked this login session
+            sessionStorage.setItem(`lastLoginCheck_${firebaseUser.uid}`, currentTime.toString());
+            
             try {
-              // Detect device information
+              // Detect device information with proper location
               const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : 'Server-side Request';
               const deviceInfo = await detectDeviceInfo(userAgent);
 
@@ -128,8 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 secureLog('info', 'Trusted device detected - no notification needed');
               }
 
-              // Always store/update login credentials (for both trusted and untrusted devices)
-              // Add small delay to ensure user is fully authenticated
+              // Store/update login credentials for this session
               setTimeout(async () => {
                 try {
                   await loginCredentialsManager.storeLoginCredentials(firebaseUser.uid, deviceInfo);
@@ -143,6 +150,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               secureLog('warn', 'Login credentials error (non-critical)', { error: error.message });
               // Don't fail the login if credential storage fails
             }
+          } else {
+            secureLog('info', 'Skipping device detection - not a fresh login or recent check');
           }
 
           setUser(appUser);

@@ -341,8 +341,8 @@ export default function BookmarksPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredQuestionBookmarks.map((bookmark, index) => (
-                    <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                  {filteredQuestionBookmarks.map((bookmark) => (
+                    <div key={`${bookmark.userId}-${bookmark.question.substring(0, 50)}-${bookmark.bookmarkedAt || 0}`} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <h3 className="font-medium text-lg mb-2">{bookmark.question}</h3>
@@ -384,6 +384,7 @@ export default function BookmarksPage() {
               </CardTitle>
               <CardDescription>
                 Complete quizzes you've bookmarked for later access
+                <Badge variant="secondary" className="ml-2 text-xs">Pro Feature</Badge>
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -406,34 +407,61 @@ export default function BookmarksPage() {
               ) : (
                 <div className="space-y-4">
                   {filteredQuizBookmarks.map((bookmark) => (
-                    <div key={bookmark.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-lg mb-1">{bookmark.quizTitle}</h3>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                            <Badge variant="secondary">{bookmark.subject}</Badge>
-                            <span>{bookmark.difficulty}</span>
-                            <span>{bookmark.questionCount} questions</span>
+                    <Card key={bookmark.id} className="hover:shadow-md transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-lg mb-1">{bookmark.quizTitle}</CardTitle>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                              <Badge variant="secondary">{bookmark.subject}</Badge>
+                              <span>{bookmark.difficulty}</span>
+                              <span>{bookmark.questionCount} questions</span>
+                            </div>
+                            {bookmark.notes && (
+                              <CardDescription className="italic">
+                                "{bookmark.notes}"
+                              </CardDescription>
+                            )}
+                            <div className="text-xs text-muted-foreground mt-2">
+                              Bookmarked {
+                                bookmark.bookmarkedAt && typeof bookmark.bookmarkedAt === 'number'
+                                  ? new Date(bookmark.bookmarkedAt).toLocaleDateString(undefined, {
+                                      year: 'numeric',
+                                      month: 'short',
+                                      day: 'numeric'
+                                    })
+                                  : 'Recently'
+                              }
+                            </div>
                           </div>
-                          {bookmark.notes && (
-                            <p className="text-sm text-muted-foreground italic mb-2">
-                              "{bookmark.notes}"
-                            </p>
-                          )}
-                          <div className="text-xs text-muted-foreground">
-                            Bookmarked {
-                              bookmark.bookmarkedAt && typeof bookmark.bookmarkedAt === 'number'
-                                ? new Date(bookmark.bookmarkedAt).toLocaleDateString(undefined, {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                  })
-                                : 'Recently'
-                            }
-                          </div>
+                          <BookMarked className="h-5 w-5 text-blue-500" />
                         </div>
-                      </div>
-                    </div>
+                      </CardHeader>
+                      
+                      {/* FIXED: Show quiz content if available */}
+                      {bookmark.quizContent && bookmark.quizContent.length > 0 && (
+                        <CardContent className="pt-0">
+                          <div className="space-y-3">
+                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Quiz Questions:</h4>
+                            {bookmark.quizContent.slice(0, 3).map((question, index) => (
+                              <div key={index} className="p-3 bg-muted/30 rounded-lg">
+                                <p className="font-medium text-sm mb-2">
+                                  {index + 1}. {question.question}
+                                </p>
+                                <p className="text-xs text-green-600">
+                                  ✓ {question.correctAnswer}
+                                </p>
+                              </div>
+                            ))}
+                            {bookmark.quizContent.length > 3 && (
+                              <p className="text-xs text-muted-foreground text-center">
+                                ... and {bookmark.quizContent.length - 3} more questions
+                              </p>
+                            )}
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
                   ))}
                 </div>
               )}

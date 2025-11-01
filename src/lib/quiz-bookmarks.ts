@@ -42,6 +42,18 @@ export class QuizBookmarkManager {
     }>;
   }, notes?: string): Promise<string> {
     try {
+      // FIXED: Check for duplicates before adding
+      const existingBookmarks = await this.getBookmarks();
+      const isDuplicate = existingBookmarks.some(bookmark => 
+        bookmark.quizTitle === quiz.title && 
+        bookmark.subject === quiz.subject &&
+        bookmark.questionCount === quiz.questionCount
+      );
+
+      if (isDuplicate) {
+        throw new Error('This quiz is already bookmarked');
+      }
+
       // Create a safe key by encoding the quiz ID
       const safeQuizId = this.encodeFirebaseKey(quiz.id);
       const bookmarkRef = ref(db, `bookmarks/${this.userId}/${safeQuizId}`);
@@ -212,6 +224,12 @@ export function useQuizBookmarks(userId: string | null) {
     difficulty: string;
     questionCount: number;
     tags?: string[];
+    quizContent?: Array<{
+      question: string;
+      options: string[];
+      correctAnswer: string;
+      type: string;
+    }>;
   }, notes?: string) => {
     if (!bookmarkManager) return;
 

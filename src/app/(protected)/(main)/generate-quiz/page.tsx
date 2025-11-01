@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlan } from "@/hooks/usePlan";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -1221,22 +1222,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const { QuizBookmarkManager } = await import('@/lib/quiz-bookmarks');
       const bookmarkManager = new QuizBookmarkManager(user.uid);
 
-      // FIXED: Check for duplicates before adding
       const quizTitle = `${formValues.topic} Quiz - ${quiz.length} Questions`;
-      const existingBookmarks = await bookmarkManager.getBookmarks();
-      const isDuplicate = existingBookmarks.some(bookmark => 
-        bookmark.quizTitle === quizTitle && 
-        bookmark.subject === formValues.topic &&
-        bookmark.questionCount === quiz.length
-      );
-
-      if (isDuplicate) {
-        toast({
-          title: "Already Bookmarked! 📚",
-          description: "This quiz is already in your bookmarks.",
-        });
-        return;
-      }
 
       // Create quiz object for bookmarking with actual quiz content
       const quizToBookmark = {
@@ -1264,11 +1250,20 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
     } catch (error: any) {
       console.error('Error bookmarking quiz:', error);
-      toast({
-        title: "Bookmark Failed",
-        description: error.message || "Could not bookmark quiz. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Handle duplicate bookmark error specifically
+      if (error.message === 'This quiz is already bookmarked') {
+        toast({
+          title: "Already Bookmarked! 📚",
+          description: "This quiz is already in your bookmarks.",
+        });
+      } else {
+        toast({
+          title: "Bookmark Failed",
+          description: error.message || "Could not bookmark quiz. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -1556,9 +1551,12 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                          <div className="flex flex-wrap gap-2">
                             <Button variant="outline" onClick={downloadQuestions}><Download className="mr-2 h-4 w-4" /> Questions</Button>
                             <Button onClick={downloadResultCard}><Download className="mr-2 h-4 w-4" /> Result Card</Button>
-                            <Button variant="outline" onClick={bookmarkWholeQuiz}>
+                            <Button variant="outline" onClick={bookmarkWholeQuiz} className="relative">
                                 <BookMarked className="mr-2 h-4 w-4" /> 
                                 Bookmark Quiz
+                                {user?.plan !== 'Pro' && (
+                                  <Badge variant="secondary" className="ml-2 text-xs">Pro</Badge>
+                                )}
                             </Button>
                          </div>
                     </div>
