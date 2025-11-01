@@ -10,8 +10,19 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "test:cron": "node test-cron-job.js",
-    "test:cron:prod": "TEST_URL=https://quizzicallabz.qzz.io node test-cron-job.js"
+    "test:cron:prod": "TEST_URL=https://quizzicallabz.qzz.io node test-cron-job.js",
+    "load-test": "k6 run load-test.js",
+    "load-test:local": "BASE_URL=http://localhost:3000 k6 run load-test.js",
+    "health-check": "curl -f https://quizzicallabz.qzz.io/api/health || exit 1",
+    "health-check:local": "curl -f http://localhost:3000/api/health || exit 1",
+    "security-audit": "npm audit --audit-level=high",
+    "build:analyze": "ANALYZE=true npm run build",
+    "postbuild": "npm run health-check:local"
   },
   "dependencies": {
     "@genkit-ai/google-cloud": "^1.12.0",
