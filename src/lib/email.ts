@@ -6,6 +6,7 @@ import {
 } from './email-templates-professional';
 import { checkEmailPreferences, logEmailAttempt, type EmailType } from './email-preferences';
 import { getTransporter as getEmailTransporter, getFromAddress, type EmailService } from './email-config';
+import { sendSecureEmail, validateEmailTemplate } from './secure-email';
 
 interface EmailOptions {
   to: string;
@@ -17,27 +18,25 @@ interface EmailOptions {
 
 export async function sendEmail({ to, subject, html, text, service = 'marketing' }: EmailOptions) {
   try {
-    const emailTransporter = getEmailTransporter(service);
-    const fromAddress = getFromAddress(service);
-    console.log('📧 Sending email to:', to.substring(0, 20) + '...', 'via', service);
+    console.log('📧 Sending secure email to:', to.substring(0, 20) + '...', 'via', service);
 
-    const result = await emailTransporter.sendMail({
-      from: fromAddress,
+    // Use secure email implementation to prevent domain confusion attacks
+    const result = await sendSecureEmail({
       to,
       subject,
       html,
       text,
-      headers: {
-        'X-Mailer': 'QuizzicallabzAI Learning Platform',
-        'X-Priority': '3',
-        'X-MSMail-Priority': 'Normal'
-      }
+      from: getFromAddress(service)
     });
 
-    console.log('✅ Email sent successfully:', result.messageId);
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to send email');
+    }
+
+    console.log('✅ Secure email sent successfully:', result.messageId);
     return { success: true, messageId: result.messageId };
   } catch (error: any) {
-    console.error('❌ Email sending failed:', error.message);
+    console.error('❌ Secure email sending failed:', error.message);
     throw error;
   }
 }

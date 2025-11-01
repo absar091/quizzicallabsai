@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Global middleware for Next.js application
+ * Next.js 16 Proxy Configuration
+ * Replaces middleware.ts for network boundary clarification
  * Runs on edge runtime before API routes and pages
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Add security headers to all responses
@@ -22,7 +23,7 @@ export function middleware(request: NextRequest) {
     'camera=(), microphone=(), geolocation=()'
   );
 
-  // Content Security Policy (CSP)
+  // Content Security Policy (CSP) - Enhanced for Next.js 16
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://apis.google.com https://va.vercel-scripts.com https://www.recaptcha.net https://cdn.jsdelivr.net https://vercel.live https://*.vercel.live https://*.firebaseio.com;
@@ -56,18 +57,35 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Rate limiting check (basic implementation)
-  // Note: More sophisticated rate limiting is handled in individual API routes
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  // Enhanced rate limiting for Next.js 16
+  const ip = request.headers.get('x-forwarded-for') || 
+             request.headers.get('x-real-ip') || 
+             request.headers.get('cf-connecting-ip') || 
+             'unknown';
 
-  // Add IP to request headers for downstream processing
+  // Add client information to headers for downstream processing
   response.headers.set('x-client-ip', ip);
+  response.headers.set('x-pathname', pathname);
+  response.headers.set('x-user-agent', request.headers.get('user-agent') || 'unknown');
+
+  // Enhanced security for sensitive routes
+  if (pathname.startsWith('/api/admin') || pathname.startsWith('/api/auth')) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+  }
+
+  // Performance optimizations for static assets
+  if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)) {
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  }
 
   return response;
 }
 
 /**
- * Configure which routes should run through middleware
+ * Configure which routes should run through the proxy
+ * Updated for Next.js 16 compatibility
  */
 export const config = {
   matcher: [
@@ -77,7 +95,11 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - Next.js 16 internal routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|_next/webpack-hmr|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
+
+// Export default for Next.js 16 compatibility
+export default proxy;

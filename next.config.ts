@@ -3,14 +3,14 @@ require('dotenv').config();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Fix workspace root warning
+  outputFileTracingRoot: __dirname,
+  
   typescript: {
     // TypeScript errors will now fail the build - ensuring type safety
     ignoreBuildErrors: false,
   },
-  eslint: {
-    // ESLint errors will now fail the build - ensuring code quality
-    ignoreDuringBuilds: false,
-  },
+  
   // Enhanced security headers
   async headers() {
     return [
@@ -86,17 +86,26 @@ const nextConfig = {
       },
     ],
   },
-   webpack: (config, { isServer }) => {
-    // This is to suppress the 'require.extensions' warning from handlebars
-    // which is a dependency of genkit.
-    config.module.rules.push({
-      test: /\.js$/,
-      include: /node_modules\/handlebars/,
-      use: ['node-loader'],
-    });
-
-    return config;
+  // Next.js 16 experimental features
+  experimental: {
+    // Enable Partial Pre-Rendering for better performance
+    ppr: true,
+    // Enable React Compiler for automatic memoization
+    reactCompiler: true,
+    // Enable optimized package imports
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  
+  // Turbopack configuration for Next.js 16
+  turbopack: {
+    // Set root directory to fix warning
+    root: __dirname,
+    // Resolve aliases for better imports
+    resolveAlias: {
+      '@': './src',
+    },
+  },
+  // Webpack config removed for full Turbopack compatibility
 };
 
 export default nextConfig;
