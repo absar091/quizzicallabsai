@@ -13,7 +13,7 @@ export function securityHeaders(response: NextResponse) {
     "style-src 'self' 'unsafe-inline' https://www.google.com; " +
     "img-src 'self' data: https:; " +
     "frame-src https://www.google.com https://www.recaptcha.net; " +
-    "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://www.google.com https://www.recaptcha.net wss://*.pusher.com;"
+    "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://www.google.com https://www.google.com/recaptcha/ https://www.google.com/recaptcha/api2/ https://www.recaptcha.net wss://*.pusher.com;"
   );
   
   return response;
