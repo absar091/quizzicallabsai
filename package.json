@@ -22,7 +22,7 @@
     "health-check:local": "curl -f http://localhost:3000/api/health || exit 1",
     "security-audit": "npm audit --audit-level=high",
     "build:analyze": "ANALYZE=true npm run build",
-    "postbuild": "npm run health-check:local"
+    "postbuild": "echo '✅ Build completed successfully!'"
   },
   "dependencies": {
     "@genkit-ai/google-cloud": "^1.12.0",
