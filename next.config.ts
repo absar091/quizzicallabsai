@@ -86,15 +86,14 @@ const nextConfig = {
       },
     ],
   },
-  // Next.js 16 experimental features
+  // Next.js 16 features
   experimental: {
-    // Enable Partial Pre-Rendering for better performance
-    ppr: true,
-    // Enable React Compiler for automatic memoization
-    reactCompiler: true,
     // Enable optimized package imports
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  
+  // Enable cache components (replaces PPR in Next.js 16)
+  cacheComponents: true,
   
   // Empty turbopack config to silence warnings
   turbopack: {},
