@@ -10,6 +10,7 @@
 <div align="center">
   <h3>🚀 Transform Educational Content into Interactive Learning Experiences</h3>
   <p><em>Enterprise-grade AI platform that converts any document, topic, or curriculum into personalized quizzes, flashcards, and competitive learning experiences in seconds.</em></p>
+  <p><strong>🌐 Live Platform:</strong> <a href="https://quizzicallabz.qzz.io">quizzicallabz.qzz.io</a></p>
 </div>
 
 ---
@@ -221,6 +222,11 @@ Seamless learning across all devices:
 ---
 
 ## 🚀 **Getting Started**
+
+### **Try the Live Platform**
+🌐 **Production Platform**: [quizzicallabz.qzz.io](https://quizzicallabz.qzz.io)
+
+Experience the full power of QuizzicalLabzᴬᴵ with our live platform featuring all the latest AI-powered learning tools.
 
 ### **Quick Setup for Development**
 
@@ -448,16 +454,17 @@ headers: {
 ## 📞 **Support & Contact**
 
 ### **Technical Support**
-- **Documentation**: Comprehensive guides and API references
+- **Documentation**: Comprehensive guides and API references at quizzicallabz.qzz.io/docs
 - **Community**: GitHub discussions and issue tracking
 - **Enterprise Support**: Dedicated technical account managers
 - **SLA**: 99.9% uptime guarantee with 24/7 monitoring
+- **Support Email**: support@quizzicallabz.qzz.io
 
 ### **Business Inquiries**
-- **Email**: business@quizzicallabs.ai
-- **Enterprise Sales**: enterprise@quizzicallabs.ai
-- **Partnerships**: partners@quizzicallabs.ai
-- **Media**: press@quizzicallabs.ai
+- **Email**: business@quizzicallabz.qzz.io
+- **Enterprise Sales**: enterprise@quizzicallabz.qzz.io
+- **Partnerships**: partners@quizzicallabz.qzz.io
+- **Media**: press@quizzicallabz.qzz.io
 
 ---
 
@@ -480,7 +487,7 @@ By using this platform, you agree to our Terms of Service and Privacy Policy. Al
 ## 🚀 **Ready to Transform Your Educational Experience?**
 
 <p>
-  <a href="mailto:business@quizzicallabs.ai">
+  <a href="mailto:business@quizzicallabz.qzz.io">
     <img src="https://img.shields.io/badge/Contact%20Sales-Get%20Demo-blue?style=for-the-badge&logo=mail" alt="Contact Sales" />
   </a>
   <a href="#getting-started">
@@ -492,6 +499,12 @@ By using this platform, you agree to our Terms of Service and Privacy Policy. Al
 
 **Built with precision for the future of education**
 
-*© 2025 QuizzicalLabsᴬᴵ. All rights reserved. Enterprise-grade AI education platform.*
+### 🔗 **Quick Links**
+- 🌐 **Platform**: [quizzicallabz.qzz.io](https://quizzicallabz.qzz.io)
+- 📧 **Contact**: hello@quizzicallabz.qzz.io
+- 💼 **Business**: business@quizzicallabz.qzz.io
+- 🛠️ **Support**: support@quizzicallabz.qzz.io
+
+*© 2025 QuizzicalLabzᴬᴵ - Your Ultimate AI-Powered Study Partner. All rights reserved.*
 
 </div>
