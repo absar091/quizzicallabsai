@@ -756,12 +756,52 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
   useEffect(() => {
     async function loadBookmarks() {
         if (user) {
-            const bookmarks = await getBookmarks(user.uid);
-            setBookmarkedQuestions(bookmarks);
+            try {
+                // Load from both IndexedDB and Firebase for consistency
+                const [localBookmarks, firebaseBookmarks] = await Promise.allSettled([
+                    getBookmarks(user.uid),
+                    loadFirebaseBookmarks(user.uid)
+                ]);
+
+                // Use Firebase data if available, fallback to local
+                if (firebaseBookmarks.status === 'fulfilled' && firebaseBookmarks.value.length > 0) {
+                    setBookmarkedQuestions(firebaseBookmarks.value);
+                } else if (localBookmarks.status === 'fulfilled') {
+                    setBookmarkedQuestions(localBookmarks.value);
+                }
+            } catch (error) {
+                console.error('Error loading bookmarks:', error);
+                // Fallback to local bookmarks only
+                try {
+                    const bookmarks = await getBookmarks(user.uid);
+                    setBookmarkedQuestions(bookmarks);
+                } catch (localError) {
+                    console.error('Error loading local bookmarks:', localError);
+                }
+            }
         }
     }
     loadBookmarks();
   }, [user]);
+
+  // Helper function to load bookmarks from Firebase
+  async function loadFirebaseBookmarks(userId: string): Promise<BookmarkedQuestion[]> {
+    try {
+        const bookmarksRef = ref(db, `question-bookmarks/${userId}`);
+        const snapshot = await get(bookmarksRef);
+        
+        if (snapshot.exists()) {
+            const bookmarksData = snapshot.val();
+            return Object.entries(bookmarksData).map(([id, data]: [string, any]) => ({
+                ...data
+            })) as BookmarkedQuestion[];
+        }
+        return [];
+    } catch (error) {
+        console.error('Error loading Firebase bookmarks:', error);
+        return [];
+    }
+  }
 
   useEffect(() => {
     async function persistState() {
