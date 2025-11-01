@@ -194,7 +194,7 @@ export default function HomePage() {
       }
     },
     onProfile: () => window.location.href = '/profile',
-    onDashboard: () => window.location.href = '/dashboard',
+    onDashboard: () => window.location.href = '/',
     onNewQuiz: () => window.location.href = '/generate-quiz',
     enabled: true
   });

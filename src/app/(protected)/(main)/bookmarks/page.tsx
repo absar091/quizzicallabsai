@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuizBookmarks } from '@/lib/quiz-bookmarks';
-import { BookmarksList } from '@/components/bookmark-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookMarked, Search, Filter, SortAsc, SortDesc, HelpCircle, Star } from 'lucide-react';
+import { BookMarked, Search, SortAsc, SortDesc, Star } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { DashboardSkeleton } from '@/components/loading-skeletons';
 import { useGlobalKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -82,7 +81,7 @@ export default function BookmarksPage() {
       }
     },
     onProfile: () => window.location.href = '/profile',
-    onDashboard: () => window.location.href = '/dashboard',
+    onDashboard: () => window.location.href = '/',
     onNewQuiz: () => window.location.href = '/generate-quiz',
     enabled: true
   });

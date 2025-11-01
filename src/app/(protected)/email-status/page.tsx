@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
 import { CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 
 interface EmailStatus {
   emailConfigured: boolean;
@@ -181,7 +182,7 @@ export default function EmailStatusPage() {
             Refresh Status
           </Button>
           <Button asChild>
-            <a href="/dashboard">Back to Dashboard</a>
+            <Link href="/">Back to Dashboard</Link>
           </Button>
         </CardContent>
       </Card>

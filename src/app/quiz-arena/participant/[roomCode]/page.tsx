@@ -463,7 +463,7 @@ function ParticipantArenaPageContent() {
               The host has ended the quiz session.
             </p>
             <Button asChild>
-              <Link href="/dashboard">Return to Dashboard</Link>
+              <Link href="/">Return to Dashboard</Link>
             </Button>
           </CardContent>
         </Card>

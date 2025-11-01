@@ -87,7 +87,15 @@ export function AppHeader({ onSidebarToggle, isSidebarOpen }: AppHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => router.back()}
+          onClick={() => {
+            // Enhanced back button logic
+            if (window.history.length > 1) {
+              router.back();
+            } else {
+              // Fallback to home page if no history
+              router.push('/');
+            }
+          }}
           aria-label="Go back"
           className="flex-shrink-0 md:hidden"
         >

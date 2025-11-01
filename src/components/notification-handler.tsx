@@ -91,7 +91,7 @@ export default function NotificationHandler() {
               case 'new_features':
                 toastConfig.action = {
                   label: 'View Dashboard',
-                  onClick: () => window.location.href = payload.data?.click_action || '/dashboard'
+                  onClick: () => window.location.href = payload.data?.click_action || '/'
                 };
                 break;
               case 'reengagement':

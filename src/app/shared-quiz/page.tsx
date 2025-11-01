@@ -138,7 +138,7 @@ export default function SharedQuizPage() {
                 <Link href="/">Go Home</Link>
               </Button>
               <Button asChild>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/">Dashboard</Link>
               </Button>
             </div>
           </CardContent>
