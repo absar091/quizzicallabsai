@@ -53,8 +53,21 @@ export const detectDeviceInfo = async (userAgent: string, ip?: string): Promise<
       const browser = getBrowserDetails(userAgent, enhancedInfo);
       const os = detectOS(userAgent);
       
-      // Get location from IP
-      const locationData = await getLocationFromIP(ip || 'unknown');
+      // FIXED: Better location detection
+      let actualIP = ip || 'localhost';
+      
+      // Try to get real IP if not provided and not on localhost
+      if (!ip && window.location.hostname !== 'localhost') {
+        try {
+          const response = await fetch('https://api.ipify.org?format=json');
+          const data = await response.json();
+          actualIP = data.ip;
+        } catch (error) {
+          console.log('Using localhost fallback for IP detection');
+        }
+      }
+      
+      const locationData = await getLocationFromIP(actualIP);
       
       console.log('🔍 Enhanced device detection:', {
         device,
@@ -70,7 +83,7 @@ export const detectDeviceInfo = async (userAgent: string, ip?: string): Promise<
         device,
         browser,
         os,
-        ip: ip || 'unknown',
+        ip: actualIP,
         location: locationData.location,
         userAgent,
         timestamp,

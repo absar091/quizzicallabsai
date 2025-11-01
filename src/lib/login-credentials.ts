@@ -165,6 +165,8 @@ export class LoginCredentialsManager {
    */
   async clearUserCredentials(userId: string): Promise<void> {
     this.credentials.delete(userId);
+    this.cache.delete(userId); // Clear cache
+    this.loadingPromises.delete(userId); // Clear any pending loads
     await this.clearDatabaseCredentials(userId);
   }
 

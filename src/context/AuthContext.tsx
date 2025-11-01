@@ -278,6 +278,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   const logout = async () => {
+    // Clear session storage for login checks
+    if (user?.uid) {
+      sessionStorage.removeItem(`lastLoginCheck_${user.uid}`);
+      // Clear login credentials cache
+      await loginCredentialsManager.clearUserCredentials(user.uid);
+    }
+    
     await firebaseSignOut(auth);
     setUser(null);
     setHasSentLoginNotification(false); // Reset notification flag for next login
