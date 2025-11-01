@@ -1251,11 +1251,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       console.log('📌 Toggling bookmark:', { question: question.substring(0, 50), isCurrentlyBookmarked });
 
       if (isCurrentlyBookmarked) {
-        // Remove from Firebase and local state
+        // FIXED: Update UI immediately for instant visual feedback
+        setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
+        
+        // Then update Firebase and IndexedDB
         const bookmarkRef = ref(db, `question-bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, null);
         await deleteBookmark(user.uid, question);
-        setBookmarkedQuestions(prev => prev.filter(bm => bm.question !== question));
         
         toast({
           title: "Bookmark Removed",
@@ -1270,11 +1272,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
           bookmarkedAt: Date.now() // Add timestamp
         };
         
-        // FIXED: Save to separate question-bookmarks path to avoid conflicts
+        // FIXED: Update UI immediately for instant visual feedback
+        setBookmarkedQuestions(prev => [...prev, newBookmark]);
+        
+        // Then update Firebase and IndexedDB
         const bookmarkRef = ref(db, `question-bookmarks/${user.uid}/${bookmarkId}`);
         await set(bookmarkRef, newBookmark);
         await saveBookmark(newBookmark);
-        setBookmarkedQuestions(prev => [...prev, newBookmark]);
         
         toast({
           title: "Bookmark Added",
