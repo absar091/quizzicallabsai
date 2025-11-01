@@ -15,15 +15,18 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    if (code.length !== 6 || !/^\d{6}$/.test(code)) {
-      console.log('Invalid code format:', code);
+    // Clean the code input
+    const cleanCode = String(code).trim().replace(/\s/g, '');
+
+    if (cleanCode.length !== 6 || !/^\d{6}$/.test(cleanCode)) {
+      console.log('Invalid code format:', cleanCode);
       return NextResponse.json({ 
-        error: 'Code must be 6 digits' 
+        error: 'Code must be exactly 6 digits' 
       }, { status: 400 });
     }
 
     // Verify code from database
-    const isValid = await verifyCodeFromDB(email, code);
+    const isValid = await verifyCodeFromDB(email, cleanCode);
 
     if (isValid) {
       // Try to update Firebase Auth user as verified
@@ -32,9 +35,11 @@ export async function POST(request: NextRequest) {
         const user = await auth.getUserByEmail(originalEmail || email);
         if (!user.emailVerified) {
           await auth.updateUser(user.uid, { emailVerified: true });
+          console.log('Firebase Auth user marked as verified:', user.uid);
         }
       } catch (authError: any) {
-        console.log('Firebase Auth update failed:', authError.message);
+        console.log('Firebase Auth update failed (non-critical):', authError.message);
+        // Don't fail the verification if Firebase Auth update fails
       }
       
       return NextResponse.json({ 
@@ -42,15 +47,16 @@ export async function POST(request: NextRequest) {
         message: 'Email verified successfully'
       });
     } else {
+      console.log('Verification failed for:', email, 'with code:', cleanCode);
       return NextResponse.json({ 
-        error: 'Invalid or expired verification code' 
+        error: 'Invalid or expired verification code. Please request a new code.' 
       }, { status: 400 });
     }
 
   } catch (error: any) {
     console.error('Verify code error:', error.message);
     return NextResponse.json({ 
-      error: 'Failed to verify code' 
+      error: 'Failed to verify code. Please try again.' 
     }, { status: 500 });
   }
 }
