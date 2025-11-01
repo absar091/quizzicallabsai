@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import { Sparkles } from "lucide-react";
-import { BrainCircuit, Loader2, CheckCircle, XCircle, MessageSquareQuote, Star, Download, Redo, RefreshCw, Brain, Lightbulb, LayoutDashboard, ArrowLeft, ArrowRight, Share2, Users, MessageCircle, Heart } from "lucide-react";
+import { BrainCircuit, Loader2, CheckCircle, XCircle, MessageSquareQuote, Star, Download, Redo, RefreshCw, Brain, Lightbulb, LayoutDashboard, ArrowLeft, ArrowRight, Share2, Users, MessageCircle, Heart, BookMarked } from "lucide-react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
@@ -1200,6 +1200,44 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     doc.save('quiz_result_card.pdf');
   };
 
+  const bookmarkWholeQuiz = async () => {
+    if (!formValues || !user || !quiz) {
+      console.log('❌ Cannot bookmark quiz: missing data');
+      return;
+    }
+
+    try {
+      // Import the quiz bookmark manager
+      const { QuizBookmarkManager } = await import('@/lib/quiz-bookmarks');
+      const bookmarkManager = new QuizBookmarkManager(user.uid);
+
+      // Create quiz object for bookmarking
+      const quizToBookmark = {
+        id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
+        title: `${formValues.topic} Quiz - ${quiz.length} Questions`,
+        subject: formValues.topic,
+        difficulty: formValues.difficulty,
+        questionCount: quiz.length,
+        tags: [formValues.topic, formValues.difficulty]
+      };
+
+      await bookmarkManager.addBookmark(quizToBookmark, `Generated on ${new Date().toLocaleDateString()}`);
+      
+      toast({
+        title: "Quiz Bookmarked! 🔖",
+        description: `"${quizToBookmark.title}" has been saved to your bookmarks`,
+      });
+
+    } catch (error: any) {
+      console.error('Error bookmarking quiz:', error);
+      toast({
+        title: "Bookmark Failed",
+        description: error.message || "Could not bookmark quiz. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const toggleBookmark = async (question: string, correctAnswer: string) => {
     if(!formValues || !user) {
       console.log('❌ Cannot bookmark: missing formValues or user');
@@ -1372,9 +1410,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
         <div className="flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium text-muted-foreground">Question {currentQuestion + 1} of {quiz.length}</p>
-                <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                <div className="flex items-center gap-4">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={bookmarkWholeQuiz}
+                        className="text-muted-foreground hover:text-primary"
+                        title="Bookmark this quiz"
+                    >
+                        <BookMarked className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Bookmark Quiz</span>
+                    </Button>
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+                    </div>
                 </div>
             </div>
             <Progress value={progress} className="h-2 w-full mb-6" />
@@ -1468,6 +1518,10 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                          <div className="flex flex-wrap gap-2">
                             <Button variant="outline" onClick={downloadQuestions}><Download className="mr-2 h-4 w-4" /> Questions</Button>
                             <Button onClick={downloadResultCard}><Download className="mr-2 h-4 w-4" /> Result Card</Button>
+                            <Button variant="outline" onClick={bookmarkWholeQuiz}>
+                                <BookMarked className="mr-2 h-4 w-4" /> 
+                                Bookmark Quiz
+                            </Button>
                          </div>
                     </div>
                 </CardHeader>
