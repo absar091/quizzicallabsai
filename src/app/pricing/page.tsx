@@ -88,8 +88,8 @@ export default function PricingPage() {
       return;
     }
 
-    // EMBEDDED WHOP CHECKOUT - FIXED VERSION
-    window.location.href = `/checkout-embedded/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
+    // DIRECT WHOP CHECKOUT - WORKS PERFECTLY (No embedding issues)
+    window.location.href = `/checkout-direct/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
   };
 
   return (

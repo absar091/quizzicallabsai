@@ -22,8 +22,20 @@ export function middleware(request: NextRequest) {
     'camera=(), microphone=(), geolocation=()'
   );
 
-  // Content Security Policy (CSP)
-  const cspHeader = `
+  // Content Security Policy (CSP) - Relaxed for development
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  const cspHeader = isDevelopment ? `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https:;
+    style-src 'self' 'unsafe-inline' https:;
+    img-src 'self' blob: data: https: http:;
+    font-src 'self' https:;
+    connect-src 'self' https: wss:;
+    frame-src 'self' https:;
+    worker-src 'self' blob:;
+    object-src 'none';
+  `.replace(/\s{2,}/g, ' ').trim() : `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://apis.google.com https://va.vercel-scripts.com https://www.recaptcha.net https://cdn.jsdelivr.net https://vercel.live https://*.vercel.live https://*.firebaseio.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
