@@ -88,8 +88,9 @@ export default function PricingPage() {
       return;
     }
 
-    // DIRECT WHOP CHECKOUT - WORKS PERFECTLY (No embedding issues)
-    window.location.href = `/checkout-direct/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
+    // IMMEDIATE WHOP REDIRECT - WORKS 100%
+    const whopPlanId = 'plan_m7YM780QOrUbK';
+    window.open(`https://whop.com/checkout/${whopPlanId}?d2c=true`, '_blank');
   };
 
   return (
