@@ -5,10 +5,8 @@ export async function GET(request: NextRequest) {
   const results = [];
 
   const domains = [
-    'api.safepay.pk',
-    'sandbox.api.safepay.pk',
-    'www.safepay.pk',
-    'safepay.pk'
+    'api.whop.com',
+    'whop.com'
   ];
 
   for (const domain of domains) {
@@ -64,8 +62,8 @@ export async function GET(request: NextRequest) {
     success: true,
     results,
     timestamp: new Date().toISOString(),
-    recommendation: results.find(r => r.domain === 'api.safepay.pk' && r.success) 
-      ? 'Use production API (api.safepay.pk)'
-      : 'SafePay services may be unavailable'
+    recommendation: results.find(r => r.domain === 'api.whop.com' && r.success) 
+      ? 'Use production API (api.whop.com)'
+      : 'Whop services may be unavailable'
   });
 }

@@ -11,6 +11,8 @@ export default function PaymentSuccessPage() {
   const [verificationStatus, setVerificationStatus] = useState<'success' | 'failed' | null>(null);
 
   const orderId = searchParams.get('orderId');
+  const planId = searchParams.get('planId');
+  const isWhop = searchParams.get('whop') === 'true';
   const isMock = searchParams.get('mock') === 'true';
 
   useEffect(() => {
@@ -96,6 +98,12 @@ export default function PaymentSuccessPage() {
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <p className="text-sm text-gray-500 mb-1">Order ID</p>
             <p className="font-mono text-sm text-gray-900">{orderId}</p>
+            {planId && (
+              <>
+                <p className="text-sm text-gray-500 mb-1 mt-2">Plan</p>
+                <p className="text-sm text-gray-900 capitalize">{planId} Plan</p>
+              </>
+            )}
             {isMock && (
               <div className="mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
                 Mock Payment (Development)

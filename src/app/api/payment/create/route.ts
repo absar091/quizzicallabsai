@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase-admin';
-import { createSubscriptionPayment, createOneTimePayment } from '@/lib/payoneer';
+import { createWhopSubscriptionPayment } from '@/lib/whop';
 import { subscriptionService } from '@/lib/subscription';
 
 export async function POST(request: NextRequest) {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const userEmail = decodedToken.email!;
     const userName = decodedToken.name || 'User';
 
-    console.log(`💳 Creating payment for user: ${userEmail} (${planId})`);
+    console.log(`💳 Creating Whop payment for user: ${userEmail} (${planId})`);
 
     // Check if user already has active subscription
     const hasActive = await subscriptionService.hasActiveSubscription(userId);
@@ -41,63 +41,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let paymentResponse;
-
     if (paymentType === 'subscription') {
-      // Create subscription payment
-      paymentResponse = await createSubscriptionPayment(
+      // Create Whop subscription payment
+      const paymentResponse = await createWhopSubscriptionPayment(
         userEmail,
         userName,
         planId as 'pro' | 'premium'
       );
-    } else {
-      // Create one-time payment
-      const { amount, description } = body;
-      if (!amount || !description) {
+
+      if (!paymentResponse.success) {
         return NextResponse.json(
-          { success: false, error: 'Amount and description required for one-time payments' },
+          { success: false, error: paymentResponse.error },
           { status: 400 }
         );
       }
 
-      paymentResponse = await createOneTimePayment(
-        userEmail,
-        userName,
-        amount,
-        description
-      );
-    }
+      // Record payment in database
+      const paymentId = await subscriptionService.recordPayment({
+        userId,
+        amount: planId === 'pro' ? 2 : 5,
+        currency: 'USD',
+        status: 'pending',
+        paymentMethod: 'whop',
+        orderId: paymentResponse.sessionId || `whop_${Date.now()}`,
+        description: `QuizzicalLabzᴬᴵ ${planId} Subscription`
+      });
 
-    if (!paymentResponse.success) {
+      // Create pending subscription
+      await subscriptionService.createSubscription(userId, planId, paymentId);
+
+      return NextResponse.json({
+        success: true,
+        paymentUrl: paymentResponse.checkoutUrl,
+        planId: paymentResponse.planId,
+        sessionId: paymentResponse.sessionId,
+        paymentId
+      });
+    } else {
       return NextResponse.json(
-        { success: false, error: paymentResponse.error },
+        { success: false, error: 'One-time payments not supported with Whop integration' },
         { status: 400 }
       );
     }
-
-    // Record payment in database
-    const paymentId = await subscriptionService.recordPayment({
-      userId,
-      amount: planId === 'pro' ? 2 : 5,
-      currency: 'USD',
-      status: 'pending',
-      paymentMethod: 'payoneer',
-      orderId: paymentResponse.orderId!,
-      description: `Quizzicallabzᴬᴵ ${planId} Subscription`
-    });
-
-    // Create pending subscription
-    if (paymentType === 'subscription') {
-      await subscriptionService.createSubscription(userId, planId, paymentId);
-    }
-
-    return NextResponse.json({
-      success: true,
-      paymentUrl: paymentResponse.checkoutUrl,
-      orderId: paymentResponse.orderId,
-      sessionId: paymentResponse.sessionId,
-      paymentId
-    });
 
   } catch (error: any) {
     console.error('❌ Payment creation error:', error);

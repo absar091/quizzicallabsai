@@ -88,50 +88,8 @@ export default function PricingPage() {
       return;
     }
 
-    setLoading(planId);
-
-    try {
-      // Get the Firebase user to access getIdToken method
-      const { auth } = await import('@/lib/firebase');
-      const firebaseUser = auth.currentUser;
-      
-      if (!firebaseUser) {
-        throw new Error('No authenticated user found');
-      }
-      
-      const idToken = await firebaseUser.getIdToken();
-      
-      const response = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          idToken,
-          planId,
-          paymentType: 'subscription'
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.paymentUrl) {
-        // Redirect to Payoneer checkout page
-        window.location.href = data.paymentUrl;
-      } else {
-        throw new Error(data.error || 'Failed to create payment');
-      }
-
-    } catch (error: any) {
-      console.error('Payment creation error:', error);
-      toast({
-        title: 'Payment Error',
-        description: error.message || 'Failed to create payment. Please try again.',
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(null);
-    }
+    // For Whop integration, redirect to dedicated checkout page
+    window.location.href = `/checkout/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
   };
 
   return (
@@ -303,7 +261,7 @@ export default function PricingPage() {
               <div>
                 <h4 className="font-medium mb-2">How does the payment work?</h4>
                 <p className="text-sm text-muted-foreground">
-                  We use Payoneer, a secure international payment gateway. You can pay with credit/debit cards, PayPal, bank transfer, or digital wallets from anywhere in the world.
+                  We use Whop, a secure payment platform. You can pay with credit/debit cards and other payment methods from anywhere in the world.
                 </p>
               </div>
               
@@ -340,7 +298,7 @@ export default function PricingPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full text-green-700 text-sm">
             <Shield className="h-4 w-4" />
-            Secure payments powered by Payoneer
+            Secure payments powered by Whop
           </div>
         </motion.div>
       </div>

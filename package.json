@@ -57,6 +57,7 @@
     "@types/mongoose": "^5.11.96",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "@whop/checkout": "^0.0.43",
     "beasties": "^0.3.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

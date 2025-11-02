@@ -108,7 +108,7 @@ export default function MockPaymentPage() {
 
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              Mock SafePay Gateway • Development Environment
+              Mock Payment Gateway • Development Environment
             </p>
           </div>
         </CardContent>
