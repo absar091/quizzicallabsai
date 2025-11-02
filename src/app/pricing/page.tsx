@@ -88,8 +88,8 @@ export default function PricingPage() {
       return;
     }
 
-    // For Whop integration, redirect to dedicated checkout page
-    window.location.href = `/checkout/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
+    // EMBEDDED WHOP CHECKOUT - FIXED VERSION
+    window.location.href = `/checkout-embedded/${planId}?email=${encodeURIComponent(user.email || '')}&name=${encodeURIComponent(user.displayName || '')}`;
   };
 
   return (

@@ -2,7 +2,7 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import WhopCheckout from '@/components/whop-checkout';
+import WhopEmbeddedCheckout from '@/components/whop-embedded-checkout';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Shield, CreditCard, Globe } from 'lucide-react';
@@ -148,8 +148,8 @@ function CheckoutContent() {
           <Card>
             <CardContent className="p-6">
               <h4 className="font-semibold mb-4">Complete Your Purchase</h4>
-              <WhopCheckout
-                planType={planId as 'pro' | 'premium'}
+              <WhopEmbeddedCheckout
+                planId="plan_m7YM780QOrUbK"
                 userEmail={userEmail}
                 userName={userName}
                 onComplete={handleCheckoutComplete}

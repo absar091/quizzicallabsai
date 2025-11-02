@@ -49,21 +49,22 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
+          // CSP disabled for development to allow Whop embed
+          ...(process.env.NODE_ENV === 'development' ? [] : [{
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://www.google.com https://accounts.google.com https://va.vercel-scripts.com https://vercel.live https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://*.whop.com https://checkout.whop.com https://api.whop.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://*.whop.com https://checkout.whop.com",
-              "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://vercel.live",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https: data:",
+              "style-src 'self' 'unsafe-inline' https:",
+              "font-src 'self' https: data:",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com wss://*.firebaseio.com https://va.vercel-scripts.com https://www.google-analytics.com https://analytics.google.com https://vitals.vercel-insights.com https://vercel.live https://vercel.com https://apis.google.com https://www.gstatic.com https://accounts.google.com https://www.google.com https://www.gstatic.com/recaptcha/ https://www.google.com/recaptcha/ https://www.google.com/recaptcha/api2/ https://www.googletagmanager.com wss://*.pusher.com https://*.pusher.com wss://ws-*.pusher.com wss://ws-us3.pusher.com https://sockjs-us3.pusher.com https://api.whop.com https://*.whop.com https://checkout.whop.com https://cdn.jsdelivr.net https://vercel.com/api/",
-              "frame-src 'self' https://accounts.google.com https://www.google.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://checkout.whop.com https://*.whop.com",
+              "connect-src 'self' https: wss:",
+              "frame-src 'self' https:",
               "worker-src 'self' blob:",
               "manifest-src 'self'",
-              "media-src 'self' blob: data:",
+              "media-src 'self' blob: data: https:",
             ].join('; '),
-          },
+          }]),
           {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
