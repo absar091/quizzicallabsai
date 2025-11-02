@@ -36,8 +36,8 @@ export interface PaymentRecord {
   subscriptionId?: string;
   amount: number;
   currency: 'USD';
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  paymentMethod: 'safepay';
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+  paymentMethod: 'safepay' | 'payoneer' | 'whop';
   transactionId?: string;
   orderId: string;
   description: string;
@@ -399,6 +399,119 @@ class SubscriptionService {
       return [];
     }
   }
+
+  /**
+   * Activate subscription after successful payment
+   */
+  async activateSubscription(orderId: string): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      // Find subscription by order ID
+      const subscriptionsRef = db.collection('subscriptions');
+      const query = subscriptionsRef.where('orderId', '==', orderId);
+      const snapshot = await query.get();
+      
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        await doc.ref.update({
+          status: 'active',
+          activatedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ Subscription activated');
+      }
+    } catch (error) {
+      console.error('❌ Failed to activate subscription:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update subscription with external ID from payment provider
+   */
+  async updateSubscriptionExternalId(orderId: string, externalId: string): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      const subscriptionsRef = db.collection('subscriptions');
+      const snapshot = await subscriptionsRef.where('orderId', '==', orderId).get();
+      
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        await doc.ref.update({
+          externalId,
+          updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ Subscription external ID updated');
+      }
+    } catch (error) {
+      console.error('❌ Failed to update subscription external ID:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update payment status
+   */
+  async updatePaymentStatus(
+    orderId: string, 
+    status: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled',
+    transactionId?: string
+  ): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      const paymentsRef = db.collection('payments');
+      const snapshot = await paymentsRef.where('orderId', '==', orderId).get();
+      
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        const updateData: any = {
+          status,
+          updatedAt: new Date().toISOString()
+        };
+        
+        if (transactionId) {
+          updateData.transactionId = transactionId;
+        }
+        
+        await doc.ref.update(updateData);
+        console.log('✅ Payment status updated');
+      }
+    } catch (error) {
+      console.error('❌ Failed to update payment status:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Cancel subscription
+   */
+  async cancelSubscription(subscriptionId: string): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      const subscriptionsRef = db.collection('subscriptions');
+      const snapshot = await subscriptionsRef.where('externalId', '==', subscriptionId).get();
+      
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        await doc.ref.update({
+          status: 'cancelled',
+          cancelledAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ Subscription cancelled');
+      }
+    } catch (error) {
+      console.error('❌ Failed to cancel subscription:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance
@@ -418,4 +531,151 @@ export const isFeatureAvailable = (plan: SubscriptionPlan, feature: keyof Subscr
   if (typeof limit === 'boolean') return limit;
   if (typeof limit === 'number') return limit > 0 || limit === -1; // -1 means unlimited
   return false;
-};
+}
+
+/**
+ * Activate subscription after successful payment
+ */
+async activateSubscription(orderId: string): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      // Find subscription by order ID
+      const subscriptionsRef = db.collection('subscriptions');
+      const query = subscriptionsRef.where('orderId', '==', orderId);
+      const snapshot = await query.get();
+      
+      if (snapshot.empty) {
+        throw new Error(`No subscription found for order ID: ${orderId}`);
+      }
+      
+      const doc = snapshot.docs[0];
+      const now = new Date();
+      const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      
+      await doc.ref.update({
+        status: 'active',
+        currentPeriodStart: now.toISOString(),
+        currentPeriodEnd: nextMonth.toISOString(),
+        updatedAt: now.toISOString()
+      });
+      
+      console.log(`✅ Subscription activated for order: ${orderId}`);
+    } catch (error) {
+      console.error('❌ Error activating subscription:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update subscription external ID (from payment provider)
+   */
+  async updateSubscriptionExternalId(orderId: string, externalId: string): Promise<void> {
+    try {
+      const { db } = await import('@/lib/firebase-admin');
+      
+      const subscriptionsRef = db.collection('subscriptions');
+      const query = subscriptionsRef.where('orderId', '==', orderId);
+      const snapshot = await query.get();
+      
+      if (snapshot.empty) {
+        throw new Error(`No subscription found for order ID: ${orderId}`);
+      }
+      
+      const doc = snapshot.docs[0];
+      await doc.ref.update({
+        externalSubscriptionId: externalId,
+        updatedAt: new Date().toISOString()
+      });
+      
+      console.log(`✅ Updated subscription external ID for order: ${orderId}`);
+    } catch (error) {
+      console.error('❌ Error updating subscription external ID:', error);
+      throw error;
+    }
+  }
+/
+**
+ * Update subscription with external ID from payment provider
+ */
+async updateSubscriptionExternalId(orderId: string, externalId: string): Promise<void> {
+  try {
+    const { db } = await import('@/lib/firebase-admin');
+    
+    const subscriptionsRef = db.collection('subscriptions');
+    const snapshot = await subscriptionsRef.where('orderId', '==', orderId).get();
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      await doc.ref.update({
+        externalId,
+        updatedAt: new Date().toISOString()
+      });
+      
+      console.log('✅ Subscription external ID updated');
+    }
+  } catch (error) {
+    console.error('❌ Failed to update subscription external ID:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update payment status
+ */
+async updatePaymentStatus(
+  orderId: string, 
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled',
+  transactionId?: string
+): Promise<void> {
+  try {
+    const { db } = await import('@/lib/firebase-admin');
+    
+    const paymentsRef = db.collection('payments');
+    const snapshot = await paymentsRef.where('orderId', '==', orderId).get();
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      const updateData: any = {
+        status,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (transactionId) {
+        updateData.transactionId = transactionId;
+      }
+      
+      await doc.ref.update(updateData);
+      console.log('✅ Payment status updated');
+    }
+  } catch (error) {
+    console.error('❌ Failed to update payment status:', error);
+    throw error;
+  }
+}
+
+/**
+ * Cancel subscription
+ */
+async cancelSubscription(subscriptionId: string): Promise<void> {
+  try {
+    const { db } = await import('@/lib/firebase-admin');
+    
+    const subscriptionsRef = db.collection('subscriptions');
+    const snapshot = await subscriptionsRef.where('externalId', '==', subscriptionId).get();
+    
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      await doc.ref.update({
+        status: 'cancelled',
+        cancelledAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      console.log('✅ Subscription cancelled');
+    }
+  } catch (error) {
+    console.error('❌ Failed to cancel subscription:', error);
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 // Centralized icon imports to prevent missing import errors
-export {
+import {
   Crown,
   Trophy,
   Medal,

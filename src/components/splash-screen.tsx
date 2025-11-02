@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BrainCircuit } from "lucide-react";
-import "/src/styles/splash.css";
+import "../styles/splash.css";
 
 type SplashScreenProps = {
     onAnimationComplete: () => void;

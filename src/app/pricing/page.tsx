@@ -303,7 +303,7 @@ export default function PricingPage() {
               <div>
                 <h4 className="font-medium mb-2">How does the payment work?</h4>
                 <p className="text-sm text-muted-foreground">
-                  We use Payoneer, a secure international payment gateway. You can pay with credit/debit cards, PayPal, bank transfer, or digital wallets from anywhere in the world.
+                  We use Whop, a secure payment platform designed for digital products. You can pay with credit/debit cards, PayPal, Apple Pay, Google Pay, and more payment methods globally.
                 </p>
               </div>
               
@@ -340,7 +340,7 @@ export default function PricingPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full text-green-700 text-sm">
             <Shield className="h-4 w-4" />
-            Secure payments powered by Payoneer
+            Secure payments powered by Whop
           </div>
         </motion.div>
       </div>

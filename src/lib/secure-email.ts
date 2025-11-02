@@ -88,7 +88,7 @@ function createSecureTransporter() {
     throw new Error('Missing required SMTP configuration');
   }
 
-  return nodemailer.createTransporter(config);
+  return nodemailer.createTransport(config);
 }
 
 // Secure email sending function

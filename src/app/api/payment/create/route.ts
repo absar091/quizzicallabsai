@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/firebase-admin';
-import { createSubscriptionPayment, createOneTimePayment } from '@/lib/payoneer';
+import { createSubscriptionCheckout, createOneTimeCheckout } from '@/lib/whop';
 import { subscriptionService } from '@/lib/subscription';
 
 export async function POST(request: NextRequest) {
@@ -44,27 +44,26 @@ export async function POST(request: NextRequest) {
     let paymentResponse;
 
     if (paymentType === 'subscription') {
-      // Create subscription payment
-      paymentResponse = await createSubscriptionPayment(
+      // Create subscription checkout
+      paymentResponse = await createSubscriptionCheckout(
         userEmail,
         userName,
         planId as 'pro' | 'premium'
       );
     } else {
-      // Create one-time payment
-      const { amount, description } = body;
-      if (!amount || !description) {
+      // Create one-time checkout
+      const { productId } = body;
+      if (!productId) {
         return NextResponse.json(
-          { success: false, error: 'Amount and description required for one-time payments' },
+          { success: false, error: 'Product ID required for one-time payments' },
           { status: 400 }
         );
       }
 
-      paymentResponse = await createOneTimePayment(
+      paymentResponse = await createOneTimeCheckout(
         userEmail,
         userName,
-        amount,
-        description
+        productId
       );
     }
 
@@ -81,8 +80,8 @@ export async function POST(request: NextRequest) {
       amount: planId === 'pro' ? 2 : 5,
       currency: 'USD',
       status: 'pending',
-      paymentMethod: 'payoneer',
-      orderId: paymentResponse.orderId!,
+      paymentMethod: 'whop',
+      orderId: paymentResponse.sessionId!,
       description: `Quizzicallabzᴬᴵ ${planId} Subscription`
     });
 
@@ -94,7 +93,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       paymentUrl: paymentResponse.checkoutUrl,
-      orderId: paymentResponse.orderId,
       sessionId: paymentResponse.sessionId,
       paymentId
     });
