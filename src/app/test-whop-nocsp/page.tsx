@@ -19,8 +19,8 @@ export default function TestWhopNoCSPPage() {
   }, []);
 
   const openWhopCheckout = () => {
-    // Direct redirect to Whop checkout
-    window.open(`https://checkout.whop.com/${planId}`, '_blank');
+    // Direct redirect to Whop checkout - CORRECT URL
+    window.open(`https://whop.com/checkout/${planId}?d2c=true`, '_blank');
   };
 
   return (
@@ -61,7 +61,7 @@ export default function TestWhopNoCSPPage() {
               if (container) {
                 container.innerHTML = `
                   <iframe 
-                    src="https://checkout.whop.com/${planId}" 
+                    src="https://whop.com/checkout/${planId}?d2c=true" 
                     width="100%" 
                     height="600" 
                     frameborder="0"
