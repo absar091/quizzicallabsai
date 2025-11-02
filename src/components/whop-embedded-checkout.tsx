@@ -133,7 +133,7 @@ export default function WhopEmbeddedCheckout({
         ref={iframeRef}
         className="w-full h-full min-h-[600px] border-0 rounded-lg"
         title="Whop Checkout"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+        sandbox="allow-scripts allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox"
         loading="lazy"
       />
 

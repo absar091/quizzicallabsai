@@ -22,7 +22,7 @@ export default function TestWhopSimplePage() {
           Since the Whop React component has TypeScript issues, you can test the checkout directly:
         </p>
         <a 
-          href={`https://checkout.whop.com/${planId}`}
+          href={`https://whop.com/checkout/${planId}?d2c=true`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

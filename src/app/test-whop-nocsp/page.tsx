@@ -8,7 +8,7 @@ export default function TestWhopNoCSPPage() {
   useEffect(() => {
     // Inject Whop checkout script directly
     const script = document.createElement('script');
-    script.src = 'https://checkout.whop.com/embed.js';
+    script.src = 'https://whop.com/embed.js';
     script.async = true;
     document.head.appendChild(script);
 
