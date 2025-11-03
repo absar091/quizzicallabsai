@@ -37,6 +37,8 @@ import { AdminAccess } from "@/components/admin-access";
 import { SyncStatus, FloatingSyncIndicator, SyncStatusToast } from "@/components/sync-status";
 import { onCloudSyncUpdate } from "@/lib/cloud-sync";
 import { EnhancedLoading } from '@/components/enhanced-loading';
+import { UsageTracker } from "@/components/usage-tracker";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -183,6 +185,7 @@ export default function HomePage() {
   // New feature hooks
   const { bookmarks } = useQuizBookmarks(user?.uid || null);
   const { streak: studyStreakData, updateStreak } = useStudyStreak(user?.uid || null);
+  const { usage, canPerformAction } = useSubscription();
 
   // Global keyboard shortcuts
   const shortcuts = useGlobalKeyboardShortcuts({
@@ -384,7 +387,12 @@ export default function HomePage() {
         initial="hidden"
         animate="show"
       >
-        {plan === 'Free' && (
+        {/* Subscription Usage Tracker */}
+        <motion.div variants={itemVariants}>
+          <UsageTracker compact={true} />
+        </motion.div>
+
+        {usage?.plan === 'free' && (
           <motion.div variants={itemVariants}>
             <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
               <CardHeader className="flex-row items-start gap-4">
@@ -392,13 +400,20 @@ export default function HomePage() {
                   <Sparkles className="h-5 w-5 text-primary"/>
                 </div>
                 <div>
-                  <CardTitle>Upgrade to Pro</CardTitle>
-                  <CardDescription className="mt-1">Get advanced AI model, higher accuracy, and ad-free experience.</CardDescription>
+                  <CardTitle>Upgrade Your Plan</CardTitle>
+                  <CardDescription className="mt-1">
+                    Get more tokens, advanced AI models, and remove ads. 
+                    {usage && (
+                      <span className="block mt-1 text-sm">
+                        You've used {Math.round((usage.tokens_used / usage.tokens_limit) * 100)}% of your tokens this month.
+                      </span>
+                    )}
+                  </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
                 <Button asChild variant="default" size="sm">
-                  <Link href="/billing">Upgrade Now <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                  <Link href="/pricing">View Plans <ArrowRight className="ml-2 h-4 w-4"/></Link>
                 </Button>
               </CardContent>
             </Card>

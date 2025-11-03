@@ -92,6 +92,21 @@ function SignupForm() {
         plan: 'Free' // Default plan
       });
 
+      // Initialize subscription with Whop service
+      try {
+        const token = await userCredential.user.getIdToken();
+        await fetch('/api/subscription/initialize', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      } catch (subError) {
+        console.warn('Failed to initialize subscription:', subError);
+        // Don't fail signup if subscription init fails
+      }
+
       // Send custom verification email instead of Firebase
       const response = await fetch('/api/auth/send-verification', {
         method: 'POST',
