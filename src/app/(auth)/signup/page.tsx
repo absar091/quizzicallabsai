@@ -9,7 +9,8 @@ import * as z from "zod";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { ref, set } from "firebase/database";
-import RecaptchaV3 from "@/components/recaptcha-v3";
+import { RecaptchaV3Provider } from "@/components/recaptcha-v3-provider";
+import { useRecaptchaV3 } from "@/hooks/useRecaptchaV3";
 import React, { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ const formSchema = z.object({
   agree: z.boolean().refine(val => val, {
     message: "You must accept the terms to continue."
   }),
-  recaptcha: z.string().min(1, { message: "Please complete the reCAPTCHA challenge." }),
+
 });
 
 export default function SignupPage() {
@@ -49,7 +50,7 @@ export default function SignupPage() {
   const { signInWithGoogle } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const { executeRecaptcha, isRecaptchaReady } = useRecaptchaV3();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,13 +62,21 @@ export default function SignupPage() {
       className: "",
       age: '' as unknown as number, // Initialize with empty string to prevent uncontrolled input error
       agree: false,
-      recaptcha: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
+      // Execute reCAPTCHA v3 before proceeding
+      if (!executeRecaptcha) {
+        throw new Error('reCAPTCHA not ready. Please try again.');
+      }
+      
+      const recaptchaToken = await executeRecaptcha('signup');
+      if (!recaptchaToken) {
+        throw new Error('reCAPTCHA verification failed. Please try again.');
+      }
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
       await updateProfile(userCredential.user, {
@@ -92,7 +101,8 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email: values.email, 
-          name: values.fullName 
+          name: values.fullName,
+          recaptchaToken 
         })
       });
       
@@ -105,11 +115,6 @@ export default function SignupPage() {
         description: "A 6-digit verification code has been sent to your email. Please check your inbox.",
         duration: 9000,
       });
-      
-      // Reset reCAPTCHA
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
-      }
       
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
@@ -124,12 +129,6 @@ export default function SignupPage() {
         description: errorMessage,
         variant: "destructive",
       });
-      
-      // Reset reCAPTCHA on error
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
-      }
-      form.setValue('recaptcha', '');
     } finally {
         setIsSubmitting(false);
     }
