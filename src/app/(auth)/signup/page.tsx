@@ -9,7 +9,7 @@ import * as z from "zod";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { ref, set } from "firebase/database";
-import ReCAPTCHA from "react-google-recaptcha";
+import RecaptchaV3 from "@/components/recaptcha-v3";
 import React, { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
