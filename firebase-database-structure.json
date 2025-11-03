@@ -1,0 +1,83 @@
+{
+  "users": {
+    "userId": {
+      "uid": "string",
+      "fullName": "string",
+      "email": "string",
+      "plan": "free",
+      "subscription": {
+        "plan": "free|basic|pro|premium",
+        "subscription_id": "whop_subscription_id",
+        "subscription_status": "active|cancelled|expired|past_due",
+        "tokens_used": 0,
+        "tokens_limit": 100000,
+        "quizzes_used": 0,
+        "quizzes_limit": 20,
+        "billing_cycle_start": "2025-01-01T00:00:00.000Z",
+        "billing_cycle_end": "2025-02-01T00:00:00.000Z",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z"
+      },
+      "usage_warnings": {
+        "tokens_warning_sent": false,
+        "quizzes_warning_sent": false,
+        "limit_reached_notifications": 0
+      }
+    }
+  },
+  "subscriptions": {
+    "whop_subscription_id": {
+      "id": "whop_subscription_id",
+      "user_id": "userId",
+      "product_id": "whop_product_id",
+      "plan_name": "pro",
+      "status": "active",
+      "amount": 2.10,
+      "currency": "USD",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "updated_at": "2025-01-01T00:00:00.000Z"
+    }
+  },
+  "payments": {
+    "userId": {
+      "paymentId": {
+        "subscription_id": "whop_subscription_id",
+        "product_id": "whop_product_id",
+        "plan": "pro",
+        "amount": 2.10,
+        "currency": "USD",
+        "status": "succeeded",
+        "created_at": "2025-01-01T00:00:00.000Z"
+      }
+    }
+  },
+  "usage": {
+    "userId": {
+      "2025": {
+        "1": {
+          "tokens_used": 50000,
+          "quizzes_created": 15,
+          "plan": "pro",
+          "month": 1,
+          "year": 2025,
+          "daily_usage": {
+            "1": { "tokens": 2000, "quizzes": 1 },
+            "2": { "tokens": 1500, "quizzes": 2 }
+          }
+        }
+      }
+    }
+  },
+  "usage_violations": {
+    "userId": {
+      "violationId": {
+        "type": "token_limit_exceeded|quiz_limit_exceeded",
+        "attempted_usage": 1000,
+        "current_limit": 500000,
+        "plan": "pro",
+        "action_taken": "blocked|warning_sent",
+        "timestamp": "2025-01-01T00:00:00.000Z"
+      }
+    }
+  }
+}
