@@ -12,6 +12,7 @@ import InstallPwaPrompt from "./install-pwa-prompt";
 import { PWAInstallPrompt } from "./pwa-install-prompt";
 import { ServiceWorkerRegistration } from "./service-worker-registration";
 import { MobileOptimization } from "./mobile-optimization";
+import { RecaptchaV3Provider } from "@/components/recaptcha-v3-provider";
 
 import { useAuth } from "@/hooks/useAuth";
 import NotificationHandler from "./notification-handler";
@@ -88,13 +89,15 @@ export default function AppProviders({
         enableSystem
         disableTransitionOnChange
       >
-        <AuthProvider>
-          {isSplashLoading ? (
-            <SplashScreen onAnimationComplete={handleAnimationComplete} />
-          ) : (
-            <AppContent>{children}</AppContent>
-          )}
-        </AuthProvider>
+        <RecaptchaV3Provider>
+          <AuthProvider>
+            {isSplashLoading ? (
+              <SplashScreen onAnimationComplete={handleAnimationComplete} />
+            ) : (
+              <AppContent>{children}</AppContent>
+            )}
+          </AuthProvider>
+        </RecaptchaV3Provider>
       </ThemeProvider>
     );
   } catch {
