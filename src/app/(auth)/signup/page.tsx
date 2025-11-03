@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -11,7 +10,6 @@ import { useState } from "react";
 import { ref, set } from "firebase/database";
 import { RecaptchaV3Provider } from "@/components/recaptcha-v3-provider";
 import { useRecaptchaV3 } from "@/hooks/useRecaptchaV3";
-import React, { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +27,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   fullName: z.string().min(1, { message: "Full name is required." }),
@@ -41,16 +38,15 @@ const formSchema = z.object({
   agree: z.boolean().refine(val => val, {
     message: "You must accept the terms to continue."
   }),
-
 });
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
   const { toast } = useToast();
   const { signInWithGoogle } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const { executeRecaptcha, isRecaptchaReady } = useRecaptchaV3();
+  const { executeRecaptcha, isLoaded } = useRecaptchaV3();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,7 +56,7 @@ export default function SignupPage() {
       email: "",
       password: "",
       className: "",
-      age: '' as unknown as number, // Initialize with empty string to prevent uncontrolled input error
+      age: '' as unknown as number,
       agree: false,
     },
   });
@@ -77,6 +73,7 @@ export default function SignupPage() {
       if (!recaptchaToken) {
         throw new Error('reCAPTCHA verification failed. Please try again.');
       }
+
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       
       await updateProfile(userCredential.user, {
@@ -118,19 +115,19 @@ export default function SignupPage() {
       
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
-        let errorMessage = "An unknown error occurred.";
-        if (error.code === 'auth/email-already-in-use') {
-            errorMessage = "This email address is already in use. Please use a different email.";
-        } else {
-            errorMessage = error.message;
-        }
+      let errorMessage = "An unknown error occurred.";
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "This email address is already in use. Please use a different email.";
+      } else {
+        errorMessage = error.message;
+      }
       toast({
         title: "Signup Failed",
         description: errorMessage,
         variant: "destructive",
       });
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -142,7 +139,6 @@ export default function SignupPage() {
         title: "Welcome!",
         description: "Successfully signed in with Google.",
       });
-      // Redirect is handled by the AuthContext
     } catch (error: any) {
       let errorMessage = "Failed to sign in with Google. Please try again.";
       if (error.code === 'auth/popup-closed-by-user') {
@@ -169,54 +165,57 @@ export default function SignupPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-             <Button
-               variant="outline"
-               className="w-full"
-               onClick={handleGoogleSignIn}
-               type="button"
-               disabled={isSubmitting || isGoogleLoading}
-               loading={isGoogleLoading}
-               loadingText="Signing up with Google..."
-             >
-               <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                 <path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 110.3 512 0 401.8 0 265.8 0 130.2 105.4 21.8 244 21.8c67.2 0 123 24.8 166.3 65.9l-67.5 64.9C258.5 122.1 223.5 101.8 182.8 101.8c-70.3 0-126.5 58.2-126.5 130.1s56.2 130.1 126.5 130.1c76.3 0 115.4-53.7 122.5-81.8H285V246.3h199.1c.3 15.2.7 30.2.7 45.5z"></path>
-               </svg>
-               Sign up with Google
-             </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignIn}
+              type="button"
+              disabled={isSubmitting || isGoogleLoading}
+            >
+              {isGoogleLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+              ) : (
+                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                  <path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 110.3 512 0 401.8 0 265.8 0 130.2 105.4 21.8 244 21.8c67.2 0 123 24.8 166.3 65.9l-67.5 64.9C258.5 122.1 223.5 101.8 182.8 101.8c-70.3 0-126.5 58.2-126.5 130.1s56.2 130.1 126.5 130.1c76.3 0 115.4-53.7 122.5-81.8H285V246.3h199.1c.3 15.2.7 30.2.7 45.5z"></path>
+                </svg>
+              )}
+              {isGoogleLoading ? "Signing up with Google..." : "Sign up with Google"}
+            </Button>
 
             <div className="relative">
               <Separator />
               <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-card px-2 text-xs text-muted-foreground">OR SIGN UP WITH EMAIL</span>
             </div>
 
-             <div className="grid grid-cols-2 gap-4">
-                <FormField
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
                 control={form.control}
                 name="fullName"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="John Doe" {...field} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
-                 <FormField
+              />
+              <FormField
                 control={form.control}
                 name="fatherName"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Father's Name</FormLabel>
                     <FormControl>
-                        <Input placeholder="Richard Roe" {...field} />
+                      <Input placeholder="Richard Roe" {...field} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
+              />
             </div>
+
             <FormField
               control={form.control}
               name="email"
@@ -230,34 +229,36 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
+
             <div className="grid grid-cols-2 gap-4">
-                <FormField
+              <FormField
                 control={form.control}
                 name="className"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Class</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 10th Grade" {...field} />
+                      <Input placeholder="e.g., 10th Grade" {...field} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
-                 <FormField
+              />
+              <FormField
                 control={form.control}
                 name="age"
                 render={({ field }) => (
-                    <FormItem>
+                  <FormItem>
                     <FormLabel>Age</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="e.g., 16" {...field} />
+                      <Input type="number" placeholder="e.g., 16" {...field} />
                     </FormControl>
                     <FormMessage />
-                    </FormItem>
+                  </FormItem>
                 )}
-                />
+              />
             </div>
+
             <FormField
               control={form.control}
               name="password"
@@ -296,90 +297,70 @@ export default function SignupPage() {
                 );
               }}
             />
-             <FormField
-                control={form.control}
-                name="recaptcha"
-                render={({ field }) => {
-                  const isLocalhost = typeof window !== 'undefined' && 
-                    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-                  
-                  // Auto-fill recaptcha for localhost (use useEffect to avoid render issues)
-                  React.useEffect(() => {
-                    if (isLocalhost && !field.value) {
-                      field.onChange('localhost-bypass');
-                    }
-                  }, [isLocalhost, field.value, field.onChange]);
-                  
-                  return (
-                    <FormItem className="flex flex-col items-center">
-                    <FormControl>
-                        {isLocalhost ? (
-                          <div className="text-green-600 text-sm p-4 border border-green-200 rounded bg-green-50">
-                            ✅ reCAPTCHA bypassed for localhost testing
-                          </div>
-                        ) : process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
-                          <ReCAPTCHA
-                              ref={recaptchaRef}
-                              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                              onChange={(value) => field.onChange(value || "")}
-                              onExpired={() => field.onChange("")}
-                              onError={() => {
-                                console.error('reCAPTCHA error');
-                                field.onChange("");
-                              }}
-                          />
-                        ) : (
-                          <div className="text-red-500 text-sm">
-                            reCAPTCHA configuration missing. Please contact support.
-                          </div>
-                        )}
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                  );
-                }}
-             />
+
+            {/* reCAPTCHA v3 status indicator */}
+            <div className="flex items-center justify-center p-2">
+              {isLoaded ? (
+                <div className="text-green-600 text-sm flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Protected by reCAPTCHA v3
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+                  Loading security verification...
+                </div>
+              )}
+            </div>
+
             <FormField
-                control={form.control}
-                name="agree"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
-                    <FormControl>
-                        <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                        <FormLabel>
-                         I agree to the{" "}
-                         <Link href="/terms-of-use" className="text-primary hover:underline" target="_blank">
-                            Terms of Use
-                        </Link>
-                        ,{" "}
-                         <Link href="/privacy-policy" className="text-primary hover:underline" target="_blank">
-                            Privacy Policy
-                        </Link>
-                        , and{" "}
-                         <Link href="/disclaimer" className="text-primary hover:underline" target="_blank">
-                            Disclaimer
-                        </Link>.
-                        </FormLabel>
-                        <FormMessage />
-                    </div>
-                    </FormItem>
-                )}
-             />
+              control={form.control}
+              name="agree"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4 border">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      I agree to the{" "}
+                      <Link href="/terms-of-use" className="text-primary hover:underline" target="_blank">
+                        Terms of Use
+                      </Link>
+                      ,{" "}
+                      <Link href="/privacy-policy" className="text-primary hover:underline" target="_blank">
+                        Privacy Policy
+                      </Link>
+                      , and{" "}
+                      <Link href="/disclaimer" className="text-primary hover:underline" target="_blank">
+                        Disclaimer
+                      </Link>.
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
-              loading={isSubmitting}
-              loadingText="Creating Account..."
+              disabled={isSubmitting || !isLoaded}
             >
-              Create Account
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Creating Account...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </Button>
             <div className="text-center text-sm text-muted-foreground space-x-2">
               <span>Already have an account?</span>
@@ -388,13 +369,21 @@ export default function SignupPage() {
               </Link>
             </div>
             <div className="text-center text-sm text-muted-foreground">
-                <Link href="/how-to-use" className="font-medium text-primary hover:underline">
-                    Need Help?
-                </Link>
+              <Link href="/how-to-use" className="font-medium text-primary hover:underline">
+                Need Help?
+              </Link>
             </div>
           </CardFooter>
         </form>
       </Form>
     </Card>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <RecaptchaV3Provider>
+      <SignupForm />
+    </RecaptchaV3Provider>
   );
 }

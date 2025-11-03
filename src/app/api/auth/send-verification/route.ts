@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   }
   
   try {
-    const { email: rawEmail, name: rawName } = await request.json();
+    const { email: rawEmail, name: rawName, recaptchaToken } = await request.json();
     
     const email = sanitizeEmail(rawEmail);
     const name = sanitizeString(rawName || '');
@@ -29,12 +29,23 @@ export async function POST(request: NextRequest) {
     const isLocalhost = request.headers.get('host')?.includes('localhost') || 
                        request.headers.get('host')?.includes('127.0.0.1');
     
-    if (!isLocalhost) {
-      // Add reCAPTCHA verification for production
-      // const { recaptchaToken } = await request.json();
-      // if (!recaptchaToken) {
-      //   return NextResponse.json({ error: 'reCAPTCHA required' }, { status: 400 });
-      // }
+    if (!isLocalhost && recaptchaToken) {
+      // Verify reCAPTCHA token
+      try {
+        const verifyResponse = await fetch('/api/recaptcha/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: recaptchaToken, action: 'signup' })
+        });
+        
+        const verifyResult = await verifyResponse.json();
+        if (!verifyResult.success) {
+          return NextResponse.json({ error: 'reCAPTCHA verification failed' }, { status: 400 });
+        }
+      } catch (error) {
+        console.error('reCAPTCHA verification error:', error);
+        // Continue without blocking if reCAPTCHA service is down
+      }
     }
 
     // Generate verification code
