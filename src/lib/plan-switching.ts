@@ -1,5 +1,4 @@
-import { db } from '@/lib/firebase';
-import { ref, get, set, update } from 'firebase/database';
+import { db as adminDb } from '@/lib/firebase-admin';
 import { whopService } from '@/lib/whop';
 import { PLAN_LIMITS } from '@/lib/whop-constants';
 
@@ -33,6 +32,14 @@ class PlanSwitchingService {
     userEmail: string
   ): Promise<PlanSwitchResult> {
     try {
+      console.log('🔄 Plan change request:', { userId, currentPlan, requestedPlan, userEmail });
+      
+      // Check Firebase Admin initialization
+      if (!adminDb) {
+        console.error('❌ Firebase Admin not initialized');
+        throw new Error('Database connection not available. Please try again.');
+      }
+      
       // Validate plans
       if (!PLAN_LIMITS[requestedPlan as keyof typeof PLAN_LIMITS]) {
         return {
@@ -44,16 +51,40 @@ class PlanSwitchingService {
       }
 
       // Get current subscription info
-      const userRef = ref(db, `users/${userId}/subscription`);
-      const snapshot = await get(userRef);
+      console.log('📊 Fetching user subscription...');
+      const userRef = adminDb.ref(`users/${userId}/subscription`);
+      const snapshot = await userRef.once('value');
       
       if (!snapshot.exists()) {
-        return {
-          success: false,
-          message: 'Subscription not found. Please contact support.',
-          isImmediate: false,
-          error: 'SUBSCRIPTION_NOT_FOUND'
-        };
+        console.log('⚠️ Subscription not found, initializing user...');
+        // Initialize user first
+        try {
+          await whopService.initializeUser(userId, userEmail, userEmail.split('@')[0]);
+          console.log('✅ User initialized, retrying plan change...');
+          
+          // Now proceed with the upgrade
+          const checkoutUrl = await whopService.createCheckoutUrl(
+            requestedPlan,
+            userId,
+            userEmail
+          );
+
+          return {
+            success: true,
+            message: `Upgrading to ${requestedPlan}! Complete payment to activate immediately.`,
+            isImmediate: true,
+            checkoutUrl,
+            effectiveDate: 'Upon payment completion'
+          };
+        } catch (initError: any) {
+          console.error('❌ Failed to initialize user:', initError);
+          return {
+            success: false,
+            message: `Failed to initialize subscription: ${initError.message}. Please try again.`,
+            isImmediate: false,
+            error: 'INITIALIZATION_FAILED'
+          };
+        }
       }
 
       const subscription = snapshot.val();
@@ -78,8 +109,8 @@ class PlanSwitchingService {
           );
 
           // Store pending upgrade
-          const pendingRef = ref(db, `users/${userId}/pending_plan_change`);
-          await set(pendingRef, {
+          const pendingRef = adminDb.ref(`users/${userId}/pending_plan_change`);
+          await pendingRef.set({
             requested_plan: requestedPlan,
             current_plan: currentPlan,
             change_type: 'upgrade',
@@ -112,7 +143,7 @@ class PlanSwitchingService {
         const effectiveDate = billingCycleEnd.toISOString();
         
         // Store scheduled downgrade
-        const changeRequestRef = ref(db, `plan_change_requests/${userId}`);
+        const changeRequestRef = adminDb.ref(`plan_change_requests/${userId}`);
         const changeRequest: Omit<PlanChangeRequest, 'id'> = {
           user_id: userId,
           current_plan: currentPlan,
@@ -124,11 +155,11 @@ class PlanSwitchingService {
           reason: 'User requested downgrade'
         };
 
-        await set(changeRequestRef, changeRequest);
+        await changeRequestRef.set(changeRequest);
 
         // Update user's pending change
-        const pendingRef = ref(db, `users/${userId}/pending_plan_change`);
-        await set(pendingRef, {
+        const pendingRef = adminDb.ref(`users/${userId}/pending_plan_change`);
+        await pendingRef.set({
           requested_plan: requestedPlan,
           current_plan: currentPlan,
           change_type: 'downgrade',
@@ -173,9 +204,14 @@ class PlanSwitchingService {
 
     } catch (error: any) {
       console.error('❌ Plan change request failed:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       return {
         success: false,
-        message: 'An unexpected error occurred. Please try again or contact support.',
+        message: `An unexpected error occurred: ${error.message}. Please try again or contact support.`,
         isImmediate: false,
         error: error.message || 'UNKNOWN_ERROR'
       };
@@ -185,16 +221,20 @@ class PlanSwitchingService {
   // Cancel a pending plan change
   async cancelPlanChange(userId: string): Promise<{ success: boolean; message: string }> {
     try {
+      if (!adminDb) {
+        throw new Error('Firebase Admin not initialized');
+      }
+      
       // Remove pending change
-      const pendingRef = ref(db, `users/${userId}/pending_plan_change`);
-      await set(pendingRef, null);
+      const pendingRef = adminDb.ref(`users/${userId}/pending_plan_change`);
+      await pendingRef.remove();
 
       // Update change request status
-      const changeRequestRef = ref(db, `plan_change_requests/${userId}`);
-      const snapshot = await get(changeRequestRef);
+      const changeRequestRef = adminDb.ref(`plan_change_requests/${userId}`);
+      const snapshot = await changeRequestRef.once('value');
       
       if (snapshot.exists()) {
-        await update(changeRequestRef, {
+        await changeRequestRef.update({
           status: 'cancelled',
           cancelled_at: new Date().toISOString()
         });
@@ -219,8 +259,12 @@ class PlanSwitchingService {
     change?: any;
   }> {
     try {
-      const pendingRef = ref(db, `users/${userId}/pending_plan_change`);
-      const snapshot = await get(pendingRef);
+      if (!adminDb) {
+        throw new Error('Firebase Admin not initialized');
+      }
+      
+      const pendingRef = adminDb.ref(`users/${userId}/pending_plan_change`);
+      const snapshot = await pendingRef.once('value');
       
       if (snapshot.exists()) {
         return {
