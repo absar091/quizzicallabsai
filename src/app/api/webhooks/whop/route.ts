@@ -7,10 +7,17 @@ export async function POST(request: NextRequest) {
     console.log('📨 Received Whop webhook');
 
     const body = await request.text();
-    const signature = request.headers.get('whop-signature') || '';
+    const signature = request.headers.get('x-whop-signature') || request.headers.get('whop-signature') || '';
 
-    // Verify webhook signature
-    if (!whopService.verifyWebhookSignature(body, signature)) {
+    console.log('📋 Webhook details:', {
+      hasSignature: !!signature,
+      bodyLength: body.length,
+      headers: Object.fromEntries(request.headers.entries())
+    });
+
+    // Verify webhook signature (skip in development for testing)
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (!isDevelopment && !whopService.verifyWebhookSignature(body, signature)) {
       console.error('❌ Invalid webhook signature');
       return NextResponse.json(
         { success: false, error: 'Invalid signature' },
@@ -19,6 +26,8 @@ export async function POST(request: NextRequest) {
     }
 
     const webhookData = JSON.parse(body);
+    console.log('📦 Webhook payload:', JSON.stringify(webhookData, null, 2));
+
     const result = whopService.processWebhook(webhookData);
 
     if (!result.success) {
@@ -71,63 +80,43 @@ async function handleMembershipActivated(
   subscriptionId: string
 ) {
   try {
-    console.log('✅ Processing membership activation');
+    console.log('✅ Processing membership activation for:', userEmail);
     
-    // Find user by email and activate subscription
+    // Find user by email
     const db = (await import('@/lib/firebase-admin')).db;
     if (!db) {
       throw new Error('Firebase Admin not initialized');
     }
 
-    // Find user by email
     const usersRef = db.ref('users');
-    const userQuery = usersRef.orderByChild('email').equalTo(userEmail);
-    const userSnapshot = await userQuery.once('value');
+    const userQuery = await usersRef.orderByChild('email').equalTo(userEmail).once('value');
 
     let firebaseUserId = userId;
     
-    if (userSnapshot.exists()) {
-      userSnapshot.forEach((child) => {
+    if (userQuery.exists()) {
+      userQuery.forEach((child) => {
         firebaseUserId = child.key!;
       });
+      console.log(`✅ Found Firebase user: ${firebaseUserId}`);
+    } else {
+      console.warn(`⚠️ User not found by email: ${userEmail}, using Whop user ID: ${userId}`);
     }
 
-    // Determine plan type from Whop plan ID
-    const planType = planId === process.env.WHOP_PRO_PRODUCT_ID ? 'pro' : 'premium';
-
-    // Update subscription status
-    await subscriptionService.updateSubscriptionStatus(
-      firebaseUserId,
-      'active',
-      subscriptionId
-    );
-
-    // Update payment status if exists
-    const paymentsRef = db.ref('payments');
-    const paymentQuery = paymentsRef.orderByChild('userId').equalTo(firebaseUserId);
-    const paymentSnapshot = await paymentQuery.once('value');
-
-    if (paymentSnapshot.exists()) {
-      paymentSnapshot.forEach(async (child) => {
-        const paymentData = child.val();
-        if (paymentData.status === 'pending') {
-          await child.ref.update({
-            status: 'completed',
-            transactionId: subscriptionId,
-            updatedAt: new Date().toISOString()
-          });
-        }
-      });
-    }
+    // Upgrade user plan
+    await whopService.upgradePlan(firebaseUserId, userEmail, planId, subscriptionId);
 
     // Send confirmation email
     try {
       const { sendAutomatedPaymentConfirmation } = await import('@/lib/email-automation');
+      const planType = planId === process.env.WHOP_PRO_PRODUCT_ID ? 'pro' : 
+                      planId === process.env.WHOP_PREMIUM_PRODUCT_ID ? 'premium' : 'basic';
+      const amount = planType === 'pro' ? 2.10 : planType === 'premium' ? 3.86 : 1.05;
+      
       await sendAutomatedPaymentConfirmation(
         userEmail,
-        'User', // We might not have the name from Whop
+        'User',
         {
-          amount: planType === 'pro' ? 2 : 5,
+          amount,
           planName: `QuizzicalLabzᴬᴵ ${planType.toUpperCase()} Plan`,
           transactionId: subscriptionId,
           date: new Date().toLocaleDateString()
@@ -135,7 +124,6 @@ async function handleMembershipActivated(
       );
     } catch (emailError) {
       console.error('❌ Failed to send confirmation email:', emailError);
-      // Don't fail the webhook for email errors
     }
 
     console.log(`🎉 Membership activated for user: ${firebaseUserId}`);

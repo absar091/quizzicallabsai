@@ -330,6 +330,136 @@ class WhopService {
       return false;
     }
   }
+
+  // Verify Whop webhook signature
+  verifyWebhookSignature(body: string, signature: string): boolean {
+    try {
+      const webhookSecret = process.env.WHOP_WEBHOOK_SECRET;
+      if (!webhookSecret) {
+        console.error('❌ WHOP_WEBHOOK_SECRET not configured');
+        return false;
+      }
+
+      // Whop uses HMAC SHA-256 for webhook signatures
+      const crypto = require('crypto');
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(body)
+        .digest('hex');
+
+      return signature === expectedSignature;
+    } catch (error) {
+      console.error('❌ Failed to verify webhook signature:', error);
+      return false;
+    }
+  }
+
+  // Process Whop webhook (supports v1 and v2 API formats)
+  processWebhook(webhookData: any): {
+    success: boolean;
+    event?: string;
+    userId?: string;
+    userEmail?: string;
+    planId?: string;
+    status?: string;
+    subscriptionId?: string;
+  } {
+    try {
+      console.log('🔍 Processing webhook data:', JSON.stringify(webhookData, null, 2));
+
+      // Whop v1 API format
+      const action = webhookData.action || webhookData.type || webhookData.event;
+      const data = webhookData.data || webhookData;
+
+      // Map Whop events to our internal events
+      const eventMap: Record<string, string> = {
+        'membership.went_valid': 'membership_activated',
+        'membership.went_invalid': 'membership_cancelled',
+        'membership.updated': 'membership_renewed',
+        'payment.succeeded': 'membership_activated',
+        'payment_succeeded': 'membership_activated',
+        'membership_went_valid': 'membership_activated',
+        'membership_went_invalid': 'membership_cancelled',
+      };
+
+      const event = eventMap[action] || action;
+      
+      // Extract user and subscription info (handle multiple formats)
+      const userId = data.user?.id || data.user_id || data.userId || '';
+      const userEmail = data.user?.email || data.email || data.user_email || '';
+      const planId = data.plan?.id || data.product_id || data.plan_id || data.product?.id || '';
+      const subscriptionId = data.id || data.membership_id || data.subscription_id || '';
+      const status = data.status || data.valid ? 'active' : 'inactive';
+
+      console.log('✅ Extracted webhook data:', {
+        event,
+        userId,
+        userEmail,
+        planId,
+        subscriptionId,
+        status
+      });
+
+      return {
+        success: true,
+        event,
+        userId,
+        userEmail,
+        planId,
+        status,
+        subscriptionId,
+      };
+    } catch (error) {
+      console.error('❌ Failed to process webhook:', error);
+      return { success: false };
+    }
+  }
+
+  // Upgrade user plan after successful payment
+  async upgradePlan(userId: string, userEmail: string, planId: string, subscriptionId: string): Promise<void> {
+    try {
+      if (!adminDb) {
+        throw new Error('Firebase Admin not initialized');
+      }
+
+      // Map Whop plan ID to our plan names
+      const planMapping: Record<string, 'basic' | 'pro' | 'premium'> = {
+        [process.env.WHOP_BASIC_PRODUCT_ID || '']: 'basic',
+        [process.env.WHOP_PRO_PRODUCT_ID || '']: 'pro',
+        [process.env.WHOP_PREMIUM_PRODUCT_ID || '']: 'premium',
+      };
+
+      const plan = planMapping[planId] || 'free';
+      const limits = PLAN_LIMITS[plan];
+
+      const now = new Date();
+      const cycleEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+
+      // Update user subscription
+      const userRef = adminDb.ref(`users/${userId}/subscription`);
+      await userRef.update({
+        plan,
+        subscription_id: subscriptionId,
+        subscription_status: 'active',
+        tokens_used: 0, // Reset usage on upgrade
+        tokens_limit: limits.tokens,
+        quizzes_used: 0, // Reset usage on upgrade
+        quizzes_limit: limits.quizzes,
+        billing_cycle_start: now.toISOString(),
+        billing_cycle_end: cycleEnd.toISOString(),
+        updated_at: now.toISOString(),
+      });
+
+      // Remove pending plan change if exists
+      const pendingRef = adminDb.ref(`users/${userId}/pending_plan_change`);
+      await pendingRef.remove();
+
+      console.log(`✅ User ${userId} upgraded to ${plan} plan`);
+    } catch (error) {
+      console.error('❌ Failed to upgrade user plan:', error);
+      throw error;
+    }
+  }
 }
 
 export const whopService = new WhopService();
