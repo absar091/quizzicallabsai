@@ -1,6 +1,7 @@
 import { db } from '@/lib/firebase';
 import { ref, get, update, push, set } from 'firebase/database';
-import { whopService, PLAN_LIMITS } from '@/lib/whop';
+import { whopService } from '@/lib/whop';
+import { PLAN_LIMITS } from '@/lib/whop-constants';
 
 export interface UsageViolation {
   id: string;

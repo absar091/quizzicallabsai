@@ -37,7 +37,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
-import { PLAN_LIMITS } from '@/lib/whop';
+import { PLAN_LIMITS } from '@/lib/whop-constants';
 
 interface UsageAnalyticsProps {
   userId?: string;

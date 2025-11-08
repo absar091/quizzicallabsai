@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PLAN_LIMITS } from '@/lib/whop';
+import { PLAN_LIMITS } from '@/lib/whop-constants';
 import { 
   TrendingUp, 
   Calendar, 

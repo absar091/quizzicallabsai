@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { whopService, PLAN_LIMITS } from '@/lib/whop';
+import { PLAN_LIMITS } from '@/lib/whop-constants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,8 +41,28 @@ export default function PricingPage() {
     if (!user) return;
     
     try {
-      const usage = await whopService.getUserUsage(user.uid);
-      setUserUsage(usage);
+      // Get Firebase token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        throw new Error('Not authenticated');
+      }
+
+      const token = await currentUser.getIdToken();
+
+      // Fetch usage from API
+      const response = await fetch('/api/subscription/usage', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserUsage(data.usage);
+      }
     } catch (error) {
       console.error('Failed to load user usage:', error);
     } finally {

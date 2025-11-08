@@ -15,7 +15,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Zap, FileText, TrendingUp, Crown } from 'lucide-react';
 import Link from 'next/link';
-import { PLAN_LIMITS } from '@/lib/whop';
+import { PLAN_LIMITS } from '@/lib/whop-constants';
 
 interface UsageLimitModalProps {
   open?: boolean;
