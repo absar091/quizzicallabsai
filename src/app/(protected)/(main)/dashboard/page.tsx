@@ -39,6 +39,7 @@ import { onCloudSyncUpdate } from "@/lib/cloud-sync";
 import { EnhancedLoading } from '@/components/enhanced-loading';
 import { UsageTracker } from "@/components/usage-tracker";
 import { useSubscription } from "@/hooks/useSubscription";
+import { SubscriptionInitializer } from "@/components/subscription-initializer";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -185,7 +186,7 @@ export default function HomePage() {
   // New feature hooks
   const { bookmarks } = useQuizBookmarks(user?.uid || null);
   const { streak: studyStreakData, updateStreak } = useStudyStreak(user?.uid || null);
-  const { usage, canPerformAction } = useSubscription();
+  const { usage, canPerformAction, loading: subscriptionLoading, error: subscriptionError } = useSubscription();
 
   // Global keyboard shortcuts
   const shortcuts = useGlobalKeyboardShortcuts({
@@ -389,7 +390,24 @@ export default function HomePage() {
       >
         {/* Subscription Usage Tracker */}
         <motion.div variants={itemVariants}>
-          <UsageTracker compact={true} />
+          {subscriptionLoading ? (
+            <Card className="p-4">
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                <span className="text-sm text-muted-foreground">Loading subscription...</span>
+              </div>
+            </Card>
+          ) : subscriptionError && subscriptionError.includes('not found') ? (
+            <SubscriptionInitializer />
+          ) : subscriptionError ? (
+            <Card className="p-4 border-red-200 bg-red-50">
+              <div className="flex items-center gap-2 text-red-800">
+                <span className="text-sm">⚠️ Error loading subscription: {subscriptionError}</span>
+              </div>
+            </Card>
+          ) : (
+            <UsageTracker compact={true} />
+          )}
         </motion.div>
 
         {usage?.plan === 'free' && (

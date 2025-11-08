@@ -241,9 +241,21 @@ export function useSubscription(): UseSubscriptionReturn {
   // Initialize user if no usage data found
   useEffect(() => {
     if (user && !loading && !usage && !error) {
+      console.log('🔄 Auto-initializing user subscription...');
       initializeUser();
     }
   }, [user, loading, usage, error, initializeUser]);
+
+  // Auto-retry initialization if it fails
+  useEffect(() => {
+    if (error && error.includes('not found') && user) {
+      console.log('⚠️ Subscription not found, retrying initialization...');
+      const timer = setTimeout(() => {
+        initializeUser();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, user, initializeUser]);
 
   return {
     usage,
