@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateQuizFromDocumentServer } from '@/ai/server-only';
+import { trackAIUsage } from '@/middleware/track-ai-usage';
 
-export async function POST(request: NextRequest) {
+async function quizFromDocumentHandler(request: NextRequest) {
   try {
     console.log('📄 Quiz from document generation API called');
     
@@ -59,3 +60,9 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Wrap with usage tracking middleware
+export const POST = trackAIUsage(quizFromDocumentHandler, {
+  estimateFromOutput: true,
+  minimumTokens: 800
+});

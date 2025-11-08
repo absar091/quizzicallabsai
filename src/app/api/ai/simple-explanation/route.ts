@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSimpleExplanationServer } from '@/ai/server-only';
+import { trackAIUsage } from '@/middleware/track-ai-usage';
 
-export async function POST(request: NextRequest) {
+async function simpleExplanationHandler(request: NextRequest) {
   try {
     console.log('💡 Simple explanation API called');
     
@@ -50,3 +51,9 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Wrap with usage tracking middleware
+export const POST = trackAIUsage(simpleExplanationHandler, {
+  estimateFromOutput: true,
+  minimumTokens: 150
+});

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCustomQuizServer } from '@/ai/server-only';
+import { trackAIUsage } from '@/middleware/track-ai-usage';
 
-export async function POST(request: NextRequest) {
+async function customQuizHandler(request: NextRequest) {
   try {
     console.log('🎯 Quiz generation API called');
 
@@ -23,7 +24,24 @@ export async function POST(request: NextRequest) {
       timeoutPromise
     ]);
 
-    console.log('✅ Quiz generated successfully:', result.quiz?.length, 'questions');
+    console.log('✅ Quiz generated successfully:', (result as any).quiz?.length, 'questions');
+
+    // Track quiz creation if 15+ questions
+    if ((result as any).quiz && (result as any).quiz.length >= 15) {
+      try {
+        const { whopService } = await import('@/lib/whop');
+        const authHeader = request.headers.get('authorization');
+        if (authHeader?.startsWith('Bearer ')) {
+          const token = authHeader.split('Bearer ')[1];
+          const { auth } = await import('@/lib/firebase-admin');
+          const decodedToken = await auth.verifyIdToken(token);
+          await whopService.trackQuizCreation(decodedToken.uid);
+          console.log(`✅ Tracked quiz creation for user ${decodedToken.uid}`);
+        }
+      } catch (error) {
+        console.error('❌ Failed to track quiz creation:', error);
+      }
+    }
 
     return NextResponse.json(result);
   } catch (error: any) {
@@ -47,3 +65,9 @@ export async function POST(request: NextRequest) {
     }, { status: 500 });
   }
 }
+
+// Wrap with usage tracking middleware
+export const POST = trackAIUsage(customQuizHandler, {
+  estimateFromOutput: true,
+  minimumTokens: 500 // Quizzes use at least 500 tokens
+});

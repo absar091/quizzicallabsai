@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateFlashcardsServer } from '@/ai/server-only';
+import { trackAIUsage } from '@/middleware/track-ai-usage';
 
-export async function POST(request: NextRequest) {
+async function flashcardsHandler(request: NextRequest) {
   try {
     console.log('🃏 Flashcards generation API called');
     
@@ -47,3 +48,9 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Wrap with usage tracking middleware
+export const POST = trackAIUsage(flashcardsHandler, {
+  estimateFromOutput: true,
+  minimumTokens: 300
+});

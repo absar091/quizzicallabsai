@@ -81,6 +81,17 @@ export async function POST(request: NextRequest) {
         explanationLength: result.explanation.length
       });
 
+      // Track token usage
+      try {
+        const { whopService } = await import('@/lib/whop');
+        const { estimateTokens } = await import('@/lib/token-estimation');
+        const tokensUsed = Math.max(estimateTokens(result.explanation) * 1.2, 300);
+        await whopService.trackTokenUsage(userId, Math.ceil(tokensUsed));
+        console.log(`✅ Tracked ${Math.ceil(tokensUsed)} tokens for image explanation`);
+      } catch (trackError) {
+        console.error('❌ Failed to track usage:', trackError);
+      }
+
       return NextResponse.json({
         success: true,
         explanation: result.explanation,

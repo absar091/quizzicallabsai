@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateStudyGuideServer } from '@/ai/server-only';
+import { trackAIUsage } from '@/middleware/track-ai-usage';
 
-export async function POST(request: NextRequest) {
+async function studyGuideHandler(request: NextRequest) {
   try {
     console.log('📚 Study guide generation API called');
     
@@ -39,3 +40,9 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Wrap with usage tracking middleware
+export const POST = trackAIUsage(studyGuideHandler, {
+  estimateFromOutput: true,
+  minimumTokens: 1000 // Study guides use at least 1000 tokens
+});
