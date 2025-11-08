@@ -22,7 +22,7 @@ class RecaptchaV3Service {
   constructor() {
     this.config = {
       siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY || '',
-      secretKey: process.env.RECAPTCHA_V3_SECRET_KEY || '',
+      secretKey: process.env.RECAPTCHA_V3_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY || '',
       minimumScore: 0.5 // Default threshold (0.5 = balanced, 0.7 = strict, 0.3 = lenient)
     };
   }

@@ -109,11 +109,11 @@ class WhopService {
   // Create checkout URL for a plan
   async createCheckoutUrl(planId: string, userId: string, userEmail: string): Promise<string> {
     try {
-      // Map plan names to Whop product IDs
+      // Map plan names to Whop product IDs (automatically reads from .env.local)
       const productIdMap: Record<string, string> = {
-        'basic': process.env.WHOP_BASIC_PRODUCT_ID || 'plan_basic_id',
-        'pro': process.env.WHOP_PRO_PRODUCT_ID || 'plan_m7YM780QOrUbK',
-        'premium': process.env.WHOP_PREMIUM_PRODUCT_ID || 'plan_premium_id',
+        'basic': process.env.WHOP_BASIC_PRODUCT_ID || '',
+        'pro': process.env.WHOP_PRO_PRODUCT_ID || '',
+        'premium': process.env.WHOP_PREMIUM_PRODUCT_ID || '',
       };
 
       const whopProductId = productIdMap[planId];

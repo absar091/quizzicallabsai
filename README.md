@@ -257,7 +257,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 GOOGLE_AI_API_KEY=your_gemini_api_key
 
 # Additional services
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_key
+NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY=your_recaptcha_v3_site_key
 ```
 
 ### **Production Deployment**
