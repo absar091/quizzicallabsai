@@ -2,6 +2,7 @@
 
 import { useSubscription } from '@/hooks/useSubscription';
 import { UsageTracker } from '@/components/usage-tracker';
+import { PendingPlanChange } from '@/components/pending-plan-change';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -80,6 +81,9 @@ export function SubscriptionDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Pending Plan Change Alert */}
+      <PendingPlanChange />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

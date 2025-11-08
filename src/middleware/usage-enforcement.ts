@@ -109,55 +109,81 @@ export function withUsageEnforcement(options: UsageEnforcementOptions) {
   };
 }
 
+// Import token estimation service
+import { TokenEstimationService } from '@/lib/token-estimation';
+
 // Token estimation functions for different types of requests
 export const tokenEstimators = {
   // Estimate tokens for quiz generation
   quizGeneration: (body: any): number => {
-    const baseTokens = 1000; // Base cost for quiz generation
-    const questionsCount = body.questionsCount || 10;
-    const topicComplexity = body.topic?.length || 50;
-    const difficultyMultiplier = {
-      'easy': 1,
-      'medium': 1.5,
-      'hard': 2,
-    }[body.difficulty] || 1;
-
-    return Math.round(baseTokens + (questionsCount * 100) + (topicComplexity * 2) * difficultyMultiplier);
+    const estimate = TokenEstimationService.estimateQuizGeneration({
+      questionsCount: body.questionsCount || body.numberOfQuestions || 10,
+      topic: body.topic || '',
+      difficulty: body.difficulty || 'medium',
+      includeExplanations: body.includeExplanations !== false,
+      includeHints: body.includeHints || false,
+    });
+    return estimate.estimated;
   },
 
   // Estimate tokens for explanation generation
   explanationGeneration: (body: any): number => {
-    const baseTokens = 500;
-    const contentLength = (body.content || '').length;
-    const detailLevel = {
-      'brief': 1,
-      'detailed': 2,
-      'comprehensive': 3,
-    }[body.detailLevel] || 1;
-
-    return Math.round(baseTokens + (contentLength * 0.5) * detailLevel);
+    const estimate = TokenEstimationService.estimateExplanation({
+      content: body.content || body.question || '',
+      detailLevel: body.detailLevel || 'standard',
+      includeExamples: body.includeExamples || false,
+    });
+    return estimate.estimated;
   },
 
   // Estimate tokens for study guide generation
   studyGuideGeneration: (body: any): number => {
-    const baseTokens = 1500;
-    const topicComplexity = (body.topic || '').length;
-    const sectionsCount = body.sections || 5;
-    
-    return Math.round(baseTokens + (topicComplexity * 3) + (sectionsCount * 200));
+    const estimate = TokenEstimationService.estimateStudyGuide({
+      topic: body.topic || '',
+      sections: body.sections || 5,
+      depth: body.depth || 'standard',
+      includeQuizzes: body.includeQuizzes || false,
+    });
+    return estimate.estimated;
   },
 
   // Estimate tokens for document analysis
   documentAnalysis: (body: any): number => {
-    const baseTokens = 800;
-    const documentLength = (body.document || '').length;
-    const analysisDepth = {
-      'summary': 1,
-      'detailed': 2,
-      'comprehensive': 3,
-    }[body.analysisType] || 1;
+    const estimate = TokenEstimationService.estimateDocumentAnalysis({
+      documentLength: (body.document || body.content || '').length,
+      analysisType: body.analysisType || 'detailed',
+      extractQuestions: body.extractQuestions || false,
+    });
+    return estimate.estimated;
+  },
 
-    return Math.round(baseTokens + (documentLength * 0.3) * analysisDepth);
+  // Estimate tokens for flashcard generation
+  flashcardGeneration: (body: any): number => {
+    const estimate = TokenEstimationService.estimateFlashcards({
+      content: body.content || '',
+      cardCount: body.cardCount || 10,
+      includeImages: body.includeImages || false,
+    });
+    return estimate.estimated;
+  },
+
+  // Estimate tokens for question generation
+  questionGeneration: (body: any): number => {
+    const estimate = TokenEstimationService.estimateQuestions({
+      topic: body.topic || '',
+      questionCount: body.questionCount || 5,
+      difficulty: body.difficulty || 'medium',
+    });
+    return estimate.estimated;
+  },
+
+  // Estimate tokens for simple explanation
+  simpleExplanation: (body: any): number => {
+    const estimate = TokenEstimationService.estimateSimpleExplanation({
+      question: body.question || '',
+      answer: body.answer || '',
+    });
+    return estimate.estimated;
   },
 };
 

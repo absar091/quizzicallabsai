@@ -55,11 +55,23 @@ export async function GET(request: NextRequest) {
 
     console.log(`🎉 Monthly usage reset completed. Processed: ${processed}, Errors: ${errors}`);
 
+    // Also process scheduled plan changes
+    const { planSwitchingService } = await import('@/lib/plan-switching');
+    const planChangeResults = await planSwitchingService.processScheduledChanges();
+    
+    console.log(`📋 Processed ${planChangeResults.processed} scheduled plan changes`);
+
     return NextResponse.json({
       success: true,
-      message: 'Monthly usage reset completed',
-      processed,
-      errors,
+      message: 'Monthly usage reset and plan changes completed',
+      usageReset: {
+        processed,
+        errors,
+      },
+      planChanges: {
+        processed: planChangeResults.processed,
+        errors: planChangeResults.errors,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

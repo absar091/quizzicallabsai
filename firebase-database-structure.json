@@ -21,8 +21,32 @@
       "usage_warnings": {
         "tokens_warning_sent": false,
         "quizzes_warning_sent": false,
-        "limit_reached_notifications": 0
+        "limit_reached_notifications": 0,
+        "last_warning_sent": "2025-01-01T00:00:00.000Z"
+      },
+      "pending_plan_change": {
+        "requested_plan": "pro",
+        "current_plan": "basic",
+        "change_type": "upgrade|downgrade|switch",
+        "requested_at": "2025-01-01T00:00:00.000Z",
+        "effective_date": "2025-02-01T00:00:00.000Z",
+        "status": "pending|scheduled|pending_payment|completed|cancelled",
+        "checkout_url": "https://whop.com/checkout/..."
       }
+    }
+  },
+  "plan_change_requests": {
+    "userId": {
+      "user_id": "userId",
+      "current_plan": "basic",
+      "requested_plan": "pro",
+      "requested_at": "2025-01-01T00:00:00.000Z",
+      "effective_date": "2025-02-01T00:00:00.000Z",
+      "status": "pending|completed|cancelled",
+      "change_type": "upgrade|downgrade|switch",
+      "reason": "User requested upgrade",
+      "completed_at": "2025-02-01T00:00:00.000Z",
+      "cancelled_at": "2025-01-15T00:00:00.000Z"
     }
   },
   "subscriptions": {

@@ -62,13 +62,57 @@ export default function PricingPage() {
 
     setUpgrading(planId);
     try {
-      const checkoutUrl = await whopService.createCheckoutUrl(planId, user.uid, user.email || '');
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      console.error('Failed to create checkout URL:', error);
+      // Get Firebase token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        throw new Error('Not authenticated');
+      }
+
+      const token = await currentUser.getIdToken();
+
+      // Request plan change
+      const response = await fetch('/api/subscription/change-plan', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          requestedPlan: planId,
+          currentPlan: userUsage?.plan || 'free',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to change plan');
+      }
+
+      // Show success message
       toast({
-        title: "Upgrade Failed",
-        description: "Failed to create checkout session. Please try again.",
+        title: data.isImmediate ? "Redirecting to Checkout" : "Plan Change Scheduled",
+        description: data.message,
+      });
+
+      // Redirect to checkout if immediate (upgrade)
+      if (data.checkoutUrl) {
+        setTimeout(() => {
+          window.location.href = data.checkoutUrl;
+        }, 1500);
+      } else {
+        // Reload usage data
+        await loadUserUsage();
+      }
+
+    } catch (error: any) {
+      console.error('Failed to change plan:', error);
+      toast({
+        title: "Plan Change Failed",
+        description: error.message || "Failed to process plan change. Please try again.",
         variant: "destructive",
       });
     } finally {

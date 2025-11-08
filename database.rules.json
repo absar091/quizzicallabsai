@@ -2,77 +2,114 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
+    
     "shared_quizzes": {
       ".read": true,
       ".write": "auth != null",
-      ".indexOn": ["shareCode", "createdAt", "ownerId", "subject", "difficulty", "isPublic"],
+      ".indexOn": ["shareCode", "createdAt", "ownerId"],
       "$quizId": {
         ".read": "auth != null || (data.exists() && data.child('isPublic').val() == true)",
         ".write": "auth != null",
         "$child": {
           ".read": "auth != null || (data.exists() && data.parent().child('isPublic').val() == true)"
-        },
-        "attempts": {
-          ".indexOn": ["completedAt", "score", "userId"],
-          "$attemptId": {
-            ".read": true,
-            ".write": "auth != null"
-          }
-        },
-        "ratings": {
-          ".indexOn": ["rating", "createdAt"],
-          "$userId": {
-            ".read": true,
-            ".write": "auth != null && auth.uid == $userId"
-          }
-        },
-        "comments": {
-          ".indexOn": ["createdAt", "userId"],
-          "$commentId": {
-            ".read": true,
-            ".write": "auth != null"
-          }
         }
       }
     },
+    
     "quizResults": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["createdAt", "topic", "difficulty", "score", "completedAt"]
+        ".indexOn": ["createdAt", "topic", "difficulty"]
       }
     },
+    
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified", "lastLogin", "lastActivityAt"],
-        "quizHistory": {
-          ".indexOn": ["completedAt", "score", "topic", "subject", "category"],
-          "$quizId": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid"
-          }
-        },
-        "profile": {
+        ".indexOn": ["lastModified", "lastLogin"],
+        
+        "subscription": {
           ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid"
+          ".write": false,
+          ".indexOn": ["plan", "billing_cycle_end"]
         },
-        "preferences": {
+        
+        "usage_warnings": {
           ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid"
+          ".write": false
+        },
+        
+        "pending_plan_change": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": false
         }
       }
     },
-
-
+    
+    "subscriptions": {
+      "$subscription_id": {
+        ".read": "data.child('user_id').val() === auth.uid",
+        ".write": false
+      }
+    },
+    
+    "payments": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": false,
+        ".indexOn": ["created_at", "status"]
+      }
+    },
+    
+    "usage": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": false,
+        ".indexOn": ["month", "year"]
+      }
+    },
+    
+    "usage_violations": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": false,
+        ".indexOn": ["timestamp", "type"]
+      }
+    },
+    
+    "plan_change_requests": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    
+    "bookmarks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    
+    "studyStreaks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".indexOn": ["lastModified"]
+      }
+    },
+    
     "studyTime": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified", "date", "subject", "duration", "sessionStart"]
+        ".indexOn": ["lastModified"]
       }
     },
+    
     "userPreferences": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
@@ -80,13 +117,15 @@
         ".indexOn": ["lastModified"]
       }
     },
+    
     "achievements": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["lastModified", "unlockedAt", "category", "type"]
+        ".indexOn": ["lastModified"]
       }
     },
+    
     "syncMetadata": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
@@ -94,193 +133,44 @@
         ".indexOn": ["lastSync"]
       }
     },
+    
     "quiz-rooms": {
       ".read": "auth != null",
-      ".write": "auth != null",
-      ".indexOn": ["createdAt", "hostId", "isActive", "gameMode"],
-      "$roomId": {
-        ".read": true,
-        ".write": "auth != null",
-        "players": {
-          ".indexOn": ["joinedAt", "score", "isActive"],
-          "$playerId": {
-            ".read": true,
-            ".write": "auth != null"
-          }
-        },
-        "answers": {
-          ".indexOn": ["submittedAt", "questionIndex", "userId"],
-          "$answerId": {
-            ".read": true,
-            ".write": "auth != null"
-          }
-        },
-        "chat": {
-          ".indexOn": ["timestamp", "userId"],
-          "$messageId": {
-            ".read": true,
-            ".write": "auth != null"
-          }
-        }
-      }
+      ".write": "auth != null"
     },
+    
     "quiz_likes": {
       ".read": true,
       ".write": "auth != null",
-      ".indexOn": ["userId", "quizId", "createdAt"]
+      ".indexOn": ["userId"]
     },
+    
     "questionBank": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["topic", "difficulty", "lastModified", "subject", "category"]
+        ".indexOn": ["topic", "difficulty", "lastModified"]
       }
     },
+    
     "user_quiz_history": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
         ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["topic", "timestamp", "score", "completedAt", "subject"]
+        ".indexOn": ["topic", "timestamp"]
       }
     },
+    
     "fcmTokens": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid",
-        ".indexOn": ["updatedAt", "platform", "isActive"]
+        ".write": "auth != null && auth.uid == $uid"
       }
     },
+    
     "public": {
       ".read": true,
       ".write": "auth != null"
-    },
-    "leaderboards": {
-      ".read": true,
-      ".indexOn": ["score", "subject", "timeframe", "lastUpdated"],
-      "$leaderboardId": {
-        ".read": true,
-        ".write": "auth != null"
-      }
-    },
-    "analytics": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        "daily": {
-          ".indexOn": ["date", "subject", "totalTime"],
-          "$date": {
-            ".read": "auth != null && auth.uid == $userId",
-            ".write": "auth != null && auth.uid == $userId"
-          }
-        },
-        "weekly": {
-          ".indexOn": ["week", "subject", "totalQuizzes"],
-          "$week": {
-            ".read": "auth != null && auth.uid == $userId",
-            ".write": "auth != null && auth.uid == $userId"
-          }
-        },
-        "monthly": {
-          ".indexOn": ["month", "subject", "averageScore"],
-          "$month": {
-            ".read": "auth != null && auth.uid == $userId",
-            ".write": "auth != null && auth.uid == $userId"
-          }
-        }
-      }
-    },
-    "emailPreferences": {
-      ".read": true,
-      ".write": true,
-      ".indexOn": ["email", "updatedAt"]
-    },
-    "emailLogs": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-      ".indexOn": ["timestamp", "emailType", "userId", "status"]
-    },
-    "loginNotifications": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-      ".indexOn": ["timestamp", "userId", "deviceType", "location"]
-    },
-    "deviceTracking": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["lastSeen", "firstSeen", "deviceType", "isActive"]
-      }
-    },
-    "app-settings": {
-      ".read": true,
-      ".write": false
-    },
-    "maintenance": {
-      ".read": true,
-      ".write": false
-    },
-    "announcements": {
-      ".read": true,
-      ".indexOn": ["createdAt", "priority", "isActive"],
-      "$announcementId": {
-        ".read": true,
-        ".write": false
-      }
-    },
-    "feedback": {
-      ".read": false,
-      ".write": "auth != null",
-      ".indexOn": ["createdAt", "type", "userId"],
-      "$feedbackId": {
-        ".write": "auth != null && (!data.exists() || auth.uid == data.child('userId').val())"
-      }
-    },
-    "reports": {
-      ".read": false,
-      ".write": "auth != null",
-      ".indexOn": ["createdAt", "type", "reportedBy"],
-      "$reportId": {
-        ".write": "auth != null"
-      }
-    },
-    "system-logs": {
-      ".read": false,
-      ".write": false
-    },
-    "subscriptions": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["status", "planId", "createdAt", "currentPeriodEnd"]
-      }
-    },
-    "payments": {
-      "$paymentId": {
-        ".read": "auth != null && auth.uid == data.child('userId').val()",
-        ".write": "auth != null && auth.uid == data.child('userId').val()",
-        ".indexOn": ["userId", "status", "createdAt", "orderId"]
-      }
-    },
-    "loginCredentials": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["timestamp", "deviceFingerprint", "location"]
-      }
-    },
-    "studyStreaks": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["lastModified", "lastStudyDate", "currentStreak", "longestStreak", "totalStudyDays"]
-      }
-    },
-    "bookmarks": {
-      "$userId": {
-        ".read": "auth != null && auth.uid == $userId",
-        ".write": "auth != null && auth.uid == $userId",
-        ".indexOn": ["bookmarkedAt", "subject", "difficulty", "quizTitle"]
-      }
     }
   }
 }
