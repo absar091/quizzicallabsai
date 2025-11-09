@@ -28,6 +28,7 @@ export default function Footer() {
               <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms-of-use" className="hover:text-primary transition-colors">Terms of Use</Link></li>
               <li><Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link></li>
               <li><Link href="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link></li>
               <li><Link href="/security" className="hover:text-primary transition-colors">Security Policy</Link></li>
               <li><Link href="/.well-known/security.txt" className="hover:text-primary transition-colors">Security.txt</Link></li>

@@ -257,15 +257,19 @@ export default function Home() {
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-foreground">Unlimited quizzes</span>
+                    <span className="text-foreground">100K AI Tokens/month</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-foreground">Public quiz battles</span>
+                    <span className="text-foreground">20 Quizzes/month</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-foreground">Basic AI model</span>
+                    <span className="text-foreground">Basic AI Model</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="text-foreground">Community Support</span>
                   </li>
                 </ul>
                 <Button className="w-full bg-primary hover:bg-primary/90" asChild>
@@ -282,23 +286,27 @@ export default function Home() {
               </div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Pro</h3>
-                <div className="text-4xl font-bold mb-6 text-foreground">$2<span className="text-lg text-muted-foreground">/month</span></div>
+                <div className="text-4xl font-bold mb-6 text-foreground">$2.10<span className="text-lg text-muted-foreground">/month</span></div>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-accent rounded-full"></div>
-                    <span className="text-foreground">Everything in Free</span>
+                    <span className="text-foreground">500K AI Tokens/month</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-accent rounded-full"></div>
-                    <span className="text-foreground">Private quiz rooms</span>
+                    <span className="text-foreground">90 Quizzes/month</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-accent rounded-full"></div>
-                    <span className="text-foreground">Advanced AI (Gemini 2.0)</span>
+                    <span className="text-foreground">Gemini 1.5 Pro</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-accent rounded-full"></div>
-                    <span className="text-foreground">Detailed analytics</span>
+                    <span className="text-foreground">No Ads</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent rounded-full"></div>
+                    <span className="text-foreground">Priority Support</span>
                   </li>
                 </ul>
                 <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" asChild>

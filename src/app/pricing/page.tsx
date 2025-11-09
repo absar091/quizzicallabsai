@@ -454,6 +454,30 @@ export default function PricingPage() {
           </Button>
         )}
       </div>
+
+      {/* Legal Terms */}
+      <div className="mt-12 p-6 bg-muted/20 rounded-lg space-y-4 text-sm text-muted-foreground">
+        <h3 className="text-lg font-semibold text-foreground">Terms & Conditions</h3>
+        <p>
+          By subscribing to any paid plan, you agree to our{' '}
+          <Link href="/terms-of-service" className="text-primary hover:underline">Terms of Service</Link>,{' '}
+          <Link href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>, and{' '}
+          <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link>.
+        </p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>All subscriptions are billed monthly and renew automatically</li>
+          <li>You can cancel your subscription at any time from your account settings</li>
+          <li>Refunds are available within 7 days of initial purchase (see our <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link>)</li>
+          <li>Usage limits reset at the beginning of each billing cycle</li>
+          <li>Prices are in USD and may vary by region</li>
+          <li>We reserve the right to modify pricing with 30 days notice</li>
+        </ul>
+        <p className="pt-4 border-t">
+          <strong>Payment Processing:</strong> All payments are securely processed through Whop. 
+          We do not store your payment information. For payment-related questions, please contact{' '}
+          <a href="mailto:support@quizzicallabz.com" className="text-primary hover:underline">support@quizzicallabz.com</a>
+        </p>
+      </div>
     </div>
   );
 }
