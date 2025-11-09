@@ -1,17 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateFlashcardsServer } from '@/ai/server-only';
-import { trackAIUsage } from '@/middleware/track-ai-usage';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
-async function flashcardsHandler(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     console.log('🃏 Flashcards generation API called');
     
     const body = await request.json();
     const { topic, incorrectQuestions } = body;
     
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+    
     console.log('📝 Flashcards input:', { 
       topic: topic?.substring(0, 50), 
-      incorrectQuestionsCount: incorrectQuestions?.length 
+      incorrectQuestionsCount: incorrectQuestions?.length,
+      remaining
     });
 
     // Add timeout wrapper
@@ -27,8 +52,22 @@ async function flashcardsHandler(request: NextRequest) {
       timeoutPromise
     ]);
 
-    console.log('✅ Flashcards generated successfully:', result.flashcards?.length, 'cards');
-    return NextResponse.json(result);
+    // ✅ Track Usage - Use actual tokens from Gemini (when flow is updated)
+    const resultData = result as any;
+    const usedTokens = resultData.usedTokens || 0;
+    
+    if (usedTokens > 0) {
+      await trackTokenUsage(userId, usedTokens);
+      console.log(`✅ Flashcards generated successfully: ${resultData.flashcards?.length} cards, tracked ${usedTokens} tokens`);
+    } else {
+      console.warn('⚠️ No token usage data returned from Gemini');
+    }
+    
+    return NextResponse.json({
+      flashcards: resultData.flashcards,
+      usage: usedTokens,
+      remaining: remaining - usedTokens
+    });
   } catch (error: any) {
     console.error('❌ Flashcards generation error:', error.message);
     
@@ -48,9 +87,3 @@ async function flashcardsHandler(request: NextRequest) {
     );
   }
 }
-
-// Wrap with usage tracking middleware
-export const POST = trackAIUsage(flashcardsHandler, {
-  estimateFromOutput: true,
-  minimumTokens: 300
-});

@@ -109,112 +109,16 @@ export function withUsageEnforcement(options: UsageEnforcementOptions) {
   };
 }
 
-// Import token estimation service
-import { TokenEstimationService } from '@/lib/token-estimation';
-
-// Token estimation functions for different types of requests
-export const tokenEstimators = {
-  // Estimate tokens for quiz generation
-  quizGeneration: (body: any): number => {
-    const estimate = TokenEstimationService.estimateQuizGeneration({
-      questionsCount: body.questionsCount || body.numberOfQuestions || 10,
-      topic: body.topic || '',
-      difficulty: body.difficulty || 'medium',
-      includeExplanations: body.includeExplanations !== false,
-      includeHints: body.includeHints || false,
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for explanation generation
-  explanationGeneration: (body: any): number => {
-    const estimate = TokenEstimationService.estimateExplanation({
-      content: body.content || body.question || '',
-      detailLevel: body.detailLevel || 'standard',
-      includeExamples: body.includeExamples || false,
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for study guide generation
-  studyGuideGeneration: (body: any): number => {
-    const estimate = TokenEstimationService.estimateStudyGuide({
-      topic: body.topic || '',
-      sections: body.sections || 5,
-      depth: body.depth || 'standard',
-      includeQuizzes: body.includeQuizzes || false,
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for document analysis
-  documentAnalysis: (body: any): number => {
-    const estimate = TokenEstimationService.estimateDocumentAnalysis({
-      documentLength: (body.document || body.content || '').length,
-      analysisType: body.analysisType || 'detailed',
-      extractQuestions: body.extractQuestions || false,
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for flashcard generation
-  flashcardGeneration: (body: any): number => {
-    const estimate = TokenEstimationService.estimateFlashcards({
-      content: body.content || '',
-      cardCount: body.cardCount || 10,
-      includeImages: body.includeImages || false,
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for question generation
-  questionGeneration: (body: any): number => {
-    const estimate = TokenEstimationService.estimateQuestions({
-      topic: body.topic || '',
-      questionCount: body.questionCount || 5,
-      difficulty: body.difficulty || 'medium',
-    });
-    return estimate.estimated;
-  },
-
-  // Estimate tokens for simple explanation
-  simpleExplanation: (body: any): number => {
-    const estimate = TokenEstimationService.estimateSimpleExplanation({
-      question: body.question || '',
-      answer: body.answer || '',
-    });
-    return estimate.estimated;
-  },
-};
-
 // Pre-configured middleware for common use cases
 export const enforceQuizUsage = withUsageEnforcement({
   actionType: 'quiz',
   amount: 1,
 });
 
+// Note: Token estimation is now done using actual Gemini usage metadata
+// These are kept for backward compatibility but should be migrated to real usage tracking
 export const enforceTokenUsage = (estimator: (body: any) => number) => 
   withUsageEnforcement({
     actionType: 'token',
     estimateTokens: estimator,
   });
-
-export const enforceQuizGenerationUsage = withUsageEnforcement({
-  actionType: 'token',
-  estimateTokens: tokenEstimators.quizGeneration,
-});
-
-export const enforceExplanationUsage = withUsageEnforcement({
-  actionType: 'token',
-  estimateTokens: tokenEstimators.explanationGeneration,
-});
-
-export const enforceStudyGuideUsage = withUsageEnforcement({
-  actionType: 'token',
-  estimateTokens: tokenEstimators.studyGuideGeneration,
-});
-
-export const enforceDocumentAnalysisUsage = withUsageEnforcement({
-  actionType: 'token',
-  estimateTokens: tokenEstimators.documentAnalysis,
-});

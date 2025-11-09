@@ -1,18 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSimpleExplanationServer } from '@/ai/server-only';
-import { trackAIUsage } from '@/middleware/track-ai-usage';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
-async function simpleExplanationHandler(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     console.log('💡 Simple explanation API called');
     
     const body = await request.json();
     const { question, correctAnswer, topic, isPro } = body;
     
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+    
     console.log('📝 Simple explanation input:', { 
       question: question?.substring(0, 50), 
       topic: topic?.substring(0, 30),
-      isPro 
+      isPro,
+      remaining
     });
 
     // Add timeout wrapper
@@ -30,8 +55,22 @@ async function simpleExplanationHandler(request: NextRequest) {
       timeoutPromise
     ]);
 
-    console.log('✅ Simple explanation generated successfully');
-    return NextResponse.json(result);
+    // ✅ Track Usage - Use actual tokens from Gemini (when flow is updated)
+    const resultData = result as any;
+    const usedTokens = resultData.usedTokens || 0;
+    
+    if (usedTokens > 0) {
+      await trackTokenUsage(userId, usedTokens);
+      console.log(`✅ Simple explanation generated successfully, tracked ${usedTokens} tokens`);
+    } else {
+      console.warn('⚠️ No token usage data returned from Gemini');
+    }
+    
+    return NextResponse.json({
+      explanation: resultData.explanation,
+      usage: usedTokens,
+      remaining: remaining - usedTokens
+    });
   } catch (error: any) {
     console.error('❌ Simple explanation error:', error.message);
     
@@ -51,9 +90,3 @@ async function simpleExplanationHandler(request: NextRequest) {
     );
   }
 }
-
-// Wrap with usage tracking middleware
-export const POST = trackAIUsage(simpleExplanationHandler, {
-  estimateFromOutput: true,
-  minimumTokens: 150
-});

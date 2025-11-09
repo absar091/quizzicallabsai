@@ -1,17 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { enforceQuizGenerationUsage } from '@/middleware/usage-enforcement';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
 // Example of a protected API route that enforces usage limits
-async function generateQuizHandler(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // Get user info from headers (added by middleware)
-    const userId = request.headers.get('x-user-id');
-    const usageAmount = parseInt(request.headers.get('x-usage-amount') || '0');
-    const remainingUsage = parseInt(request.headers.get('x-remaining-usage') || '0');
-    const warningLevel = request.headers.get('x-warning-level');
-
     const body = await request.json();
     const { topic, difficulty, questionsCount } = body;
+    
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+    
+    const warningLevel = remaining < 10000 ? 'critical' : remaining < 25000 ? 'low' : 'normal';
 
     // Validate input
     if (!topic || !difficulty || !questionsCount) {
@@ -22,7 +42,7 @@ async function generateQuizHandler(request: NextRequest): Promise<NextResponse> 
 
     // Your quiz generation logic here
     console.log(`🎯 Generating quiz for user ${userId}`);
-    console.log(`📊 Token usage: ${usageAmount}, Remaining: ${remainingUsage}`);
+    console.log(`📊 Remaining tokens: ${remaining}`);
     console.log(`⚠️ Warning level: ${warningLevel}`);
 
     // Simulate quiz generation
@@ -37,17 +57,21 @@ async function generateQuizHandler(request: NextRequest): Promise<NextResponse> 
         correctAnswer: 0,
         explanation: `This is the explanation for question ${i + 1}`,
       })),
-      tokensUsed: usageAmount,
       createdAt: new Date().toISOString(),
     };
+
+    // ✅ Track Usage - Estimate for demo (in real app, use actual tokens from Genkit)
+    const estimatedTokens = questionsCount * 150 + 500;
+    await trackTokenUsage(userId, estimatedTokens);
+    console.log(`✅ Tracked ${estimatedTokens} tokens for quiz generation`);
 
     // Include usage info in response
     const response = {
       success: true,
       quiz,
       usage: {
-        tokensUsed: usageAmount,
-        remainingTokens: remainingUsage,
+        tokensUsed: estimatedTokens,
+        remainingTokens: remaining - estimatedTokens,
         warningLevel,
         ...(warningLevel === 'critical' && {
           warning: 'You are approaching your token limit. Consider upgrading your plan.'
@@ -67,6 +91,3 @@ async function generateQuizHandler(request: NextRequest): Promise<NextResponse> 
     }, { status: 500 });
   }
 }
-
-// Export the protected handler
-export const POST = enforceQuizGenerationUsage(generateQuizHandler);

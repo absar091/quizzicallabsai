@@ -1,13 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateNtsQuizServer } from '@/ai/server-only';
-import { trackAIUsage } from '@/middleware/track-ai-usage';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
-async function ntsQuizHandler(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     console.log('🎯 NTS quiz generation API called');
     
     const body = await request.json();
-    console.log('📝 NTS input:', { category: body.category, topic: body.topic?.substring(0, 50) });
+    
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+    
+    console.log('📝 NTS input:', { category: body.category, topic: body.topic?.substring(0, 50), remaining });
 
     // Add timeout wrapper
     const timeoutPromise = new Promise((_, reject) => {
@@ -19,8 +44,22 @@ async function ntsQuizHandler(request: NextRequest) {
       timeoutPromise
     ]);
 
-    console.log('✅ NTS quiz generated successfully:', result.quiz?.length, 'questions');
-    return NextResponse.json(result);
+    // ✅ Track Usage - Use actual tokens from Gemini (when flow is updated)
+    const resultData = result as any;
+    const usedTokens = resultData.usedTokens || 0;
+    
+    if (usedTokens > 0) {
+      await trackTokenUsage(userId, usedTokens);
+      console.log(`✅ NTS quiz generated successfully: ${resultData.quiz?.length} questions, tracked ${usedTokens} tokens`);
+    } else {
+      console.warn('⚠️ No token usage data returned from Gemini');
+    }
+    
+    return NextResponse.json({
+      quiz: resultData.quiz,
+      usage: usedTokens,
+      remaining: remaining - usedTokens
+    });
   } catch (error: any) {
     console.error('❌ NTS quiz generation error:', error.message);
     
@@ -40,9 +79,3 @@ async function ntsQuizHandler(request: NextRequest) {
     );
   }
 }
-
-// Wrap with usage tracking middleware
-export const POST = trackAIUsage(ntsQuizHandler, {
-  estimateFromOutput: true,
-  minimumTokens: 500
-});

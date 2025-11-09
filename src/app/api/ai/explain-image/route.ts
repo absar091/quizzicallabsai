@@ -81,13 +81,17 @@ export async function POST(request: NextRequest) {
         explanationLength: result.explanation.length
       });
 
-      // Track token usage
+      // Track token usage - Use actual tokens from Gemini (when flow is updated)
       try {
-        const { whopService } = await import('@/lib/whop');
-        const { estimateTokens } = await import('@/lib/token-estimation');
-        const tokensUsed = Math.max(estimateTokens(result.explanation) * 1.2, 300);
-        await whopService.trackTokenUsage(userId, Math.ceil(tokensUsed));
-        console.log(`✅ Tracked ${Math.ceil(tokensUsed)} tokens for image explanation`);
+        const { trackTokenUsage } = await import('@/lib/usage');
+        const usedTokens = (result as any).usedTokens || 0;
+        
+        if (usedTokens > 0) {
+          await trackTokenUsage(userId, usedTokens);
+          console.log(`✅ Tracked ${usedTokens} tokens for image explanation`);
+        } else {
+          console.warn('⚠️ No token usage data returned from Gemini');
+        }
       } catch (trackError) {
         console.error('❌ Failed to track usage:', trackError);
       }
