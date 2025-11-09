@@ -71,7 +71,9 @@ export async function POST(request: NextRequest) {
       remaining: remaining - usedTokens
     });
   } catch (error: any) {
-    console.error('❌ Study guide generation error:', error.message);
+    console.error('❌ Study guide generation error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     
     let errorMessage = error.message || 'Failed to generate study guide';
     
@@ -84,7 +86,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: errorMessage },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }
