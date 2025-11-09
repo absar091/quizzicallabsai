@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { whopService } from '@/lib/whop';
 import { auth } from '@/lib/firebase-admin';
-import { estimateTokens } from '@/lib/token-estimation';
+import { estimateTokens } from '@/lib/estimate-tokens';
 
 /**
  * Middleware to track AI usage (tokens) for all AI API routes
