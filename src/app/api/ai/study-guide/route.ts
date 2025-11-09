@@ -1,13 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateStudyGuideServer } from '@/ai/server-only';
-import { trackAIUsage } from '@/middleware/track-ai-usage';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
-async function studyGuideHandler(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     console.log('📚 Study guide generation API called');
     
     const body = await request.json();
-    console.log('📝 Study guide input:', { topic: body.topic?.substring(0, 50), isPro: body.isPro });
+    
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+
+    console.log('📝 Study guide input:', { 
+      topic: body.topic?.substring(0, 50), 
+      isPro: body.isPro,
+      remaining
+    });
 
     // Add timeout wrapper
     const timeoutPromise = new Promise((_, reject) => {
@@ -19,8 +48,28 @@ async function studyGuideHandler(request: NextRequest) {
       timeoutPromise
     ]);
 
-    console.log('✅ Study guide generated successfully');
-    return NextResponse.json(result);
+    // ✅ Track Usage - Use actual tokens from Gemini
+    const resultData = result as any;
+    const usedTokens = resultData.usedTokens || 0;
+    
+    if (usedTokens > 0) {
+      await trackTokenUsage(userId, usedTokens);
+      console.log(`✅ Study guide generated successfully, tracked ${usedTokens} actual tokens`);
+    } else {
+      console.warn('⚠️ No token usage data returned from Gemini');
+    }
+    
+    return NextResponse.json({
+      studyGuide: {
+        title: resultData.title,
+        summary: resultData.summary,
+        keyConcepts: resultData.keyConcepts,
+        analogies: resultData.analogies,
+        quizYourself: resultData.quizYourself
+      },
+      usage: usedTokens,
+      remaining: remaining - usedTokens
+    });
   } catch (error: any) {
     console.error('❌ Study guide generation error:', error.message);
     
@@ -40,9 +89,3 @@ async function studyGuideHandler(request: NextRequest) {
     );
   }
 }
-
-// Wrap with usage tracking middleware
-export const POST = trackAIUsage(studyGuideHandler, {
-  estimateFromOutput: true,
-  minimumTokens: 1000 // Study guides use at least 1000 tokens
-});

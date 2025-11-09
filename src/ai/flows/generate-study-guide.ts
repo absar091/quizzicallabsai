@@ -40,7 +40,8 @@ const GenerateStudyGuideOutputSchema = z.object({
           question: z.string().describe("A quick question to test understanding."),
           answer: z.string().describe("The answer to the question.")
       })
-  ).describe("A few questions to help the user test their knowledge.")
+  ).describe("A few questions to help the user test their knowledge."),
+  usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateStudyGuideOutput = z.infer<typeof GenerateStudyGuideOutputSchema>;
 
@@ -129,6 +130,13 @@ const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
         const result = await prompt(input);
         output = result.output;
         
+        // ✅ Correct & safe token usage extraction for Genkit
+        const usedTokens =
+          (result as any)?.raw?.response?.usageMetadata?.totalTokenCount ??
+          (result as any)?.raw?.usageMetadata?.totalTokenCount ??
+          0;
+        console.log(`📊 Gemini usage: ${usedTokens} tokens for study guide`);
+        
         if (
           output &&
           output.title &&
@@ -141,7 +149,7 @@ const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
           output.quizYourself &&
           Array.isArray(output.quizYourself)
         ) {
-          return output;
+          return { ...output, usedTokens };
         } else {
           throw new Error("AI returned incomplete study guide");
         }

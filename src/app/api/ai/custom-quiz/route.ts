@@ -1,17 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCustomQuizServer } from '@/ai/server-only';
-import { trackAIUsage } from '@/middleware/track-ai-usage';
+import { auth } from '@/lib/firebase-admin';
+import { trackTokenUsage } from '@/lib/usage';
+import { checkTokenLimit } from '@/lib/check-limit';
 
-async function customQuizHandler(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     console.log('🎯 Quiz generation API called');
 
     const input = await request.json();
+    
+    // ✅ Get logged in user
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await auth.verifyIdToken(token);
+    const userId = decoded.uid;
+
+    // ✅ Check Limit
+    const { allowed, remaining } = await checkTokenLimit(userId);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { status: 402 }
+      );
+    }
+
     console.log('📝 Input received:', {
       topic: input.topic,
       difficulty: input.difficulty,
       numberOfQuestions: input.numberOfQuestions,
-      isPro: input.isPro
+      isPro: input.isPro,
+      remaining
     });
 
     // Add timeout wrapper
@@ -26,24 +52,35 @@ async function customQuizHandler(request: NextRequest) {
 
     console.log('✅ Quiz generated successfully:', (result as any).quiz?.length, 'questions');
 
+    // ✅ Track Usage - Use actual tokens from Gemini
+    const resultData = result as any;
+    const usedTokens = resultData.usedTokens || 0;
+    const questionCount = resultData.quiz?.length || 0;
+    
+    if (usedTokens > 0) {
+      await trackTokenUsage(userId, usedTokens);
+      console.log(`✅ Quiz generated successfully, tracked ${usedTokens} actual tokens for ${questionCount} questions`);
+    } else {
+      console.warn('⚠️ No token usage data returned from Gemini');
+    }
+
     // Track quiz creation if 15+ questions
-    if ((result as any).quiz && (result as any).quiz.length >= 15) {
+    if (questionCount >= 15) {
       try {
         const { whopService } = await import('@/lib/whop');
-        const authHeader = request.headers.get('authorization');
-        if (authHeader?.startsWith('Bearer ')) {
-          const token = authHeader.split('Bearer ')[1];
-          const { auth } = await import('@/lib/firebase-admin');
-          const decodedToken = await auth.verifyIdToken(token);
-          await whopService.trackQuizCreation(decodedToken.uid);
-          console.log(`✅ Tracked quiz creation for user ${decodedToken.uid}`);
-        }
+        await whopService.trackQuizCreation(userId);
+        console.log(`✅ Tracked quiz creation for user ${userId}`);
       } catch (error) {
         console.error('❌ Failed to track quiz creation:', error);
       }
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json({
+      comprehensionText: resultData.comprehensionText,
+      quiz: resultData.quiz,
+      usage: usedTokens,
+      remaining: remaining - usedTokens
+    });
   } catch (error: any) {
     console.error('❌ Quiz generation API error:', error.message);
     console.error('Stack trace:', error.stack);
@@ -65,9 +102,3 @@ async function customQuizHandler(request: NextRequest) {
     }, { status: 500 });
   }
 }
-
-// Wrap with usage tracking middleware
-export const POST = trackAIUsage(customQuizHandler, {
-  estimateFromOutput: true,
-  minimumTokens: 500 // Quizzes use at least 500 tokens
-});

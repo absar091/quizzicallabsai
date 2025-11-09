@@ -50,6 +50,7 @@ const GenerateCustomQuizOutputSchema = z.object({
       correctAnswer: z.string().optional().describe('The correct answer for a multiple-choice question.'),
     })
   ).describe('The generated quiz questions and answers.'),
+  usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSchema>;
 
@@ -242,8 +243,15 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
         const result = await prompt(input);
         output = result.output;
         
+        // ✅ Correct & safe token usage extraction for Genkit
+        const usedTokens =
+          (result as any)?.raw?.response?.usageMetadata?.totalTokenCount ??
+          (result as any)?.raw?.usageMetadata?.totalTokenCount ??
+          0;
+        console.log(`📊 Gemini usage: ${usedTokens} tokens for ${output?.quiz?.length || 0} questions`);
+        
         if (output && output.quiz && output.quiz.length > 0) {
-          return output;
+          return { ...output, usedTokens };
         } else {
           throw new Error("AI returned empty quiz");
         }
