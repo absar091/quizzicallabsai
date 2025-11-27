@@ -95,9 +95,21 @@ export default function GenerateStudyGuidePage() {
     setIsGenerating(true);
     setStudyGuide(null);
     try {
+      // Get auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('Please sign in to generate study guides');
+      }
+
       const response = await fetch('/api/ai/study-guide', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           ...values,
           isPro: user?.plan === 'Pro',

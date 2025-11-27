@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,6 +12,16 @@ export function SubscriptionInitializer() {
   const [initializing, setInitializing] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [autoInitAttempted, setAutoInitAttempted] = useState(false);
+
+  // Auto-initialize on mount
+  useEffect(() => {
+    if (user && !autoInitAttempted && !initializing) {
+      setAutoInitAttempted(true);
+      console.log('🔄 Auto-initializing subscription for new user...');
+      handleInitialize();
+    }
+  }, [user, autoInitAttempted, initializing]);
 
   const handleInitialize = async () => {
     if (!user) {
@@ -51,12 +61,14 @@ export function SubscriptionInitializer() {
       }
 
       setStatus('success');
-      setMessage('Subscription initialized successfully! Refreshing page...');
+      setMessage('Subscription initialized successfully! Refreshing...');
       
-      // Reload page after 2 seconds
+      console.log('✅ Subscription auto-initialized successfully');
+      
+      // Reload page after 1 second
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
 
     } catch (error: any) {
       console.error('Failed to initialize subscription:', error);

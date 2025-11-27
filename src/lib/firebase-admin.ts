@@ -117,6 +117,24 @@ export const firestore = (() => {
   }
 })();
 
+// Export Realtime Database helper functions for compatibility with client SDK
+export const ref = (database: admin.database.Database | null, path: string) => {
+  if (!database) throw new Error('Database not initialized');
+  return database.ref(path);
+};
+
+export const get = async (reference: admin.database.Reference) => {
+  return await reference.get();
+};
+
+export const set = async (reference: admin.database.Reference, value: any) => {
+  return await reference.set(value);
+};
+
+export const remove = async (reference: admin.database.Reference) => {
+  return await reference.remove();
+};
+
 // Export initialization status and error info for debugging
 export const isFirebaseAdminInitialized = () => isInitialized;
 export const getFirebaseAdminError = () => initializationError;

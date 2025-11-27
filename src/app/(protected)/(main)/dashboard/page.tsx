@@ -60,16 +60,18 @@ function AiInsightsCard({ recentActivity, userName, userPlan }: { recentActivity
   const [insights, setInsights] = useState<GenerateDashboardInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
   }, []);
   
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted || hasFetched) return;
     
     async function fetchInsights() {
       setIsLoading(true);
+      setHasFetched(true);
       try {
         const response = await fetch('/api/ai/dashboard-insights', {
           method: 'POST',
@@ -98,7 +100,7 @@ function AiInsightsCard({ recentActivity, userName, userPlan }: { recentActivity
     }
     
     fetchInsights();
-  }, [recentActivity, userName, isMounted]);
+  }, [isMounted, hasFetched, recentActivity, userName, userPlan]);
   
   if (!isMounted) {
     return (

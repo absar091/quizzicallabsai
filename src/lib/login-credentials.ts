@@ -208,18 +208,29 @@ export class LoginCredentialsManager {
     try {
       console.log(`💾 Saving ${credentials.length} login credentials for user ${userId} to Realtime Database`);
       
-      const { auth, db, ref, set } = await import('./firebase');
+      // Check if we're on the server (Node.js environment)
+      const isServer = typeof window === 'undefined';
       
-      // Ensure user is authenticated before writing
-      if (!auth.currentUser || auth.currentUser.uid !== userId) {
-        console.warn('⚠️ User not authenticated or UID mismatch, skipping credential save');
+      if (isServer) {
+        // On server, skip saving for now (login credentials are client-side feature)
+        // TODO: Implement server-side saving via API route if needed
+        console.log('⚠️ Skipping credential save on server (client-side feature)');
         return;
+      } else {
+        // Use client SDK on browser
+        const { auth, db, ref, set } = await import('./firebase');
+        
+        // Ensure user is authenticated before writing
+        if (!auth.currentUser || auth.currentUser.uid !== userId) {
+          console.warn('⚠️ User not authenticated or UID mismatch, skipping credential save');
+          return;
+        }
+        
+        await set(ref(db, `loginCredentials/${userId}`), {
+          credentials,
+          updatedAt: new Date().toISOString()
+        });
       }
-      
-      await set(ref(db, `loginCredentials/${userId}`), {
-        credentials,
-        updatedAt: new Date().toISOString()
-      });
       
       console.log('✅ Login credentials saved successfully');
     } catch (error: any) {
@@ -235,15 +246,27 @@ export class LoginCredentialsManager {
     try {
       console.log(`📖 Loading login credentials for user ${userId} from Realtime Database`);
       
-      const { auth, db, ref, get } = await import('./firebase');
+      // Check if we're on the server (Node.js environment)
+      const isServer = typeof window === 'undefined';
       
-      // Ensure user is authenticated before reading
-      if (!auth.currentUser || auth.currentUser.uid !== userId) {
-        console.warn('⚠️ User not authenticated or UID mismatch, returning empty credentials');
+      let snapshot;
+      
+      if (isServer) {
+        // On server, return empty (login credentials are client-side feature)
+        console.log('⚠️ Skipping credential load on server (client-side feature)');
         return [];
+      } else {
+        // Use client SDK on browser
+        const { auth, db, ref, get } = await import('./firebase');
+        
+        // Ensure user is authenticated before reading
+        if (!auth.currentUser || auth.currentUser.uid !== userId) {
+          console.warn('⚠️ User not authenticated or UID mismatch, returning empty credentials');
+          return [];
+        }
+        
+        snapshot = await get(ref(db, `loginCredentials/${userId}`));
       }
-      
-      const snapshot = await get(ref(db, `loginCredentials/${userId}`));
       
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -267,15 +290,26 @@ export class LoginCredentialsManager {
     try {
       console.log(`🗑️ Clearing login credentials for user ${userId} from Realtime Database`);
       
-      const { auth, db, ref, remove } = await import('./firebase');
+      // Check if we're on the server (Node.js environment)
+      const isServer = typeof window === 'undefined';
       
-      // Ensure user is authenticated before clearing
-      if (!auth.currentUser || auth.currentUser.uid !== userId) {
-        console.warn('⚠️ User not authenticated or UID mismatch, skipping credential clear');
+      if (isServer) {
+        // On server, skip clearing (login credentials are client-side feature)
+        console.log('⚠️ Skipping credential clear on server (client-side feature)');
         return;
+      } else {
+        // Use client SDK on browser
+        const { auth, db, ref, remove } = await import('./firebase');
+        
+        // Ensure user is authenticated before clearing
+        if (!auth.currentUser || auth.currentUser.uid !== userId) {
+          console.warn('⚠️ User not authenticated or UID mismatch, skipping credential clear');
+          return;
+        }
+        
+        await remove(ref(db, `loginCredentials/${userId}`));
       }
       
-      await remove(ref(db, `loginCredentials/${userId}`));
       console.log('✅ Login credentials cleared successfully');
     } catch (error: any) {
       if (error.code === 'PERMISSION_DENIED') {

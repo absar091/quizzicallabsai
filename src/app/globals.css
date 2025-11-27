@@ -426,3 +426,20 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Hide reCAPTCHA v3 badge - it affects UI/UX */
+/* Note: You must still display reCAPTCHA terms in your privacy policy */
+.grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Alternative: Position it off-screen instead of hiding */
+/* 
+.grecaptcha-badge {
+  position: fixed !important;
+  bottom: -100px !important;
+  right: -100px !important;
+}
+*/

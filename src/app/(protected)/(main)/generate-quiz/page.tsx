@@ -883,9 +883,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const recentQuizHistory = user ? (await getQuizResults(user.uid)).slice(0, 5) : [];
       const historyForAI = recentQuizHistory.map(r => ({ topic: r.topic, percentage: r.percentage }));
 
+      // Get auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('Please sign in to generate quizzes');
+      }
+
       const response = await fetch("/api/ai/custom-quiz", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           ...values,
           isPro: isPro,

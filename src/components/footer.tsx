@@ -99,6 +99,31 @@ export default function Footer() {
               <span>Beta</span>
             </div>
           </div>
+          
+          {/* reCAPTCHA Disclosure - Required when hiding badge */}
+          <div className="mt-4 text-center">
+            <p className="text-xs text-muted-foreground/70">
+              This site is protected by reCAPTCHA and the Google{' '}
+              <a 
+                href="https://policies.google.com/privacy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-primary transition-colors"
+              >
+                Privacy Policy
+              </a>{' '}
+              and{' '}
+              <a 
+                href="https://policies.google.com/terms" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-primary transition-colors"
+              >
+                Terms of Service
+              </a>{' '}
+              apply.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

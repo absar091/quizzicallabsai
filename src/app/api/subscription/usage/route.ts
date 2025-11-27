@@ -15,10 +15,17 @@ export async function GET(request: NextRequest) {
     const userId = decodedToken.uid;
 
     // Get user usage
-    const usage = await whopService.getUserUsage(userId);
+    let usage = await whopService.getUserUsage(userId);
     
+    // If user doesn't exist, initialize them
     if (!usage) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      console.log(`🆕 User ${userId} not found, auto-initializing...`);
+      await whopService.initializeUser(userId);
+      usage = await whopService.getUserUsage(userId);
+      
+      if (!usage) {
+        return NextResponse.json({ error: 'Failed to initialize user' }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ success: true, usage });
