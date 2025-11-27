@@ -1,9 +1,37 @@
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
-import { getNextApiKey, handleApiKeyError, getNextWorkingApiKey } from '@/lib/api-key-manager';
+// Server-side only imports with proper guards
+let genkit: any = null;
+let googleAI: any = null;
 
-// Suppress Genkit registry warnings during development
-import '@/lib/suppress-genkit-warnings';
+// Only load Genkit on server side with proper error handling
+const loadGenkit = async () => {
+  // Prevent client-side execution
+  if (typeof window !== 'undefined') {
+    return { genkit: null, googleAI: null };
+  }
+  
+  try {
+    // Dynamic imports to prevent bundling issues
+    const [genkitModule, googleAIModule] = await Promise.all([
+      import('genkit').catch(() => null),
+      import('@genkit-ai/googleai').catch(() => null)
+    ]);
+    
+    if (!genkitModule || !googleAIModule) {
+      console.warn('Genkit modules not available');
+      return { genkit: null, googleAI: null };
+    }
+    
+    return {
+      genkit: genkitModule.genkit,
+      googleAI: googleAIModule.googleAI
+    };
+  } catch (error) {
+    console.warn('Failed to load Genkit:', error);
+    return { genkit: null, googleAI: null };
+  }
+};
+
+import { getNextApiKey, handleApiKeyError, getNextWorkingApiKey } from '@/lib/api-key-manager';
 
 // Check if we're in a server environment and API key is available
 const isServer = typeof process !== 'undefined';
@@ -32,20 +60,29 @@ if (!hasApiKey && isServer) {
 let _ai: any = null;
 let _currentApiKey: string | null = null;
 
-const initializeAI = () => {
+const initializeAI = async () => {
+  // Prevent client-side execution
+  if (typeof window !== 'undefined') return null;
   if (!isServer || !hasApiKey) return null;
   if (_ai) return _ai;
 
   try {
+    // Load Genkit modules dynamically
+    const { genkit: genkitFn, googleAI: googleAIFn } = await loadGenkit();
+    if (!genkitFn || !googleAIFn) {
+      console.log('🔄 Genkit not available, using fallback mode');
+      return null;
+    }
+
     // Get the next API key from rotation
     const apiKey = getNextApiKey();
     _currentApiKey = apiKey;
 
     console.log(`🔑 Using API Key rotation - Current key: ${apiKey.substring(0, 20)}...`);
 
-    _ai = genkit({
+    _ai = genkitFn({
       plugins: [
-        googleAI({
+        googleAIFn({
           apiKey: apiKey,
         }),
       ],
@@ -53,27 +90,11 @@ const initializeAI = () => {
     return _ai;
   } catch (error) {
     console.error('Failed to initialize AI:', error);
-    // Try next working key on initialization failure
-    try {
-      const fallbackKey = getNextWorkingApiKey();
-      console.log(`🔄 Fallback: Using next working API key: ${fallbackKey.substring(0, 20)}...`);
-
-      _ai = genkit({
-        plugins: [
-          googleAI({
-            apiKey: fallbackKey,
-          }),
-        ],
-      });
-      return _ai;
-    } catch (fallbackError) {
-      console.error('Fallback AI initialization also failed:', fallbackError);
-      return null;
-    }
+    return null;
   }
 };
 
-export const ai = typeof process !== 'undefined' ? initializeAI() : null;
+export const ai = (typeof process !== 'undefined' && typeof window === 'undefined') ? initializeAI() : null;
 
 // Helper function to check if AI is available
 export const isAiAvailable = () => {
