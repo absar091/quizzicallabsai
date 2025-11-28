@@ -80,29 +80,29 @@ const promptText = `You are an expert educator specializing in creating effectiv
 Generate the flashcards now.
 `;
 
-const createPrompt = (isPro: boolean) => ai!.definePrompt({
+const generateFlashcardsFlow = async (input: GenerateFlashcardsInput): Promise<GenerateFlashcardsOutput> => {
+  // Await the AI instance
+  const aiInstance = await ai;
+  if (!aiInstance) {
+    throw new Error('AI service is not available');
+  }
+
+  const createPrompt = (isPro: boolean) => aiInstance.definePrompt({
     name: "generateFlashcardsPrompt",
     model: `googleai/${getModel(isPro, false)}`,
     prompt: promptText,
     input: { schema: GenerateFlashcardsInputSchema },
     output: { schema: GenerateFlashcardsOutputSchema },
-});
+  });
 
-const generateFlashcardsFlow = ai!.defineFlow(
-  {
-    name: 'generateFlashcardsFlow',
-    inputSchema: GenerateFlashcardsInputSchema,
-    outputSchema: GenerateFlashcardsOutputSchema,
-  },
-  async (input) => {
-    const maxRetries = 3;
-    let lastError: Error | null = null;
+  const maxRetries = 3;
+  let lastError: Error | null = null;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const prompt = createPrompt(input.isPro || false);
-        const result = await prompt(input);
-        const output = result.output;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const prompt = createPrompt(input.isPro || false);
+      const result = await prompt(input);
+      const output = result.output;
 
         if (!output || !output.flashcards) {
           // Return empty array if no flashcards are generated
@@ -148,5 +148,4 @@ const generateFlashcardsFlow = ai!.defineFlow(
     } else {
       throw new Error('Failed to generate flashcards. Please try again or contact support if the issue persists.');
     }
-  }
-);
+};

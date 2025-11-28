@@ -81,7 +81,7 @@ async function runTests() {
     
     if (usage) {
       logTest('User Usage', 'PASS', 'Successfully retrieved user usage', {
-        plan: usage.plan_name,
+        plan: usage.plan,
         tokens_limit: usage.tokens_limit,
         tokens_used: usage.tokens_used,
         tokens_remaining: usage.tokens_remaining,
