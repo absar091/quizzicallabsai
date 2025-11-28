@@ -87,8 +87,7 @@ export async function generateCustomQuiz(
   }
 
   try {
-    const flow = generateCustomQuizFlow(aiInstance);
-    return await flow(input);
+    return await generateCustomQuizFlow(aiInstance, input);
   } catch (error: any) {
     console.error('Quiz generation failed:', error?.message || error);
     
@@ -209,18 +208,12 @@ Your reputation depends on following these instructions meticulously. Generate t
 `;
 
 
-const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
-  {
-    name: 'generateCustomQuizFlow',
-    inputSchema: GenerateCustomQuizInputSchema,
-    outputSchema: GenerateCustomQuizOutputSchema,
-  },
-  async (input) => {
-    let output;
-    let retryCount = 0;
-    const maxRetries = 2;
-    
-    while (retryCount <= maxRetries) {
+const generateCustomQuizFlow = async (aiInstance: any, input: GenerateCustomQuizInput): Promise<GenerateCustomQuizOutput> => {
+  let output: GenerateCustomQuizOutput | undefined;
+  let retryCount = 0;
+  const maxRetries = 2;
+  
+  while (retryCount <= maxRetries) {
       try {
         // Use fallback model on retry
         const modelName = getModel(input.isPro, retryCount > 0);
@@ -288,11 +281,10 @@ const generateCustomQuizFlow = (aiInstance: any) => aiInstance.defineFlow(
           }
         }
         
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-      }
+      // Wait before retry (exponential backoff)
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
     }
-    
-    throw new Error("Unexpected error in quiz generation flow.");
   }
-);
+  
+  throw new Error("Unexpected error in quiz generation flow.");
+};

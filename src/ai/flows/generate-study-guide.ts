@@ -63,8 +63,7 @@ export async function generateStudyGuide(
   }
   
   try {
-    const flow = generateStudyGuideFlow(aiInstance);
-    return await flow(input);
+    return await generateStudyGuideFlow(aiInstance, input);
   } catch (error: any) {
     console.error('Study guide generation failed:', error?.message || error);
     
@@ -102,18 +101,12 @@ The study guide MUST be personalized based on the user's learning preferences an
   Generate the personalized study guide now.`;
 
 
-const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
-  {
-    name: 'generateStudyGuideFlow',
-    inputSchema: GenerateStudyGuideInputSchema,
-    outputSchema: GenerateStudyGuideOutputSchema,
-  },
-  async input => {
-    let output;
-    let retryCount = 0;
-    const maxRetries = 2;
-    
-    while (retryCount <= maxRetries) {
+const generateStudyGuideFlow = async (aiInstance: any, input: GenerateStudyGuideInput): Promise<GenerateStudyGuideOutput> => {
+  let output: GenerateStudyGuideOutput | undefined;
+  let retryCount = 0;
+  const maxRetries = 2;
+  
+  while (retryCount <= maxRetries) {
       try {
         // Use fallback model on retry
         const modelName = getModel(input.isPro, retryCount > 0);
@@ -177,11 +170,10 @@ const generateStudyGuideFlow = (aiInstance: any) => aiInstance.defineFlow(
             throw new Error(`Failed to generate study guide after ${maxRetries + 1} attempts. Please try again.`);
           }
         }
-        
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
-      }
+      
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
     }
-    
-    throw new Error("Unexpected error in study guide generation flow.");
   }
-);
+  
+  throw new Error("Unexpected error in study guide generation flow.");
+};
