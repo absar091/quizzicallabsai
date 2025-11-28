@@ -122,7 +122,7 @@ export default function GenerateStudyGuidePage() {
       const result = await response.json();
       
       if (result.error) throw new Error(result.error);
-      setStudyGuide(result);
+      setStudyGuide(result.studyGuide || result);
     } catch (error) {
       toast({
         title: "Error Generating Study Guide",
@@ -337,7 +337,7 @@ export default function GenerateStudyGuidePage() {
                     <div>
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Brain className="h-5 w-5 text-primary" /> Key Concepts</h3>
                          <Accordion type="single" collapsible className="w-full">
-                            {studyGuide.keyConcepts.map((item, index) => (
+                            {studyGuide.keyConcepts?.map((item, index) => (
                                <AccordionItem value={`item-${index}`} key={index}>
                                  <AccordionTrigger>{item.concept}</AccordionTrigger>
                                  <AccordionContent className="space-y-3">
@@ -355,7 +355,7 @@ export default function GenerateStudyGuidePage() {
                     <div>
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Lightbulb className="h-5 w-5 text-primary" /> Simple Analogies</h3>
                         <div className="space-y-4">
-                        {studyGuide.analogies.map((item, index) => (
+                        {studyGuide.analogies?.map((item, index) => (
                              <Card key={index} className="bg-muted/30">
                                 <CardContent className="pt-6">
                                     <p className="font-semibold italic">"{item.analogy}"</p>
@@ -368,7 +368,7 @@ export default function GenerateStudyGuidePage() {
                      <div>
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><HelpCircle className="h-5 w-5 text-primary" /> Quiz Yourself</h3>
                          <Accordion type="single" collapsible className="w-full">
-                            {studyGuide.quizYourself.map((item, index) => (
+                            {studyGuide.quizYourself?.map((item, index) => (
                                <AccordionItem value={`quiz-${index}`} key={index}>
                                  <AccordionTrigger>{item.question}</AccordionTrigger>
                                  <AccordionContent>

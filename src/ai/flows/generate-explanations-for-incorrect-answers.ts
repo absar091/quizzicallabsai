@@ -33,7 +33,7 @@ export async function generateExplanationsForIncorrectAnswers(
     return { explanation: 'AI explanations are temporarily unavailable. Please try again later.', usedTokens: 0 };
   }
   
-  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  const aiInstance = await ai;
   if (!aiInstance) {
     return { explanation: 'AI explanations are temporarily unavailable. Please try again later.', usedTokens: 0 };
   }

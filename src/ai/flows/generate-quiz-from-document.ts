@@ -44,7 +44,7 @@ export async function generateQuizFromDocument(
     throw new Error('AI service is not configured. Please contact support.');
   }
   
-  const aiInstance = ai || (await import('@/ai/genkit')).ai;
+  const aiInstance = await ai;
   if (!aiInstance) {
     throw new Error('AI service is not configured. Please contact support.');
   }
