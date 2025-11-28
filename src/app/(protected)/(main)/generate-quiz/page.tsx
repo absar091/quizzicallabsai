@@ -996,9 +996,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
+      // Get auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('Please sign in to get explanations');
+      }
+
       const response = await fetch("/api/generate-explanation", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           question: question.question,
           studentAnswer: userAnswers[questionIndex] || "",
@@ -1039,9 +1051,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     }));
 
     try {
+      // Get auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('Please sign in to get explanations');
+      }
+
       const response = await fetch("/api/generate-simple-explanation", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           question: question.question,
           correctAnswer: question.correctAnswer || "N/A",
@@ -1086,9 +1110,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     setGeneratedFlashcards(null);
 
     try {
+      // Get auth token
+      const { getAuth } = await import('firebase/auth');
+      const auth = getAuth();
+      const token = await auth.currentUser?.getIdToken();
+      
+      if (!token) {
+        throw new Error('Please sign in to generate flashcards');
+      }
+
       const response = await fetch("/api/generate-flashcards", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           topic: formValues.topic,
           incorrectQuestions: incorrectQuestions.map(q => ({
