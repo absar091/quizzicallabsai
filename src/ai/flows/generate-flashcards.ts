@@ -32,6 +32,7 @@ const FlashcardSchema = z.object({
 
 export const GenerateFlashcardsOutputSchema = z.object({
   flashcards: z.array(FlashcardSchema).describe('An array of generated flashcards.'),
+  usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSchema>;
 
@@ -50,7 +51,7 @@ export async function generateFlashcards(
       throw new Error("Invalid input: 'topic' cannot be empty.");
   }
   if (!input.incorrectQuestions || input.incorrectQuestions.length === 0) {
-      return { flashcards: [] }; // Return empty if there's nothing to process
+      return { flashcards: [], usedTokens: 0 }; // Return empty if there's nothing to process
   }
 
   console.log('✅ AI available, starting flashcards generation flow...');
@@ -104,19 +105,26 @@ const generateFlashcardsFlow = async (input: GenerateFlashcardsInput): Promise<G
       const result = await prompt(input);
       const output = result.output;
 
-        if (!output || !output.flashcards) {
-          // Return empty array if no flashcards are generated
-          return { flashcards: [] };
-        }
+      // ✅ Correct & safe token usage extraction for Genkit
+      const usedTokens =
+        (result as any)?.raw?.response?.usageMetadata?.totalTokenCount ??
+        (result as any)?.raw?.usageMetadata?.totalTokenCount ??
+        0;
+      console.log(`📊 Gemini usage: ${usedTokens} tokens for flashcards`);
 
-        // Additional validation to ensure data integrity
-        for (const card of output.flashcards) {
-          if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
-            throw new Error("The AI model returned incomplete flashcard data.");
-          }
-        }
+      if (!output || !output.flashcards) {
+        // Return empty array if no flashcards are generated
+        return { flashcards: [], usedTokens };
+      }
 
-        return output;
+      // Additional validation to ensure data integrity
+      for (const card of output.flashcards) {
+        if (!card.term || card.term.trim().length === 0 || !card.definition || card.definition.trim().length === 0) {
+          throw new Error("The AI model returned incomplete flashcard data.");
+        }
+      }
+
+      return { ...output, usedTokens };
       } catch (error: any) {
         lastError = error;
         console.error(`Flashcard generation attempt ${attempt} failed:`, sanitizeLogInput(error.message));

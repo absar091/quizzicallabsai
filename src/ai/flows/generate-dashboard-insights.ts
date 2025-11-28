@@ -85,76 +85,82 @@ INSTRUCTIONS:
 
 Keep it brief. Focus on positives.`;
 
-const createPrompt = (isPro: boolean, useFallback: boolean = false) => {
-  const { getUniquePromptName } = require('@/ai/utils/prompt-registry');
-  return ai!.definePrompt({
-    name: getUniquePromptName('generateDashboardInsightsPrompt'),
-    model: `googleai/${getModel(isPro, useFallback)}`,
-    prompt: getPromptText(isPro),
-    input: { schema: GenerateDashboardInsightsInputSchema },
-    output: { schema: GenerateDashboardInsightsOutputSchema },
-  });
-};
-
-
-const generateDashboardInsightsFlow = ai!.defineFlow(
-  {
-    name: 'generateDashboardInsightsFlow',
-    inputSchema: GenerateDashboardInsightsInputSchema,
-    outputSchema: GenerateDashboardInsightsOutputSchema,
-  },
-  async (input) => {
-    // To keep the prompt from getting too long, only send the last 10 quiz results
-    const recentHistory = {
-      ...input,
-      quizHistory: input.quizHistory.slice(0, 10),
-    };
-    
-    let output;
-    let retryCount = 0;
-    const maxRetries = 1; // Reduced from 2 to 1
-
-    while (retryCount <= maxRetries) {
-      try {
-        // Pre-create prompts instead of regenerating
-        const prompt = createPrompt(input.isPro, retryCount > 0);
-        const result = await prompt(recentHistory);
-        output = result.output;
-
-        // Quick validation
-        if (output?.greeting && output?.observation && output?.suggestion) {
-          return output;
-        } else {
-          throw new Error("AI returned invalid insights structure");
-        }
-      } catch (error: any) {
-        retryCount++;
-        const errorMsg = error?.message || 'Unknown error';
-
-        if (retryCount > maxRetries) {
-          // Fail fast for non-quota errors
-          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
-            try {
-              const { handleApiKeyError } = await import('@/lib/api-key-manager');
-              handleApiKeyError();
-              console.log('🔄 Rotated API key due to quota limit (dashboard insights)');
-            } catch (rotateError) {
-              console.warn('Failed to rotate API key:', rotateError);
-            }
-            throw new Error('AI service quota exceeded. Please try again in a few minutes.');
-          }
-          throw new Error('Failed to generate dashboard insights. Please try again.');
-        }
-
-        // Reduced backoff: 500ms instead of 2^retry * 1000ms
-        await new Promise(resolve => setTimeout(resolve, 500));
+const generateDashboardInsightsFlow = async (input: GenerateDashboardInsightsInput): Promise<GenerateDashboardInsightsOutput> => {
+  // Await the AI instance
+  const aiInstance = await ai;
+  if (!aiInstance) {
+    return {
+      greeting: `Welcome back, ${input.userName}!`,
+      observation: "AI insights are temporarily unavailable.",
+      suggestion: "Continue practicing with quizzes to improve your skills.",
+      suggestedAction: {
+        buttonText: "Create Quiz",
+        link: "/generate-quiz"
       }
-    }
-
-    if (!output || !output.greeting || !output.observation || !output.suggestion) {
-      console.error('AI model returned invalid insights structure:', output);
-      throw new Error("The AI model failed to return valid insights (missing greeting, observation, or suggestion). Please try again.");
-    }
-    return output;
+    };
   }
-);
+
+  const createPrompt = (isPro: boolean, useFallback: boolean = false) => {
+    const { getUniquePromptName } = require('@/ai/utils/prompt-registry');
+    return aiInstance.definePrompt({
+      name: getUniquePromptName('generateDashboardInsightsPrompt'),
+      model: `googleai/${getModel(isPro, useFallback)}`,
+      prompt: getPromptText(isPro),
+      input: { schema: GenerateDashboardInsightsInputSchema },
+      output: { schema: GenerateDashboardInsightsOutputSchema },
+    });
+  };
+
+  // To keep the prompt from getting too long, only send the last 10 quiz results
+  const recentHistory = {
+    ...input,
+    quizHistory: input.quizHistory.slice(0, 10),
+  };
+  
+  let output: GenerateDashboardInsightsOutput | undefined;
+  let retryCount = 0;
+  const maxRetries = 1; // Reduced from 2 to 1
+
+  while (retryCount <= maxRetries) {
+    try {
+      // Pre-create prompts instead of regenerating
+      const prompt = createPrompt(input.isPro, retryCount > 0);
+      const result = await prompt(recentHistory);
+      output = result.output;
+
+      // Quick validation
+      if (output?.greeting && output?.observation && output?.suggestion) {
+        return output;
+      } else {
+        throw new Error("AI returned invalid insights structure");
+      }
+    } catch (error: any) {
+      retryCount++;
+      const errorMsg = error?.message || 'Unknown error';
+
+      if (retryCount > maxRetries) {
+        // Fail fast for non-quota errors
+        if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+          try {
+            const { handleApiKeyError } = await import('@/lib/api-key-manager');
+            handleApiKeyError();
+            console.log('🔄 Rotated API key due to quota limit (dashboard insights)');
+          } catch (rotateError) {
+            console.warn('Failed to rotate API key:', rotateError);
+          }
+          throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+        }
+        throw new Error('Failed to generate dashboard insights. Please try again.');
+      }
+
+      // Reduced backoff: 500ms instead of 2^retry * 1000ms
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  if (!output || !output.greeting || !output.observation || !output.suggestion) {
+    console.error('AI model returned invalid insights structure:', output);
+    throw new Error("The AI model failed to return valid insights (missing greeting, observation, or suggestion). Please try again.");
+  }
+  return output;
+};

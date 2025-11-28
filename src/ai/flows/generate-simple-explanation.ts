@@ -21,6 +21,7 @@ export type GenerateSimpleExplanationInput = z.infer<typeof GenerateSimpleExplan
 
 const GenerateSimpleExplanationOutputSchema = z.object({
   explanation: z.string().describe('The AI-generated simple explanation.'),
+  usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateSimpleExplanationOutput = z.infer<typeof GenerateSimpleExplanationOutputSchema>;
 
@@ -28,12 +29,12 @@ export async function generateSimpleExplanation(
   input: GenerateSimpleExplanationInput
 ): Promise<GenerateSimpleExplanationOutput> {
   if (typeof process === 'undefined' || !isAiAvailable()) {
-    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.', usedTokens: 0 };
   }
   
   const aiInstance = ai || (await import('@/ai/genkit')).ai;
   if (!aiInstance) {
-    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.' };
+    return { explanation: 'AI explanations are temporarily unavailable. Please try again later.', usedTokens: 0 };
   }
   
   try {
@@ -41,7 +42,7 @@ export async function generateSimpleExplanation(
     return await flow(input);
   } catch (error: any) {
     console.error('Simple explanation generation failed:', error?.message || error);
-    return { explanation: 'Unable to generate simple explanation at this time. Please try again.' };
+    return { explanation: 'Unable to generate simple explanation at this time. Please try again.', usedTokens: 0 };
   }
 }
 
@@ -84,8 +85,15 @@ const generateSimpleExplanationFlow = (aiInstance: any) => aiInstance.defineFlow
         const result = await prompt(input);
         output = result.output;
 
+        // ✅ Correct & safe token usage extraction for Genkit
+        const usedTokens =
+          (result as any)?.raw?.response?.usageMetadata?.totalTokenCount ??
+          (result as any)?.raw?.usageMetadata?.totalTokenCount ??
+          0;
+        console.log(`📊 Gemini usage: ${usedTokens} tokens`);
+
         if (output && output.explanation && output.explanation.trim() !== '') {
-          return output;
+          return { ...output, usedTokens };
         } else {
           throw new Error("AI returned empty explanation");
         }
