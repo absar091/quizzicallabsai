@@ -55,9 +55,21 @@ function NtsTestFlow() {
                 numberOfQuestions: numQuestions,
             };
 
+            // Get auth token
+            const { getAuth } = await import('firebase/auth');
+            const auth = getAuth();
+            const token = await auth.currentUser?.getIdToken();
+            
+            if (!token) {
+              throw new Error('Please sign in to generate NTS tests');
+            }
+
             const response = await fetch('/api/ai/nts-quiz', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
               body: JSON.stringify(quizInput)
             });
 

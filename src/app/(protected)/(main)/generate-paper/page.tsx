@@ -114,9 +114,21 @@ export default function GeneratePaperPage() {
             const progress = ((i + 1) / values.numberOfVariants) * 100;
             setGenerationProgress(progress);
             
+            // Get auth token
+            const { getAuth } = await import('firebase/auth');
+            const auth = getAuth();
+            const token = await auth.currentUser?.getIdToken();
+            
+            if (!token) {
+              throw new Error('Please sign in to generate exam papers');
+            }
+
             const response = await fetch('/api/ai/custom-quiz', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
               body: JSON.stringify({
                 ...values,
                 isPro: user?.plan === 'Pro',

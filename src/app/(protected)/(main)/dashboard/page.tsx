@@ -73,9 +73,21 @@ function AiInsightsCard({ recentActivity, userName, userPlan }: { recentActivity
       setIsLoading(true);
       setHasFetched(true);
       try {
+        // Get auth token
+        const { getAuth } = await import('firebase/auth');
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken();
+        
+        if (!token) {
+          throw new Error('Please sign in');
+        }
+
         const response = await fetch('/api/ai/dashboard-insights', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             userName: userName, 
             quizHistory: recentActivity,

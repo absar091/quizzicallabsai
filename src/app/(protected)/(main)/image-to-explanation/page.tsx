@@ -81,9 +81,21 @@ export default function ExplainImagePage() {
     reader.onloadend = async () => {
       const dataUri = reader.result as string;
       try {
+        // Get auth token
+        const { getAuth } = await import('firebase/auth');
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken();
+        
+        if (!token) {
+          throw new Error('Please sign in to explain images');
+        }
+
         const response = await fetch('/api/ai/explain-image', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             imageData: dataUri,
             query: values.query,

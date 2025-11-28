@@ -62,9 +62,21 @@ function MdcatTestFlow() {
                 userClass: "MDCAT Student",
                 specificInstructions: `Generate an MDCAT-level test for the topic: ${topic}. Questions should be strictly based on the official MDCAT syllabus.`
             };
+            // Get auth token
+            const { getAuth } = await import('firebase/auth');
+            const auth = getAuth();
+            const token = await auth.currentUser?.getIdToken();
+            
+            if (!token) {
+              throw new Error('Please sign in to generate MDCAT tests');
+            }
+
             const response = await fetch('/api/ai/custom-quiz', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
               body: JSON.stringify(quizInput)
             });
             
