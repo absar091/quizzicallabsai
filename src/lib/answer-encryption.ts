@@ -28,11 +28,22 @@ function fromBase64(str: string): string {
   return Buffer.from(str, 'base64').toString('utf-8');
 }
 
-// Generate session-specific key
+// Generate deterministic key from quizId
 function generateSessionKey(quizId: string): string {
-  const timestamp = Date.now().toString();
-  const random = Math.random().toString(36).substring(2);
-  return `${quizId}_${timestamp}_${random}`.substring(0, 32);
+  // Use a fixed salt for consistent key generation
+  const salt = 'QuizzicalLabz_2025';
+  const combined = `${salt}_${quizId}`;
+  
+  // Simple hash function for deterministic key
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Generate 32-char key from hash
+  const baseKey = Math.abs(hash).toString(36).padStart(16, '0');
+  return (baseKey + baseKey).substring(0, 32);
 }
 
 /**
@@ -43,10 +54,7 @@ export function encryptAnswer(answer: string, explanation: string | undefined, q
   const data = JSON.stringify({ a: answer, e: explanation || '' });
   const encrypted = xorEncrypt(data, sessionKey);
   const encoded = toBase64(encrypted);
-  
-  // Add session key hint (last 8 chars) for decryption
-  const keyHint = sessionKey.substring(sessionKey.length - 8);
-  return `${encoded}.${keyHint}`;
+  return encoded;
 }
 
 /**
@@ -54,15 +62,8 @@ export function encryptAnswer(answer: string, explanation: string | undefined, q
  */
 export function decryptAnswer(encryptedData: string, quizId: string): { answer: string; explanation?: string } {
   try {
-    const [encoded, keyHint] = encryptedData.split('.');
     const sessionKey = generateSessionKey(quizId);
-    
-    // Verify key hint matches
-    if (sessionKey.substring(sessionKey.length - 8) !== keyHint) {
-      throw new Error('Invalid session key');
-    }
-    
-    const encrypted = fromBase64(encoded);
+    const encrypted = fromBase64(encryptedData);
     const decrypted = xorEncrypt(encrypted, sessionKey);
     const data = JSON.parse(decrypted);
     
