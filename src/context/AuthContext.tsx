@@ -392,7 +392,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Update local state immediately for instant UI feedback
           setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
           
-          secureLog('info', 'User plan updated', { plan });
+          secureLog('info', 'User plan updated successfully', { plan });
+          
+          // Force reload user data from Firebase to ensure consistency
+          setTimeout(async () => {
+            try {
+              const snapshot = await get(userRef);
+              const freshData = snapshot.val();
+              if (freshData) {
+                setUser(prevUser => prevUser ? { ...prevUser, plan: freshData.plan } : null);
+                secureLog('info', 'User plan refreshed from Firebase', { plan: freshData.plan });
+              }
+            } catch (error) {
+              secureLog('warn', 'Failed to refresh user data', error);
+            }
+          }, 500);
         } catch (error) {
           secureLog('error', 'Error updating user plan', error);
           throw new Error('Failed to update plan. Please try again.');

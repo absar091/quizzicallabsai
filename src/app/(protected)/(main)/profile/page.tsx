@@ -120,12 +120,17 @@ export default function ProfilePage() {
         
         toast({ 
           title: "Success! 🎉", 
-          description: "You've been upgraded to the Pro plan. Enjoy unlimited access!",
-          duration: 5000
+          description: "You've been upgraded to Pro! Refreshing page...",
+          duration: 3000
         });
         
         // Clear the input
         setRedeemCode('');
+        
+        // Reload page after 2 seconds to ensure all components recognize Pro status
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
         toast({ 
           title: "Invalid Code", 
