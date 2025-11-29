@@ -219,20 +219,38 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
 
   const calculateScore = useCallback(() => {
     if (!quiz) return { score: 0, percentage: 0, totalScorable: 0 };
+    
     const score = quiz.reduce((acc, question, index) => {
       const userAnswer = userAnswers[index];
-      const correctAnswer = question.correctAnswer;
-      if (question.type === 'descriptive' || correctAnswer === undefined) {
+      let correctAnswer = question.correctAnswer;
+      
+      // Decrypt answer if encrypted
+      if (!correctAnswer && (question as any)._enc) {
+        try {
+          const { decryptAnswer } = require('@/lib/answer-encryption');
+          const decrypted = decryptAnswer((question as any)._enc, `${formValues?.topic || 'quiz'}_${index}`);
+          correctAnswer = decrypted.answer;
+        } catch (error) {
+          console.error('Decryption failed for question', index, error);
+          return acc;
+        }
+      }
+      
+      if (question.type === 'descriptive' || !correctAnswer) {
         return acc;
       }
       return acc + (correctAnswer === userAnswer ? 1 : 0);
     }, 0);
 
-    const scorableQuestions = quiz.filter(q => q.type !== 'descriptive' && q.correctAnswer !== undefined).length;
+    const scorableQuestions = quiz.filter(q => {
+      if (q.type === 'descriptive') return false;
+      return q.correctAnswer || (q as any)._enc;
+    }).length;
+    
     const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
 
     return { score, percentage, totalScorable: scorableQuestions };
-  }, [quiz, userAnswers]);
+  }, [quiz, userAnswers, formValues]);
 
 
   const handleSubmit = useCallback(async () => {
