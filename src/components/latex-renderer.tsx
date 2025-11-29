@@ -1,63 +1,86 @@
-
 'use client';
 
-import { useEffect } from 'react';
-import Latex from 'react-katex';
+import React from 'react';
+import 'katex/dist/katex.min.css';
+import katex from 'katex';
 
-type LatexRendererProps = {
-    text: string;
-};
+interface LaTeXRendererProps {
+  content: string;
+  displayMode?: boolean;
+  className?: string;
+}
 
-// This component will find and render LaTeX expressions within a string.
-export default function LatexRenderer({ text }: LatexRendererProps) {
-    if (!text) return null;
+export function LaTeXRenderer({ content, displayMode = false, className = '' }: LaTeXRendererProps) {
+  const containerRef = React.useRef<HTMLSpanElement>(null);
 
-    // Dynamic loading of KaTeX CSS only when needed
-    useEffect(() => {
-        if (text && text.includes('$')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
-            link.onload = () => {
-                // CSS loaded successfully
-            };
-            link.onerror = () => {
-                console.warn('Failed to load KaTeX CSS');
-            };
-            document.head.appendChild(link);
-
-            // Cleanup function
-            return () => {
-                try {
-                    document.head.removeChild(link);
-                } catch (e) {
-                    // Link might already be removed
-                }
-            };
+  React.useEffect(() => {
+    if (containerRef.current) {
+      try {
+        // Render LaTeX using KaTeX
+        katex.render(content, containerRef.current, {
+          displayMode,
+          throwOnError: false,
+          errorColor: '#cc0000',
+          strict: false,
+          trust: true,
+          macros: {
+            "\\ce": "\\mathrm{#1}", // Chemistry equations
+            "\\pu": "\\mathrm{#1}", // Physical units
+          }
+        });
+      } catch (error) {
+        console.error('LaTeX rendering error:', error);
+        if (containerRef.current) {
+          containerRef.current.textContent = content;
         }
-    }, [text]);
+      }
+    }
+  }, [content, displayMode]);
 
-    // Regex to find all occurrences of $...$ (inline) and $$...$$ (display)
-    const regex = /(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g;
-    const parts = text.split(regex);
+  return <span ref={containerRef} className={className} />;
+}
 
-    return (
-        <span>
-            {parts.map((part, index) => {
-                if (part.match(regex)) {
-                    const isDisplay = part.startsWith('$$');
-                    const latex = part.substring(isDisplay ? 2 : 1, part.length - (isDisplay ? 2 : 1));
-                    try {
-                         return <Latex key={index} block={isDisplay}>{latex}</Latex>;
-                    } catch (e) {
-                        // If KaTeX fails to parse, just return the original string part
-                        console.error("KaTeX parsing error:", e);
-                        return <span key={index}>{part}</span>;
-                    }
-                }
-                // Return plain text parts
-                return <span key={index}>{part}</span>;
-            })}
-        </span>
-    );
+interface RichTextRendererProps {
+  content: string;
+  className?: string;
+}
+
+export function RichTextRenderer({ content, className = '' }: RichTextRendererProps) {
+  // Parse content and render LaTeX inline
+  const renderContent = () => {
+    // Match LaTeX expressions: $...$ for inline, $$...$$ for display
+    const parts = content.split(/(\$\$[\s\S]+?\$\$|\$[^\$]+?\$)/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('$$') && part.endsWith('$$')) {
+        // Display mode LaTeX
+        const latex = part.slice(2, -2);
+        return <LaTeXRenderer key={index} content={latex} displayMode={true} />;
+      } else if (part.startsWith('$') && part.endsWith('$')) {
+        // Inline LaTeX
+        const latex = part.slice(1, -1);
+        return <LaTeXRenderer key={index} content={latex} displayMode={false} />;
+      } else {
+        // Regular text
+        return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+      }
+    });
+  };
+
+  return <div className={className}>{renderContent()}</div>;
+}
+
+// Chemistry equation renderer
+export function ChemistryEquation({ equation, className = '' }: { equation: string; className?: string }) {
+  return <LaTeXRenderer content={`\\ce{${equation}}`} className={className} />;
+}
+
+// Physics formula renderer
+export function PhysicsFormula({ formula, className = '' }: { formula: string; className?: string }) {
+  return <LaTeXRenderer content={formula} displayMode={true} className={className} />;
+}
+
+// Math expression renderer
+export function MathExpression({ expression, inline = true, className = '' }: { expression: string; inline?: boolean; className?: string }) {
+  return <LaTeXRenderer content={expression} displayMode={!inline} className={className} />;
 }

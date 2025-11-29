@@ -3,11 +3,16 @@
  * Centralized model selection logic for different user plans
  */
 
-// Model Router Constants - Working model names confirmed by API
-const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-1.5-flash';
-const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-2.0-flash';
-const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-2.5-pro';
-const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-2.5-flash';
+// Model Router Constants - Production-ready model names
+const MODEL_ROUTER_FREE_PRIMARY = process.env.MODEL_ROUTER_FREE_PRIMARY || 'gemini-2.5-flash';
+const MODEL_ROUTER_FREE_FALLBACK = process.env.MODEL_ROUTER_FREE_FALLBACK || 'gemini-flash-lite-latest';
+const MODEL_ROUTER_PRO_PRIMARY = process.env.MODEL_ROUTER_PRO_PRIMARY || 'gemini-3-pro-preview';
+const MODEL_ROUTER_PRO_FALLBACK = process.env.MODEL_ROUTER_PRO_FALLBACK || 'gemini-2.5-pro';
+const MODEL_ROUTER_PRO_FALLBACK_2 = process.env.MODEL_ROUTER_PRO_FALLBACK_2 || 'gemini-2.5-flash';
+
+// Image model constants
+const MODEL_ROUTER_FREE_IMAGE = process.env.MODEL_ROUTER_FREE_IMAGE || 'gemini-2.5-flash-image';
+const MODEL_ROUTER_PRO_IMAGE = process.env.MODEL_ROUTER_PRO_IMAGE || 'gemini-3-pro-image-preview';
 
 interface ModelConfig {
   model: string;
@@ -22,13 +27,32 @@ interface ModelConfig {
  * Get the appropriate AI model for a user's request
  * Returns model name string for compatibility with AI flows
  */
-export function getModel(isPro: boolean = false, useFallback: boolean = false): string {
-  // Determine which model set to use
-  const primaryModel = isPro ? MODEL_ROUTER_PRO_PRIMARY : MODEL_ROUTER_FREE_PRIMARY;
-  const fallbackModel = isPro ? MODEL_ROUTER_PRO_FALLBACK : MODEL_ROUTER_FREE_FALLBACK;
+export function getModel(isPro: boolean = false, useFallback: boolean = false, hasImage: boolean = false): string {
+  // Image models
+  if (hasImage) {
+    return isPro ? MODEL_ROUTER_PRO_IMAGE : MODEL_ROUTER_FREE_IMAGE;
+  }
+  
+  // Text models with fallback chain
+  if (isPro) {
+    return useFallback ? MODEL_ROUTER_PRO_FALLBACK : MODEL_ROUTER_PRO_PRIMARY;
+  }
+  
+  return useFallback ? MODEL_ROUTER_FREE_FALLBACK : MODEL_ROUTER_FREE_PRIMARY;
+}
 
-  // Use fallback if requested or if primary is unavailable
-  return useFallback ? fallbackModel : primaryModel;
+/**
+ * Get next fallback model in the chain
+ */
+export function getNextFallback(currentModel: string, isPro: boolean): string | null {
+  if (isPro) {
+    if (currentModel === MODEL_ROUTER_PRO_PRIMARY) return MODEL_ROUTER_PRO_FALLBACK;
+    if (currentModel === MODEL_ROUTER_PRO_FALLBACK) return MODEL_ROUTER_PRO_FALLBACK_2;
+    if (currentModel === MODEL_ROUTER_PRO_IMAGE) return MODEL_ROUTER_FREE_IMAGE;
+  } else {
+    if (currentModel === MODEL_ROUTER_FREE_PRIMARY) return MODEL_ROUTER_FREE_FALLBACK;
+  }
+  return null;
 }
 
 /**
@@ -90,12 +114,12 @@ export function getModelForUseCase(useCase: 'quiz' | 'flashcard' | 'explanation'
  */
 export function isModelAvailable(modelName: string): boolean {
   const availableModels = [
-    'gemini-1.5-flash',
-    'gemini-1.5-pro',
-    'gemini-1.5-flash-8b',
-    'gemini-2.0-flash',
+    'gemini-3-pro-preview',
     'gemini-2.5-pro',
-    'gemini-2.5-flash'
+    'gemini-2.5-flash',
+    'gemini-flash-lite-latest',
+    'gemini-3-pro-image-preview',
+    'gemini-2.5-flash-image'
   ];
 
   return availableModels.includes(modelName);
