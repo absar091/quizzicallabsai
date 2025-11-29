@@ -1647,7 +1647,19 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                         <h3 className="text-xl font-bold mb-4">Review Your Answers</h3>
                         <div className="space-y-4">
                             {quiz.map((q, index) => {
-                                const isCorrect = q.correctAnswer === userAnswers[index];
+                                // Decrypt correct answer if encrypted
+                                let correctAnswer = q.correctAnswer;
+                                if (!correctAnswer && (q as any)._enc) {
+                                  try {
+                                    const { decryptAnswer } = require('@/lib/answer-encryption');
+                                    const decrypted = decryptAnswer((q as any)._enc, `${formValues?.topic || 'quiz'}_${index}`);
+                                    correctAnswer = decrypted.answer;
+                                  } catch (error) {
+                                    console.error('Decryption failed for question', index, error);
+                                  }
+                                }
+                                
+                                const isCorrect = correctAnswer === userAnswers[index];
                                 const explanationState = explanations[index];
                                 const isBookmarked = bookmarkedQuestions.some(bm => bm.question === q.question);
 
@@ -1655,8 +1667,8 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                     <Card key={index} className={cn("bg-muted/30", isCorrect ? "border-primary/20" : "border-destructive/20")}>
                                         <CardHeader className="flex flex-row justify-between items-start pb-2">
                                             <div className="font-semibold flex-1 pr-4"><RichContentRenderer content={`${index + 1}. ${q.question}`} smiles={q.smiles} /></div>
-                                            {q.correctAnswer && (
-                                                <Button variant="ghost" size="icon" onClick={() => toggleBookmark(q.question, q.correctAnswer || "")}>
+                                            {correctAnswer && (
+                                                <Button variant="ghost" size="icon" onClick={() => toggleBookmark(q.question, correctAnswer || "")}>
                                                     <Star className={cn("h-5 w-5", isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground")} />
                                                     <span className="sr-only">Bookmark</span>
                                                 </Button>
@@ -1668,13 +1680,13 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                                     {isCorrect ? <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 shrink-0 mt-0.5" />}
                                                     <span>Your answer: <RichContentRenderer content={userAnswers[index] || "Skipped"} inline /></span>
                                                  </p>
-                                                 {!isCorrect && q.correctAnswer && (
+                                                 {!isCorrect && correctAnswer && (
                                                      <p className="text-primary flex items-start gap-2">
                                                         <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                                        <span>Correct answer: <RichContentRenderer content={q.correctAnswer} inline /></span>
+                                                        <span>Correct answer: <RichContentRenderer content={correctAnswer} inline /></span>
                                                      </p>
                                                  )}
-                                                 {q.type === 'descriptive' && !q.correctAnswer && (
+                                                 {q.type === 'descriptive' && !correctAnswer && (
                                                     <p className="flex items-start gap-2 text-muted-foreground">
                                                          <MessageSquareQuote className="h-4 w-4 shrink-0 mt-0.5" />
                                                          <span>Your Answer: {userAnswers[index] || "Not answered"}</span>

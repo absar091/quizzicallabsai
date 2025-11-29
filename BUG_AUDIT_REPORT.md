@@ -95,12 +95,23 @@ Systematic review of all features and components to identify bugs similar to the
 - Keys don't match → decryption fails → no score calculation
 
 **Fix Applied:**
-- Changed `generateSessionKey()` to be deterministic
-- Uses only quizId + fixed salt (no timestamp/random)
-- Same quizId always generates same key
-- Removed key hint system (no longer needed)
-- Simplified encrypt/decrypt functions
+1. **answer-encryption.ts**: Made key generation deterministic
+   - Changed `generateSessionKey()` to use only quizId + fixed salt
+   - Removed timestamp and random components
+   - Same quizId always generates same key
+   - Removed key hint system (no longer needed)
+   - Simplified encrypt/decrypt functions
 
-**Impact:** Quiz results now work correctly with proper scores and answer comparison
+2. **generate-quiz/page.tsx**: Updated score calculation and results display
+   - Modified `calculateScore()` to decrypt answers from `_enc` field
+   - Added decryption logic in quiz results rendering
+   - Correct answers now properly decrypted and displayed
+   - Score calculation now works with encrypted answers
+
+**Impact:** 
+- Quiz results now show correct scores (e.g., 2/6 instead of 0/0)
+- Correct answers are properly displayed for comparison
+- Answer validation works correctly
+- Explanations show actual correct answers instead of "N/A"
 
 ### 🔍 Checking More Areas...
