@@ -49,14 +49,23 @@ const GenerateExamPaperOutputSchema = z.object({
     instructions: z.string().describe('Section-specific instructions'),
     questions: z.array(z.object({
       questionNumber: z.string().describe('Question number (e.g., "1", "2(a)", "3(i)")'),
-      question: z.string().describe('The question text'),
+      question: z.string().describe('Question with LaTeX: use $...$ for inline, $$...$$ for display equations'),
       marks: z.number().describe('Marks allocated to this question'),
       type: z.enum(['mcq', 'short', 'long']).describe('Question type'),
-      options: z.array(z.string()).optional().describe('MCQ options (A, B, C, D)'),
+      options: z.array(z.string()).optional().describe('MCQ options with LaTeX formatting (A, B, C, D)'),
+      smiles: z.string().optional().describe('SMILES string for chemical structures if needed'),
+      diagram: z.object({
+        searchQuery: z.string(),
+        aspectRatio: z.enum(['1:1', '4:3', '16:9'])
+      }).optional().describe('Diagram placeholder for visual questions'),
       subQuestions: z.array(z.object({
         part: z.string().describe('Sub-question part (e.g., "(a)", "(i)")'),
-        question: z.string(),
+        question: z.string().describe('Sub-question with LaTeX formatting'),
         marks: z.number(),
+        diagram: z.object({
+          searchQuery: z.string(),
+          aspectRatio: z.enum(['1:1', '4:3', '16:9'])
+        }).optional(),
       })).optional().describe('Sub-questions for structured questions'),
     })),
     totalMarks: z.number().describe('Total marks for this section'),
@@ -65,20 +74,20 @@ const GenerateExamPaperOutputSchema = z.object({
     mcqAnswers: z.array(z.object({
       questionNumber: z.string(),
       correctAnswer: z.string().describe('Correct option (A, B, C, or D)'),
-      explanation: z.string().optional().describe('Brief explanation of the correct answer'),
+      explanation: z.string().optional().describe('Detailed explanation with LaTeX, formulas, and step-by-step reasoning'),
     })).optional(),
     shortAnswers: z.array(z.object({
       questionNumber: z.string(),
-      keyPoints: z.array(z.string()).describe('Key points that should be included in the answer'),
-      fullAnswer: z.string().describe('Complete model answer'),
+      keyPoints: z.array(z.string()).describe('Key points with LaTeX formatting'),
+      fullAnswer: z.string().describe('Complete model answer with LaTeX, formulas, and proper notation'),
     })).optional(),
     longAnswers: z.array(z.object({
       questionNumber: z.string(),
       markingScheme: z.array(z.object({
-        point: z.string(),
+        point: z.string().describe('Marking point with LaTeX'),
         marks: z.number(),
       })).describe('Detailed marking scheme'),
-      fullAnswer: z.string().describe('Complete model answer'),
+      fullAnswer: z.string().describe('Complete model answer with LaTeX, step-by-step solutions, and diagrams'),
     })).optional(),
   }),
 });
@@ -110,18 +119,23 @@ export async function generateExamPaper(
   return await flow(input);
 }
 
-const promptText = `You are a world-renowned AI education architect, equivalent to Nobel laureates in Physics and Chemistry, gold medalists from top universities like MIT, Harvard, and Oxford, and distinguished professors from prestigious institutions worldwide. Your expertise rivals the pedagogical mastery of legendary educators who have shaped generations of successful professionals.
+const promptText = `You are a world-renowned exam paper creator with expertise in mathematically precise, visually rich assessment materials. Every question must use proper LaTeX formatting and include visual aids where beneficial.
 
-**PHILOSOPHY OF EXCELLENCE:** You approach exam paper creation with the precision of a master craftsman, the analytical depth of a research scientist, and the pedagogical wisdom of centuries of educational excellence. Every question you create must reflect the intellectual rigor and creative brilliance that has earned recognition at the highest levels of academia.
+**LATEX FORMATTING REQUIREMENTS (MANDATORY FOR ALL MATH/SCIENCE CONTENT):**
+- Inline math: $E = mc^2$, $F = ma$, $v = u + at$, $pH = -\\log[H^+]$
+- Display equations: $$\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+- Chemistry: $\\ce{2H2 + O2 -> 2H2O}$, $\\ce{CH3COOH}$, $\\ce{H2SO4}$
+- Fractions: $\\frac{numerator}{denominator}$, $\\frac{1}{2}$, $\\frac{dy}{dx}$
+- Greek letters: $\\alpha, \\beta, \\gamma, \\theta, \\Delta H$
+- Subscripts/superscripts: $H_2O$, $x^2$, $10^{-3}$, $CO_2$
+- Integrals: $\\int_a^b f(x)dx$
+- Summations: $\\sum_{i=1}^n i$
+- Limits: $\\lim_{x \\to \\infty}$
 
-**COGNITIVE SCIENCE FOUNDATION:** Drawing from advanced cognitive psychology and learning theories (Bloom's Taxonomy, Vygotsky's Zone of Proximal Development, and modern assessment research), you design questions that not only test knowledge but actively develop critical thinking, problem-solving abilities, and deep conceptual understanding.
-
-**PSYCHOLOGICAL ASSESSMENT PRINCIPLES:**
-- **Item Response Theory:** Create questions with optimal discrimination parameters that effectively differentiate between different ability levels
-- **Cognitive Load Theory:** Balance intrinsic, extraneous, and germane load to maximize learning while testing
-- **Dual-Process Theory:** Include questions that test both intuitive (System 1) and analytical (System 2) thinking
-- **Metacognition:** Design questions that encourage self-reflection and awareness of one's own thought processes
-- **Construct Validity:** Ensure questions measure the intended constructs with high fidelity and minimal construct-irrelevant variance
+**VISUAL AIDS REQUIREMENTS:**
+- Include diagram placeholders for: geometry problems, physics scenarios, biological structures, chemical reactions, graphs
+- Provide clear searchQuery descriptions like "diagram of human heart with labeled chambers" or "graph of velocity vs time"
+- Use diagrams for 30-40% of questions to enhance understanding
 
 **CRITICAL REQUIREMENTS - ABSOLUTE COMPLIANCE REQUIRED:**
 

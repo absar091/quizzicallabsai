@@ -21,26 +21,47 @@ export type GenerateStudyGuideInput = z.infer<typeof GenerateStudyGuideInputSche
 
 const GenerateStudyGuideOutputSchema = z.object({
   title: z.string().describe("The title of the study guide."),
-  summary: z.string().describe('A brief, high-level summary of the topic.'),
+  summary: z.string().describe('A brief, high-level summary with LaTeX for formulas (use $...$ for inline, $$...$$ for display).'),
   keyConcepts: z.array(
     z.object({
-      concept: z.string().describe('A key concept, term, or idea.'),
-      definition: z.string().describe('A clear and concise definition or explanation of the concept.'),
-      importance: z.string().describe('Why this concept is important to understanding the overall topic.'),
+      concept: z.string().describe('A key concept with LaTeX formatting for math/chemistry.'),
+      definition: z.string().describe('Definition with LaTeX formulas, chemical equations using $\\ce{...}$, and proper notation.'),
+      importance: z.string().describe('Why this concept is important.'),
+      formula: z.string().optional().describe('Key formula in LaTeX format if applicable (e.g., $$E = mc^2$$).'),
+      diagram: z.object({
+        searchQuery: z.string(),
+        aspectRatio: z.enum(['1:1', '4:3', '16:9'])
+      }).optional().describe('Diagram placeholder for visual learners.'),
     })
-  ).describe('A list of the most important concepts and their explanations.'),
+  ).describe('Key concepts with formulas, equations, and visual aids.'),
+  formulas: z.array(
+    z.object({
+      name: z.string().describe('Formula name.'),
+      formula: z.string().describe('LaTeX formula (e.g., $$F = ma$$).'),
+      explanation: z.string().describe('When and how to use this formula.'),
+      example: z.string().optional().describe('Worked example with LaTeX.'),
+    })
+  ).optional().describe('Important formulas for physics, chemistry, or math topics.'),
   analogies: z.array(
       z.object({
-          analogy: z.string().describe("The analogy to explain a concept."),
-          concept: z.string().describe("The concept the analogy explains.")
+          analogy: z.string().describe("Simple analogy with LaTeX if needed."),
+          concept: z.string().describe("The concept explained.")
       })
-  ).describe("A list of simple analogies to help understand complex parts of the topic."),
+  ).describe("Real-world analogies for complex concepts."),
+  visualAids: z.array(
+    z.object({
+      title: z.string().describe('Visual aid title.'),
+      description: z.string().describe('What the diagram/chart shows.'),
+      searchQuery: z.string().describe('Search query for diagram placeholder.'),
+      aspectRatio: z.enum(['1:1', '4:3', '16:9'])
+    })
+  ).optional().describe('Suggested diagrams and visual aids.'),
   quizYourself: z.array(
       z.object({
-          question: z.string().describe("A quick question to test understanding."),
-          answer: z.string().describe("The answer to the question.")
+          question: z.string().describe("Question with LaTeX formatting."),
+          answer: z.string().describe("Answer with LaTeX and detailed explanation.")
       })
-  ).describe("A few questions to help the user test their knowledge."),
+  ).describe("Self-test questions with proper mathematical notation."),
   usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateStudyGuideOutput = z.infer<typeof GenerateStudyGuideOutputSchema>;
@@ -78,25 +99,37 @@ export async function generateStudyGuide(
   }
 }
 
-const getPromptText = (isPro: boolean) => `You are an expert educator and content creator. Your task is to generate a comprehensive, accurate, and easy-to-digest study guide for the following topic: {{{topic}}}.
+const getPromptText = (isPro: boolean) => `You are a world-class educator and content creator with expertise in creating visually rich, mathematically precise study materials. Generate a comprehensive study guide for: {{{topic}}}.
 
-${isPro ? '**PRO USER - PREMIUM QUALITY:**\r\n- Provide more detailed explanations and advanced concepts\r\n- Include additional key concepts (7-10 instead of 5-7)\r\n- Create more sophisticated analogies\r\n- Generate more comprehensive quiz questions (5-6 instead of 3-4)\r\n- Focus on deeper understanding and critical thinking\r\n\r\n' : '**STANDARD USER:**\r\n- Focus on core concepts and fundamental understanding\r\n- Keep explanations clear and accessible\r\n- Provide essential knowledge for solid foundation\r\n\r\n'}
+**LATEX FORMATTING REQUIREMENTS:**
+- Use $...$ for inline math: $E = mc^2$
+- Use $$...$$ for display equations: $$\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+- Chemistry: $\\ce{2H2 + O2 -> 2H2O}$
+- Physics formulas: $$F = ma$$, $$v = u + at$$
+- Fractions: $\\frac{numerator}{denominator}$
+- Greek letters: $\\alpha, \\beta, \\gamma$
+- Subscripts/superscripts: $H_2O$, $x^2$
 
-The study guide MUST be personalized based on the user's learning preferences and difficulties.
+${isPro ? '**PRO USER - PREMIUM QUALITY:**\r\n- Include 8-12 key concepts with formulas and diagrams\r\n- Provide 3-5 important formulas with worked examples\r\n- Create 4-6 visual aid suggestions\r\n- Generate 6-8 comprehensive quiz questions\r\n- Use advanced LaTeX for complex equations\r\n- Include step-by-step problem-solving examples\r\n- Add chemical structures and reaction mechanisms\r\n\r\n' : '**STANDARD USER:**\r\n- Include 5-7 key concepts with essential formulas\r\n- Provide 2-3 basic formulas\r\n- Create 2-3 visual aid suggestions\r\n- Generate 4-5 quiz questions\r\n- Use clear LaTeX for fundamental equations\r\n\r\n'}
+
+The study guide MUST be personalized and visually rich with proper mathematical notation.
 
   **Critical Instructions:**
-  1.  **ACCURACY IS KEY:** All definitions, explanations, and facts must be 100% accurate and verified. Do not include speculative or incorrect information.
-  2.  **STRUCTURED CONTENT:** Follow the output structure precisely.
-      *   **Title:** Create a clear, compelling title for the study guide.
-      *   **Summary:** Write a short, engaging, and accurate summary (2-3 sentences) of the overall topic.
-      *   **Key Concepts:** Identify the 5-7 most important key concepts, terms, or ideas related to the topic. For each concept, you MUST provide a simple, clear definition and a brief explanation of why it's truly important for understanding the topic.
-      *   **Analogies:** Create 2-3 simple, effective, real-world analogies to explain the most complex or abstract parts of the topic. The analogy must be easy to understand and directly relevant.
-      *   **Quiz Yourself:** Generate 3-4 high-quality questions that effectively test the understanding of the key concepts. Provide the correct and concise answer for each question.
-  3.  **CLARITY:** Use language that is easy to understand, avoiding jargon where possible or explaining it clearly when necessary.
-  4.  **PERSONALIZATION (MOST IMPORTANT):**
-      {{#if learningDifficulties}}*   **User's Difficulties:** '{{{learningDifficulties}}}'. Pay special attention to these areas. Provide extra detail, simpler explanations, or targeted examples for these specific concepts in the "Key Concepts" section.{{/if}}
-      {{#if learningStyle}}*   **User's Learning Style:** '{{{learningStyle}}}'. Adapt the entire study guide to this style. For example, if the user is a 'visual' learner, describe diagrams or use visual metaphors. If they prefer 'analogies', make sure the analogies are prominent and clear.{{/if}}
-  5.  **FINAL OUTPUT FORMAT:** Your final output MUST be ONLY the JSON object specified in the output schema. Do not include any extra text, commentary, or markdown formatting. The JSON must be perfect and parsable.
+  1.  **ACCURACY & PRECISION:** All content must be 100% accurate with proper LaTeX formatting for all mathematical and chemical content.
+  2.  **RICH CONTENT STRUCTURE:**
+      *   **Title:** Clear, compelling title
+      *   **Summary:** 2-3 sentences with LaTeX for key formulas
+      *   **Key Concepts:** Each with definition, importance, formula (if applicable), and diagram suggestion
+      *   **Formulas:** Separate section for important equations with explanations and examples
+      *   **Analogies:** Real-world comparisons for complex concepts
+      *   **Visual Aids:** Diagram suggestions with descriptive search queries
+      *   **Quiz Yourself:** Questions with LaTeX and detailed answers
+  3.  **LATEX EXCELLENCE:** Use proper LaTeX notation for ALL mathematical, chemical, and physics content. Never write formulas as plain text.
+  4.  **VISUAL LEARNING:** For diagrams, provide clear searchQuery descriptions like "diagram of cell structure with labeled organelles" or "graph showing quadratic function parabola".
+  5.  **PERSONALIZATION:**
+      {{#if learningDifficulties}}*   **User's Difficulties:** '{{{learningDifficulties}}}'. Provide extra detail, worked examples, and visual aids for these areas.{{/if}}
+      {{#if learningStyle}}*   **Learning Style:** '{{{learningStyle}}}'. Adapt content accordingly - more diagrams for visual learners, more analogies for conceptual learners.{{/if}}
+  6.  **OUTPUT FORMAT:** Return ONLY valid JSON matching the schema. Use proper LaTeX escaping in JSON strings (double backslashes: \\\\).
 
   Generate the personalized study guide now.`;
 

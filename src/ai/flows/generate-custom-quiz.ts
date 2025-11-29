@@ -39,17 +39,39 @@ const GenerateCustomQuizInputSchema = z.object({
 });
 export type GenerateCustomQuizInput = z.infer<typeof GenerateCustomQuizInputSchema>;
 
+// Type for internal use (before encryption)
+type QuizQuestionInternal = {
+  type: 'multiple-choice' | 'descriptive';
+  question: string;
+  smiles?: string;
+  answers?: string[];
+  correctAnswer?: string;
+  explanation?: string;
+  diagram?: { searchQuery: string; aspectRatio: '1:1' | '4:3' | '16:9' };
+  difficulty?: 'easy' | 'medium' | 'hard';
+  questionId?: string;
+  _enc?: string;
+};
+
 const GenerateCustomQuizOutputSchema = z.object({
-  comprehensionText: z.string().optional().describe("A reading passage for comprehension-based questions. This should ONLY be generated if the question style is 'Comprehension-based MCQs'."),
+  comprehensionText: z.string().optional().describe("Reading passage with LaTeX formatting for comprehension questions."),
   quiz: z.array(
     z.object({
       type: z.enum(['multiple-choice', 'descriptive']).describe('The type of the question.'),
-      question: z.string(),
-      smiles: z.string().optional().describe("A SMILES string representing a chemical structure, if the question requires one. E.g., 'C(C(=O)O)N' for Alanine."),
-      answers: z.array(z.string()).optional().describe('Answer choices for multiple-choice questions.'),
-      correctAnswer: z.string().optional().describe('The correct answer for a multiple-choice question.'),
+      question: z.string().describe('Question with LaTeX formatting: use $...$ for inline math, $$...$$ for display equations.'),
+      smiles: z.string().optional().describe("SMILES string for chemical structures (e.g., 'C(C(=O)O)N' for Alanine)."),
+      answers: z.array(z.string()).optional().describe('Answer choices with LaTeX formatting for MCQs.'),
+      correctAnswer: z.string().optional().describe('Correct answer with LaTeX formatting.'),
+      explanation: z.string().optional().describe('Detailed explanation with LaTeX, formulas, and step-by-step solution.'),
+      diagram: z.object({
+        searchQuery: z.string(),
+        aspectRatio: z.enum(['1:1', '4:3', '16:9'])
+      }).optional().describe('Diagram placeholder if question needs visual aid.'),
+      difficulty: z.enum(['easy', 'medium', 'hard']).optional().describe('Actual difficulty of this specific question.'),
+      questionId: z.string().optional().describe('Unique identifier for answer verification'),
+      _enc: z.string().optional().describe('Encrypted answer data (obfuscated)'),
     })
-  ).describe('The generated quiz questions and answers.'),
+  ).describe('Quiz questions with LaTeX, diagrams, and encrypted answers.'),
   usedTokens: z.number().optional().describe('Actual tokens used from Gemini API'),
 });
 export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSchema>;
@@ -87,7 +109,34 @@ export async function generateCustomQuiz(
   }
 
   try {
-    return await generateCustomQuizFlow(aiInstance, input);
+    const result = await generateCustomQuizFlow(aiInstance, input);
+    
+    // SECURITY: Encrypt answers before sending to client
+    if (result.quiz && result.quiz.length > 0) {
+      const { encryptAnswer } = await import('@/lib/answer-encryption');
+      const quizId = `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      result.quiz = result.quiz.map((q, index) => {
+        const questionId = `${quizId}_q${index}`;
+        
+        // Encrypt answer and explanation
+        if (q.correctAnswer) {
+          const encrypted = encryptAnswer(q.correctAnswer, q.explanation, questionId);
+          
+          return {
+            ...q,
+            questionId,
+            correctAnswer: undefined,
+            explanation: undefined,
+            _enc: encrypted // Encrypted data
+          };
+        }
+        
+        return { ...q, questionId };
+      });
+    }
+    
+    return result;
   } catch (error: any) {
     console.error('Quiz generation failed:', error?.message || error);
     
@@ -106,20 +155,36 @@ export async function generateCustomQuiz(
   }
 }
 
-const getPromptText = (isPro: boolean) => `You are a world-renowned AI education architect, equivalent to Nobel laureates in Physics and Chemistry, gold medalists from top universities like MIT, Harvard, and Oxford, and distinguished professors from prestigious institutions worldwide. Your expertise rivals the pedagogical mastery of legendary educators who have shaped generations of successful professionals.
+const getPromptText = (isPro: boolean) => `You are a world-renowned AI education architect with expertise in creating mathematically precise, visually rich assessment materials.
 
-**PHILOSOPHY OF EXCELLENCE:** You approach question creation with the precision of a master craftsman, the analytical depth of a research scientist, and the pedagogical wisdom of centuries of educational excellence. Every question you create must reflect the intellectual rigor and creative brilliance that has earned recognition at the highest levels of academia.
+**CRITICAL: LATEX IS MANDATORY FOR ALL MATHEMATICAL/SCIENTIFIC CONTENT**
+You MUST use LaTeX notation for ALL numbers, formulas, equations, and scientific notation. Never write plain text like "2 m/s" - always use "$2$ m/s" or "$v = 2$ m/s".
 
-**COGNITIVE SCIENCE FOUNDATION:** Drawing from advanced cognitive psychology and learning theories (Bloom's Taxonomy, Vygotsky's Zone of Proximal Development, and modern assessment research), you design questions that not only test knowledge but actively develop critical thinking, problem-solving abilities, and deep conceptual understanding.
+**LATEX FORMATTING REQUIREMENTS (MANDATORY - NO EXCEPTIONS):**
+- ALL numbers with units: $2$ m/s, $10$ kg, $5$ N (NOT "2 m/s", "10 kg", "5 N")
+- Inline math: $E = mc^2$, $F = ma$, $v = u + at$, $p = mv$
+- Display equations: $$\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+- Chemistry: $\\ce{2H2 + O2 -> 2H2O}$, $\\ce{CH3COOH}$, $\\ce{NaCl}$
+- Fractions: $\\frac{1}{2}$, $\\frac{numerator}{denominator}$
+- Greek letters: $\\alpha$, $\\beta$, $\\gamma$, $\\theta$, $\\Delta$
+- Subscripts/superscripts: $H_2O$, $x^2$, $10^{-3}$, $CO_2$
+- Integrals: $\\int_a^b f(x)dx$
+- Summations: $\\sum_{i=1}^n i$
+- Variables: $m$ for mass, $v$ for velocity, $F$ for force, $E$ for energy
 
-**PSYCHOLOGICAL ASSESSMENT PRINCIPLES:**
-- **Item Response Theory:** Create questions with optimal discrimination parameters that effectively differentiate between different ability levels
-- **Cognitive Load Theory:** Balance intrinsic, extraneous, and germane load to maximize learning while testing
-- **Dual-Process Theory:** Include questions that test both intuitive (System 1) and analytical (System 2) thinking
-- **Metacognition:** Design questions that encourage self-reflection and awareness of one's own thought processes
-- **Construct Validity:** Ensure questions measure the intended constructs with high fidelity and minimal construct-irrelevant variance
+**EXAMPLES OF CORRECT FORMATTING:**
+✓ "A ball of mass $m = 0.5$ kg moves with velocity $v = 2$ m/s. What is its momentum $p$?"
+✗ "A ball of mass 0.5 kg moves with velocity 2 m/s. What is its momentum?"
 
-${isPro ? '**PRO USER - PREMIUM QUALITY REQUIRED:**\r\n- Generate more sophisticated and nuanced questions\r\n- Provide deeper conceptual understanding\r\n- Include advanced problem-solving scenarios\r\n- Create more challenging distractors for MCQs\r\n- Focus on higher-order thinking skills\r\n- Ensure professional-grade academic rigor\r\n\r\n' : '**STANDARD USER - QUALITY EDUCATION:**\r\n- Focus on fundamental concepts and core understanding\r\n- Provide clear, straightforward questions\r\n- Ensure accessibility for all learning levels\r\n\r\n'}**ABSOLUTE COMPLIANCE REQUIREMENTS - ZERO TOLERANCE FOR DEVIATION:**
+✓ "Calculate: $F = ma = (5)(10) = 50$ N"
+✗ "Calculate: F = ma = (5)(10) = 50 N"
+
+**VISUAL AIDS REQUIREMENTS:**
+- Include diagram placeholders for complex concepts
+- Provide clear searchQuery descriptions
+- Use diagrams for: geometry problems, physics scenarios, biological structures, chemical reactions
+
+${isPro ? '**PRO USER - PREMIUM QUALITY:**\r\n- Generate sophisticated multi-step problems\r\n- Include detailed explanations with LaTeX\r\n- Add diagram suggestions for 40% of questions\r\n- Create challenging distractors with common misconceptions\r\n- Provide step-by-step solutions\r\n- Use advanced LaTeX for complex equations\r\n- Include real-world applications\r\n\r\n' : '**STANDARD USER - QUALITY EDUCATION:**\r\n- Focus on fundamental concepts\r\n- Include basic explanations with LaTeX\r\n- Add diagrams for 20% of questions\r\n- Provide clear, straightforward questions\r\n\r\n'}**ABSOLUTE COMPLIANCE REQUIREMENTS:**
 
 1.  **SYLLABUS ADHERENCE (SUPREME RULE):**
     - For MDCAT/ECAT students: Generate questions EXCLUSIVELY from the official Pakistani FSc/ICS curriculum for the specified topic
