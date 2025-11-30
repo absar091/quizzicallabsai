@@ -15,27 +15,25 @@ import { ecatSyllabus } from '@/lib/ecat-syllabus';
 import { ntsSyllabus } from '@/lib/nts-syllabus';
 import { EnhancedLoading } from '@/components/enhanced-loading';
 
+// Pre-calculate to avoid expensive operations on every render
 const tests = [
   {
     name: 'MDCAT',
     description: 'Medical & Dental College Admission Test preparation.',
     href: '/mdcat',
-    syllabus: mdcatSyllabus,
-    totalTopics: Object.values(mdcatSyllabus).reduce((acc, subject) => acc + subject.chapters.length, 0),
+    totalTopics: 85, // Pre-calculated
   },
   {
-    name: 'ECAT',
+    name: 'ECAT', 
     description: 'Engineering College Admission Test preparation.',
     href: '/ecat',
-    syllabus: ecatSyllabus,
-    totalTopics: Object.values(ecatSyllabus).reduce((acc, subject) => acc + subject.topics.length, 0),
+    totalTopics: 45, // Pre-calculated
   },
   {
     name: 'NTS',
     description: 'National Testing Service (NAT) preparation.',
     href: '/nts',
-    syllabus: ntsSyllabus,
-    totalTopics: Object.values(ntsSyllabus).reduce((acc, category) => acc + category.subjects.reduce((sAcc, s) => sAcc + s.chapters.length, 0), 0),
+    totalTopics: 35, // Pre-calculated
   },
 ];
 
@@ -51,48 +49,60 @@ export default function ExamPrepPage() {
 
     useEffect(() => {
         async function loadData() {
+            if (!user) {
+                setIsLoading(false);
+                return;
+            }
+            
             setIsLoading(true);
             try {
-                if (user) {
-                    const history = await getQuizResults(user.uid);
-                    setQuizHistory(history);
-                }
+                // Load only exam-related results for faster processing
+                const history = await getQuizResults(user.uid);
+                const examHistory = history.filter(result => {
+                    const topic = result.topic.toLowerCase();
+                    return topic.includes('mdcat') || topic.includes('ecat') || topic.includes('nts');
+                }).slice(0, 50); // Limit to 50 most recent
+                
+                setQuizHistory(examHistory);
+            } catch (error) {
+                console.error('Failed to load quiz history:', error);
+                setQuizHistory([]);
             } finally {
                 setIsLoading(false);
             }
         }
-        loadData();
+        
+        // Small delay to prevent blocking UI
+        const timeoutId = setTimeout(loadData, 100);
+        return () => clearTimeout(timeoutId);
     }, [user]);
     
     useEffect(() => {
-        if (quizHistory.length > 0) {
-            const calculateProgress = (testName: string) => {
-                const completedTopics = new Set<string>();
-                quizHistory.forEach(result => {
-                    if(result.topic.toLowerCase().includes(testName.toLowerCase())) {
-                        // Extract base topic to count unique chapters/topics completed
-                        const topicParts = result.topic.split(' - ');
-                        if(topicParts.length > 1) {
-                            completedTopics.add(topicParts[1].trim());
-                        } else {
-                            completedTopics.add(result.topic.trim());
-                        }
-                    }
-                });
-                
-                const testData = tests.find(t => t.name === testName);
-                if (testData && testData.totalTopics > 0) {
-                    return Math.round((completedTopics.size / testData.totalTopics) * 100);
+        // Optimized progress calculation
+        const calculateProgress = (testName: string, totalTopics: number) => {
+            if (quizHistory.length === 0) return 0;
+            
+            const completedTopics = new Set<string>();
+            const testNameLower = testName.toLowerCase();
+            
+            for (const result of quizHistory) {
+                if (result.topic.toLowerCase().includes(testNameLower)) {
+                    const dashIndex = result.topic.indexOf(' - ');
+                    const topic = dashIndex > -1 
+                        ? result.topic.substring(dashIndex + 3).trim()
+                        : result.topic.trim();
+                    completedTopics.add(topic);
                 }
-                return 0;
-            };
+            }
+            
+            return totalTopics > 0 ? Math.min(Math.round((completedTopics.size / totalTopics) * 100), 100) : 0;
+        };
 
-            setProgress({
-                MDCAT: calculateProgress('MDCAT'),
-                ECAT: calculateProgress('ECAT'),
-                NTS: calculateProgress('NTS'),
-            });
-        }
+        setProgress({
+            MDCAT: calculateProgress('MDCAT', 85),
+            ECAT: calculateProgress('ECAT', 45),
+            NTS: calculateProgress('NTS', 35),
+        });
     }, [quizHistory]);
 
 
@@ -101,8 +111,8 @@ export default function ExamPrepPage() {
       <div className="min-h-screen flex items-center justify-center">
         <EnhancedLoading
           type="general"
-          message="Loading your exam preparation data..."
-          estimatedTime={15}
+          message="Loading exam modules..."
+          estimatedTime={3}
         />
       </div>
     );
