@@ -389,6 +389,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           await set(userRef, updatedUserData);
           
+          // CRITICAL: Also update subscription data for Pro users
+          if (plan === 'Pro') {
+            const subscriptionRef = ref(db, `users/${user.uid}/subscription`);
+            const now = new Date();
+            const cycleEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            
+            await set(subscriptionRef, {
+              plan: 'pro',
+              subscription_status: 'active',
+              tokens_used: 0,
+              tokens_limit: 500000, // 500K tokens for Pro
+              quizzes_used: 0,
+              quizzes_limit: 90, // 90 quizzes for Pro
+              billing_cycle_start: now.toISOString(),
+              billing_cycle_end: cycleEnd.toISOString(),
+              created_at: now.toISOString(),
+              updated_at: now.toISOString(),
+            });
+            
+            secureLog('info', 'Pro subscription data created', { userId: user.uid });
+          }
+          
           // Update local state immediately for instant UI feedback
           setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
           

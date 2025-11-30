@@ -111,4 +111,33 @@ Systematic review of all features and components to identify bugs similar to the
 
 **Test Status:** ✅ Ready for testing
 
+### 🔴 Bug #4: Pro Plan Shows Free Limits in Billing (FIXED)
+**Location:** `src/context/AuthContext.tsx`
+**Severity:** HIGH
+**Issue:** User shows as Pro in UI but billing page shows Free limits (100K tokens, 20 quizzes)
+
+**Root Cause:** 
+- `updateUserPlan()` only updates `users/{uid}/plan` (for UI display)
+- Billing page reads from `users/{uid}/subscription` (managed by Whop service)
+- Pro users via promo code don't get subscription data created
+
+**Symptoms:**
+- User badge shows "Pro" ✅
+- User metadata shows plan: "Pro" ✅  
+- Billing page shows "Free Plan" with 100K tokens ❌
+- Should show "Pro Plan" with 500K tokens ❌
+
+**Fix Applied:**
+- Updated `updateUserPlan()` to create subscription data for Pro users
+- Sets correct Pro limits: 500K tokens, 90 quizzes
+- Creates proper billing cycle dates
+- Ensures billing page reads correct Pro limits
+
+**Impact:**
+- Pro users now see correct limits in billing dashboard
+- Usage tracking works with Pro limits
+- Billing page displays "Pro Plan" correctly
+
+**Test Status:** ✅ Ready for testing
+
 ### 🔍 Checking More Areas...
