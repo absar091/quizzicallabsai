@@ -228,7 +228,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       if (!correctAnswer && (question as any)._enc) {
         try {
           const { decryptAnswer } = require('@/lib/answer-encryption');
-          const decrypted = decryptAnswer((question as any)._enc, `${formValues?.topic || 'quiz'}_${index}`);
+          // Use questionId if available, otherwise fallback to index-based key
+          const questionId = (question as any).questionId || `quiz_${index}`;
+          const decrypted = decryptAnswer((question as any)._enc, questionId);
           correctAnswer = decrypted.answer;
         } catch (error) {
           console.error('Decryption failed for question', index, error);
@@ -250,7 +252,7 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
     const percentage = scorableQuestions > 0 ? (score / scorableQuestions) * 100 : 0;
 
     return { score, percentage, totalScorable: scorableQuestions };
-  }, [quiz, userAnswers, formValues]);
+  }, [quiz, userAnswers]);
 
 
   const handleSubmit = useCallback(async () => {
@@ -1652,7 +1654,9 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
                                 if (!correctAnswer && (q as any)._enc) {
                                   try {
                                     const { decryptAnswer } = require('@/lib/answer-encryption');
-                                    const decrypted = decryptAnswer((q as any)._enc, `${formValues?.topic || 'quiz'}_${index}`);
+                                    // Use questionId if available, otherwise fallback to index-based key
+                                    const questionId = (q as any).questionId || `quiz_${index}`;
+                                    const decrypted = decryptAnswer((q as any)._enc, questionId);
                                     correctAnswer = decrypted.answer;
                                   } catch (error) {
                                     console.error('Decryption failed for question', index, error);
