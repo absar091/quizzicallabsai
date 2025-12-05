@@ -426,6 +426,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             secureLog('info', 'Pro subscription data created', { userId: user.uid });
           }
           
+          // CRITICAL: Sync plan to usage collection
+          try {
+            const { whopService } = await import('@/lib/whop');
+            await whopService.updateUserPlan(user.uid, plan);
+            secureLog('info', 'User plan synced to usage collection', { userId: user.uid, plan });
+          } catch (syncError) {
+            secureLog('warn', 'Failed to sync plan to usage collection', syncError);
+            // Don't throw - plan update succeeded, sync is secondary
+          }
+          
           // Update local state immediately for instant UI feedback
           setUser(prevUser => prevUser ? { ...prevUser, plan } : null);
           
