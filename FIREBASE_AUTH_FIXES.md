@@ -141,6 +141,16 @@ catch (error: any) {
    - Silent return for user cancellations
    - Clear error for blocked popups
 
+3. **`src/components/global-error-handler.tsx`** (NEW)
+   - Global unhandled promise rejection handler
+   - Suppresses Firebase Auth internal errors
+   - Suppresses COOP warnings
+   - Logs other errors for debugging
+
+4. **`src/components/app-providers.tsx`**
+   - Added GlobalErrorHandler component
+   - Catches all unhandled errors globally
+
 ## 🚀 Deployment
 
 ### Before Deploying

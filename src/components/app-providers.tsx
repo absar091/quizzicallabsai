@@ -13,6 +13,7 @@ import { PWAInstallPrompt } from "./pwa-install-prompt";
 import { ServiceWorkerRegistration } from "./service-worker-registration";
 import { MobileOptimization } from "./mobile-optimization";
 import { RecaptchaV3Provider } from "@/components/recaptcha-v3-provider";
+import { GlobalErrorHandler } from "@/components/global-error-handler";
 
 import { useAuth } from "@/hooks/useAuth";
 import NotificationHandler from "./notification-handler";
@@ -89,6 +90,7 @@ export default function AppProviders({
         enableSystem
         disableTransitionOnChange
       >
+        <GlobalErrorHandler />
         <RecaptchaV3Provider>
           <AuthProvider>
             {isSplashLoading ? (
