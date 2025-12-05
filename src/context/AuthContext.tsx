@@ -372,6 +372,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Google users skip verification - redirect directly to dashboard
       router.push('/dashboard');
     } catch (error: any) {
+      // Handle specific Firebase Auth errors
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('Google sign-in popup was closed by user');
+        // Don't throw error, just return silently
+        return;
+      }
+      if (error.code === 'auth/cancelled-popup-request') {
+        console.log('Google sign-in popup was cancelled');
+        // Don't throw error, just return silently
+        return;
+      }
+      if (error.code === 'auth/popup-blocked') {
+        throw new Error('Popup was blocked by browser. Please allow popups for this site.');
+      }
+      // For other errors, throw them
       throw error;
     }
   };

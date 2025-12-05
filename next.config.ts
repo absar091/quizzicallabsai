@@ -31,7 +31,7 @@ const nextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'SAMEORIGIN' // Changed from DENY to allow Firebase Auth popups
           },
           {
             key: 'X-Content-Type-Options',
@@ -44,6 +44,14 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups' // Allow Firebase Auth popups
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'unsafe-none' // Required for Firebase Auth
           }
         ],
       },
