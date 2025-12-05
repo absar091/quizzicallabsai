@@ -394,6 +394,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateUserPlan = async (plan: UserPlan) => {
     if (user) {
         try {
+          const previousPlan = user.plan;
+          
           // Save complete user data to Firebase
           const userRef = ref(db, `users/${user.uid}`);
           const updatedUserData = {
@@ -405,7 +407,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await set(userRef, updatedUserData);
           
           // CRITICAL: Also update subscription data for Pro users
+          let tokensLimit = 10000; // Free plan default
+          let quizzesLimit = 10; // Free plan default
+          
           if (plan === 'Pro') {
+            tokensLimit = 500000; // 500K tokens for Pro
+            quizzesLimit = 90; // 90 quizzes for Pro
+            
             const subscriptionRef = ref(db, `users/${user.uid}/subscription`);
             const now = new Date();
             const cycleEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
@@ -414,9 +422,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               plan: 'pro',
               subscription_status: 'active',
               tokens_used: 0,
-              tokens_limit: 500000, // 500K tokens for Pro
+              tokens_limit: tokensLimit,
               quizzes_used: 0,
-              quizzes_limit: 90, // 90 quizzes for Pro
+              quizzes_limit: quizzesLimit,
               billing_cycle_start: now.toISOString(),
               billing_cycle_end: cycleEnd.toISOString(),
               created_at: now.toISOString(),
@@ -426,14 +434,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             secureLog('info', 'Pro subscription data created', { userId: user.uid });
           }
           
-          // CRITICAL: Sync plan to usage collection
+          // CRITICAL: Sync plan to usage collection via API
           try {
-            const { whopService } = await import('@/lib/whop');
-            await whopService.updateUserPlan(user.uid, plan);
-            secureLog('info', 'User plan synced to usage collection', { userId: user.uid, plan });
+            const idToken = await auth.currentUser?.getIdToken();
+            if (idToken) {
+              const response = await fetch('/api/admin/sync-user-plan', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({ plan })
+              });
+              
+              if (response.ok) {
+                secureLog('info', 'User plan synced to usage collection', { userId: user.uid, plan });
+              } else {
+                secureLog('warn', 'Failed to sync plan to usage collection via API');
+              }
+            }
           } catch (syncError) {
             secureLog('warn', 'Failed to sync plan to usage collection', syncError);
             // Don't throw - plan update succeeded, sync is secondary
+          }
+          
+          // Send plan upgrade email notification via API
+          if (plan === 'Pro' && previousPlan !== 'Pro' && user.email) {
+            try {
+              const idToken = await auth.currentUser?.getIdToken();
+              if (idToken) {
+                const response = await fetch('/api/notifications/plan-upgrade', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    idToken,
+                    userEmail: user.email,
+                    userName: user.displayName || user.email.split('@')[0] || 'Student',
+                    plan: plan,
+                    tokensLimit: tokensLimit,
+                    quizzesLimit: quizzesLimit
+                  })
+                });
+                
+                if (response.ok) {
+                  secureLog('info', 'Plan upgrade email sent', { userId: user.uid, plan });
+                } else {
+                  secureLog('warn', 'Failed to send plan upgrade email via API');
+                }
+              }
+            } catch (emailError) {
+              secureLog('warn', 'Failed to send plan upgrade email', emailError);
+              // Don't throw - plan update succeeded, email is secondary
+            }
           }
           
           // Update local state immediately for instant UI feedback

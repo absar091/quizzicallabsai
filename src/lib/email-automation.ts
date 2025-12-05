@@ -335,3 +335,152 @@ Quizzicallabzᴬᴵ Team
     skipPreferenceCheck: true // Payment confirmations are critical emails
   });
 }
+
+export async function sendAutomatedPlanUpgrade(
+  userEmail: string,
+  userName: string,
+  upgradeData: {
+    newPlan: string;
+    previousPlan?: string;
+    tokensLimit: number;
+    quizzesLimit: number;
+    upgradeDate?: string;
+    upgradeMethod?: 'promo_code' | 'payment' | 'admin';
+  }
+) {
+  const template = {
+    subject: `🎉 Welcome to ${upgradeData.newPlan} Plan!`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin: 0;">Quizzicallabzᴬᴵ</h1>
+          <p style="color: #6b7280; margin: 5px 0;">Plan Upgrade Confirmation</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+          <h2 style="color: white; margin: 0 0 10px 0;">Congratulations!</h2>
+          <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 18px;">
+            You've been upgraded to the <strong>${upgradeData.newPlan}</strong> plan!
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">Hi ${userName},</h3>
+          <p style="color: #4b5563; line-height: 1.6;">
+            Great news! Your account has been successfully upgraded to the <strong>${upgradeData.newPlan}</strong> plan. 
+            You now have access to enhanced features and increased limits.
+          </p>
+        </div>
+
+        <div style="background: white; border: 2px solid #10b981; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">✨ Your New Benefits</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 12px 0; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 20px; margin-right: 8px;">🎯</span> Plan
+              </td>
+              <td style="padding: 12px 0; color: #1f2937; font-weight: 600; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                ${upgradeData.newPlan}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 0; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 20px; margin-right: 8px;">🪙</span> AI Tokens
+              </td>
+              <td style="padding: 12px 0; color: #1f2937; font-weight: 600; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                ${upgradeData.tokensLimit.toLocaleString()} / month
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 0; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 20px; margin-right: 8px;">📝</span> Quizzes
+              </td>
+              <td style="padding: 12px 0; color: #1f2937; font-weight: 600; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                ${upgradeData.quizzesLimit} / month
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 0; color: #6b7280;">
+                <span style="font-size: 20px; margin-right: 8px;">🤖</span> AI Model
+              </td>
+              <td style="padding: 12px 0; color: #1f2937; font-weight: 600; text-align: right;">
+                ${upgradeData.newPlan === 'Pro' ? 'Gemini 2.5 Pro' : 'Gemini 1.5 Flash'}
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        ${upgradeData.newPlan === 'Pro' ? `
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+          <p style="color: #92400e; margin: 0; font-size: 14px;">
+            <strong>💡 Pro Tip:</strong> You now have access to our most advanced AI model (Gemini 2.5 Pro) 
+            for more accurate and detailed quiz generation!
+          </p>
+        </div>
+        ` : ''}
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" 
+             style="background: #2563eb; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">
+            Start Using Your New Features
+          </a>
+        </div>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h4 style="color: #1f2937; margin-top: 0;">📅 Upgrade Details</h4>
+          <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+            <strong>Upgrade Date:</strong> ${upgradeData.upgradeDate || new Date().toLocaleDateString()}
+          </p>
+          ${upgradeData.previousPlan ? `
+          <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+            <strong>Previous Plan:</strong> ${upgradeData.previousPlan}
+          </p>
+          ` : ''}
+          <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+            <strong>Billing Cycle:</strong> Monthly (resets on the 1st of each month)
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+          <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
+            Need help getting started? Check out our <a href="${process.env.NEXT_PUBLIC_APP_URL}/help" style="color: #2563eb;">Help Center</a>
+          </p>
+          <p style="color: #6b7280; font-size: 14px; margin: 0;">
+            Questions? Contact us at <a href="mailto:support@quizzicallabs.com" style="color: #2563eb;">support@quizzicallabs.com</a>
+          </p>
+        </div>
+      </div>
+    `,
+    text: `
+🎉 Welcome to ${upgradeData.newPlan} Plan!
+
+Hi ${userName},
+
+Congratulations! Your account has been successfully upgraded to the ${upgradeData.newPlan} plan.
+
+Your New Benefits:
+- Plan: ${upgradeData.newPlan}
+- AI Tokens: ${upgradeData.tokensLimit.toLocaleString()} / month
+- Quizzes: ${upgradeData.quizzesLimit} / month
+- AI Model: ${upgradeData.newPlan === 'Pro' ? 'Gemini 2.5 Pro' : 'Gemini 1.5 Flash'}
+
+Upgrade Details:
+- Upgrade Date: ${upgradeData.upgradeDate || new Date().toLocaleDateString()}
+${upgradeData.previousPlan ? `- Previous Plan: ${upgradeData.previousPlan}` : ''}
+- Billing Cycle: Monthly (resets on the 1st of each month)
+
+Start using your new features: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard
+
+Need help? Visit our Help Center: ${process.env.NEXT_PUBLIC_APP_URL}/help
+Questions? Email us: support@quizzicallabs.com
+
+Best regards,
+Quizzicallabzᴬᴵ Team
+    `
+  };
+
+  return EmailAutomation.sendAutomatedEmail(userEmail, 'promotions', template, {
+    skipPreferenceCheck: true // Plan upgrades are important notifications
+  });
+}

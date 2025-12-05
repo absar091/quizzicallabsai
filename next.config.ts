@@ -103,6 +103,39 @@ const nextConfig = {
       use: ['node-loader'],
     });
 
+    // Handle WASM files (for farmhash-modern and other dependencies)
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+    };
+
+    // Exclude WASM files from client bundle (they're only needed server-side)
+    if (!isServer) {
+      config.module.rules.push({
+        test: /\.wasm$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/wasm/[name].[hash][ext]',
+        },
+      });
+
+      // Fallback for node modules in client-side
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    } else {
+      // Server-side: handle WASM properly
+      config.module.rules.push({
+        test: /\.wasm$/,
+        type: 'webassembly/async',
+      });
+    }
+
     return config;
   },
 };
