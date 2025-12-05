@@ -13,7 +13,7 @@ import { getQuizResults, QuizResult } from '@/lib/indexed-db';
 import { mdcatSyllabus } from '@/lib/mdcat-syllabus';
 import { ecatSyllabus } from '@/lib/ecat-syllabus';
 import { ntsSyllabus } from '@/lib/nts-syllabus';
-import { EnhancedLoading } from '@/components/enhanced-loading';
+import { ExamModuleLoading } from '@/components/professional-loading';
 
 // Pre-calculate to avoid expensive operations on every render
 const tests = [
@@ -105,15 +105,7 @@ export default function ExamPrepPage() {
 
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <EnhancedLoading
-          type="general"
-          message="Loading exam modules..."
-          estimatedTime={3}
-        />
-      </div>
-    );
+    return <ExamModuleLoading />;
   }
 
   return (

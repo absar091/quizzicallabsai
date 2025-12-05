@@ -67,7 +67,7 @@ const icons = {
 
 export function EnhancedLoading({
   type,
-  progress = 0,
+  progress: externalProgress = 0,
   message,
   onRetry,
   showRetry = false,
@@ -76,14 +76,34 @@ export function EnhancedLoading({
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isTakingLonger, setIsTakingLonger] = useState(false);
+  const [simulatedProgress, setSimulatedProgress] = useState(0);
 
   const messages = loadingMessages[type] || loadingMessages.general;
   const Icon = icons[type] || icons.general;
 
+  // Use external progress if provided, otherwise simulate
+  const progress = externalProgress > 0 ? externalProgress : simulatedProgress;
+
+  useEffect(() => {
+    // Simulate progress if no external progress provided
+    if (externalProgress === 0) {
+      const progressInterval = setInterval(() => {
+        setSimulatedProgress(prev => {
+          if (prev >= 95) return prev; // Stop at 95% until complete
+          // Slow down as we approach 100%
+          const increment = prev < 50 ? 3 : prev < 80 ? 2 : 1;
+          return Math.min(prev + increment, 95);
+        });
+      }, 500);
+
+      return () => clearInterval(progressInterval);
+    }
+  }, [externalProgress]);
+
   useEffect(() => {
     const messageInterval = setInterval(() => {
       setCurrentMessageIndex(prev => (prev + 1) % messages.length);
-    }, 2500); // Faster message rotation
+    }, 2500);
 
     const timeInterval = setInterval(() => {
       setTimeElapsed(prev => {
