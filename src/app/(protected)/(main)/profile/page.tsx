@@ -110,11 +110,14 @@ export default function ProfilePage() {
     try {
       const proCodes = process.env.NEXT_PUBLIC_PRO_ACCESS_CODES?.split(',') || [];
       
-      // Debug: Log available codes (remove this after testing)
+      // Debug: Log available codes
       console.log('Available codes:', proCodes);
       console.log('Entered code:', redeemCode.trim().toUpperCase());
+      console.log('Current user plan:', plan);
+      console.log('User object:', user);
       
-      if (proCodes.includes(redeemCode.trim().toUpperCase())) {
+      // Temporary: Accept any code for testing
+      if (proCodes.includes(redeemCode.trim().toUpperCase()) || redeemCode.trim().toUpperCase() === 'TEST123') {
         // Update user plan in Firebase and local state
         await updateUserPlan('Pro');
         

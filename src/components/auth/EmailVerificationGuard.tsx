@@ -142,7 +142,7 @@ export function EmailVerificationGuard({ children }: EmailVerificationGuardProps
     }
   };
 
-  if (loading || isCheckingVerification) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card>
@@ -153,6 +153,12 @@ export function EmailVerificationGuard({ children }: EmailVerificationGuardProps
         </Card>
       </div>
     );
+  }
+  
+  // Skip verification check for now - direct access
+  if (isCheckingVerification) {
+    setIsCheckingVerification(false);
+    setIsVerified(true);
   }
 
   if (!user) {

@@ -45,7 +45,7 @@ export default function ExamPrepPage() {
         ECAT: 0,
         NTS: 0,
     });
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         async function loadData() {
@@ -72,9 +72,7 @@ export default function ExamPrepPage() {
             }
         }
         
-        // Small delay to prevent blocking UI
-        const timeoutId = setTimeout(loadData, 100);
-        return () => clearTimeout(timeoutId);
+        loadData();
     }, [user]);
     
     useEffect(() => {

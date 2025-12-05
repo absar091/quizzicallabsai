@@ -460,6 +460,56 @@ class WhopService {
       throw error;
     }
   }
+
+  // Update user plan in usage collection (for syncing metadata with usage)
+  async updateUserPlan(userId: string, plan: string): Promise<boolean> {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+
+      // Update current month's usage with correct plan
+      const usageRef = adminDb.ref(`usage/${userId}/${year}/${month}`);
+      const snapshot = await usageRef.once('value');
+
+      if (snapshot.exists()) {
+        await usageRef.update({
+          plan: plan,
+          updated_at: now.toISOString(),
+        });
+      } else {
+        // Create usage entry if it doesn't exist
+        const limits = PLAN_LIMITS[plan.toLowerCase() as keyof typeof PLAN_LIMITS] || PLAN_LIMITS.free;
+        await usageRef.set({
+          plan: plan,
+          tokens_used: 0,
+          tokens_limit: limits.tokens,
+          quizzes_created: 0,
+          month: month,
+          year: year,
+          created_at: now.toISOString(),
+          updated_at: now.toISOString(),
+        });
+      }
+
+      // Also update subscription metadata
+      const subscriptionRef = adminDb.ref(`users/${userId}/subscription`);
+      const subSnapshot = await subscriptionRef.once('value');
+      
+      if (subSnapshot.exists()) {
+        await subscriptionRef.update({
+          plan: plan,
+          updated_at: now.toISOString(),
+        });
+      }
+
+      console.log(`✅ User ${userId} plan synced to ${plan} in usage collection`);
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to update user plan in usage:', error);
+      return false;
+    }
+  }
 }
 
 export const whopService = new WhopService();
