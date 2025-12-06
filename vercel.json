@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron?type=reminders",
-      "schedule": "0 9 * * *"
+      "schedule": "0 9 * * *" 
     },
     {
-      "path": "/api/cron/auto-fix-stuck-payments?secret=qz_cr0n_9am_n0t1f_s3cur3_k3y_2024_xY9mP7qR8wE5",
-      "schedule": "0 */6 * * *"
+      "path": "/api/cron/auto-fix-stuck-payments",
+      "schedule": "0 0 * * *"
     }
   ],
   "functions": {
