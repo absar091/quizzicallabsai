@@ -114,10 +114,10 @@ export async function generateCustomQuiz(
     // SECURITY: Encrypt answers before sending to client
     if (result.quiz && result.quiz.length > 0) {
       const { encryptAnswer } = await import('@/lib/answer-encryption');
-      const quizId = `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       result.quiz = result.quiz.map((q, index) => {
-        const questionId = `${quizId}_q${index}`;
+        // Use consistent format: quiz_${index}
+        const questionId = `quiz_${index}`;
         
         // Encrypt answer and explanation
         if (q.correctAnswer) {

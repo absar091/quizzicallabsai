@@ -83,12 +83,14 @@ export function decryptAnswer(encryptedData: string, quizId: string): { answer: 
 export function obfuscateQuiz(quiz: any[], quizId: string) {
   return quiz.map((q, index) => {
     if (q.correctAnswer) {
-      const encrypted = encryptAnswer(q.correctAnswer, q.explanation, `${quizId}_${index}`);
+      const questionId = `quiz_${index}`; // Use consistent format
+      const encrypted = encryptAnswer(q.correctAnswer, q.explanation, questionId);
       return {
         ...q,
         correctAnswer: undefined,
         explanation: undefined,
-        _enc: encrypted // Encrypted answer
+        _enc: encrypted,
+        questionId: questionId // Store the questionId for later decryption
       };
     }
     return q;
