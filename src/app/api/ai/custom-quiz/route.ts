@@ -24,13 +24,38 @@ export async function POST(request: NextRequest) {
     const userId = decoded.uid;
 
     // ✅ Check Limit
-    const { allowed, remaining } = await checkTokenLimit(userId);
-    if (!allowed) {
+    const limitCheck = await checkTokenLimit(userId);
+    if (!limitCheck.allowed) {
+      // Send limit reached email notification (async, don't wait)
+      if (limitCheck.limitReached) {
+        fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/limit-reached`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ limitType: 'tokens' })
+        }).catch(err => console.error('Failed to send limit email:', err));
+      }
+
       return NextResponse.json(
-        { error: 'Your token limit is used up. Upgrade to continue.', remaining },
+        { 
+          error: limitCheck.errorMessage || 'Your token limit has been reached.',
+          code: 'LIMIT_REACHED',
+          details: {
+            planName: limitCheck.planName,
+            tokensUsed: limitCheck.tokensUsed,
+            tokensLimit: limitCheck.tokensLimit,
+            resetDate: limitCheck.resetDate,
+            upgradeUrl: limitCheck.upgradeUrl
+          },
+          remaining: limitCheck.remaining
+        },
         { status: 402 }
       );
     }
+
+    const { remaining } = limitCheck;
 
     console.log('📝 Input received:', {
       topic: input.topic,

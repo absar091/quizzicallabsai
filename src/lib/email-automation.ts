@@ -336,6 +336,127 @@ Quizzicallabzᴬᴵ Team
   });
 }
 
+export async function sendAutomatedLimitReached(
+  userEmail: string,
+  userName: string,
+  limitData: {
+    limitType: 'tokens' | 'quizzes';
+    currentPlan: string;
+    usedAmount: number;
+    limitAmount: number;
+    resetDate?: string;
+  }
+) {
+  const isTokenLimit = limitData.limitType === 'tokens';
+  const limitName = isTokenLimit ? 'AI Token' : 'Quiz Generation';
+  const limitIcon = isTokenLimit ? '🪙' : '📝';
+
+  const template = {
+    subject: `${limitIcon} ${limitName} Limit Reached - Upgrade to Continue`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin: 0;">Quizzicallabzᴬᴵ</h1>
+          <p style="color: #6b7280; margin: 5px 0;">Usage Limit Notification</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); padding: 30px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 10px;">${limitIcon}</div>
+          <h2 style="color: white; margin: 0 0 10px 0;">${limitName} Limit Reached</h2>
+          <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">
+            You've used ${limitData.usedAmount.toLocaleString()} of ${limitData.limitAmount.toLocaleString()} ${isTokenLimit ? 'tokens' : 'quizzes'}
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">Hi ${userName},</h3>
+          <p style="color: #4b5563; line-height: 1.6;">
+            You've reached your monthly ${limitName.toLowerCase()} limit on the <strong>${limitData.currentPlan}</strong> plan. 
+            To continue using our AI-powered features, you have two options:
+          </p>
+        </div>
+
+        <div style="background: white; border: 2px solid #2563eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">📈 Option 1: Upgrade Your Plan</h3>
+          <p style="color: #4b5563; line-height: 1.6; margin-bottom: 15px;">
+            Get instant access to more ${isTokenLimit ? 'tokens' : 'quizzes'} and premium features:
+          </p>
+          <ul style="color: #4b5563; line-height: 1.8; margin: 0; padding-left: 20px;">
+            <li><strong>Pro Plan:</strong> 100,000 tokens/month + Gemini 2.5 Pro AI</li>
+            <li><strong>Premium Plan:</strong> 500,000 tokens/month + Priority Support</li>
+            <li><strong>Ultimate Plan:</strong> 2,000,000 tokens/month + All Features</li>
+          </ul>
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/pricing" 
+               style="background: #2563eb; color: white; padding: 12px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">
+              View Pricing & Upgrade
+            </a>
+          </div>
+        </div>
+
+        <div style="background: white; border: 2px solid #10b981; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+          <h3 style="color: #1f2937; margin-top: 0;">⏰ Option 2: Wait for Reset</h3>
+          <p style="color: #4b5563; line-height: 1.6; margin: 0;">
+            Your ${limitName.toLowerCase()} limit will automatically reset on <strong>${limitData.resetDate || 'the 1st of next month'}</strong>. 
+            You can continue using the platform then at no additional cost.
+          </p>
+        </div>
+
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+          <p style="color: #92400e; margin: 0; font-size: 14px;">
+            <strong>💡 Need Help?</strong> If you'd like to discuss custom plans or have questions about upgrading, 
+            our support team is here to help at <a href="mailto:support@quizzicallabs.com" style="color: #2563eb;">support@quizzicallabs.com</a>
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+          <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
+            <strong>Current Plan:</strong> ${limitData.currentPlan}
+          </p>
+          <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
+            <strong>Usage:</strong> ${limitData.usedAmount.toLocaleString()} / ${limitData.limitAmount.toLocaleString()} ${isTokenLimit ? 'tokens' : 'quizzes'}
+          </p>
+          <p style="color: #6b7280; font-size: 14px; margin: 0;">
+            Questions? Contact us at <a href="mailto:support@quizzicallabs.com" style="color: #2563eb;">support@quizzicallabs.com</a>
+          </p>
+        </div>
+      </div>
+    `,
+    text: `
+${limitIcon} ${limitName} Limit Reached
+
+Hi ${userName},
+
+You've reached your monthly ${limitName.toLowerCase()} limit on the ${limitData.currentPlan} plan.
+Usage: ${limitData.usedAmount.toLocaleString()} / ${limitData.limitAmount.toLocaleString()} ${isTokenLimit ? 'tokens' : 'quizzes'}
+
+To continue using our AI-powered features, you have two options:
+
+📈 OPTION 1: UPGRADE YOUR PLAN
+Get instant access to more ${isTokenLimit ? 'tokens' : 'quizzes'} and premium features:
+- Pro Plan: 100,000 tokens/month + Gemini 2.5 Pro AI
+- Premium Plan: 500,000 tokens/month + Priority Support
+- Ultimate Plan: 2,000,000 tokens/month + All Features
+
+View pricing and upgrade: ${process.env.NEXT_PUBLIC_APP_URL}/pricing
+
+⏰ OPTION 2: WAIT FOR RESET
+Your ${limitName.toLowerCase()} limit will automatically reset on ${limitData.resetDate || 'the 1st of next month'}.
+
+💡 NEED HELP?
+If you'd like to discuss custom plans or have questions about upgrading, contact our support team:
+Email: support@quizzicallabs.com
+
+Best regards,
+Quizzicallabzᴬᴵ Team
+    `
+  };
+
+  return EmailAutomation.sendAutomatedEmail(userEmail, 'promotions', template, {
+    skipPreferenceCheck: false // Allow users to opt out of limit notifications
+  });
+}
+
 export async function sendAutomatedPlanUpgrade(
   userEmail: string,
   userName: string,
