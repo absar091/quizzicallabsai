@@ -118,18 +118,77 @@ export default function GenerateStudyGuidePage() {
         })
       });
       
-      if (!response.ok) throw new Error('Failed to generate study guide');
       const result = await response.json();
       
-      if (result.error) throw new Error(result.error);
+      // Handle specific error cases
+      if (!response.ok || result.error) {
+        const errorCode = result.code || result.error;
+        const errorMessage = result.error || result.message || 'Failed to generate study guide';
+        
+        // Handle specific error types with user-friendly messages
+        if (response.status === 429 || errorCode === 'LIMIT_REACHED' || errorMessage.includes('limit')) {
+          toast({
+            title: "Token Limit Reached 🚫",
+            description: "You've used all your AI tokens for this month. Upgrade to Pro for 500,000 tokens or wait until your limit resets on January 1, 2026.",
+            variant: "destructive",
+            duration: 8000,
+          });
+          // Optionally redirect to pricing page after a delay
+          setTimeout(() => {
+            if (confirm('Would you like to upgrade to Pro for unlimited access?')) {
+              window.location.href = '/pricing';
+            }
+          }, 2000);
+        } else if (response.status === 401 || errorMessage.includes('Unauthorized') || errorMessage.includes('sign in')) {
+          toast({
+            title: "Authentication Required 🔐",
+            description: "Please sign in again to continue using AI features.",
+            variant: "destructive",
+          });
+        } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+          toast({
+            title: "Service Temporarily Unavailable ⏳",
+            description: "The AI service is currently at capacity. Please try again in a few minutes.",
+            variant: "destructive",
+          });
+        } else if (errorMessage.includes('timeout') || errorMessage.includes('busy')) {
+          toast({
+            title: "Request Timeout ⏱️",
+            description: "The AI is taking longer than expected. Please try again with a simpler topic.",
+            variant: "destructive",
+          });
+        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+          toast({
+            title: "Connection Error 🌐",
+            description: "Unable to reach the server. Please check your internet connection and try again.",
+            variant: "destructive",
+          });
+        } else {
+          // Generic error with the actual error message
+          toast({
+            title: "Error Generating Study Guide ❌",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+      
       setStudyGuide(result.studyGuide || result);
-    } catch (error) {
+      
+      // Success notification
       toast({
-        title: "Error Generating Study Guide",
-        description: "An error occurred while generating the study guide. The AI model might be busy. Please try again.",
+        title: "Study Guide Generated! ✅",
+        description: "Your personalized study guide is ready.",
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error('Study guide generation error:', error);
+      toast({
+        title: "Unexpected Error ⚠️",
+        description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-      console.error(error);
     } finally {
       setIsGenerating(false);
     }

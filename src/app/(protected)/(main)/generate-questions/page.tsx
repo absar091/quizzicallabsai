@@ -122,19 +122,40 @@ export default function GenerateQuestionsPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate questions");
+      const result = await response.json();
+
+      // Handle errors with user-friendly messages
+      if (!response.ok || result.error) {
+        const { handleAIError, showUpgradeDialog } = await import('@/lib/ai-error-handler');
+        const errorInfo = handleAIError(response, result, isPro);
+        
+        toast({
+          title: errorInfo.title,
+          description: errorInfo.description,
+          variant: "destructive",
+          duration: errorInfo.duration,
+        });
+        
+        if (errorInfo.showUpgradePrompt && errorInfo.redirectToPricing) {
+          showUpgradeDialog();
+        }
+        return;
       }
 
-      const result = await response.json();
       setQuestions(result.quiz as Question[]);
-    } catch (error: any) {
+      
       toast({
-        title: "Error Generating Questions",
-        description: error.message || "An error occurred while generating practice questions. The AI might be busy.",
+        title: "Questions Generated! ✅",
+        description: `${result.quiz?.length || 0} practice questions are ready.`,
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error('Practice questions error:', error);
+      toast({
+        title: "Unexpected Error ⚠️",
+        description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-      console.error(error);
     } finally {
       setIsGenerating(false);
     }
