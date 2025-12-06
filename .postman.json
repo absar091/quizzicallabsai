@@ -7,7 +7,7 @@
       "uid": "50620793-e69c443f-32d5-4a11-906a-79b79db69515",
       "name": "Quizzicallabs AI API",
       "description": "Complete API collection for Quizzicallabs AI platform with authentication and token tracking",
-      "lastUpdated": "2025-12-06T12:12:34.087Z",
+      "lastUpdated": "2025-12-06T14:30:00.000Z",
       "requests": [
         {
           "id": "e3fb531a-6656-46c6-83c5-aa56735867da",
@@ -18,7 +18,7 @@
         },
         {
           "id": "49818260-6b94-bc03-d5c0-f7f6f4bbc12d",
-          "name": "Generate Custom Quiz (Updated)",
+          "name": "Generate Custom Quiz",
           "method": "POST",
           "endpoint": "/api/ai/custom-quiz",
           "requiresAuth": true
@@ -60,10 +60,12 @@
     }
   ],
   "testResults": {
-    "lastRun": "2025-12-06T12:12:34.087Z",
+    "lastRun": "2025-12-06T14:30:00.000Z",
     "totalRequests": 9,
     "failedRequests": 9,
     "successRate": "0%",
-    "status": "Server not running - authentication required"
+    "status": "Server not running - all requests failed (connection refused)",
+    "duration": "9.25s",
+    "notes": "Development server must be running on http://localhost:3000 for tests to pass. Auth token required for protected endpoints."
   }
 }

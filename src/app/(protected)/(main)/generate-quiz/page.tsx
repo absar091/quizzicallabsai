@@ -1293,20 +1293,21 @@ export default function GenerateQuizPage({ initialQuiz, initialFormValues, initi
       const quizTitle = `${formValues.topic} Quiz - ${quiz.length} Questions`;
 
       // Create quiz object for bookmarking with actual quiz content
+      // 🔧 FIX: Clean all data to prevent undefined values
       const quizToBookmark = {
         id: `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title: quizTitle,
-        subject: formValues.topic,
-        difficulty: formValues.difficulty,
+        subject: formValues.topic || 'General',
+        difficulty: formValues.difficulty || 'medium',
         questionCount: quiz.length,
-        tags: [formValues.topic, formValues.difficulty],
-        // FIXED: Include actual quiz questions for later viewing
+        tags: [formValues.topic, formValues.difficulty].filter(Boolean),
+        // FIXED: Include actual quiz questions for later viewing with clean data
         quizContent: quiz.map(q => ({
-          question: q.question,
-          options: q.answers || [],
-          correctAnswer: q.correctAnswer,
+          question: q.question || '',
+          options: Array.isArray(q.answers) ? q.answers.filter(a => a !== undefined && a !== null && a !== '') : [],
+          correctAnswer: q.correctAnswer || '',
           type: q.type || 'multiple-choice'
-        }))
+        })).filter(q => q.question && q.question.trim() !== '')
       };
 
       await bookmarkManager.addBookmark(quizToBookmark, `Generated on ${new Date().toLocaleDateString()}`);

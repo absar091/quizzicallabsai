@@ -58,17 +58,25 @@ export class QuizBookmarkManager {
       const safeQuizId = this.encodeFirebaseKey(quiz.id);
       const bookmarkRef = ref(db, `bookmarks/${this.userId}/${safeQuizId}`);
       
+      // 🔧 FIX: Clean quiz content to remove undefined values
+      const cleanQuizContent = quiz.quizContent?.map(q => ({
+        question: q.question || '',
+        options: Array.isArray(q.options) ? q.options.filter(opt => opt !== undefined && opt !== null) : [],
+        correctAnswer: q.correctAnswer || '',
+        type: q.type || 'multiple-choice'
+      })).filter(q => q.question && q.question.trim() !== '') || [];
+      
       const bookmark: Omit<QuizBookmark, 'id'> = {
         userId: this.userId,
-        quizId: quiz.id, // Store the original quiz ID
-        quizTitle: quiz.title,
-        subject: quiz.subject,
-        difficulty: quiz.difficulty,
-        questionCount: quiz.questionCount,
+        quizId: quiz.id || `quiz_${Date.now()}`, // Fallback ID
+        quizTitle: quiz.title || 'Untitled Quiz',
+        subject: quiz.subject || 'General',
+        difficulty: quiz.difficulty || 'medium',
+        questionCount: quiz.questionCount || 0,
         bookmarkedAt: Date.now(),
-        tags: quiz.tags || [],
+        tags: Array.isArray(quiz.tags) ? quiz.tags.filter(tag => tag !== undefined && tag !== null) : [],
         notes: notes || '',
-        quizContent: quiz.quizContent || [] // Store actual quiz questions
+        quizContent: cleanQuizContent
       };
 
       await set(bookmarkRef, bookmark);

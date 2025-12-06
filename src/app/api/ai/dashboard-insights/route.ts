@@ -1,9 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateDashboardInsightsServer } from '@/ai/server-only';
+import { auth } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
     console.log('📊 Dashboard insights API called');
+    
+    // Get user from Firebase Auth token
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const idToken = authHeader.split('Bearer ')[1];
+    
+    // Check if auth is available before verifying token
+    if (!auth) {
+      console.error('❌ Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 });
+    }
+    
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const userId = decodedToken.uid;
+
+    console.log('✅ User authenticated:', userId);
     
     const body = await request.json();
     const { userName, quizHistory, isPro } = body;
