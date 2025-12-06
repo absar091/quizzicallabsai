@@ -1,0 +1,36 @@
+{
+  "workspaceId": "cc7be61f-0333-410f-8e80-8b2c3fef9b4c",
+  "workspaceName": "Quizzicallabs API Testing",
+  "collections": [
+    {
+      "id": "e69c443f-32d5-4a11-906a-79b79db69515",
+      "uid": "50620793-e69c443f-32d5-4a11-906a-79b79db69515",
+      "name": "Quizzicallabs AI API",
+      "requests": [
+        {
+          "id": "873cba8b-b7b0-ba35-05ef-0db6cbd21f20",
+          "name": "Health Check"
+        },
+        {
+          "id": "db7aafcc-47ca-d6af-24df-7efca82136c7",
+          "name": "AI Health Check"
+        },
+        {
+          "id": "8fa9731b-6e4b-d6e4-450b-a79e93b65415",
+          "name": "Generate Custom Quiz"
+        },
+        {
+          "id": "c9a1a42e-7333-8628-1af2-8d6ab1d572bc",
+          "name": "Get Subscription Status"
+        }
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "id": "e9dc9d64-6d16-4dd2-804c-07cd07841864",
+      "uid": "50620793-e9dc9d64-6d16-4dd2-804c-07cd07841864",
+      "name": "Quizzicallabs Local"
+    }
+  ]
+}
