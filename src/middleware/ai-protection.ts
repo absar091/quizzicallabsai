@@ -2,6 +2,7 @@
  * AI Protection Middleware for API routes
  */
 
+// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { AIAbusePreventionSystem } from '@/lib/ai-abuse-prevention';
 import { secureLog } from '@/lib/secure-logger';

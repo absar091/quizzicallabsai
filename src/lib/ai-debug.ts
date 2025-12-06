@@ -72,20 +72,22 @@ export async function checkAIStatus() {
   if (ai && aiAvailable) {
     try {
       // Simple test request
-      const testFlow = ai.defineFlow(
-        {
-          name: 'testFlow',
-          inputSchema: { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object' },
-          outputSchema: { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object' }
-        },
-        async () => ({ test: 'success' })
-      );
+      const genkitAi = await ai;
+      if (genkitAi) {
+        const testFlow = genkitAi.defineFlow(
+          {
+            name: 'testFlow',
+            inputSchema: { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object' },
+            outputSchema: { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object' }
+          },
+          async () => ({ test: 'success' })
+        );
 
-      const result = await testFlow();
-      diagnostics.sampleRequest.tested = true;
-      diagnostics.sampleRequest.success = !!result;
-      console.log('  ✅ Sample request successful');
-
+        const result = await testFlow();
+        diagnostics.sampleRequest.tested = true;
+        diagnostics.sampleRequest.success = !!result;
+        console.log('  ✅ Sample request successful');
+      }
     } catch (error: any) {
       diagnostics.sampleRequest.error = error?.message || String(error);
       console.log('❌ Sample request failed:', diagnostics.sampleRequest.error);

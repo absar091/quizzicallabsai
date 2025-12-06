@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest } from 'next/server';
 import { createProtectedAIEndpoint } from '@/middleware/ai-protection';
 

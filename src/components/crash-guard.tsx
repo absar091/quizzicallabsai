@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 export function CrashGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -8,20 +8,6 @@ export function CrashGuard({ children }: { children: React.ReactNode }) {
     const preventCrash = () => {
       window.onerror = () => true;
       window.onunhandledrejection = () => true;
-      
-      // Wrap ALL React render methods
-      if (typeof window !== 'undefined' && window.React) {
-        const originalRender = window.React.render;
-        if (originalRender) {
-          window.React.render = function(...args) {
-            try {
-              return originalRender.apply(this, args);
-            } catch {
-              return null;
-            }
-          };
-        }
-      }
     };
 
     preventCrash();

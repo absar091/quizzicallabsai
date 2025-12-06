@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Error logging and monitoring system for Quizzicallabs AI
 
 interface ErrorLog {

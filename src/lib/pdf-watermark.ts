@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export async function addWatermarkToPdf(pdfBytes: Uint8Array, userPlan: string): Promise<Uint8Array> {

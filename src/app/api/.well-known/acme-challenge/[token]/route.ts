@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const token = params.token;
+  const { token } = await params;
   
   // Firebase domain verification token
   if (token === 'ynQDI2sLWH8OVCEW319gVHppiG0iMABzKt66xqdDzQFnmQWjL0e48E0Rp7WRG3cO') {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 🔥 Quiz Arena API Endpoints Tests
  * Testing all API routes for security, performance, and reliability

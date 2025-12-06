@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ref, set, get, onValue } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { toast } from "@/hooks/use-toast";

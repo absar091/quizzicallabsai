@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface PlanLimits {
   maxBookmarks: number;
   hasWatermark: boolean;

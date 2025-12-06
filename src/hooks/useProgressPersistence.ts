@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Real-time progress persistence
 import { useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';

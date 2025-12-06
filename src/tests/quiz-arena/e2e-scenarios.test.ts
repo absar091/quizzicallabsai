@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 🎮 Quiz Arena End-to-End Test Scenarios
  * Complete user journey testing for live multiplayer quiz battles

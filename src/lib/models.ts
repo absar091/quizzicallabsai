@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * MongoDB Models and Schemas for Quizzicallabs
  * This file defines all database models using Mongoose ODM

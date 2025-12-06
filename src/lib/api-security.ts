@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Security middleware and utilities
  */

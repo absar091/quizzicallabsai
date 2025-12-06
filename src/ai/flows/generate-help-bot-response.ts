@@ -57,76 +57,87 @@ ${userPlan === 'Pro' ? '**PRO USER BENEFITS:**\r\n- Unlimited bookmarks\r\n- No 
 6.  Your response MUST be just the answer text, formatted for the JSON output.`;
 
 // Dynamic prompt creation based on user plan
-const createPrompt = (userPlan: string) => ai!.definePrompt({
+const createPrompt = async (userPlan: string) => {
+  const genkitAi = await ai;
+  if (!genkitAi) throw new Error('AI not available');
+  return genkitAi.definePrompt({
     name: 'generateHelpBotResponsePrompt',
     model: `googleai/${getModel(userPlan === 'pro', false)}`,
     prompt: getPromptText(userPlan),
     input: { schema: GenerateHelpBotResponseInputSchema },
     output: { schema: GenerateHelpBotResponseOutputSchema },
-});
+  });
+};
 
-const generateHelpBotResponseFlow = ai!.defineFlow(
-  {
-    name: 'generateHelpBotResponseFlow',
-    inputSchema: GenerateHelpBotResponseInputSchema,
-    outputSchema: GenerateHelpBotResponseOutputSchema,
-  },
-  async (input) => {
-    let output;
-    let retryCount = 0;
-    const maxRetries = 2;
+const generateHelpBotResponseFlow = async (input: GenerateHelpBotResponseInput): Promise<GenerateHelpBotResponseOutput> => {
+  const genkitAi = await ai;
+  if (!genkitAi) throw new Error('AI not available');
+  
+  const flow = genkitAi.defineFlow(
+    {
+      name: 'generateHelpBotResponseFlow',
+      inputSchema: GenerateHelpBotResponseInputSchema,
+      outputSchema: GenerateHelpBotResponseOutputSchema,
+    },
+    async (input: GenerateHelpBotResponseInput) => {
+      let output;
+      let retryCount = 0;
+      const maxRetries = 2;
 
-    while (retryCount <= maxRetries) {
-      try {
+      while (retryCount <= maxRetries) {
         try {
-          JSON.parse(input.faqContext);
-        } catch (e) {
-          throw new Error("Invalid faqContext: Must be a valid JSON string.");
-        }
-
-        const model = input.userPlan === 'Pro' ? 'googleai/gemini-2.5-pro' : 'googleai/gemini-1.5-flash';
-        const prompt = createPrompt(input.userPlan);
-        const result = await prompt(input, { model });
-        output = result.output;
-
-        if (output && output.answer) {
-          return output;
-        } else {
-          throw new Error("AI returned empty response");
-        }
-      } catch (error: any) {
-        retryCount++;
-        const errorMsg = error?.message || 'Unknown error';
-        console.error(`Help bot response generation attempt ${retryCount} failed:`, errorMsg);
-
-        if (retryCount > maxRetries) {
-          if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
-            // Rotate to next API key for quota issues
-            try {
-              const { handleApiKeyError } = await import('@/lib/api-key-manager');
-              handleApiKeyError();
-              console.log('🔄 Rotated API key due to quota limit (help bot)');
-            } catch (rotateError) {
-              console.warn('Failed to rotate API key:', rotateError);
-            }
-            throw new Error('AI service quota exceeded. Please try again in a few minutes.');
-          } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
-            throw new Error('Request timeout. The AI service is busy. Please try again.');
-          } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
-            throw new Error('Network connection issue. Please check your internet connection.');
-          } else {
-            throw new Error('Failed to generate help response. Please try again.');
+          try {
+            JSON.parse(input.faqContext);
+          } catch (e) {
+            throw new Error("Invalid faqContext: Must be a valid JSON string.");
           }
+
+          const model = input.userPlan === 'Pro' ? 'googleai/gemini-2.5-pro' : 'googleai/gemini-1.5-flash';
+          const prompt = await createPrompt(input.userPlan);
+          const result = await prompt(input, { model });
+          output = result.output;
+
+          if (output && output.answer) {
+            return output;
+          } else {
+            throw new Error("AI returned empty response");
+          }
+        } catch (error: any) {
+          retryCount++;
+          const errorMsg = error?.message || 'Unknown error';
+          console.error(`Help bot response generation attempt ${retryCount} failed:`, errorMsg);
+
+          if (retryCount > maxRetries) {
+            if (errorMsg.includes('quota') || errorMsg.includes('rate limit')) {
+              // Rotate to next API key for quota issues
+              try {
+                const { handleApiKeyError } = await import('@/lib/api-key-manager');
+                handleApiKeyError();
+                console.log('🔄 Rotated API key due to quota limit (help bot)');
+              } catch (rotateError) {
+                console.warn('Failed to rotate API key:', rotateError);
+              }
+              throw new Error('AI service quota exceeded. Please try again in a few minutes.');
+            } else if (errorMsg.includes('timeout') || errorMsg.includes('deadline')) {
+              throw new Error('Request timeout. The AI service is busy. Please try again.');
+            } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+              throw new Error('Network connection issue. Please check your internet connection.');
+            } else {
+              throw new Error('Failed to generate help response. Please try again.');
+            }
+          }
+
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
         }
-
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
       }
-    }
 
-    if (!output || !output.answer) {
-      throw new Error("The AI model failed to return a valid response. Please try again.");
+      if (!output || !output.answer) {
+        throw new Error("The AI model failed to return a valid response. Please try again.");
+      }
+      return output;
     }
-    return output;
-  }
-);
+  );
+  
+  return flow(input);
+};

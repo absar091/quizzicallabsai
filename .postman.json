@@ -6,22 +6,43 @@
       "id": "e69c443f-32d5-4a11-906a-79b79db69515",
       "uid": "50620793-e69c443f-32d5-4a11-906a-79b79db69515",
       "name": "Quizzicallabs AI API",
+      "description": "Complete API collection for Quizzicallabs AI platform with authentication and token tracking",
+      "lastUpdated": "2025-12-06T12:12:34.087Z",
       "requests": [
         {
-          "id": "873cba8b-b7b0-ba35-05ef-0db6cbd21f20",
-          "name": "Health Check"
+          "id": "e3fb531a-6656-46c6-83c5-aa56735867da",
+          "name": "Health Check",
+          "method": "GET",
+          "endpoint": "/api/health",
+          "requiresAuth": false
         },
         {
-          "id": "db7aafcc-47ca-d6af-24df-7efca82136c7",
-          "name": "AI Health Check"
+          "id": "49818260-6b94-bc03-d5c0-f7f6f4bbc12d",
+          "name": "Generate Custom Quiz (Updated)",
+          "method": "POST",
+          "endpoint": "/api/ai/custom-quiz",
+          "requiresAuth": true
         },
         {
-          "id": "8fa9731b-6e4b-d6e4-450b-a79e93b65415",
-          "name": "Generate Custom Quiz"
+          "id": "b89a61da-731c-0d4f-5ce6-6d2f6fa05ac1",
+          "name": "Verify reCAPTCHA",
+          "method": "POST",
+          "endpoint": "/api/recaptcha/verify",
+          "requiresAuth": false
         },
         {
-          "id": "c9a1a42e-7333-8628-1af2-8d6ab1d572bc",
-          "name": "Get Subscription Status"
+          "id": "6e794b61-790c-d7e0-0166-da683c3adb6f",
+          "name": "Generate Study Guide",
+          "method": "POST",
+          "endpoint": "/api/ai/study-guide",
+          "requiresAuth": true
+        },
+        {
+          "id": "e690563b-e0bf-3131-94a7-54d070a4d2bf",
+          "name": "Generate Help Bot Response",
+          "method": "POST",
+          "endpoint": "/api/ai/help-bot",
+          "requiresAuth": true
         }
       ]
     }
@@ -30,7 +51,19 @@
     {
       "id": "e9dc9d64-6d16-4dd2-804c-07cd07841864",
       "uid": "50620793-e9dc9d64-6d16-4dd2-804c-07cd07841864",
-      "name": "Quizzicallabs Local"
+      "name": "Quizzicallabs Local",
+      "variables": {
+        "base_url": "http://localhost:3000",
+        "api_base": "{{base_url}}/api",
+        "auth_token": "<set-your-firebase-token-here>"
+      }
     }
-  ]
+  ],
+  "testResults": {
+    "lastRun": "2025-12-06T12:12:34.087Z",
+    "totalRequests": 9,
+    "failedRequests": 9,
+    "successRate": "0%",
+    "status": "Server not running - authentication required"
+  }
 }
