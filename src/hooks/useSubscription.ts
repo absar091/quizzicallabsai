@@ -62,9 +62,13 @@ export function useSubscription(): UseSubscriptionReturn {
       const token = await getAuthToken();
       if (!token) throw new Error('No auth token');
 
-      const response = await fetch('/api/subscription/usage', {
+      // Add timestamp to prevent caching
+      const timestamp = Date.now();
+      const response = await fetch(`/api/subscription/usage?t=${timestamp}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
         },
       });
 

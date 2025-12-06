@@ -28,7 +28,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, usage });
+    // Return with cache-busting headers to prevent stale data
+    return NextResponse.json(
+      { success: true, usage },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Failed to get user usage:', error);
     return NextResponse.json({ 
@@ -75,11 +85,21 @@ export async function POST(request: NextRequest) {
     // Get updated usage
     const usage = await whopService.getUserUsage(userId);
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Usage tracked successfully',
-      usage 
-    });
+    // Return with cache-busting headers
+    return NextResponse.json(
+      { 
+        success: true, 
+        message: 'Usage tracked successfully',
+        usage 
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Failed to track usage:', error);
     return NextResponse.json({ 

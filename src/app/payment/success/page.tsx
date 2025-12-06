@@ -31,6 +31,7 @@ export default function PaymentSuccessPage() {
   const isMock = searchParams.get('mock') === 'true';
 
   // Poll subscription status every 2 seconds for up to 60 seconds
+  // If activation doesn't happen after 10 seconds, trigger auto-fix
   useEffect(() => {
     if (!orderId || !user) {
       if (!orderId) router.push('/');
@@ -39,6 +40,55 @@ export default function PaymentSuccessPage() {
 
     let pollInterval: NodeJS.Timeout;
     let timeoutTimer: NodeJS.Timeout;
+    let autoFixTimer: NodeJS.Timeout;
+    let autoFixTriggered = false;
+
+    const triggerAutoFix = async () => {
+      if (autoFixTriggered) return;
+      autoFixTriggered = true;
+
+      console.log('🔧 Triggering automatic plan activation...');
+      
+      try {
+        // Check if user has pending_plan_change
+        const pendingRef = ref(database, `users/${user.uid}/pending_plan_change`);
+        const pendingSnapshot = await get(pendingRef);
+        
+        if (!pendingSnapshot.exists()) {
+          console.log('✅ No pending plan change, activation already complete');
+          return;
+        }
+
+        const pendingChange = pendingSnapshot.val();
+        const requestedPlan = pendingChange.requested_plan || planId || 'pro';
+
+        console.log(`🚀 Auto-activating ${requestedPlan} plan for user...`);
+
+        // Call the auto-fix API
+        const response = await fetch('/api/admin/activate-user-plan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.uid,
+            userEmail: user.email,
+            plan: requestedPlan,
+            adminSecret: 'AUTO_FIX_FROM_CLIENT', // Special marker
+          }),
+        });
+
+        if (response.ok) {
+          console.log('✅ Auto-fix successful, refreshing status...');
+          // Force a status check
+          await checkSubscriptionStatus();
+        } else {
+          console.error('❌ Auto-fix failed:', await response.text());
+        }
+      } catch (error) {
+        console.error('❌ Auto-fix error:', error);
+      }
+    };
 
     const checkSubscriptionStatus = async () => {
       try {
@@ -54,6 +104,7 @@ export default function PaymentSuccessPage() {
             setIsPolling(false);
             clearInterval(pollInterval);
             clearTimeout(timeoutTimer);
+            clearTimeout(autoFixTimer);
             
             // Send confirmation email
             await sendConfirmationEmail(data);
@@ -100,16 +151,24 @@ export default function PaymentSuccessPage() {
     // Poll every 2 seconds
     pollInterval = setInterval(checkSubscriptionStatus, 2000);
 
+    // Trigger auto-fix after 10 seconds if still not activated
+    autoFixTimer = setTimeout(() => {
+      console.log('⏰ 10 seconds elapsed, triggering auto-fix...');
+      triggerAutoFix();
+    }, 10000);
+
     // Stop polling after 60 seconds
     timeoutTimer = setTimeout(() => {
       setIsPolling(false);
       setTimeoutReached(true);
       clearInterval(pollInterval);
+      clearTimeout(autoFixTimer);
     }, 60000);
 
     return () => {
       clearInterval(pollInterval);
       clearTimeout(timeoutTimer);
+      clearTimeout(autoFixTimer);
     };
   }, [orderId, user, router, planId]);
 
