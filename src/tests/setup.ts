@@ -85,7 +85,17 @@ global.fetch = jest.fn(() =>
 
 // Console setup for cleaner test output
 const originalError = console.error;
+const originalLog = console.log;
+const originalWarn = console.warn;
+
 beforeAll(() => {
+  // Suppress console.log during tests
+  console.log = jest.fn();
+  
+  // Suppress console.warn during tests
+  console.warn = jest.fn();
+  
+  // Filter console.error
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
@@ -99,6 +109,8 @@ beforeAll(() => {
 
 afterAll(() => {
   console.error = originalError;
+  console.log = originalLog;
+  console.warn = originalWarn;
 });
 
 // Global test utilities

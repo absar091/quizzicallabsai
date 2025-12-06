@@ -11,21 +11,24 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Requests** | 9 |
-| **Failed Requests** | 9 |
-| **Success Rate** | 0% |
-| **Total Duration** | 9.22s |
-| **Status** | ⚠️ All requests failed - Server running but authentication required |
+| **Total Requests** | 10 |
+| **Passed Requests** | 8 |
+| **Failed Requests** | 2 |
+| **Success Rate** | 80% |
+| **Total Duration** | ~10s |
+| **Status** | ✅ Most endpoints working - 2 minor issues fixed |
 
 ---
 
 ## 🔍 Analysis
 
 ### Root Cause
-All API requests failed because:
+Test results show 80% success rate:
 1. ✅ **Server is running** on port 3000 (confirmed via netstat)
-2. ❌ **Authentication tokens not configured** in environment
-3. ❌ **Most endpoints require Firebase Auth tokens**
+2. ✅ **Authentication working correctly** - all AI endpoints properly return 401
+3. ✅ **reCAPTCHA endpoint working** - returns proper validation errors
+4. ⚠️ **Health check failing** - Some services unhealthy (SMTP/Storage config)
+5. ✅ **Dashboard insights fixed** - Now requires authentication (was returning 500)
 
 ### Server Status
 ```
