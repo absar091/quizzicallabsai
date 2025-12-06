@@ -14,10 +14,11 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error("❌ Please define the MONGODB_URI environment variable inside .env.local");
+// Only throw error at runtime, not during build
+if (!MONGODB_URI && typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
+  console.warn("⚠️ MONGODB_URI not defined. MongoDB features will be disabled.");
 }
 
 /**
@@ -25,6 +26,10 @@ if (!MONGODB_URI) {
  * This is the recommended approach for Next.js applications
  */
 export async function connectDB(): Promise<typeof mongoose> {
+  if (!MONGODB_URI) {
+    throw new Error("❌ MONGODB_URI is not defined. Please set it in your environment variables.");
+  }
+
   if (cached.conn) {
     console.log("🟡 Using cached MongoDB connection");
     return cached.conn;

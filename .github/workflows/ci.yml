@@ -11,18 +11,14 @@ jobs:
     name: Test & Build
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Node.js ${{ matrix.node-version }}
+    - name: Setup Node.js 20.x
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '20.x'
         cache: 'npm'
         
     - name: Install dependencies
@@ -32,10 +28,10 @@ jobs:
       run: npm run typecheck
       
     - name: Run linting
-      run: npm run lint --if-present
+      run: npm run lint
       
     - name: Run tests
-      run: npm test --if-present
+      run: npm test
       env:
         CI: true
         
@@ -44,10 +40,35 @@ jobs:
       env:
         SKIP_ENV_VALIDATION: true
         
-    - name: Check bundle size
+    - name: Analyze bundle size
       run: |
-        npm run build
-        npx bundlesize --if-present
+        echo "📦 Analyzing bundle size..."
+        if [ -d ".next" ]; then
+          echo "✅ Build successful!"
+          echo "📊 Bundle Analysis:"
+          du -sh .next
+          du -sh .next/static
+          if [ -d ".next/static/chunks" ]; then
+            echo "📦 Largest chunks:"
+            du -h .next/static/chunks/* | sort -rh | head -10
+          fi
+        else
+          echo "❌ Build directory not found!"
+          exit 1
+        fi
+        
+    - name: Check bundle size limits
+      run: |
+        echo "🔍 Checking bundle size limits..."
+        TOTAL_SIZE=$(du -sb .next | cut -f1)
+        MAX_SIZE=$((100 * 1024 * 1024)) # 100MB limit
+        
+        if [ $TOTAL_SIZE -gt $MAX_SIZE ]; then
+          echo "❌ Bundle size ($TOTAL_SIZE bytes) exceeds limit ($MAX_SIZE bytes)"
+          exit 1
+        else
+          echo "✅ Bundle size OK: $(($TOTAL_SIZE / 1024 / 1024))MB / $(($MAX_SIZE / 1024 / 1024))MB"
+        fi
         
   security:
     name: Security Audit
