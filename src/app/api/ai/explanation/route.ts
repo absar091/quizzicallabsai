@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
     const token = authHeader.split('Bearer ')[1];
     const decoded = await auth.verifyIdToken(token);
     const userId = decoded.uid;
+    const userEmail = decoded.email || undefined;
+    const userName = decoded.name || decoded.email?.split('@')[0] || undefined;
 
     // ✅ Check Limit
-    const limitCheck = await checkTokenLimit(userId);
+    const limitCheck = await checkTokenLimit(userId, userEmail, userName);
     if (!limitCheck.allowed) {
       // Send limit reached email notification (async, don't wait)
       if (limitCheck.limitReached) {

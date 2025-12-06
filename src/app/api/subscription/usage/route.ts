@@ -20,7 +20,12 @@ export async function GET(request: NextRequest) {
     // If user doesn't exist, initialize them
     if (!usage) {
       console.log(`🆕 User ${userId} not found, auto-initializing...`);
-      await whopService.initializeUser(userId);
+      
+      // Get user info from decoded token
+      const email = decodedToken.email || 'unknown@example.com';
+      const name = decodedToken.name || decodedToken.email?.split('@')[0] || 'User';
+      
+      await whopService.initializeUser(userId, email, name);
       usage = await whopService.getUserUsage(userId);
       
       if (!usage) {

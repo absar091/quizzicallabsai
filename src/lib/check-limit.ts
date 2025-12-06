@@ -17,14 +17,19 @@ export interface LimitCheckResult {
   errorMessage?: string;
 }
 
-export async function checkTokenLimit(userId: string): Promise<LimitCheckResult> {
+export async function checkTokenLimit(userId: string, userEmail?: string, userName?: string): Promise<LimitCheckResult> {
   try {
     let usage = await whopService.getUserUsage(userId);
     
     // If user doesn't exist, initialize them with free plan
     if (!usage) {
       console.log(`🆕 User ${userId} not found in Whop, initializing...`);
-      await whopService.initializeUser(userId);
+      
+      // Try to initialize with available user info
+      const email = userEmail || 'unknown@example.com';
+      const name = userName || 'User';
+      
+      await whopService.initializeUser(userId, email, name);
       usage = await whopService.getUserUsage(userId);
       
       // If still no usage after initialization, something is wrong
@@ -55,19 +60,19 @@ export async function checkTokenLimit(userId: string): Promise<LimitCheckResult>
         allowed: false,
         remaining: 0,
         limitReached: true,
-        planName: usage.plan_name || 'Free',
+        planName: usage.plan || 'Free',
         tokensUsed: usage.tokens_used,
         tokensLimit: usage.tokens_limit,
         upgradeUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
         resetDate: resetDateStr,
-        errorMessage: `Your ${usage.plan_name || 'Free'} plan token limit has been reached. Upgrade to continue or wait until ${resetDateStr} for your limit to reset.`
+        errorMessage: `Your ${usage.plan || 'Free'} plan token limit has been reached. Upgrade to continue or wait until ${resetDateStr} for your limit to reset.`
       };
     }
 
     return {
       allowed: true,
       remaining,
-      planName: usage.plan_name,
+      planName: usage.plan,
       tokensUsed: usage.tokens_used,
       tokensLimit: usage.tokens_limit,
     };
@@ -81,14 +86,19 @@ export async function checkTokenLimit(userId: string): Promise<LimitCheckResult>
   }
 }
 
-export async function checkQuizLimit(userId: string): Promise<LimitCheckResult> {
+export async function checkQuizLimit(userId: string, userEmail?: string, userName?: string): Promise<LimitCheckResult> {
   try {
     let usage = await whopService.getUserUsage(userId);
     
     // If user doesn't exist, initialize them with free plan
     if (!usage) {
       console.log(`🆕 User ${userId} not found in Whop, initializing...`);
-      await whopService.initializeUser(userId);
+      
+      // Try to initialize with available user info
+      const email = userEmail || 'unknown@example.com';
+      const name = userName || 'User';
+      
+      await whopService.initializeUser(userId, email, name);
       usage = await whopService.getUserUsage(userId);
       
       if (!usage) {
@@ -101,7 +111,7 @@ export async function checkQuizLimit(userId: string): Promise<LimitCheckResult> 
       }
     }
 
-    const remaining = usage.quizzes_limit - usage.quizzes_created;
+    const remaining = usage.quizzes_limit - usage.quizzes_used;
     const limitReached = remaining <= 0;
 
     // Calculate reset date (1st of next month)
@@ -118,20 +128,20 @@ export async function checkQuizLimit(userId: string): Promise<LimitCheckResult> 
         allowed: false,
         remaining: 0,
         limitReached: true,
-        planName: usage.plan_name || 'Free',
-        tokensUsed: usage.quizzes_created,
+        planName: usage.plan || 'Free',
+        tokensUsed: usage.quizzes_used,
         tokensLimit: usage.quizzes_limit,
         upgradeUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
         resetDate: resetDateStr,
-        errorMessage: `Your ${usage.plan_name || 'Free'} plan quiz limit has been reached. Upgrade to continue or wait until ${resetDateStr} for your limit to reset.`
+        errorMessage: `Your ${usage.plan || 'Free'} plan quiz limit has been reached. Upgrade to continue or wait until ${resetDateStr} for your limit to reset.`
       };
     }
 
     return {
       allowed: true,
       remaining,
-      planName: usage.plan_name,
-      tokensUsed: usage.quizzes_created,
+      planName: usage.plan,
+      tokensUsed: usage.quizzes_used,
       tokensLimit: usage.quizzes_limit,
     };
   } catch (error) {

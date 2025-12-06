@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
       userName,
       {
         limitType: limitType as 'tokens' | 'quizzes',
-        currentPlan: usage.plan_name || 'Free',
-        usedAmount: limitType === 'tokens' ? usage.tokens_used : usage.quizzes_created,
+        currentPlan: usage.plan || 'Free',
+        usedAmount: limitType === 'tokens' ? usage.tokens_used : usage.quizzes_used,
         limitAmount: limitType === 'tokens' ? usage.tokens_limit : usage.quizzes_limit,
         resetDate: resetDateStr
       }
