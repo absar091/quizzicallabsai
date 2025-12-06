@@ -51,24 +51,28 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(() => new URLSearchParams())
 }));
 
-// Mock window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'http://localhost:3000',
-    origin: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: ''
-  },
-  writable: true
-});
+// Mock window.location (only in browser-like environments)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'location', {
+    value: {
+      href: 'http://localhost:3000',
+      origin: 'http://localhost:3000',
+      pathname: '/',
+      search: '',
+      hash: ''
+    },
+    writable: true
+  });
+}
 
-// Mock navigator
-Object.defineProperty(navigator, 'clipboard', {
-  value: {
-    writeText: jest.fn(() => Promise.resolve())
-  }
-});
+// Mock navigator (only in browser-like environments)
+if (typeof navigator !== 'undefined') {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: {
+      writeText: jest.fn(() => Promise.resolve())
+    }
+  });
+}
 
 // Mock fetch
 global.fetch = jest.fn(() =>

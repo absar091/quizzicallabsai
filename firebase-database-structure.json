@@ -5,10 +5,12 @@
       "fullName": "string",
       "email": "string",
       "plan": "free",
+      "role": "user|admin",
       "subscription": {
         "plan": "free|basic|pro|premium",
         "subscription_id": "whop_subscription_id",
-        "subscription_status": "active|cancelled|expired|past_due",
+        "subscription_status": "pending|active|cancelled|expired|past_due",
+        "subscription_source": "whop|promo_code|admin|free",
         "tokens_used": 0,
         "tokens_limit": 100000,
         "quizzes_used": 0,
@@ -16,7 +18,9 @@
         "billing_cycle_start": "2025-01-01T00:00:00.000Z",
         "billing_cycle_end": "2025-02-01T00:00:00.000Z",
         "created_at": "2025-01-01T00:00:00.000Z",
-        "updated_at": "2025-01-01T00:00:00.000Z"
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "activation_attempts": 0,
+        "last_activation_error": "Error message if activation failed"
       },
       "usage_warnings": {
         "tokens_warning_sent": false,
@@ -102,6 +106,52 @@
         "action_taken": "blocked|warning_sent",
         "timestamp": "2025-01-01T00:00:00.000Z"
       }
+    }
+  },
+  "promo_codes": {
+    "code_id": {
+      "code": "LAUNCH2024",
+      "plan": "basic|pro|premium",
+      "usage_limit": 100,
+      "usage_count": 0,
+      "expires_at": "2025-12-31T23:59:59.000Z",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "created_by": "admin_user_id",
+      "active": true,
+      "description": "Launch promotion - Free Pro plan"
+    }
+  },
+  "promo_code_redemptions": {
+    "userId": {
+      "code_id": {
+        "code": "LAUNCH2024",
+        "user_id": "userId",
+        "redeemed_at": "2025-01-15T10:30:00.000Z",
+        "plan_activated": "pro"
+      }
+    }
+  },
+  "webhook_errors": {
+    "timestamp_id": {
+      "type": "SIGNATURE_INVALID|USER_NOT_FOUND|PLAN_ACTIVATION_FAILED|DATABASE_ERROR|INVALID_PAYLOAD",
+      "message": "Error description",
+      "userId": "userId",
+      "webhookPayload": {},
+      "timestamp": "2025-01-01T00:00:00.000Z",
+      "retryable": true
+    }
+  },
+  "pending_purchases": {
+    "userId": {
+      "user_id": "userId",
+      "email": "user@example.com",
+      "requested_plan": "pro",
+      "whop_product_id": "prod_xxx",
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "status": "pending|completed|failed",
+      "webhook_received_at": "2025-01-01T00:00:30.000Z",
+      "activation_completed_at": "2025-01-01T00:00:45.000Z",
+      "error": "Error message if failed"
     }
   }
 }

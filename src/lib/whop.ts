@@ -497,9 +497,14 @@ class WhopService {
       const subSnapshot = await subscriptionRef.once('value');
       
       if (subSnapshot.exists()) {
+        const currentData = subSnapshot.val();
         await subscriptionRef.update({
           plan: plan,
           updated_at: now.toISOString(),
+          // Preserve subscription_source if it exists, default to 'whop'
+          subscription_source: currentData.subscription_source || 'whop',
+          // Increment activation_attempts if updating
+          activation_attempts: (currentData.activation_attempts || 0) + 1,
         });
       }
 

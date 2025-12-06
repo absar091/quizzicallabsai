@@ -171,6 +171,40 @@
     "public": {
       ".read": true,
       ".write": "auth != null"
+    },
+    
+    "promo_codes": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".indexOn": ["code", "active", "expires_at"],
+      "$code_id": {
+        ".validate": "newData.hasChildren(['code', 'plan', 'usage_limit', 'usage_count', 'expires_at', 'created_at', 'created_by', 'active'])"
+      }
+    },
+    
+    "promo_code_redemptions": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId",
+        ".indexOn": ["redeemed_at", "code"],
+        "$code_id": {
+          ".validate": "newData.hasChildren(['code', 'user_id', 'redeemed_at', 'plan_activated'])"
+        }
+      }
+    },
+    
+    "webhook_errors": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": false,
+      ".indexOn": ["timestamp", "type", "userId"]
+    },
+    
+    "pending_purchases": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid == $userId || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": false,
+        ".indexOn": ["created_at", "status"]
+      }
     }
   }
 }
