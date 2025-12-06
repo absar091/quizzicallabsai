@@ -204,10 +204,22 @@ export default function QuizArenaPage() {
           description: `Creating ${template.questions} questions for ${template.topic}. This may take up to 60 seconds...`,
         });
 
+        // 🔧 FIX: Get Firebase auth token for API authentication
+        const { auth: firebaseAuth } = await import('firebase/auth');
+        const { auth: authInstance } = await import('@/lib/firebase');
+        const currentUser = authInstance.currentUser;
+        
+        if (!currentUser) {
+          throw new Error('You must be logged in to create a quiz arena');
+        }
+        
+        const idToken = await currentUser.getIdToken();
+
         const response = await fetch('/api/ai/custom-quiz', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`, // ✅ Add auth token
           },
           body: JSON.stringify({
             topic: template.topic,
@@ -342,10 +354,22 @@ export default function QuizArenaPage() {
             description: `Creating ${template.questions} questions for ${template.topic}. This may take up to 60 seconds...`,
           });
 
+          // 🔧 FIX: Get Firebase auth token for API authentication
+          const { auth: firebaseAuth } = await import('firebase/auth');
+          const { auth: authInstance } = await import('@/lib/firebase');
+          const currentUser = authInstance.currentUser;
+          
+          if (!currentUser) {
+            throw new Error('You must be logged in to create a quiz arena');
+          }
+          
+          const idToken = await currentUser.getIdToken();
+
           const response = await fetch('/api/ai/custom-quiz', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`, // ✅ Add auth token
             },
             body: JSON.stringify({
               topic: template.topic,
@@ -388,10 +412,22 @@ export default function QuizArenaPage() {
             description: `Creating ${quizSetup.numberOfQuestions} questions for ${quizSetup.topic}. This may take up to 60 seconds...`,
           });
 
+          // 🔧 FIX: Get Firebase auth token for API authentication
+          const { auth: firebaseAuth } = await import('firebase/auth');
+          const { auth: authInstance } = await import('@/lib/firebase');
+          const currentUser = authInstance.currentUser;
+          
+          if (!currentUser) {
+            throw new Error('You must be logged in to create a quiz arena');
+          }
+          
+          const idToken = await currentUser.getIdToken();
+
           const response = await fetch('/api/ai/custom-quiz', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`, // ✅ Add auth token
             },
             body: JSON.stringify({
               topic: quizSetup.topic,
