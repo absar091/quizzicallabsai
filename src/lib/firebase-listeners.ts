@@ -1,165 +1,154 @@
-import { onSnapshot, DocumentReference, CollectionReference } from 'firebase/firestore';
+// 🔄 Enhanced real-time listener with retry logic and proper cleanup
+import { onSnapshot, DocumentReference, CollectionReference, Unsubscribe } from 'firebase/firestore';
 
 export class ReliableListener {
-  private unsubscribe: (() => void) | null = null;
+  private unsubscribe: Unsubscribe | null = null;
   private retryCount = 0;
   private maxRetries = 5;
-  private retryDelay = 1000;
-  private retryTimeout: NodeJS.Timeout | null = null;
+  private retryDelay = 1000; // Start with 1 second
   private isActive = false;
-  private lastSuccessfulUpdate = Date.now();
+  private reconnectTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private ref: DocumentReference | CollectionReference,
-    private callback: (data: any) => void,
-    private errorCallback?: (error: Error) => void
+    private onData: (data: any) => void,
+    private onError?: () => void
   ) {}
 
-  start() {
-    if (this.isActive) return; // Prevent multiple starts
+  start(): void {
+    if (this.isActive) {
+      console.warn('ReliableListener already active');
+      return;
+    }
+    
     this.isActive = true;
     this.setupListener();
   }
 
-  stop() {
+  stop(): void {
     this.isActive = false;
     
-    // Clear retry timeout
-    if (this.retryTimeout) {
-      clearTimeout(this.retryTimeout);
-      this.retryTimeout = null;
-    }
-    
-    // Unsubscribe from Firebase
     if (this.unsubscribe) {
       try {
         this.unsubscribe();
+        this.unsubscribe = null;
       } catch (error) {
-        console.warn('Error during unsubscribe:', error);
+        console.warn('Error unsubscribing listener:', error);
       }
-      this.unsubscribe = null;
+    }
+    
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
     }
     
     this.retryCount = 0;
   }
 
-  private setupListener() {
+  private setupListener(): void {
     if (!this.isActive) return;
 
-    // Clean up existing listener
-    if (this.unsubscribe) {
-      this.unsubscribe();
-      this.unsubscribe = null;
-    }
-
     try {
-      // OPTIMIZED: Add listener options for better performance
-      const listenerOptions = {
-        includeMetadataChanges: false // Ignore metadata changes for better performance
-      };
+      this.unsubscribe = onSnapshot(
+        this.ref,
+        (snapshot) => {
+          try {
+            // Reset retry count on successful connection
+            this.retryCount = 0;
+            this.retryDelay = 1000;
 
-      // Handle different reference types
-      if ('type' in this.ref && this.ref.type === 'document') {
-        // Document reference
-        this.unsubscribe = onSnapshot(
-          this.ref as DocumentReference,
-          listenerOptions,
-          (snapshot) => {
-            if (!this.isActive) return;
-            
-            this.retryCount = 0;
-            this.lastSuccessfulUpdate = Date.now();
-            
-            try {
-              const data = snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
-              this.callback(data);
-            } catch (callbackError) {
-              console.error('Callback error:', callbackError);
-              this.errorCallback?.(callbackError as Error);
+            if ('docs' in snapshot) {
+              // Collection snapshot
+              const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+              this.onData(data);
+            } else {
+              // Document snapshot
+              if (snapshot.exists()) {
+                const data = {
+                  id: snapshot.id,
+                  ...snapshot.data()
+                };
+                this.onData(data);
+              } else {
+                this.onData(null);
+              }
             }
-          },
-          (error) => {
-            if (!this.isActive) return;
-            // OPTIMIZED: Reduce error logging for better performance
-            if (error.code !== 'permission-denied') {
-              console.error('Listener error:', error);
-            }
-            this.handleError(error);
+          } catch (dataError) {
+            console.error('Error processing snapshot data:', dataError);
+            this.handleError();
           }
-        );
-      } else {
-        // Collection reference
-        this.unsubscribe = onSnapshot(
-          this.ref as CollectionReference,
-          listenerOptions,
-          (snapshot) => {
-            if (!this.isActive) return;
-            
-            this.retryCount = 0;
-            this.lastSuccessfulUpdate = Date.now();
-            
-            try {
-              const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-              this.callback(data);
-            } catch (callbackError) {
-              console.error('Callback error:', callbackError);
-              this.errorCallback?.(callbackError as Error);
-            }
-          },
-          (error) => {
-            if (!this.isActive) return;
-            // OPTIMIZED: Reduce error logging for better performance
-            if (error.code !== 'permission-denied') {
-              console.error('Listener error:', error);
-            }
-            this.handleError(error);
-          }
-        );
-      }
-    } catch (error) {
-      console.error('Failed to setup listener:', error);
-      this.handleError(error as Error);
+        },
+        (error) => {
+          console.error('Firebase listener error:', error);
+          this.handleError();
+        }
+      );
+    } catch (setupError) {
+      console.error('Error setting up listener:', setupError);
+      this.handleError();
     }
   }
 
-  private handleError(error: Error) {
+  private handleError(): void {
     if (!this.isActive) return;
 
-    // Check if it's a network error that we should retry
-    const isRetryableError = 
-      error.message.includes('network') ||
-      error.message.includes('offline') ||
-      error.message.includes('unavailable') ||
-      error.message.includes('timeout');
+    // Clean up current listener
+    if (this.unsubscribe) {
+      try {
+        this.unsubscribe();
+        this.unsubscribe = null;
+      } catch (error) {
+        console.warn('Error cleaning up failed listener:', error);
+      }
+    }
 
-    if (this.retryCount < this.maxRetries && isRetryableError) {
+    // Check if we should retry
+    if (this.retryCount < this.maxRetries) {
       this.retryCount++;
-      const delay = Math.min(this.retryDelay * Math.pow(2, this.retryCount - 1), 30000);
       
-      console.log(`Retrying listener in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries})`);
+      console.log(`Retrying listener setup (attempt ${this.retryCount}/${this.maxRetries}) in ${this.retryDelay}ms`);
       
-      this.retryTimeout = setTimeout(() => {
+      this.reconnectTimer = setTimeout(() => {
         if (this.isActive) {
           this.setupListener();
         }
-      }, delay);
+      }, this.retryDelay);
+      
+      // Exponential backoff with jitter
+      this.retryDelay = Math.min(this.retryDelay * 2 + Math.random() * 1000, 30000);
     } else {
-      console.error('Max retries reached or non-retryable error:', error);
-      this.errorCallback?.(error);
+      console.error('Max retries reached for Firebase listener');
+      if (this.onError) {
+        this.onError();
+      }
     }
   }
 
   // Health check method
   isHealthy(): boolean {
-    const timeSinceLastUpdate = Date.now() - this.lastSuccessfulUpdate;
-    return this.isActive && timeSinceLastUpdate < 60000; // Healthy if updated within 1 minute
+    return this.isActive && this.unsubscribe !== null && this.retryCount < this.maxRetries;
   }
 
-  // Force restart the listener
-  restart() {
-    this.stop();
-    setTimeout(() => {
-      this.start();
-    }, 1000);
+  // Force reconnect method
+  forceReconnect(): void {
+    if (this.isActive) {
+      this.stop();
+      setTimeout(() => this.start(), 100);
+    }
   }
 }
+
+// Utility function to create a reliable listener
+export function createReliableListener(
+  ref: DocumentReference | CollectionReference,
+  onData: (data: any) => void,
+  onError?: () => void
+): ReliableListener {
+  return new ReliableListener(ref, onData, onError);
+}
+
+// Export for backward compatibility
+export default ReliableListener;

@@ -183,7 +183,16 @@ export default function QuizArenaPage() {
     }));
 
     // Call handleCreateRoom with template data directly
-    await handleCreateRoomWithTemplate(template);
+    try {
+      await handleCreateRoomWithTemplate(template);
+    } catch (error) {
+      console.error('Template selection error:', error);
+      toast?.({
+        title: 'Template Error',
+        description: 'Failed to create arena from template. Please try again.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleCreateRoomWithTemplate = async (template: any) => {
@@ -714,6 +723,16 @@ export default function QuizArenaPage() {
                   <p className="text-slate-400">Design your own battleground</p>
                 </div>
               </div>
+            </div>
+
+            {/* Diagnostics Link */}
+            <div className="flex justify-center mt-8">
+              <Button variant="ghost" asChild className="text-slate-400 hover:text-cyan-400">
+                <Link href="/quiz-arena/diagnostics">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Having Issues? Run Diagnostics
+                </Link>
+              </Button>
             </div>
           </div>
 

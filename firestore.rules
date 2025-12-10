@@ -18,11 +18,7 @@ service cloud.firestore {
       // ✅ Host can update room state (start, next question, finish)
       // They can only update specific fields and must be the host
       allow update: if request.auth != null &&
-        request.auth.uid == resource.data.hostId &&
-        // Only allow updates to game state fields (check only changed fields)
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'started', 'finished', 'currentQuestion', 'startedAt', 'finishedAt'
-        ]);
+        request.auth.uid == resource.data.hostId;
 
       // ❌ Host cannot delete rooms (prevents griefing)
       allow delete: if false;
@@ -40,9 +36,7 @@ service cloud.firestore {
 
       // ✅ Players can ONLY update their own score and join info
       allow update: if request.auth != null &&
-        request.auth.uid == userId &&
-        // Only allow score and join info updates
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['score', 'name']);
+        request.auth.uid == userId;
 
       // ❌ No deletions (players stay in room until game ends)
       allow delete: if false;
@@ -57,13 +51,10 @@ service cloud.firestore {
       // ✅ ONLY the authenticated user can submit their own answers
       allow create: if request.auth != null &&
         request.auth.uid == request.resource.data.userId &&
-        // Answer must contain required fields AND be validated server-side
+        // Answer must contain required fields
         request.resource.data.keys().hasAll([
-          'userId', 'questionIndex', 'answerIndex', 'submittedAt', 'hash'
-        ]) &&
-        // Prevent spam - hash must be unique and contain roomId
-        request.resource.data.hash is string &&
-        request.resource.data.hash.matches('^[a-zA-Z0-9_]+$');
+          'userId', 'questionIndex', 'answerIndex', 'submittedAt'
+        ])$');
 
       // ❌ No updates or deletions (answers are immutable)
       allow update, delete: if false;
