@@ -1,7 +1,11 @@
 // 🔧 Quiz Arena Diagnostics and Auto-Fix System
-import { auth } from './firebase';
-import { firestore } from './firebase';
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { auth, firestore } from './firebase';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc
+} from 'firebase/firestore';
 
 export interface DiagnosticResult {
   component: string;
@@ -47,8 +51,17 @@ export class QuizArenaDiagnostics {
     try {
       const user = auth.currentUser;
       if (user) {
-        const token = await user.getIdToken();
-        this.addResult('Authentication', 'pass', `User authenticated: ${user.uid}`);
+        // Test if getIdToken works
+        try {
+          const token = await user.getIdToken();
+          if (token) {
+            this.addResult('Authentication', 'pass', `User authenticated: ${user.uid}`);
+          } else {
+            this.addResult('Authentication', 'fail', 'Failed to get authentication token');
+          }
+        } catch (tokenError: any) {
+          this.addResult('Authentication', 'fail', `Auth error: ${tokenError.message}`);
+        }
       } else {
         this.addResult('Authentication', 'warning', 'No user currently authenticated');
       }

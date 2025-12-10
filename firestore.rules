@@ -142,6 +142,12 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // 🧪 Test collection for diagnostics
+    match /test/{document} {
+      // ✅ Allow authenticated users to test connection
+      allow read, write: if request.auth != null;
+    }
+
     // 🕒 Default deny-all rule for any other collections
     match /{document} {
       allow read, write: if false;
