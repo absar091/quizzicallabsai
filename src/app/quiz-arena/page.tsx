@@ -214,9 +214,8 @@ export default function QuizArenaPage() {
         });
 
         // 🔧 FIX: Get Firebase auth token for API authentication
-        const { auth: firebaseAuth } = await import('firebase/auth');
-        const { auth: authInstance } = await import('@/lib/firebase');
-        const currentUser = authInstance.currentUser;
+        const { auth } = await import('@/lib/firebase');
+        const currentUser = auth.currentUser;
         
         if (!currentUser) {
           throw new Error('You must be logged in to create a quiz arena');
@@ -364,9 +363,8 @@ export default function QuizArenaPage() {
           });
 
           // 🔧 FIX: Get Firebase auth token for API authentication
-          const { auth: firebaseAuth } = await import('firebase/auth');
-          const { auth: authInstance } = await import('@/lib/firebase');
-          const currentUser = authInstance.currentUser;
+          const { auth } = await import('@/lib/firebase');
+          const currentUser = auth.currentUser;
           
           if (!currentUser) {
             throw new Error('You must be logged in to create a quiz arena');
@@ -422,9 +420,8 @@ export default function QuizArenaPage() {
           });
 
           // 🔧 FIX: Get Firebase auth token for API authentication
-          const { auth: firebaseAuth } = await import('firebase/auth');
-          const { auth: authInstance } = await import('@/lib/firebase');
-          const currentUser = authInstance.currentUser;
+          const { auth } = await import('@/lib/firebase');
+          const currentUser = auth.currentUser;
           
           if (!currentUser) {
             throw new Error('You must be logged in to create a quiz arena');

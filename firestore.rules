@@ -54,7 +54,7 @@ service cloud.firestore {
         // Answer must contain required fields
         request.resource.data.keys().hasAll([
           'userId', 'questionIndex', 'answerIndex', 'submittedAt'
-        ])$');
+        ]);$');
 
       // ❌ No updates or deletions (answers are immutable)
       allow update, delete: if false;

@@ -1,7 +1,7 @@
 // 🔧 Quiz Arena Diagnostics and Auto-Fix System
 import { auth } from './firebase';
 import { firestore } from './firebase';
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
 export interface DiagnosticResult {
   component: string;
@@ -81,7 +81,7 @@ export class QuizArenaDiagnostics {
       await setDoc(roomRef, testRoom);
       
       // Clean up test room
-      await roomRef.delete();
+      await deleteDoc(roomRef);
       
       this.addResult('Firestore Rules', 'pass', 'Firestore rules allow room creation');
     } catch (error: any) {
@@ -190,7 +190,7 @@ export class QuizArenaDiagnostics {
         this.addResult('Room Creation', 'pass', `Test room created successfully: ${testRoomCode}`);
         
         // Clean up test room
-        await roomRef.delete();
+        await deleteDoc(roomRef);
       } else {
         this.addResult('Room Creation', 'fail', 'Room creation succeeded but room not found in database');
       }
